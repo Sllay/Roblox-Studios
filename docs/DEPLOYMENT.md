@@ -4,17 +4,17 @@
 
 ## Separação de responsabilidades
 
-- \`game.manifest.json\`: nomes de Places e caminhos Rojo (não inclui IDs).
-- \`deploy.targets.json\`: IDs públicos de cada ambiente e Place (sem credenciais).
-- GitHub **Environments** \`staging\` e \`production\`: secret \`ROBLOX_OPEN_CLOUD_API_KEY\`.
-- \`tools/deploy.py\`: valida seleção de destino, envia a versão e consulta a operação assíncrona até confirmar sucesso ou erro.
-- \`.github/workflows/publish.yml\`: envio **somente manual** mediante confirmação.
+- `game.manifest.json`: nomes de Places e caminhos Rojo (não inclui IDs).
+- `deploy.targets.json`: IDs públicos de cada ambiente e Place (sem credenciais).
+- GitHub **Environments** `staging` e `production`: secret `ROBLOX_OPEN_CLOUD_API_KEY`.
+- `tools/deploy.py`: valida seleção de destino, envia a versão e consulta a operação assíncrona até confirmar sucesso ou erro.
+- `.github/workflows/publish.yml`: envio **somente manual** mediante confirmação.
 
 ## Exemplo de configuração
 
-\`games/maps/<slug>/deploy.targets.json\`:
+`games/maps/<slug>/deploy.targets.json`:
 
-\`\`\`json
+```json
 {
   "schemaVersion": 1,
   "environments": {
@@ -28,15 +28,15 @@
     }
   }
 }
-\`\`\`
+```
 
-Esses números são **ilustrativos**: substitua pelos IDs reais antes de publicar. Todos os IDs podem ser strings numéricas ou inteiros positivos; \`null\` significa não configurado. Staging e production devem usar Universes diferentes e nenhum Place ID deve ser duplicado entre eles. Adapte os nomes dos Places ao seu jogo.
+Esses números são **ilustrativos**: substitua pelos IDs reais antes de publicar. Todos os IDs podem ser strings numéricas ou inteiros positivos; `null` significa não configurado. Staging e production devem usar Universes diferentes e nenhum Place ID deve ser duplicado entre eles. Adapte os nomes dos Places ao seu jogo.
 
 ## Uma chave para cada ambiente, não uma chave para cada Place
 
-1. Acesse \`https://github.com/Sllay/Roblox-Studios/settings/environments\`.
-2. Crie \`staging\` e \`production\`. Configure revisores/aprovação no \`production\` quando disponível.
-3. Em cada ambiente, adicione um **Environment secret** chamado \`ROBLOX_OPEN_CLOUD_API_KEY\`. O nome do secret é sempre o mesmo; o valor pode mudar por ambiente.
+1. Acesse `https://github.com/Sllay/Roblox-Studios/settings/environments`.
+2. Crie `staging` e `production`. Configure revisores/aprovação no `production` quando disponível.
+3. Em cada ambiente, adicione um **Environment secret** chamado `ROBLOX_OPEN_CLOUD_API_KEY`. O nome do secret é sempre o mesmo; o valor pode mudar por ambiente.
 4. No Roblox Creator Dashboard, gere chaves Open Cloud com **Assets API: Read e Write**, limitadas aos jogos realmente necessários.
 5. **Não** ative autorização irrestrita por experiência para simplificar a configuração. Se vários jogos compartilharem uma chave, a chave precisa autorizar esses jogos, mas aumenta o alcance de um eventual vazamento. Para jogos com maior risco, use ambientes/chaves separados por jogo em uma evolução futura.
 6. Chaves de Vercel são independentes; Vercel não é obrigatório para publicar Places.
@@ -49,25 +49,25 @@ Esses números são **ilustrativos**: substitua pelos IDs reais antes de publica
 
 ## Comandos de controle
 
-\`\`\`sh
+```sh
 python tools/workspace.py validate
 python tools/deploy.py validate
 python tools/deploy.py show --game sandbox-demo --place lobby --environment staging
 python tools/workspace.py build --game sandbox-demo --place lobby
 python tools/deploy.py publish --game sandbox-demo --place lobby --environment staging
-\`\`\`
+```
 
-O comando \`publish\` sem \`--execute\` é apenas prévia. O workflow manual passa \`--execute\` e só funciona depois de configurar IDs e secret. Configuração incompleta interrompe o processo antes de chamar o Roblox.
+O comando `publish` sem `--execute` é apenas prévia. O workflow manual passa `--execute` e só funciona depois de configurar IDs e secret. Configuração incompleta interrompe o processo antes de chamar o Roblox.
 
 ## Publicação manual
 
-Acesse \`https://github.com/Sllay/Roblox-Studios/actions/workflows/publish.yml\`, selecione jogo, Place, ambiente e marque a confirmação. O workflow compila o Place selecionado, envia o arquivo \`.rbxlx\` pela **Assets API** e consulta \`operations/{id}\` até \`done=true\`. Falhas não devem ser tratadas como publicação concluída.
+Acesse `https://github.com/Sllay/Roblox-Studios/actions/workflows/publish.yml`, selecione jogo, Place, ambiente e marque a confirmação. O workflow compila o Place selecionado, envia o arquivo `.rbxlx` pela **Assets API** e consulta `operations/{id}` até `done=true`. Falhas não devem ser tratadas como publicação concluída.
 
-A publicação **não** acontece automaticamente no push; \`ci.yml\` segue compilando e testando sem chave.
+A publicação **não** acontece automaticamente no push; `ci.yml` segue compilando e testando sem chave.
 
 ## Limitações e segurança
 
-- A documentação Roblox informa que certos objetos \`EditableImage\`, \`EditableMesh\`, \`PartOperation\`, \`SurfaceAppearance\` e \`BaseWrap\` podem precisar de publicação via Studio.
+- A documentação Roblox informa que certos objetos `EditableImage`, `EditableMesh`, `PartOperation`, `SurfaceAppearance` e `BaseWrap` podem precisar de publicação via Studio.
 - IDs não provam, por si só, que Place e Universe pertencem um ao outro; confirme-os no Creator Dashboard.
 - Atualizações de Place não representam necessariamente hot reload em servidores já abertos.
 - O workflow não cria automaticamente uma experiência, não importa assets externos e não substitui todas as operações gráficas do Studio.
