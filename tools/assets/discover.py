@@ -242,7 +242,7 @@ def main(argv=None) -> int:
             raise DiscoveryError(f"Unknown or unsafe game slug: {args.game}")
         if len(args.biome) > 80:
             raise DiscoveryError("Biome hint must contain at most 80 characters")
-        key = os.environ.get("ROBLOX_CREATOR_STORE_API_KEY", "") or os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY", "")
+        key = os.environ.get("ROBLOX_CREATOR_STORE_API_KEY", "")
         assets = search_models(args.query, args.count, key)
         render(args.output, assets, game=args.game, query=args.query, biome=args.biome)
         return 0

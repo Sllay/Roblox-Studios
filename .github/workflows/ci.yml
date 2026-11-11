@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Install image renderer
+        run: python -m pip install Pillow==11.3.0
       - name: Structural validation
         run: python tools/workspace.py validate
       - name: Validate deployment mappings

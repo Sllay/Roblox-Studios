@@ -1,0 +1,61 @@
+name: Asset Discovery - Creator Store Gallery
+
+on:
+  workflow_dispatch:
+    inputs:
+      game:
+        description: Game slug in games/maps/
+        required: true
+        type: string
+        default: mapa-principal
+      query:
+        description: Models to search (e.g. tropical tree)
+        required: true
+        type: string
+        default: tropical tree
+      biome:
+        description: Biome hint (no automatic approval)
+        required: false
+        type: string
+        default: praia
+      count:
+        description: Maximum number of candidates
+        type: choice
+        options:
+          - '8'
+          - '16'
+          - '24'
+        default: '16'
+  push:
+    paths:
+      - 'games/maps/mapa-principal/docs/asset-discovery-2026-11-11.trigger'
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install image renderer
+        run: python -m pip install Pillow==11.3.0
+      - name: Query Creator Store and generate visual catalog
+        env:
+          GAME_NAME: ${{ inputs.game || 'mapa-principal' }}
+          SEARCH_QUERY: ${{ inputs.query || 'tropical tree' }}
+          BIOME_HINT: ${{ inputs.biome || 'praia' }}
+          SEARCH_COUNT: ${{ inputs.count || '16' }}
+          ROBLOX_CREATOR_STORE_API_KEY: ${{ secrets.ROBLOX_CREATOR_STORE_API_KEY }}
+        run: python tools/assets/discover.py --game "$GAME_NAME" --query "$SEARCH_QUERY" --biome "$BIOME_HINT" --count "$SEARCH_COUNT" --output dist/asset-discovery
+      - name: Upload gallery (JSON, HTML, PNG, thumbnails)
+        uses: actions/upload-artifact@v4
+        with:
+          name: creator-store-visual-gallery
+          path: dist/asset-discovery/
+          if-no-files-found: error
+          retention-days: 14

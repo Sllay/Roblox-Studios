@@ -35,6 +35,12 @@ python tools/workspace.py build --game sandbox-demo --place lobby
 
 O build gera arquivos em `dist/<jogo>/<place>.rbxlx`. O GitHub Actions pode validar e compilar sem computador local.
 
+## Descoberta de assets e inspeção do mapa
+
+- [Asset Discovery (galeria visual do Creator Store)](.github/workflows/asset-discovery.yml): gera candidates.json, gallery.html, contact-sheet.png e miniaturas em Actions artifacts; nenhum asset é aprovado ou importado.
+- [Scene Inspector (Open Cloud, somente leitura)](.github/workflows/scene-inspector.yml): produz scene.json, scene-map.png e report.md com posição de Parts. **Não tira screenshot real nem modifica o Place.**
+- Cada jogo tem `ASSET_STYLE_GUIDE.md` e `game/assets/catalog.json`; aprovação de assets e importação são etapas futuras separadas.
+
 ## Diagnóstico automático de Luau
 
 Os workflows verificam a sintaxe de Scripts, LocalScripts e ModuleScripts com Luau oficial 0.744 e SHA-256 validado. Erros bloqueiam a publicação. Consulte [Quality Gates](docs/QUALITY_GATES.md). Testes de runtime ainda são independentes.

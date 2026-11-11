@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def list_sources(root: Path) -> list[Path]:
     paths: set[Path] = set()
-    for base in (root / "games" / "maps", root / "packages"):
+    for base in (root / "games" / "maps", root / "packages", root / "tools"):
         if not base.is_dir():
             raise ValueError(f"Missing source directory: {base}")
         for pattern in ("*.luau", "*.lua"):
