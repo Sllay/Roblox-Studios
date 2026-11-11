@@ -8,8 +8,17 @@ Teste técnico da pipeline GitHub → Rojo → execução remota Roblox, sem alt
 - `StarterPlayer.StarterPlayerScripts.CloudFloatClient`: LocalScript que cria uma barra discreta e confirma inicialização e movimento replicado.
 - Sem RemoteEvents, DataStores, permissão de jogador, monetização ou operações de rede externas.
 
-## Estado
-Build local Rojo e testes no GitHub Actions **não provam** execução efetiva na engine mobile. O status deve ser registrado apenas quando o usuário observar no cliente.
+## Resultado da publicação remota — 11 de novembro de 2026
+
+- GitHub Actions: [execução 43108939043](https://github.com/Sllay/Roblox-Studios/actions/runs/43108939043) **sucesso**.
+- Universe `10769712453`, Place `118200154785968`.
+- Validação de identidade e ausência de colisão entre nomes: **PASSOU**.
+- Luau Execution criou/atualizou `Workspace.RobloxStudiosSmoke.FloatingPlatform`, `ServerScriptService.CloudFloatController` e `StarterPlayer.StarterPlayerScripts.CloudFloatClient`.
+- `AssetService:SavePlaceAsync({SaveWithoutPublish=false})`: concluído.
+- Segunda sessão remota carregou a **versão 2** e confirmou os três objetos e os códigos dos scripts: **PASSOU**.
+- Validação visual, dinâmica e mobile: **PENDENTE**, pois scripts de gameplay e física não rodam automaticamente durante Luau Execution Tasks.
+
+O workflow `cloud-smoke.yml` agora tem somente disparo manual para evitar futuras publicações por push. A confirmação de persistência não deve ser confundida com validação do comportamento em partida.
 
 ## Implantação segura de teste
 O Place ID recebido foi cadastrado em `production`. **Não substituir o Place inteiro com o build Rojo**, pois o projeto local não contém necessariamente a cena completa existente.

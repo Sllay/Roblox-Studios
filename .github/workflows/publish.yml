@@ -24,6 +24,11 @@ on:
         type: boolean
         required: true
         default: false
+      confirm_full_place_replacement:
+        description: "I understand the Rojo build REPLACES the entire existing Place"
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -34,7 +39,7 @@ concurrency:
 
 jobs:
   publish:
-    if: ${{ inputs.confirm_publish }}
+    if: ${{ inputs.confirm_publish && inputs.confirm_full_place_replacement }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     timeout-minutes: 20

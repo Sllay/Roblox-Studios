@@ -1,10 +1,7 @@
-name: Cloud smoke test (incremental, manual or one-time trigger)
+name: Cloud smoke test (incremental, manual only)
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'games/maps/mapa-principal/docs/cloud-smoke-2026-11-11.trigger'
 
 permissions:
   contents: read
