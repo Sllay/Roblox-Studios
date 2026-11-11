@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "slug": "mapa-principal",
+  "name": "Mapa Principal",
+  "platform": "roblox",
+  "places": [
+    {
+      "slug": "main",
+      "name": "Main",
+      "project": "game/places/main/default.project.json"
+    }
+  ]
+}
