@@ -18,6 +18,8 @@ Este arquivo é o ponto de entrada para agentes de código que trabalham neste r
 - Consulte `docs/DEPLOYMENT.md` e use o workflow manual para publicar apenas um Place por vez.
 - Nunca inclua tokens Roblox, chaves Open Cloud ou segredos no Git.
 - Preserve `packages/` como código compartilhado e evite acoplamento entre jogos.
+- Para assets, siga `docs/ASSET_AND_SCENE_WORKFLOWS.md`. Asset Discovery fornece candidatos visuais, nunca autorização de importação. Só usar `tools/assets/catalog.py` para pré-selecionar, com auditoria pendente.
+- Scene Inspector é de leitura; não declarar seu mapa esquemático como screenshot real e não inventar biomas ausentes.
 - Registre decisões importantes em `docs/adr/` e atualize a documentação afetada.
 - Nunca afirme ter executado testes que não foram executados.
 

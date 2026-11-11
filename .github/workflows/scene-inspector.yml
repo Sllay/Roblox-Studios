@@ -21,9 +21,6 @@ on:
           - staging
         required: true
         default: production
-  push:
-    paths:
-      - 'games/maps/mapa-principal/docs/scene-inspector-2026-11-11.trigger'
 
 permissions:
   contents: read

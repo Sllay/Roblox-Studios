@@ -26,9 +26,6 @@ on:
           - '16'
           - '24'
         default: '16'
-  push:
-    paths:
-      - 'games/maps/mapa-principal/docs/asset-discovery-2026-11-11.trigger'
 
 permissions:
   contents: read

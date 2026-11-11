@@ -39,7 +39,8 @@ O build gera arquivos em `dist/<jogo>/<place>.rbxlx`. O GitHub Actions pode vali
 
 - [Asset Discovery (galeria visual do Creator Store)](.github/workflows/asset-discovery.yml): gera candidates.json, gallery.html, contact-sheet.png e miniaturas em Actions artifacts; nenhum asset é aprovado ou importado.
 - [Scene Inspector (Open Cloud, somente leitura)](.github/workflows/scene-inspector.yml): produz scene.json, scene-map.png e report.md com posição de Parts. **Não tira screenshot real nem modifica o Place.**
-- Cada jogo tem `ASSET_STYLE_GUIDE.md` e `game/assets/catalog.json`; aprovação de assets e importação são etapas futuras separadas.
+- Cada jogo tem `ASSET_STYLE_GUIDE.md` e `game/assets/catalog.json`. O CLI `tools/assets/catalog.py` registra escolhas visuais como **pré-selecionadas, não auditadas e não importadas**.
+- [Manual dos workflows de assets e inspeção](docs/ASSET_AND_SCENE_WORKFLOWS.md).
 
 ## Diagnóstico automático de Luau
 
