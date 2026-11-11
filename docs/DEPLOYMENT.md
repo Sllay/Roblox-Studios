@@ -6,7 +6,7 @@
 
 - `game.manifest.json`: nomes de Places e caminhos Rojo (não inclui IDs).
 - `deploy.targets.json`: IDs públicos de cada ambiente e Place (sem credenciais).
-- GitHub **Environments** `staging` e `production`: secret `ROBLOX_OPEN_CLOUD_API_KEY`.
+- GitHub **Actions → Repository secrets**: secret `ROBLOX_OPEN_CLOUD_API_KEY` (configuração atual recomendada para o repositório). Opcionalmente, o mesmo nome pode existir como secret de ambiente para restringir seu uso por destino.
 - `tools/deploy.py`: valida seleção de destino, envia a versão e consulta a operação assíncrona até confirmar sucesso ou erro.
 - `.github/workflows/publish.yml`: envio **somente manual** mediante confirmação.
 
@@ -32,14 +32,21 @@
 
 Esses números são **ilustrativos**: substitua pelos IDs reais antes de publicar. Todos os IDs podem ser strings numéricas ou inteiros positivos; `null` significa não configurado. Staging e production devem usar Universes diferentes e nenhum Place ID deve ser duplicado entre eles. Adapte os nomes dos Places ao seu jogo.
 
-## Uma chave para cada ambiente, não uma chave para cada Place
+## Chave única no Repository secrets (configuração escolhida)
 
-1. Acesse `https://github.com/Sllay/Roblox-Studios/settings/environments`.
-2. Crie `staging` e `production`. Configure revisores/aprovação no `production` quando disponível.
-3. Em cada ambiente, adicione um **Environment secret** chamado `ROBLOX_OPEN_CLOUD_API_KEY`. O nome do secret é sempre o mesmo; o valor pode mudar por ambiente.
-4. No Roblox Creator Dashboard, gere chaves Open Cloud com **Assets API: Read e Write**, limitadas aos jogos realmente necessários.
-5. **Não** ative autorização irrestrita por experiência para simplificar a configuração. Se vários jogos compartilharem uma chave, a chave precisa autorizar esses jogos, mas aumenta o alcance de um eventual vazamento. Para jogos com maior risco, use ambientes/chaves separados por jogo em uma evolução futura.
-6. Chaves de Vercel são independentes; Vercel não é obrigatório para publicar Places.
+1. Acesse `https://github.com/Sllay/Roblox-Studios/settings/secrets/actions`.
+2. Crie um **Repository secret** com o nome exato `ROBLOX_OPEN_CLOUD_API_KEY`.
+3. Use uma chave da Roblox Open Cloud com permissões mínimas de Assets API (Read/Write), autorizada somente para as experiências que precisam ser publicadas.
+4. O workflow `publish.yml` já lê `secrets.ROBLOX_OPEN_CLOUD_API_KEY` diretamente. Não é necessário copiar o secret para os Environments.
+5. Os ambientes `staging` e `production` continuam selecionando os IDs de destino em `deploy.targets.json`. É possível adicionar aprovação obrigatória para `production` em Settings → Environments, sem armazenar a chave lá.
+6. A chave de Vercel não publica Places Roblox e deve permanecer separada, caso exista outro serviço que precise dela.
+
+### Segurança e limites desta opção
+
+Repository secrets são criptografados, mas seu alcance é **todo o repositório**, não somente o workflow de publicação. Outros workflows com acesso legítimo ao contexto de secrets podem referenciá-los. Environment secrets oferecem melhor isolamento por ambiente; quando há nomes idênticos, o secret de ambiente tem precedência. Ao manter a chave no repositório, proteja mudanças nos arquivos de workflow, prefira permissões restritas da Roblox e use proteção de publicação quando possível.
+
+**Não é necessário um secret por jogo ou por Place.** Se um dia houver muitos jogos com permissões incompatíveis, separar credenciais por jogo/ambiente será mais seguro que uma chave com acesso irrestrito.
+
 
 ## Onde obter os IDs
 
