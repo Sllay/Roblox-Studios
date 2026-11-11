@@ -1,0 +1,36 @@
+name: Validate and build Roblox places
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Structural validation
+        run: python tools/workspace.py validate
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Install pinned Rojo via Rokit
+        uses: CompeyDev/setup-rokit@v0.2.1
+      - name: Verify Rojo
+        run: rojo --version
+      - name: Compile all places (no publishing)
+        run: python tools/workspace.py build --all
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-places
+          path: dist/**/*.rbxlx
+          if-no-files-found: error

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "slug": "sandbox-demo",
+  "name": "Sandbox Demo",
+  "platform": "roblox",
+  "places": [
+    {
+      "slug": "lobby",
+      "name": "Lobby",
+      "project": "game/places/lobby/default.project.json",
+      "placeId": null,
+      "universeId": null
+    },
+    {
+      "slug": "arena",
+      "name": "Arena",
+      "project": "game/places/arena/default.project.json",
+      "placeId": null,
+      "universeId": null
+    }
+  ]
+}

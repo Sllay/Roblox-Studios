@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "slug": "_template",
+  "name": "New Game Template",
+  "platform": "roblox",
+  "places": [
+    {
+      "slug": "main",
+      "name": "Main",
+      "project": "game/places/main/default.project.json",
+      "placeId": null,
+      "universeId": null
+    }
+  ]
+}
