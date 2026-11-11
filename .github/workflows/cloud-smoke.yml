@@ -1,0 +1,51 @@
+name: Cloud smoke test (incremental, manual or one-time trigger)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'games/maps/mapa-principal/docs/cloud-smoke-2026-11-11.trigger'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloud-smoke-mapa-principal-production
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate tests and compile without deploying
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate all projects
+        run: |
+          python tools/workspace.py validate
+          python tools/deploy.py validate
+          python -m unittest discover -s tests -v
+          python tools/cloud_smoke.py
+      - uses: CompeyDev/setup-rokit@v0.2.1
+      - name: Compile all Places
+        run: python tools/workspace.py build --all
+
+  cloud-smoke:
+    name: Incremental save to existing Roblox Place
+    needs: validate
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Check target identity, upsert smoke test, verify persisted objects
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/cloud_smoke.py --execute
