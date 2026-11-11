@@ -205,6 +205,10 @@ def main(argv=None):
         if not args.execute:
             print(f"DRY RUN: {len(apply)} bytes Luau; no API calls made", flush=True)
             return 0
+        # Mandatory even when executed directly, outside GitHub Actions.
+        from script_quality import main as check_luau
+        if check_luau([]) != 0:
+            raise WorkspaceError("Luau pre-deploy quality gate failed; refusing remote write")
         key = os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY", "").strip()
         if not key:
             raise WorkspaceError("Missing secret ROBLOX_OPEN_CLOUD_API_KEY in GitHub Actions")

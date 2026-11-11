@@ -191,6 +191,10 @@ def main(argv=None):
             if args.action == "publish":
                 print("DRY RUN ONLY: pass --execute to actually publish.")
             return 0
+        # Mandatory even when executed directly, outside GitHub Actions.
+        from script_quality import main as check_luau
+        if check_luau([]) != 0:
+            raise WorkspaceError("Luau pre-deploy quality gate failed; refusing remote write")
         key = os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY")
         if not key:
             raise WorkspaceError("ROBLOX_OPEN_CLOUD_API_KEY secret is not set")
