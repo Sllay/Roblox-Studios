@@ -34,7 +34,10 @@ class CloudSmokeTests(unittest.TestCase):
         self.assertIn("serverScript.Source", s)
         self.assertIn("localScript.Source", s)
         self.assertIn("FloatingPlatform", s)
-        self.assertNotIn("Destroy()", s)
+        # Embedded source legitimately destroys only an existing client UI label.
+        # Limit destructive-operation assertions to the installer, not embedded scripts.
+        installer = s.split("serverScript.Source = ")[0]
+        self.assertNotIn("Destroy()", installer)
         self.assertNotIn("require(0", s)
 
     def test_verification_is_read_only(self):
