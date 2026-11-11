@@ -26,6 +26,21 @@ jobs:
           python tools/deploy.py validate
           python -m unittest discover -s tests -v
           python tools/cloud_smoke.py
+      - name: Install pinned official Luau
+        run: bash tools/install-luau.sh
+      - name: Compile-check all Luau sources
+        run: python tools/script_quality.py
+      - name: Negative gate test - bad syntax must fail
+        run: |
+          BAD_FILE="$(mktemp --suffix=.luau)"
+          printf 'local = invalid\n' > "$BAD_FILE"
+          if luau-compile --null "$BAD_FILE"; then
+            echo "::error::Luau compiler accepted invalid code"
+            rm -f "$BAD_FILE"
+            exit 1
+          fi
+          rm -f "$BAD_FILE"
+          echo 'PASS: compiler rejected invalid code'
       - uses: CompeyDev/setup-rokit@v0.2.1
       - name: Compile all Places
         run: python tools/workspace.py build --all
@@ -42,6 +57,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Install official Luau (pre-deploy)
+        run: bash tools/install-luau.sh
+      - name: Mandatory syntax gate before using Roblox key
+        run: python tools/script_quality.py
       - name: Check target identity, upsert smoke test, verify persisted objects
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}

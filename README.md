@@ -27,12 +27,17 @@ python tools/scaffold.py new-game --slug novo-jogo --name "Novo Jogo"
 python tools/scaffold.py add-place --game novo-jogo --place arena
 python tools/workspace.py list
 python tools/workspace.py validate
+python tools/script_quality.py
 python -m unittest discover -s tests -v
 python tools/workspace.py build --all
 python tools/workspace.py build --game sandbox-demo --place lobby
 ```
 
 O build gera arquivos em `dist/<jogo>/<place>.rbxlx`. O GitHub Actions pode validar e compilar sem computador local.
+
+## Diagnóstico automático de Luau
+
+Os workflows verificam a sintaxe de Scripts, LocalScripts e ModuleScripts com Luau oficial 0.744 e SHA-256 validado. Erros bloqueiam a publicação. Consulte [Quality Gates](docs/QUALITY_GATES.md). Testes de runtime ainda são independentes.
 
 ## Publicação e IDs
 

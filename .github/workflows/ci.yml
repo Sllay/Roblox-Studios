@@ -24,6 +24,21 @@ jobs:
         run: python tools/deploy.py validate
       - name: Unit tests
         run: python -m unittest discover -s tests -v
+      - name: Install pinned official Luau
+        run: bash tools/install-luau.sh
+      - name: Compile-check all Luau sources
+        run: python tools/script_quality.py
+      - name: Negative gate test - bad syntax must fail
+        run: |
+          BAD_FILE="$(mktemp --suffix=.luau)"
+          printf 'local = invalid\n' > "$BAD_FILE"
+          if luau-compile --null "$BAD_FILE"; then
+            echo "::error::Luau compiler accepted invalid code"
+            rm -f "$BAD_FILE"
+            exit 1
+          fi
+          rm -f "$BAD_FILE"
+          echo 'PASS: compiler rejected invalid code'
       - name: Install pinned Rojo via Rokit
         uses: CompeyDev/setup-rokit@v0.2.1
       - name: Verify Rojo

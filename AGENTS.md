@@ -12,6 +12,7 @@ Este arquivo é o ponto de entrada para agentes de código que trabalham neste r
 ## Contratos
 - `game/` contém o jogo exportável. Documentos e contexto dos agentes nunca devem estar em `$path` de um projeto Rojo.
 - Use apenas APIs Roblox documentadas; sem dependências ou formatos fictícios.
+- Obrigatório passar no quality gate oficial Luau (`python tools/script_quality.py`) antes de cada deploy, corrigindo falhas sem desativar a análise.
 - Mantenha scripts do servidor e cliente separados, com contratos explícitos.
 - Não publique Places sem confirmação manual; IDs reais ficam em `deploy.targets.json`, credenciais somente em GitHub Actions Repository secrets ou Environment secrets.
 - Consulte `docs/DEPLOYMENT.md` e use o workflow manual para publicar apenas um Place por vez.
@@ -23,6 +24,7 @@ Este arquivo é o ponto de entrada para agentes de código que trabalham neste r
 ## Verificação mínima
 ```sh
 python tools/workspace.py validate
+python tools/script_quality.py
 python -m unittest discover -s tests -v
 python tools/workspace.py build --all
 ```
