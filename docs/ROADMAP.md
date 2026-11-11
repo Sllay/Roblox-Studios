@@ -7,7 +7,8 @@
 - [ ] Testar os builds em runner GitHub Actions e corrigir incompatibilidades.
 - [ ] Adicionar análise estática de Luau e testes de comportamento.
 - [ ] Catálogo de assets e pipeline de importação com verificação de permissões.
+- [x] Configuração de IDs por jogo/Place/ambiente e workflow manual de publicação via Open Cloud (teste real pendente).
 - [ ] Gestão de experiências/Places existentes via Open Cloud.
-- [ ] Publicação para homologação sob controle explícito.
+- [ ] Configurar IDs e secrets reais, e validar publicação de homologação no Roblox.
 - [ ] Testes Luau na infraestrutura Roblox.
 - [ ] Promoção para produção com aprovação.

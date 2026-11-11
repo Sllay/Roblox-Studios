@@ -1,0 +1,63 @@
+name: Publish Roblox Place (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      game:
+        description: "Game slug under games/maps/"
+        type: string
+        required: true
+      place:
+        description: "Place slug from game.manifest.json"
+        type: string
+        required: true
+      environment:
+        description: "Destination environment"
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+        required: true
+      confirm_publish:
+        description: "I intend to publish a new version to this Roblox Place"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ inputs.game }}-${{ inputs.place }}-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ inputs.confirm_publish }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Validate repository and target mappings
+        run: |
+          python tools/workspace.py validate
+          python tools/deploy.py validate
+          python -m unittest discover -s tests -v
+      - uses: CompeyDev/setup-rokit@v0.2.1
+      - name: Compile selected Place
+        env:
+          TARGET_GAME: ${{ inputs.game }}
+          TARGET_PLACE: ${{ inputs.place }}
+        run: python tools/workspace.py build --game "$TARGET_GAME" --place "$TARGET_PLACE"
+      - name: Publish through Open Cloud Assets API
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          TARGET_GAME: ${{ inputs.game }}
+          TARGET_PLACE: ${{ inputs.place }}
+          TARGET_ENV: ${{ inputs.environment }}
+        run: python tools/deploy.py publish --game "$TARGET_GAME" --place "$TARGET_PLACE" --environment "$TARGET_ENV" --execute

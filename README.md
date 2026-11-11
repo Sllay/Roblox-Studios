@@ -30,9 +30,14 @@ python tools/workspace.py build --game sandbox-demo --place lobby
 
 O build gera arquivos em `dist/<jogo>/<place>.rbxlx`. O GitHub Actions pode validar e compilar sem computador local.
 
-## Publicação
+## Publicação e IDs
 
-**A publicação no Roblox ainda não está habilitada.** É necessário configurar uma experiência e Places reais, permissões de Open Cloud e segredos no GitHub Actions. Não colocar chaves em commits. Consulte `docs/DEPLOYMENT.md`.
+Cada jogo possui `deploy.targets.json` com seus Universe/Place IDs por ambiente (`staging` e `production`). **IDs não são secretos; nunca inclua chaves aqui.** As chaves Open Cloud pertencem aos GitHub Environment secrets com nome `ROBLOX_OPEN_CLOUD_API_KEY`. O workflow manual `.github/workflows/publish.yml` compila e publica um único Place, com confirmação explícita e validação assíncrona. Configuração de IDs e secrets ainda precisa ser feita por você. Veja [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+```sh
+python tools/deploy.py validate
+python tools/deploy.py show --game sandbox-demo --place lobby --environment staging
+```
 
 ## Documentação
 

@@ -7,9 +7,7 @@
     {
       "slug": "main",
       "name": "Main",
-      "project": "game/places/main/default.project.json",
-      "placeId": null,
-      "universeId": null
+      "project": "game/places/main/default.project.json"
     }
   ]
 }

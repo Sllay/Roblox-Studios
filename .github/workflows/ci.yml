@@ -20,6 +20,8 @@ jobs:
           python-version: '3.13'
       - name: Structural validation
         run: python tools/workspace.py validate
+      - name: Validate deployment mappings
+        run: python tools/deploy.py validate
       - name: Unit tests
         run: python -m unittest discover -s tests -v
       - name: Install pinned Rojo via Rokit

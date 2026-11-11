@@ -7,16 +7,12 @@
     {
       "slug": "lobby",
       "name": "Lobby",
-      "project": "game/places/lobby/default.project.json",
-      "placeId": null,
-      "universeId": null
+      "project": "game/places/lobby/default.project.json"
     },
     {
       "slug": "arena",
       "name": "Arena",
-      "project": "game/places/arena/default.project.json",
-      "placeId": null,
-      "universeId": null
+      "project": "game/places/arena/default.project.json"
     }
   ]
 }
