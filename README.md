@@ -12,15 +12,19 @@ Monorepositório de desenvolvimento de jogos Roblox orientado por agentes de IA,
 - `tools/`: validação, descoberta e compilação.
 - `.github/workflows/`: testes e builds na nuvem.
 
-## Exemplo inicial
+## Jogos existentes
 
-`games/maps/sandbox-demo/` contém dois Places separados: `lobby` e `arena`.
+- `games/maps/mapa-principal/`: projeto inicial com Place `main` e IDs provisórios cadastrados em produção, sem publicação.
+- `games/maps/sandbox-demo/`: exemplo técnico de dois Places (`lobby` e `arena`).
+- `games/maps/_template/`: modelo canônico de novos jogos.
 
 ## Comandos
 
 Requer Python 3.11+ e Rojo conforme `rokit.toml`.
 
 ```sh
+python tools/scaffold.py new-game --slug novo-jogo --name "Novo Jogo"
+python tools/scaffold.py add-place --game novo-jogo --place arena
 python tools/workspace.py list
 python tools/workspace.py validate
 python -m unittest discover -s tests -v
@@ -41,6 +45,7 @@ python tools/deploy.py show --game sandbox-demo --place lobby --environment stag
 
 ## Documentação
 
+- [Arquitetura completa do template (inclui código dos scripts)](docs/architecture/GAME_TEMPLATE_ARCHITECTURE.md)
 - [Arquitetura global](ARCHITECTURE.md)
 - [Regras dos agentes](AGENTS.md)
 - [Implantação segura](docs/DEPLOYMENT.md)

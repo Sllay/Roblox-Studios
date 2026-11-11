@@ -7,12 +7,13 @@ Este arquivo é o ponto de entrada para agentes de código que trabalham neste r
 2. Leia `AGENTS.md`, `GDD.md`, `ARCHITECTURE.md` e `game.manifest.json` desse jogo.
 3. Leia a documentação técnica específica em `docs/`; inspecione os arquivos existentes antes de propor mudanças.
 4. Defina o escopo: não altere outros jogos sem necessidade demonstrável.
+5. Para criar jogos ou Places, leia `docs/architecture/GAME_TEMPLATE_ARCHITECTURE.md` e use `tools/scaffold.py`. Nunca invente a estrutura.
 
 ## Contratos
 - `game/` contém o jogo exportável. Documentos e contexto dos agentes nunca devem estar em `$path` de um projeto Rojo.
 - Use apenas APIs Roblox documentadas; sem dependências ou formatos fictícios.
 - Mantenha scripts do servidor e cliente separados, com contratos explícitos.
-- Não publique Places sem confirmação manual; IDs reais ficam em `deploy.targets.json`, credenciais somente em GitHub Environment secrets.
+- Não publique Places sem confirmação manual; IDs reais ficam em `deploy.targets.json`, credenciais somente em GitHub Actions Repository secrets ou Environment secrets.
 - Consulte `docs/DEPLOYMENT.md` e use o workflow manual para publicar apenas um Place por vez.
 - Nunca inclua tokens Roblox, chaves Open Cloud ou segredos no Git.
 - Preserve `packages/` como código compartilhado e evite acoplamento entre jogos.
