@@ -1,1 +1,1 @@
-One-time read-only Scene Inspector test. Place: mapa-principal/main (production). No SavePlaceAsync, no Place changes; output artifacts only.
+Read-only retry 2: prevent comment-only false-positive in static safety check; never SavePlaceAsync, never alter Place.

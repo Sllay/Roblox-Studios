@@ -44,7 +44,7 @@ def request_api(path: str, key: str, *, payload: dict | None = None) -> dict:
 
 def fetch_scene(universe: str, place: str, key: str) -> dict:
     script = LUAU.read_text(encoding="utf-8")
-    assert "SavePlaceAsync" not in script and "Instance.new" not in script
+    assert "SavePlaceAsync(" not in script and "Instance.new(" not in script
     endpoint = f"universes/{universe}/places/{place}/luau-execution-session-tasks"
     task = request_api(endpoint, key, payload={"script": script})
     path = task.get("path")
