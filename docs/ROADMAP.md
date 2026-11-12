@@ -104,3 +104,7 @@
 - [x] Pinned v14 API probe 43258355023: terrain voxels, pathfinding (8 waypoints), serialization roundtrip observed; headless physical queries returned no hits and EditableMesh permission denied. Evidence persisted. Terrain atlas (materials, altitude, placement) implemented, read-only live validation pending.
 
 - [x] Terrain Atlas live verified v14 (43258670029): material, altitude and placement diagrams from 9216 samples across nine hash-verified playable chunks. Summary recorded; no Place writes.
+
+## Roteiro operacional atual — 2026-11-12
+
+A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (roteiro) concluído; S01 (segurança/transações) é o próximo checkpoint, seguido por S02 Spatial Engine, S03 Asset Lab, S04 Physics Builder/vento, S05 staging, S06 runtime/mobile, S07 visual, S08 APIs/Studio, S09 MCP e S10 handoff. O roteiro distingue planejado, implementado, verificado, publicado e aceite mobile. Baseline v14; não reaplicar planos históricos. As entradas anteriores acima são histórico, não uma fila de execução.
