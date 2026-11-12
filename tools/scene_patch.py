@@ -7,6 +7,10 @@ from deploy import load_all,resolve,WorkspaceError
 from scene_snapshot import canonical
 ID=re.compile(r"[a-z][a-z0-9-]{2,63}")
 NAME=re.compile(r"[A-Za-z0-9_ -]{1,80}")
+COUPLED_ROOTS={"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets"}
+def require_uncoupled(r):
+    path=r.get("path",[])
+    require(r.get("service")!="Workspace" or not path or path[0]["name"] not in COUPLED_ROOTS,"Use dedicated coupled environment migration")
 def num(v,lo,hi):return type(v) in (int,float) and math.isfinite(v) and lo<=v<=hi
 def vector(v,n,lo,hi):return isinstance(v,list) and len(v)==n and all(num(x,lo,hi) for x in v)
 def cf(v):
@@ -41,9 +45,11 @@ def prepare(t,base,p):
         require(kind in ("add_part","set_part","move_model","adopt","archive","restore","create_script","update_script"),"Unsupported operation")
         if kind in ("set_part","move_model","adopt","archive","restore","update_script"):
             key=op.pop("targetKey");require(key not in seen,"Repeated target");seen.add(key);op["target"]=lookup(key)
+            require_uncoupled(op["target"])
             target_paths.append((op["target"]["service"],op["target"]["path"]))
         if kind in ("add_part","restore","create_script"):
             op["parent"]=parent(op.pop("parentKey"))
+            require_uncoupled(op["parent"])
             parent_paths.append((op["parent"]["service"],op["parent"]["path"]))
         if kind in ("add_part","create_script"):
             require(NAME.fullmatch(op["name"]) and ID.fullmatch(op["id"]) and "managed:"+op["id"] not in records and op["id"] not in new_ids,"Name/ID")
@@ -95,6 +101,7 @@ def main():
     require(preview.get("preview") is True and preview.get("operations")==len(ops) and preview["loadedVersion"]==base["loadedVersion"],"Preview contract mismatch")
     if p.operation=="preview":print("PATCH_PREVIEW",json.dumps(preview));return
     require(p.confirm_staging,"Explicit confirmation required")
+    require(not (p.output/"cloud-task.json").exists(),"Prior write journal; reconcile before apply")
     from script_quality import main as quality
     require(quality([])==0,"Luau gate")
     result=task(t,key,dispatch,mode="apply",compile_source=True,journal=p.output/"cloud-task.json",**opts);write(p.output/"save.json",result)

@@ -21,8 +21,10 @@ local function getParent(r)
 end
 local function noCritical(obj)
     assert(obj~=W.Terrain and not obj:IsA("SpawnLocation") and obj.Name~="Baseplate","Use dedicated terrain/spawn migration")
-    local scene=W:FindFirstChild("RSSceneBuilder")
-    assert(not scene or (obj~=scene and not obj:IsDescendantOf(scene)),"Use coupled forest editor for models and colliders")
+    for _,name in {"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets"} do
+        local scene=W:FindFirstChild(name)
+        assert(not scene or (obj~=scene and not obj:IsDescendantOf(scene)),"Use dedicated coupled environment migration")
+    end
 end
 local inert={Model=true,Folder=true,Part=true,MeshPart=true,SurfaceAppearance=true,Texture=true,Decal=true,SpecialMesh=true,WedgePart=true,CornerWedgePart=true}
 local function inertTree(obj)

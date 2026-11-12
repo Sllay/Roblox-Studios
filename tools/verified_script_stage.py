@@ -1,7 +1,7 @@
 """Reviewed script-only staging transaction using existing Scene Patch.
 No automatic write retry. A saved but unverified operation requires reconciliation.
 """
-import argparse,hashlib,json,subprocess,sys
+import argparse,hashlib,json,subprocess,sys,os
 from pathlib import Path
 from scene_sync import ROOT,read,write,require
 GAME=ROOT/"games/maps/mapa-principal"
@@ -25,7 +25,7 @@ def main():
     from cloud_tasks import atomic_json
     try:
         with (a.output/"receipt.json").open("x",encoding="utf-8") as out:
-            json.dump(receipt,out);out.flush()
+            json.dump(receipt,out);out.flush();os.fsync(out.fileno())
     except FileExistsError as exc:
         raise RuntimeError("Existing transaction receipt; reconcile before another attempt") from exc
     try:
@@ -45,6 +45,6 @@ def main():
     except Exception:
         receipt["status"]="requires_reconciliation"
         receipt["retryAllowed"]=False
-        write(a.output/"receipt.json",receipt)
+        atomic_json(a.output/"receipt.json",receipt)
         raise
 if __name__=="__main__":main()

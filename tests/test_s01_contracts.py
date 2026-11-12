@@ -33,3 +33,26 @@ class S01Tests(unittest.TestCase):
         self.assertNotIn("__RS_CONFIG__",source)
         self.assertNotIn("__RS_SYNC_DISPATCH__",source)
         self.assertIn("local function syncResult",source)
+
+    def test_coupled_scope(self):
+        from scene_patch import require_uncoupled
+        with self.assertRaises(WorkspaceError):require_uncoupled({"service":"Workspace","path":[{"name":"RSEnvironmentP4Detail"}]})
+        require_uncoupled({"service":"Workspace","path":[{"name":"Unrelated"}]})
+    def test_reconciliation_no_replay_or_promotion(self):
+        from reconcile_task import recover
+        t={"universeId":"1","placeId":"2","environment":"staging"}
+        j={"schemaVersion":1,"retryAllowed":False,"universeId":"1","placeId":"2","taskPath":P}
+        base={"loadedVersion":14,"stateDigest":"a","records":{}}
+        after={"loadedVersion":15,"stateDigest":"b","records":{"x":1}}
+        calls=[]
+        def get(*args,**kwargs):calls.append(args);return {"saved":True}
+        r=recover(t,"key",j,base,get=get,observe=lambda *args:after)
+        self.assertEqual(len(calls),1)
+        self.assertTrue(r["taskReportedSaved"])
+        self.assertFalse(r["retryAllowed"] or r["baselinePromoted"])
+        self.assertEqual(r["afterVersion"],15)
+        j.pop("taskPath");calls.clear()
+        r=recover(t,"key",j,base,get=get,observe=lambda *args:base)
+        self.assertEqual(calls,[])
+        self.assertTrue(r["sceneUnchanged"])
+        self.assertFalse(r["retryAllowed"])

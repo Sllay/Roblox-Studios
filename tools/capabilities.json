@@ -297,6 +297,19 @@
       "produces": [
         "forensic report"
       ]
+    },
+    {
+      "id": "cloud.task_reconcile",
+      "entry": "tools/reconcile_task.py",
+      "mode": "read",
+      "status": "implemented",
+      "purpose": "Resume recorded task via GET and observe scene without replay or baseline promotion",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "reconciliation report"
+      ]
     }
   ]
 }
