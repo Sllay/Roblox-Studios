@@ -23,6 +23,7 @@ def cylinder_profile(x,z,ground,top,diameter):
 def build(base,inventory,native):
     require(inventory["loadedVersion"]==native["loadedVersion"]==base["loadedVersion"] and inventory["stateDigest"]==native["stateDigest"]==base["stateDigest"],"Stale evidence")
     require(native["snapshotDigest"]==sha({k:v for k,v in native.items() if k!="snapshotDigest"}),"Native snapshot integrity")
+    require(len(native["tiles"])==9 and all(base["records"]["terrain:"+t["id"]]["digest"]==t["digest"] and base["records"]["terrain:"+t["id"]]["bounds"]==t["bounds"] for t in native["tiles"]),"Terrain digest")
     idx=SurfaceIndex(native["tiles"],native["materials"])
     rows=inventory["rows"];ids={r["id"] for r in rows}
     require(len(ids)==len(rows),"Model identity")
@@ -54,7 +55,14 @@ def build(base,inventory,native):
             blocked.append({"id":r["id"],"reason":"visual_ground_mismatch"});continue
         profile=cylinder_profile(x,z,ground,r["top"],width)
         profiles.append({"id":r["id"],"root":r["root"],"species":r["species"],"asset":r["asset"],"mesh":t["mesh"],"modelPosition":r["position"],"modelScale":r["scale"],"groundY":ground,"oldCollider":c,"action":"replace" if c else "add","widthEvidence":source,"widthCalibrationRequired":source=="legacy_width_provisional","collisionGroup":c["group"] if c else "Default","owner":c["owner"] if c else "RobloxStudiosStaticV1",**profile})
-    return {"schemaVersion":1,"loadedVersion":base["loadedVersion"],"stateDigest":base["stateDigest"],"profiles":profiles,"excludedHorizon":excluded,"blocked":blocked,"geometryProbe":inventory["geometry"],"noPlaceWrites":True,"applyAuthorized":False,"runtimeSlideVerified":False}
+    speciesProfiles={}
+    for p in profiles:
+        a=speciesProfiles.setdefault(p["species"],{"widthEvidence":p["widthEvidence"],"widthCalibrationRequired":p["widthCalibrationRequired"],"count":0,"diameters":[],"heights":[]})
+        a["count"]+=1;a["diameters"].append(p["diameter"]);a["heights"].append(p["top"]-p["groundY"])
+    for a in speciesProfiles.values():
+        a["diameterRange"]=[min(a["diameters"]),max(a["diameters"])];a["heightRange"]=[min(a["heights"]),max(a["heights"])]
+        del a["diameters"];del a["heights"]
+    return {"schemaVersion":1,"loadedVersion":base["loadedVersion"],"stateDigest":base["stateDigest"],"speciesProfiles":speciesProfiles,"profiles":profiles,"excludedHorizon":excluded,"blocked":blocked,"geometryProbe":inventory["geometry"],"noPlaceWrites":True,"applyAuthorized":False,"runtimeSlideVerified":False}
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument("--inventory",type=Path,required=True);p.add_argument("--output",type=Path,default=ROOT/"dist/s04");a=p.parse_args()
