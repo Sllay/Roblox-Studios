@@ -160,7 +160,107 @@ if cfg.mode == "verify" then
     for i, value in actual do assert(math.abs(value - desired[i]) < 0.02, "Model pivot mismatch") end
     return output({verified=true,managedId=cfg.managedId,parts=parts})
 end
+
+-- Pack selectors are path segments with a child index, name and class.
+-- They are locators in a particular loaded hierarchy, not independent Asset IDs.
+local function packPath(root: Instance, obj: Instance)
+    local segments = {}
+    local cursor = obj
+    while cursor ~= root do
+        local parent = cursor.Parent
+        assert(parent, "Object outside pack")
+        table.insert(segments, 1, {
+            index=table.find(parent:GetChildren(),cursor),
+            name=cursor.Name, class=cursor.ClassName,
+        })
+        cursor=parent
+    end
+    return segments
+end
+local function selectPackModel(root: Model, path)
+    assert(typeof(path)=="table" and #path>0 and #path<=32,"Invalid pack selector")
+    local cursor: Instance = root
+    for _, segment in path do
+        local child=cursor:GetChildren()[segment.index]
+        assert(child and child.Name==segment.name and child.ClassName==segment.class,"Pack selector changed; inventory again")
+        cursor=child
+    end
+    assert(cursor:IsA("Model"),"Selector must identify an individual Model")
+    return cursor
+end
+local function describeModel(root: Model, obj: Model)
+    local counts={}
+    local parts, scripts, pbr, nested, unsupported=0,0,0,0,0
+    local descendants=obj:GetDescendants()
+    for _, child in descendants do
+        counts[child.ClassName]=(counts[child.ClassName] or 0)+1
+        if child:IsA("BasePart") then parts+=1 end
+        if child:IsA("LuaSourceContainer") then scripts+=1 end
+        if child:IsA("SurfaceAppearance") then pbr+=1 end
+        if child:IsA("Model") then nested+=1 end
+        if not allowed[child.ClassName] then unsupported+=1 end
+    end
+    local _, size=obj:GetBoundingBox()
+    return {name=obj.Name, selector=packPath(root,obj), instances=#descendants,
+        parts=parts, meshes=counts.MeshPart or 0, scripts=scripts, pbr=pbr,
+        nestedModels=nested, unsupported=unsupported, counts=counts,
+        bounds={size.X,size.Y,size.Z},
+        technicalCandidate=parts>0 and parts<=MAX_PARTS and #descendants<=MAX_DESCENDANTS
+            and scripts==0 and unsupported==0 and math.max(size.X,size.Y,size.Z)<=512}
+end
+local function inspectPack(root: Model)
+    local all=root:GetDescendants()
+    assert(#all<=10000,"Pack exceeds 10,000-instance inspection limit")
+    local candidates={}
+    local totalModels=0
+    local scripts=0
+    for _, obj in all do
+        if obj:IsA("LuaSourceContainer") then scripts+=1 end
+        if obj:IsA("Model") then
+            totalModels+=1
+            if #candidates<256 then table.insert(candidates,describeModel(root,obj)) end
+        end
+    end
+    table.sort(candidates,function(a,b)
+        if a.technicalCandidate~=b.technicalCandidate then return a.technicalCandidate end
+        if a.nestedModels~=b.nestedModels then return a.nestedModels<b.nestedModels end
+        if a.instances~=b.instances then return a.instances<b.instances end
+        return Http:JSONEncode(a.selector)<Http:JSONEncode(b.selector)
+    end)
+    local result={schemaVersion=1, totalInstances=#all,totalModels=totalModels,
+        scriptsInPack=scripts, inventoryTruncated=totalModels>#candidates,candidates=candidates}
+    -- Automatic sample is a technical extraction proof, NOT visual selection or approval.
+    local selected=nil
+    if cfg.selector then
+        selected=selectPackModel(root,cfg.selector)
+    elseif cfg.sample==true then
+        for _, item in candidates do
+            if item.technicalCandidate then selected=selectPackModel(root,item.selector);break end
+        end
+    end
+    if selected then
+        local info=describeModel(root,selected)
+        assert(info.technicalCandidate,"Selected model exceeds basic extraction policy")
+        local clone=selected:Clone()
+        assert(clone and clone.Parent==nil and clone:IsA("Model"),"Detached clone failed")
+        assert(#clone:GetDescendants()==#selected:GetDescendants(),"Clone omitted descendants (Archivable)")
+        local report=audit(clone)
+        local ok,evidence=pcall(function()
+            local data=game:GetService("SerializationService"):SerializeInstancesAsync({clone})
+            local encoding=game:GetService("EncodingService")
+            return {bytes=buffer.len(data),sha256Base64=buffer.tostring(encoding:Base64Encode(encoding:ComputeBufferHash(data,Enum.HashAlgorithm.Sha256)))}
+        end)
+        clone:Destroy()
+        result.extraction={name=info.name,selector=info.selector,instances=info.instances,
+            detached=true,audit=report,serialization=if ok then evidence else {unavailable=true,reason=tostring(evidence)},
+            visualApproved=false,importAuthorized=false}
+    end
+    root:Destroy()
+    return output({pack=result})
+end
+
 local model = loadAsset()
+if cfg.mode == "pack_inventory" then return inspectPack(model) end
 local report = audit(model)
 if cfg.mode == "audit" then
     -- Official serialization probe: only fingerprint and byte count, never
