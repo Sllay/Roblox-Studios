@@ -1,8 +1,6 @@
 name: PBR compatibility probe (read only)
 on:
   workflow_dispatch:
-  push:
-    paths: ['games/maps/mapa-principal/docs/pbr-probe.trigger']
 permissions:
   contents: read
 jobs:

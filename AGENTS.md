@@ -39,3 +39,5 @@ Antes de editar um Place remoto, consulte `docs/ASSET_IMPORT.md`. Não confundir
 ## Memória visual de assets
 
 Antes de buscar ou avaliar novamente um asset conhecido, consulte docs/ASSET_VISUAL_MEMORY.md e tools/assets/visual_lookup.py. Reutilize fichas da biblioteca com escopo de evidência explícito. Não invente cor final PBR, espécie ou adequação a bioma. Revisão visual não aprova segurança, direitos ou importação. Se a evidência mudar, marque a ficha como desatualizada e revise apenas aquele modelo.
+
+Safe Import 2.0: for reviewed pack submodels with PBR, follow docs/ASSET_IMPORT.md and tools/assets/pack_import.py. Never use v1 whole-pack import for a single submodel. Do not commit serialized third-party binaries. Staging-only, explicit plan, no automatic production promotion. Confirm actual mobile rendering separately.

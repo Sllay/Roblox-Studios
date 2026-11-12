@@ -24,8 +24,6 @@ on:
       confirm_staging:
         type: boolean
         default: false
-  push:
-    paths: ['games/maps/mapa-principal/docs/pack-import-audit.trigger', 'games/maps/mapa-principal/docs/p1-apply-once.trigger']
 permissions:
   contents: read
 concurrency:
@@ -33,7 +31,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   pack:
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'audit' || (inputs.operation == 'apply' && inputs.confirm_staging)) }}
+    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation == 'audit' || (inputs.operation == 'apply' && inputs.confirm_staging)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -56,9 +54,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           [[ "$GAME" =~ ^[a-z][a-z0-9-]*$ && "$SELECTOR" =~ ^[a-z0-9-]+\.json$ && "$PLAN" =~ ^[a-z0-9-]+\.json$ ]] || exit 1
-          if [[ "$GITHUB_EVENT_NAME" == push && -f games/maps/mapa-principal/docs/p1-apply-once.trigger ]]; then
-            python tools/assets/pack_import.py apply --game mapa-principal --place main --plan games/maps/mapa-principal/game/assets/imports/tree-01-p1.json --confirm-staging
-          elif [[ "$OP" == audit ]]; then
+          if [[ "$OP" == audit ]]; then
             python tools/assets/pack_import.py audit --game "$GAME" --place "$PLACE" --asset-id "$ASSET" --selector "games/maps/$GAME/docs/$SELECTOR"
           else
             python tools/assets/pack_import.py apply --game "$GAME" --place "$PLACE" --plan "games/maps/$GAME/game/assets/imports/$PLAN" --confirm-staging
