@@ -112,3 +112,5 @@ A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (
 - [ ] S01: composed task gate, exclusive journal, GET-only reconciliation, coupled-root guard and pinned default clone forensic evidence verified; hash-bound Scene Patch transaction preview pending. Default-module cleanup, isolated restore and coupled environment transaction remain open.
 
 - [x] S01 core safety read-only gate: pinned v13/v14 forensics, composed compile, 119 tests, journal/reconciliation, scoped transaction manifest preview 43262312131, CI 43262312418. No Place writes. Coupled transaction and restore remain pending before S05; next S02 read-only surface index.
+
+- [x] S02 native spatial index core live-verified v14 (43263487282): 36,864 samples, 9 tiles, p80 26.51, 44 prior placement heights reproduced, 216 provisional resource points, identical offline replay. Pine species visual identity and final asset contact pending; no Place writes. Next S03.

@@ -1,0 +1,77 @@
+{
+  "runId": 43263487282,
+  "artifactId": 13964567176,
+  "sourceCommit": "9d8247ef5d2f4c782217032837a86cd448fff0db",
+  "live": {
+    "loadedVersion": 14,
+    "stateDigest": "fc6d1050b100b87ead072c99e4fd60a3a85781c840e7e11e39cbff81c76e4c08",
+    "nativeSamples": 36864,
+    "tiles": 9,
+    "grassSamples": 35161,
+    "grassAltitudeP80": 26.509803771972656,
+    "observedModels": 182,
+    "stones": 108,
+    "sticks": 108,
+    "pineScenarios": [
+      {
+        "species": "Pine_01.1",
+        "planned": 4,
+        "requested": 4,
+        "visualIdentityConfirmed": false
+      },
+      {
+        "species": "Pine_03.1",
+        "planned": 4,
+        "requested": 4,
+        "visualIdentityConfirmed": false
+      }
+    ],
+    "legacyRegression": {
+      "samples": 44,
+      "maxHeightErrorStuds": 0.000001006687391225114
+    },
+    "metrics": {
+      "cloudCalls": 5,
+      "cacheHits": 0
+    },
+    "planDigest": "b87f61ae1f4f93bd765167862bf730a202cb4161b8f689b44105a8b989276394",
+    "noPlaceWrites": true
+  },
+  "offline": {
+    "loadedVersion": 14,
+    "stateDigest": "fc6d1050b100b87ead072c99e4fd60a3a85781c840e7e11e39cbff81c76e4c08",
+    "nativeSamples": 36864,
+    "tiles": 9,
+    "grassSamples": 35161,
+    "grassAltitudeP80": 26.509803771972656,
+    "observedModels": 182,
+    "stones": 108,
+    "sticks": 108,
+    "pineScenarios": [
+      {
+        "species": "Pine_01.1",
+        "planned": 4,
+        "requested": 4,
+        "visualIdentityConfirmed": false
+      },
+      {
+        "species": "Pine_03.1",
+        "planned": 4,
+        "requested": 4,
+        "visualIdentityConfirmed": false
+      }
+    ],
+    "legacyRegression": {
+      "samples": 44,
+      "maxHeightErrorStuds": 0.000001006687391225114
+    },
+    "metrics": {
+      "cloudCalls": 0,
+      "offline": true
+    },
+    "planDigest": "b87f61ae1f4f93bd765167862bf730a202cb4161b8f689b44105a8b989276394",
+    "noPlaceWrites": true
+  },
+  "visualIdentityConfirmed": false,
+  "applyAuthorized": false
+}

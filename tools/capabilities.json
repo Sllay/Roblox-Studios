@@ -315,7 +315,7 @@
       "id": "terrain.spatial_index",
       "entry": "tools/spatial_engine.py",
       "mode": "read",
-      "status": "implemented",
+      "status": "live_verified",
       "purpose": "Native 4-stud cached surface index, cross-tile support, occupancy and deterministic placement previews",
       "requires": [
         "scene.sync",

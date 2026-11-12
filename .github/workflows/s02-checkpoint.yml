@@ -1,0 +1,51 @@
+name: S02 persist verified spatial evidence
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s02-checkpoint.trigger']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: s02-spatial
+          run-id: 43263487282
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s02
+      - name: Verify artifact and persist exact plans
+        run: |
+          python - <<'PY'
+          import json,hashlib,shutil
+          from pathlib import Path
+          root=Path("games/maps/mapa-principal")
+          src=Path("dist/s02")
+          dest=root/"docs/spatial/v14"
+          dest.mkdir(parents=True,exist_ok=True)
+          def load(p):return json.loads(p.read_text())
+          def sha(v):return hashlib.sha256(json.dumps(v,sort_keys=True,ensure_ascii=False,separators=(",",":"),allow_nan=False).encode()).hexdigest()
+          summary=load(src/"summary.json")
+          plan=load(src/"candidates.json")
+          native=load(src/"native.json")
+          base=load(root/"docs/sync/main/staging.summary.json")
+          assert base["loadedVersion"]==14 and summary["stateDigest"]==base["stateDigest"]
+          assert plan["stateDigest"]==native["stateDigest"]==base["stateDigest"]
+          assert plan["planDigest"]==sha({k:v for k,v in plan.items() if k!="planDigest"})=="b87f61ae1f4f93bd765167862bf730a202cb4161b8f689b44105a8b989276394"
+          assert native["snapshotDigest"]==sha({k:v for k,v in native.items() if k!="snapshotDigest"})==plan["nativeSnapshotDigest"]
+          assert plan["noPlaceWrites"] is True and plan["applyAuthorized"] is False
+          for tile in native["tiles"]:
+              assert tile["digest"]==base["terrain"]["terrain:"+tile["id"]]["digest"]
+          for name in ("native.json","candidates.json","occupancy.json","summary.json","high-terrain.png","resource-candidates.png","Pine_01.1-conditional.png","Pine_03.1-conditional.png"):
+              shutil.copyfile(src/name,dest/name)
+          print("S02_CHECKPOINT_VERIFIED",plan["planDigest"])
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/spatial/v14
+          git commit -m "evidence(s02): persist native v14 snapshot and exact candidate layouts"
+          git push origin HEAD:main
