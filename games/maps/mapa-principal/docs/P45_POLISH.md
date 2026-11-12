@@ -11,3 +11,6 @@ Preflight run 43256116605 failed after successful gates because standalone inspe
 
 ## Atualização v14 e próximos passos
 A correção de vento foi publicada e verificada no run 43257825675, sync dd359a0, 49 hashes intactos; aceite visual mobile pendente. 182 modelos, 158 jogáveis, atlas/probe de v14 disponíveis. O roteiro ativo é `docs/NEXT_STEPS.md` na raiz (S01–S10); inclui recursos, altitude, arbustos, colisores e ferramentas reutilizáveis. Não tratar planejamento como implementação.
+
+## S03 resource preparation
+108 small stones (8 existing Rock IDs reused, 100 new), 108 new sticks and 3 of 8 Bush_03 relocations planned; exact evidence and plan in docs/spatial/v14/s03. Stick converted from legacy mesh/wood texture, all five pack scripts excluded. Native scale proof passed. No staging write, physical contact and mobile visibility pending. Preserve large moss rocks, existing pine identity pending. Next S04 collider profiles and runtime wind diagnostic; S05 combines approved coupled edits.

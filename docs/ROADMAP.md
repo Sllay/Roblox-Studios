@@ -114,3 +114,5 @@ A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (
 - [x] S01 core safety read-only gate: pinned v13/v14 forensics, composed compile, 119 tests, journal/reconciliation, scoped transaction manifest preview 43262312131, CI 43262312418. No Place writes. Coupled transaction and restore remain pending before S05; next S02 read-only surface index.
 
 - [x] S02 native spatial index core live-verified v14 (43263487282): 36,864 samples, 9 tiles, p80 26.51, 44 prior placement heights reproduced, 216 provisional resource points, identical offline replay. Pine species visual identity and final asset contact pending; no Place writes. Next S03.
+
+- [x] S03 Asset Lab core: exact inert legacy stick conversion, 108+108 resource preview including 8 reused rock IDs, 3 Bush_03 moves; native detached scale proof and deterministic replay validated, evidence 472d9e3/run 43265161056. No Place write; final mobile contact and coupled writer pending. Next S04.

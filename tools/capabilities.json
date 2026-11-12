@@ -326,6 +326,35 @@
         "occupancy map",
         "placement candidates"
       ]
+    },
+    {
+      "id": "asset.component_extract",
+      "entry": "tools/assets/component_extract.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Extract exact inert visual component from detached pack including supported legacy FileMesh conversion; no code execution",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "component geometry",
+        "dependency and serialization receipt"
+      ]
+    },
+    {
+      "id": "scene.resource_preview",
+      "entry": "tools/resource_layout.py",
+      "mode": "offline",
+      "status": "live_verified",
+      "purpose": "Geometry-aware deterministic resource placement and existing bush relocation preview; no writes",
+      "requires": [
+        "terrain.spatial_index",
+        "asset.component_extract"
+      ],
+      "produces": [
+        "resource plan",
+        "placement summary"
+      ]
     }
   ]
 }
