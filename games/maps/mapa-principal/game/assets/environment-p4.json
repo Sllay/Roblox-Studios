@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "environment": "staging",
+  "purpose": "first bounded vegetation and rock expansion",
+  "seed": 98321,
+  "maxNewModels": 24,
+  "assets": [
+    {
+      "assetId": "79689531752352",
+      "name": "Tree_03",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 3,
+          "name": "Tree_03"
+        }
+      ],
+      "role": "tree",
+      "visualStatus": "geometry_reviewed",
+      "modelKey": "9154d273e0b18a57b560150cffe563476ab63991bd54734e2323d61535004d87",
+      "auditStatus": "pending_exact_v2",
+      "count": 4
+    },
+    {
+      "assetId": "79689531752352",
+      "name": "Tree_12",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 12,
+          "name": "Tree_12"
+        }
+      ],
+      "role": "tree",
+      "visualStatus": "geometry_reviewed",
+      "modelKey": "658a919c8a178cabb24812df223b98799ae418a21de7dbbf5643ff07b0eefe1f",
+      "auditStatus": "pending_exact_v2",
+      "count": 4
+    },
+    {
+      "assetId": "79689531752352",
+      "name": "Bush_03",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models_Bushes"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 3,
+          "name": "Bush_03"
+        }
+      ],
+      "role": "bush",
+      "visualStatus": "geometry_reviewed",
+      "modelKey": "39f2ad0bb8ca42c38bd1acb302ff4fc044279c13bac6cda602768ae5aa2c106a",
+      "auditStatus": "pending_exact_v2",
+      "count": 8
+    },
+    {
+      "assetId": "80215326989711",
+      "name": "Rock",
+      "selector": [
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Rock"
+        }
+      ],
+      "role": "rock",
+      "visualStatus": "user_selected",
+      "auditStatus": "static_v1_pass_exact_v2_pending",
+      "count": 8
+    }
+  ],
+  "placement": {
+    "status": "pending_exact_geometry_and_terrain_preview",
+    "preserveExisting": true,
+    "terrainWrites": false
+  },
+  "importAuthorized": false
+}

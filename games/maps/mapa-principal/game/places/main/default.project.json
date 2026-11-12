@@ -16,6 +16,9 @@
       },
       "RSWorldClock": {
         "$path": "src/ReplicatedStorage/RSWorldClock.luau"
+      },
+      "RSWindPolicy": {
+        "$path": "src/ReplicatedStorage/RSWindPolicy.luau"
       }
     },
     "ServerScriptService": {
