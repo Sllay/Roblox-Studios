@@ -22,4 +22,4 @@ for name,owner in roots do
         table.insert(rows,row)
     end
 end
-return output({rows=rows,noPlaceWrites=true})
+return syncResult({rows=rows,noPlaceWrites=true})

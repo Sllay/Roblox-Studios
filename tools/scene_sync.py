@@ -47,10 +47,16 @@ def normalize(report):
     state["records"]=items
     state["stateDigest"]=sha(items)
     return state
+def compose_dispatch(source,dispatch):
+    marker="-- __RS_SYNC_DISPATCH__"
+    require(source.count(marker)==1,"Scene Sync dispatch marker missing or ambiguous")
+    require(not dispatch or marker not in dispatch,"Nested dispatch marker")
+    return source.replace(marker,dispatch)
+
 def task(t,key,dispatch="",**extra):
     cfg=dict(universeId=t["universeId"],placeId=t["placeId"],services=SERVICES,regions=regions(t),maxObjects=5000,**extra)
     payload=canonical(cfg)
-    src=SOURCE.read_text().replace("-- __RS_SYNC_DISPATCH__",dispatch)
+    src=compose_dispatch(SOURCE.read_text(),dispatch)
     for n in range(1,16):
         eq="="*n
         if "]"+eq+"]" not in payload:return run_task(t["universeId"],t["placeId"],key,src.replace("__RS_CONFIG__","["+eq+"["+payload+"]"+eq+"]"))

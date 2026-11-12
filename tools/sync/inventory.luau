@@ -129,5 +129,11 @@ local function inventory()
     end
     return {schemaVersion=1,universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),objects=rows,terrain=terrainState(),lighting=lightingState(),workspaceSettings=workspaceSettings(),total=total,services=cfg.services}
 end
+-- Shared result envelope for all checked-in Scene Sync operations.
+local function syncResult(r)
+    r.universeId=tostring(game.GameId)
+    r.placeId=tostring(game.PlaceId)
+    return Http:JSONEncode(r)
+end
 -- __RS_SYNC_DISPATCH__
 return Http:JSONEncode(inventory())

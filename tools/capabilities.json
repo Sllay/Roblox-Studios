@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "scope": "Roblox development toolchain",
+  "capabilities": [
+    {
+      "id": "scene.sync",
+      "entry": "tools/scene_sync.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Observe published scene and compare version/digest",
+      "requires": [],
+      "produces": [
+        "scene baseline",
+        "changes"
+      ]
+    },
+    {
+      "id": "scene.query",
+      "entry": "tools/scene_query.py",
+      "mode": "offline",
+      "status": "implemented",
+      "purpose": "Query observed scene without cloud calls",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "selected records"
+      ]
+    },
+    {
+      "id": "asset.inventory",
+      "entry": "tools/assets/pack.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Inventory detached pack content",
+      "requires": [],
+      "produces": [
+        "selectors",
+        "component inventory"
+      ]
+    },
+    {
+      "id": "asset.import",
+      "entry": "tools/assets/pack_import.py",
+      "mode": "staging_write",
+      "status": "live_verified",
+      "purpose": "Audited exact model import with serialized PBR checks",
+      "requires": [
+        "scene.sync",
+        "asset.inventory",
+        "quality.gate"
+      ],
+      "produces": [
+        "preview",
+        "verification"
+      ]
+    },
+    {
+      "id": "asset.visual",
+      "entry": "tools/assets/visual_lookup.py",
+      "mode": "offline",
+      "status": "implemented",
+      "purpose": "Reuse reviewed asset geometry evidence",
+      "requires": [],
+      "produces": [
+        "visual evidence"
+      ]
+    },
+    {
+      "id": "asset.code_audit",
+      "entry": "tools/assets/code_audit.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Compile detached source without executing it",
+      "requires": [
+        "asset.inventory"
+      ],
+      "produces": [
+        "source hashes",
+        "syntax report"
+      ]
+    },
+    {
+      "id": "terrain.build",
+      "entry": "tools/terrain_builder.py",
+      "mode": "staging_write",
+      "status": "live_verified",
+      "purpose": "Generate bounded native terrain",
+      "requires": [
+        "scene.sync",
+        "quality.gate"
+      ],
+      "produces": [
+        "terrain preview",
+        "voxel verification"
+      ]
+    },
+    {
+      "id": "terrain.paint",
+      "entry": "tools/terrain_paint.py",
+      "mode": "staging_write",
+      "status": "live_verified",
+      "purpose": "Change material while preserving occupancy",
+      "requires": [
+        "scene.sync",
+        "quality.gate"
+      ],
+      "produces": [
+        "material delta",
+        "occupancy proof"
+      ]
+    },
+    {
+      "id": "scene.place",
+      "entry": "tools/environment_layout.py",
+      "mode": "staging_write",
+      "status": "live_verified",
+      "purpose": "Deterministic terrain-aware static placement",
+      "requires": [
+        "scene.sync",
+        "asset.inventory",
+        "quality.gate"
+      ],
+      "produces": [
+        "layout",
+        "verification"
+      ]
+    },
+    {
+      "id": "scene.support",
+      "entry": "tools/prop_reconcile.py",
+      "mode": "staging_write",
+      "status": "live_verified",
+      "purpose": "Reconcile coupled props with terrain",
+      "requires": [
+        "scene.sync",
+        "quality.gate"
+      ],
+      "produces": [
+        "contact evidence"
+      ]
+    },
+    {
+      "id": "scene.patch",
+      "entry": "tools/scene_patch.py",
+      "mode": "staging_write",
+      "status": "live_verified",
+      "purpose": "Scoped script and instance patches",
+      "requires": [
+        "scene.sync",
+        "quality.gate"
+      ],
+      "produces": [
+        "preview",
+        "verification",
+        "archive"
+      ]
+    },
+    {
+      "id": "quality.gate",
+      "entry": "tools/quality_gate_v2.py",
+      "mode": "offline",
+      "status": "live_verified",
+      "purpose": "Typed Luau policies and executable assertions",
+      "requires": [],
+      "produces": [
+        "test report"
+      ]
+    },
+    {
+      "id": "scene.inspect",
+      "entry": "tools/p45_preflight.py",
+      "mode": "read",
+      "status": "implemented",
+      "purpose": "Inspect managed foliage and collider geometry",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "inventory",
+        "script preview"
+      ]
+    },
+    {
+      "id": "runtime.visual",
+      "entry": null,
+      "mode": "read",
+      "status": "planned",
+      "purpose": "Actual client captures and scenario replay",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "screenshots",
+        "runtime metrics"
+      ]
+    },
+    {
+      "id": "scene.transaction",
+      "entry": null,
+      "mode": "staging_write",
+      "status": "planned",
+      "purpose": "Compose typed operations into one verified save with recovery receipt",
+      "requires": [
+        "scene.sync",
+        "quality.gate"
+      ],
+      "produces": [
+        "transaction receipt",
+        "recovery plan"
+      ]
+    },
+    {
+      "id": "terrain.surface",
+      "entry": null,
+      "mode": "offline",
+      "status": "planned",
+      "purpose": "Reusable terrain surface fields, altitude, normals and resource suitability",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "surface index",
+        "placement rules"
+      ]
+    },
+    {
+      "id": "agent.mcp",
+      "entry": null,
+      "mode": "offline",
+      "status": "planned",
+      "purpose": "Expose typed capabilities with policy and evidence contracts",
+      "requires": [
+        "scene.transaction"
+      ],
+      "produces": [
+        "tool schemas"
+      ]
+    }
+  ]
+}
