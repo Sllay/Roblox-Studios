@@ -2,7 +2,7 @@ name: S07 modular prop preview
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/s07-prop-preview.yml', 'tools/prop_framework.py', 'tools/s07_prop_preview.py', 'games/maps/mapa-principal/game/assets/prop-registry-s07.json']
+    paths: ['.github/workflows/s07-prop-preview.yml', 'tools/prop_framework.py', 'tools/s07_geometry_probe.py', 'tools/sync/s07_geometry_probe.luau', 'tools/spatial_index.py', 'tools/s07_prop_preview.py', 'games/maps/mapa-principal/game/assets/prop-registry-s07.json']
   workflow_dispatch:
 permissions:
   contents: read
