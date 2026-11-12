@@ -18,6 +18,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
       - run: bash tools/install-luau.sh
       - run: bash tools/install-luau-lsp.sh
       - run: python tools/script_quality.py
