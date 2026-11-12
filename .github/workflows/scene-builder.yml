@@ -15,7 +15,7 @@ on:
         type: boolean
         default: false
   push:
-    paths: ['games/maps/mapa-principal/docs/forest-preview-once.trigger']
+    paths: ['games/maps/mapa-principal/docs/forest-apply-once.trigger']
 permissions:
   contents: read
   actions: read
@@ -37,10 +37,10 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: python tools/script_quality.py
       - uses: actions/download-artifact@v4
-        if: ${{ inputs.operation == 'apply' || inputs.operation == 'verify' }}
+        if: ${{ github.event_name == 'push' || inputs.operation == 'apply' || inputs.operation == 'verify' }}
         with:
           name: scene-builder-evidence
-          run-id: ${{ inputs.baseline_run }}
+          run-id: ${{ inputs.baseline_run || '43140490888' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: dist/prior-scene
       - name: Preview or apply forest plan
@@ -50,6 +50,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then OP=apply; VERSION=5; fi
           if [[ "$OP" != preview ]]; then args+=(--baseline dist/prior-scene/preview.json); fi
           if [[ "$OP" == apply ]]; then args+=(--confirm-staging); fi
           python tools/scene_builder.py "$OP" --plan games/maps/mapa-principal/game/terrain/forest-pilot.json --expected-version "$VERSION" "${args[@]}"
