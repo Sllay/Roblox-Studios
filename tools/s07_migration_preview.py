@@ -53,4 +53,29 @@ def main():
     require(latest(target,key)==18,"Live head changed")
     write(OUT/"migration-preview.json",r)
     print(json.dumps(r),flush=True)
+    if os.environ.get("S07_PUBLISH")=="1":
+        reviewed=read(OUT/"reviewed/migration-preview.json")
+        require(reviewed["preview"] and reviewed["noPlaceWrites"] and reviewed["all49Restored"] and reviewed["resourceInverse"],"Reviewed proof")
+        require(all(r[k]==reviewed[k] for k in ("beforeFingerprint","afterFingerprint","terrain","counts","vegetationRotated","restoredMaterialVoxels")),"Fresh preview differs")
+        require(latest(target,key)==18,"Head changed before save")
+        src="do\n"+(ROOT/"tools/sync/s07_migration_preview.luau").read_text()+"\nend"
+        expected=dict(expectedBefore=r["beforeFingerprint"],expectedAfter=r["afterFingerprint"],expectedTerrain={x["id"]:x["digest"] for x in r["terrain"]})
+        apply={**opts,**expected,"mode":"apply"}
+        require(len(compose_task(target,src,**apply).encode())<=1048576,"Apply size")
+        from cloud_tasks import atomic_json
+        receipt={"status":"started","beforeVersion":18,"retryAllowed":False,**expected}
+        atomic_json(OUT/"publication-receipt.json",receipt)
+        try:
+            saved=task(target,key,src,compile_source=True,journal=OUT/"publication-task.json",**apply)
+            require(saved["saved"] and saved["loadedVersion"]==18,"Save receipt")
+            version=latest(target,key);require(version==19,"Expected v19")
+            receipt.update(status="saved_pending_verification",afterVersion=version);atomic_json(OUT/"publication-receipt.json",receipt)
+            proof=run("s07_migration_preview.luau",version,rows=[0]*2000,mode="verify",**expected)
+            require(proof["verified"] and proof["afterFingerprint"]==expected["expectedAfter"],"Persisted proof")
+            require(latest(target,key)==version,"Head changed after verify")
+            write(OUT/"publication-verification.json",proof)
+            receipt.update(status="verified");atomic_json(OUT/"publication-receipt.json",receipt)
+            print("S07_PUBLISHED_VERIFIED",version,flush=True)
+        except Exception:
+            receipt["status"]="requires_reconciliation";atomic_json(OUT/"publication-receipt.json",receipt);raise
 if __name__=="__main__":main()
