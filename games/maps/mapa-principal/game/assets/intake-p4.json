@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "game": "mapa-principal",
+  "environment": "staging",
+  "source": "user-provided Creator Store links",
+  "assets": [
+    {
+      "id": "15261348321",
+      "name": "Particle effects",
+      "sourceUrl": "https://create.roblox.com/store/asset/15261348321/Particle-effects",
+      "userAcquiredReported": true,
+      "kindHint": "vfx",
+      "intendedUse": "environment particles",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "9204066145",
+      "name": "Punishment stick",
+      "sourceUrl": "https://create.roblox.com/store/asset/9204066145/Punishment-stick",
+      "userAcquiredReported": true,
+      "kindHint": "prop_or_tool",
+      "intendedUse": "stick; no combat behavior approved",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "80215326989711",
+      "name": "Rock",
+      "sourceUrl": "https://create.roblox.com/store/asset/80215326989711/Rock",
+      "userAcquiredReported": true,
+      "kindHint": "static",
+      "intendedUse": "natural rock",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "103581254866679",
+      "name": "Dirt Bag Garden Kit Farm Plot Pro Tools",
+      "sourceUrl": "https://create.roblox.com/store/asset/103581254866679/Dirt-Bag-Garden-Kit-Farm-Plot-Pro-Tools",
+      "userAcquiredReported": true,
+      "kindHint": "mixed",
+      "intendedUse": "farm plot, tools and cultivation props",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "7564537285",
+      "name": "VFX Pack",
+      "sourceUrl": "https://create.roblox.com/store/asset/7564537285/VFX-Pack",
+      "userAcquiredReported": true,
+      "kindHint": "vfx",
+      "intendedUse": "effects library",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "99176447965360",
+      "name": "Simulator Icon Pack",
+      "sourceUrl": "https://create.roblox.com/store/asset/99176447965360/Simulator-Icon-Pack",
+      "userAcquiredReported": true,
+      "kindHint": "ui",
+      "intendedUse": "interface icons",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "130425813530814",
+      "name": "Food Meshpack",
+      "sourceUrl": "https://create.roblox.com/store/asset/130425813530814/Food-Meshpack-Foods-Fast-Low-Poly-Fruit-Vegetable",
+      "userAcquiredReported": true,
+      "kindHint": "static",
+      "intendedUse": "food meshes",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "106208631832795",
+      "name": "Lowpoly Fruits Vegetables",
+      "sourceUrl": "https://create.roblox.com/store/asset/106208631832795/Lowpoly-Fruits-Vegetables",
+      "userAcquiredReported": true,
+      "kindHint": "static",
+      "intendedUse": "food and cultivation props",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "85389927254160",
+      "name": "Low Poly Stylized Rock Pack",
+      "sourceUrl": "https://create.roblox.com/store/asset/85389927254160/Low-Poly-Stylized-Rock-Pack",
+      "userAcquiredReported": true,
+      "kindHint": "static",
+      "intendedUse": "rock formations",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "18817890736",
+      "name": "Innos Stylized Asset Pack",
+      "sourceUrl": "https://create.roblox.com/store/asset/18817890736/Innos-Stylized-Asset-Pack",
+      "userAcquiredReported": true,
+      "kindHint": "mixed",
+      "intendedUse": "environment props; buildings and vegetation subject to inventory",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "9002291527",
+      "name": "MossLeaf Asset Pack",
+      "sourceUrl": "https://create.roblox.com/store/asset/9002291527/MossLeaf-Asset-Pack",
+      "userAcquiredReported": true,
+      "kindHint": "mixed",
+      "intendedUse": "vegetation and wall/steep-slope vines subject to inventory",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    },
+    {
+      "id": "11946229834",
+      "name": "Wind Effects",
+      "sourceUrl": "https://create.roblox.com/store/asset/11946229834/Wind-Effects",
+      "userAcquiredReported": true,
+      "kindHint": "vfx_script",
+      "intendedUse": "wind visuals; inspect code and dependencies before any use",
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported"
+    }
+  ]
+}

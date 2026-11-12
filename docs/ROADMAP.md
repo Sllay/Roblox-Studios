@@ -61,3 +61,7 @@
 - [x] Dedicated prop support reconciliation preview/apply tool, no Terrain writes; paint transform preservation check added. Live read-only central chunk preview 43147865460 passed: 7 supported props, zero moves/reviews/unmanaged; no save.
 
 - [x] v8 mobile regression: no_safe_spawn prevented character creation. v9 native automatic lifecycle hotfix published; separate ray/voxel diagnostics, two trusted scripts updated, terrain and vegetation unchanged. Patch scope rejected default-module delta, reviewed independently; live mobile retest pending.
+
+- [x] P4 v10: user mobile acceptance of death/ragdoll and corpse ground collision; 58 FPS snapshot, 53 voxel-supported spawn candidates, 138 voxel-supported props; server probe not_supported remains open. See games/maps/mapa-principal/docs/P4_EXPANSION.md.
+- [ ] P4 expansion: 12 user-selected packs registered in intake; detached inventory, per-component review, import and mobile verification pending. World clock code and tests prepared; staging deployment and mobile validation pending.
+- [ ] P4: replace visual boundary square pattern, expand vegetation/rocks/vines, validate full cycle and performance; no production promotion.
