@@ -17,6 +17,7 @@ import tempfile
 from pathlib import Path
 from pipeline import ROOT,check_id,read,write,WorkspaceError
 from pack import validate_selector
+from placement import validate_profile
 from cloud_tasks import run_task
 from deploy import load_all,resolve
 from scene_snapshot import capture,compare,canonical
@@ -33,7 +34,7 @@ def task(target,key,mode,asset,selector,**options):
     for n in range(1,16):
         eq="="*n
         if "]"+eq+"]" not in payload:
-            src=SOURCE.read_text().replace("__RS_CONFIG__","["+eq+"["+payload+"]"+eq+"]")
+            src=SOURCE.read_text().replace("-- __RS_PLACEMENT__", SOURCE.with_name("placement.luau").read_text()).replace("__RS_CONFIG__","["+eq+"["+payload+"]"+eq+"]")
             return run_task(target["universeId"],target["placeId"],key,src)
     raise WorkspaceError("Invalid config")
 
@@ -118,6 +119,8 @@ def validate_plan(t,p):
     registry=read(ROOT/"games"/"maps"/t["game"]/"game/assets/visual-reviews"/(p["assetId"]+".json"))
     rows=[x for x in registry["reviews"] if x["selector"]==p["selector"] and x["visual"]["status"] in ("geometry_reviewed","visual_reviewed")]
     if len(rows)!=1 or p["biome"] not in rows[0]["visual"]["inferred"]["suitableBiomes"]:raise WorkspaceError("Visual review or biome mismatch")
+    profile=validate_profile(p.get("placementProfile"))
+    if profile!=rows[0].get("placementProfile"):raise WorkspaceError("Placement profile not reviewed for this model")
     if p["evidenceSha256"]!=hashlib.sha256(canonical(r).encode()).hexdigest():
         raise WorkspaceError("Evidence hash mismatch")
     if r["digest"]!=p["digest"]:raise WorkspaceError("Digest mismatch")
@@ -140,7 +143,7 @@ def apply(t,key,p,output):
     if before["loadedVersion"]!=p["expectedVersion"]:raise WorkspaceError("Place version changed; prepare new plan")
     if any(x.get("managedId")==p["managedId"] for x in before["objects"]):raise WorkspaceError("Already imported")
     options=dict(managedId=p["managedId"],digest=p["digest"],selectorJson=canonical(p["selector"]),
-                 position=p["position"],yaw=p["yaw"],biome=p["biome"])
+                 position=p["position"],yaw=p["yaw"],biome=p["biome"],placementProfile=p["placementProfile"])
     result=task(t,key,"apply",p["assetId"],p["selector"],expectedVersion=p["expectedVersion"],environment="staging",**options)
     write(output/"save-result.json",result)
     if result.get("saved") is not True:raise WorkspaceError("Save unconfirmed")
@@ -161,7 +164,7 @@ def apply(t,key,p,output):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument("operation",choices=["audit","prepare","apply"])
+    p.add_argument("operation",choices=["audit","prepare","apply","placement-probe"])
     p.add_argument("--game",default="mapa-principal")
     p.add_argument("--place",default="main")
     p.add_argument("--asset-id")
@@ -179,10 +182,23 @@ def main():
     try:
         games,targets=load_all();t=resolve(games,targets,a.game,a.place,"staging")
         key=os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY","")
+        if a.operation=="placement-probe":
+            if not a.selector or not a.asset_id or not a.position:raise WorkspaceError("Selector, asset and position required")
+            selector=json.loads(a.selector.read_text())
+            registry=read(ROOT/"games"/"maps"/t["game"]/"game/assets/visual-reviews"/(check_id(a.asset_id)+".json"))
+            rows=[x for x in registry["reviews"] if x["selector"]==selector]
+            if len(rows)!=1:raise WorkspaceError("Missing model review")
+            profile=validate_profile(rows[0].get("placementProfile"))
+            report=task(t,key,"placement_probe",a.asset_id,selector,position=a.position,yaw=a.yaw,placementProfile=profile)
+            write(a.output/"placement.json",report); print(json.dumps(report,ensure_ascii=False)); return 0
         if a.operation=="prepare":
             if not a.evidence or not a.plan or not a.rights_review or not a.position:raise WorkspaceError("Evidence, plan, explicit position and rights review required")
             r=read(a.evidence)
             plan=dict(schemaVersion=2,game=t["game"],place=t["place"],environment="staging",universeId=t["universeId"],placeId=t["placeId"],assetId=r["assetId"],selector=r["selector"],managedId=a.managed_id,biome=a.biome,rightsReview=a.rights_review,position=a.position,yaw=a.yaw,expectedVersion=r["loadedVersion"],digest=r["digest"],evidence=r,evidenceSha256=hashlib.sha256(canonical(r).encode()).hexdigest())
+            registry=read(ROOT/"games"/"maps"/t["game"]/"game/assets/visual-reviews"/(r["assetId"]+".json"))
+            rows=[x for x in registry["reviews"] if x["selector"]==r["selector"]]
+            if len(rows)!=1:raise WorkspaceError("Missing placement review")
+            plan["placementProfile"]=validate_profile(rows[0].get("placementProfile"))
             validate_plan(t,plan)
             if a.plan.exists():raise WorkspaceError("Plan already exists")
             write(a.plan,plan)

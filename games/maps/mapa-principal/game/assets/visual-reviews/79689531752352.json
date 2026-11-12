@@ -224,14 +224,14 @@
       "name": "Tree_01",
       "modelKey": "9d80edf1cdfbd1d60be5158456042a1ea229e24f6baab5f08abbd61f2009469f",
       "visual": {
-        "status": "geometry_reviewed",
-        "description": "Copa arredondada, irregular e larga, planos de folhagem sobrepostos. Tronco ereto ligeiramente curvo, bifurcações altas e galhos laterais finos. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa de copa ampla, semelhante a caducifólia genérica. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "status": "visual_reviewed",
+        "description": "Árvore folhosa estilizada, copa ampla arredondada e irregular, folhas verdes em planos sobrepostos, tronco marrom escuro sulcado, ereto e levemente sinuoso, bifurcado no alto. Lembra uma caducifólia ornamental de bosque. No cliente móvel, áreas da copa ficam claras/amareladas sob luz direta e há brilho intenso contra o sol; causa em diagnóstico. A ponta afilada inferior do tronco requer enterramento.",
         "observed": {
           "canopyShape": "Copa arredondada, irregular e larga, planos de folhagem sobrepostos.",
           "trunkShape": "Tronco ereto ligeiramente curvo, bifurcações altas e galhos laterais finos.",
           "style": "estilizado",
-          "foliageColor": null,
-          "trunkColor": null
+          "foliageColor": "Verde-oliva a verde-amarelado sob luz direta; verde escuro em sombra",
+          "trunkColor": "Marrom escuro, com sulcos"
         },
         "inferred": {
           "resembles": "Árvore folhosa de copa ampla, semelhante a caducifólia genérica",
@@ -251,9 +251,9 @@
         "confidence": {
           "geometry": "moderate",
           "species": "low",
-          "finalColor": "unverified"
+          "finalColor": "observed_mobile_under_current_lighting"
         },
-        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+        "evidenceScope": "Official mesh thumbnails plus user mobile screenshots of staging version 2 (IMG_0926, IMG_0927, IMG_0928); no FPS measurement"
       },
       "selector": [
         {
@@ -296,9 +296,26 @@
         "version": 2,
         "managedId": "yasu-tree-01",
         "run": "43134660278",
-        "clientVisualValidation": "pending",
+        "clientVisualValidation": "rendered_with_placement_and_lighting_issues",
         "plan": "game/assets/imports/tree-01-p1.json",
         "dependencyFetch": "source textures and MeshPart instances successful; serialized PBR references preserved"
+      },
+      "placementProfile": {
+        "schemaVersion": 1,
+        "mountType": "bury_in_ground",
+        "orientation": "upright",
+        "contactRule": "bounds_bottom_plus_burial",
+        "buryDepthStuds": 6,
+        "supportRadiusStuds": 2,
+        "maxSlopeDegrees": 15,
+        "maxHeightDeltaStuds": 1,
+        "rayTop": 256,
+        "rayBottom": -128,
+        "groundNames": [
+          "Baseplate"
+        ],
+        "calibrationStatus": "provisional",
+        "note": "Mobile screenshots show exposed taper. Initial 6-stud burial; confirm on client before reuse as verified. Ground allowlist is staging-specific."
       }
     },
     {

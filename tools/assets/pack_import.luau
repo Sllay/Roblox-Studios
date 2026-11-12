@@ -160,10 +160,16 @@ if cfg.mode=="verify" then
     local blob,digest=serialize(model)
     return output({verified=true,audit=report,dependencyFetch=fetched,persistedDigest=digest,serializedBase64=buffer.tostring(Encoding:Base64Encode(blob))})
 end
+-- __RS_PLACEMENT__
 local model=cloneSelected()
 local report=audit(model)
 local fetched=fetchDependencies(model,report)
 local blob,digest=serialize(model)
+if cfg.mode=="placement_probe" then
+    local placement=solvePlacement(model,cfg.position[1],cfg.position[3],cfg.yaw,cfg.placementProfile)
+    model:Destroy()
+    return output({placement=placement,digest=digest})
+end
 if cfg.mode=="audit" then
     local encoded=buffer.tostring(Encoding:Base64Encode(blob))
     local pivot=model:GetPivot()
@@ -204,7 +210,10 @@ model:SetAttribute("RSAssetId",cfg.assetId)
 model:SetAttribute("RSModelDigest",cfg.digest)
 model:SetAttribute("RSSelector",cfg.selectorJson)
 model:SetAttribute("Biome",cfg.biome)
-model:PivotTo(CFrame.new(cfg.position[1],cfg.position[2],cfg.position[3])*CFrame.Angles(0,math.rad(cfg.yaw),0))
+local solved=solvePlacement(model,cfg.position[1],cfg.position[3],cfg.yaw,cfg.placementProfile)
+assert(math.abs(solved.position[2]-cfg.position[2])<0.05,"Reviewed ground position changed")
+model:PivotTo(CFrame.new(solved.position[1],solved.position[2],solved.position[3])*CFrame.Angles(0,math.rad(cfg.yaw),0))
+model:SetAttribute("RSPlacementProfile",Http:JSONEncode(cfg.placementProfile))
 -- verify geometry and PBR again after transformation, before save
 local final=audit(model)
 assert(final.parts==report.parts and final.surfaces==report.surfaces,"Sanitize changed appearance")
@@ -216,4 +225,4 @@ if not root then
 end
 model.Parent=root
 Assets:SavePlaceAsync({SaveWithoutPublish=false})
-return output({saved=true,managedId=cfg.managedId,audit=final,dependencyFetch=fetched})
+return output({saved=true,managedId=cfg.managedId,audit=final,dependencyFetch=fetched,placement=solved})
