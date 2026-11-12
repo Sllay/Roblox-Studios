@@ -436,6 +436,37 @@
         "native geometry evidence",
         "budget report"
       ]
+    },
+    {
+      "id": "scene.resource_visibility_preview",
+      "entry": "tools/resource_visibility.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Plan resource clearings against unified vegetation and test material-only paint inverse and native clone dimensions",
+      "requires": [
+        "scene.vegetation_regeneration_preview",
+        "terrain.spatial_index"
+      ],
+      "produces": [
+        "resource plan",
+        "paint inverse proof",
+        "geometry proof"
+      ]
+    },
+    {
+      "id": "runtime.branch_wind_prototype",
+      "entry": "tools/branch_wind_probe.py",
+      "mode": "read",
+      "status": "prototype",
+      "purpose": "Original skinned canopy authoring and native bone transform probe; actual asset upload denied and client render unverified",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "original GLB",
+        "native bone proof",
+        "asset permission receipt"
+      ]
     }
   ]
 }

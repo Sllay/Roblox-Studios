@@ -124,3 +124,6 @@ A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (
 - [x] S06.1 v16 staging: RS Development Lab and server player-only small-resource collision policy; WorldRoot matrix probe passed, scripts persisted and 49 terrain hashes unchanged. Run 43278748110. Client tests pending; S06.2 unified vegetation/density plan next. See revised S06 sequence in NEXT_STEPS.md.
 
 - [x] S06.2 unified vegetation preview: 212 playable placements, 132 native tree collider profiles, 73.80% coverage vs 48.50%, deterministic and native proof 43280368817. Staging v16 unchanged; full publication requires budget/recovery gates and resource replan. Next S06.3. Manual acceptance at end of S06.
+
+- [x] S06.3 resource visibility preview: 216 models, 36 clearings, reversible material paint and native dimensions verified 43281759955; no publication.
+- [ ] S06.4 branch wind: stronger macro and authored-rig controller, original GLB and native bone proof implemented; actual skinned asset import blocked HTTP 403 (43282633795). Keep original visual assets until authorized import and review. See NEXT_STEPS.md.

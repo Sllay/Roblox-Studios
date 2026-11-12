@@ -26,3 +26,6 @@ User found no small stones/sticks, pines too small/low, vegetation too sparse an
 
 ## S06.2 unified regeneration preview
 212 playable vegetation planned (120 broadleaf, 12 larger pines, 80 bushes), 138 existing IDs reused and 74 new, 24 exterior vegetation preserved. Coverage metric 48.50% ->73.80%; native 212-model/132-collider proof passed 43280368817. No geometry published. Exact plan and maps docs/s06/regeneration-v16; budget blocked (4840 projected vs4500 safe ceiling). Next S06.3 resource replan and pine geometry. Manual test only after all S06 steps per user.
+
+## S06.3/S06.4 checkpoints
+Resources/clearings native preview verified 43281759955, all 216 IDs and 49 restored terrain hashes. Original canopy GLB, bone control, stronger macro and authored-rig controller checked in. Existing mesh editing denied; original model upload 403 denied (43282633795), actual skinning/client render still unverified. No staging changes; manual tests only after S06.6. See docs/s06/resources-v16 and wind-v16.
