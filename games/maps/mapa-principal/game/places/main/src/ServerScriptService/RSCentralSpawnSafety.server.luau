@@ -3,6 +3,12 @@ local Players=game:GetService("Players")
 Players.CharacterAutoLoads=true
 local W=workspace
 local RunService=game:GetService("RunService")
+local Physics=game:GetService("PhysicsService")
+local deadGroup="RSDeadBody"
+if not Physics:IsCollisionGroupRegistered(deadGroup) then Physics:RegisterCollisionGroup(deadGroup) end
+Physics:CollisionGroupSetCollidable(deadGroup,deadGroup,false)
+Physics:CollisionGroupSetCollidable(deadGroup,"Default",true)
+Physics:CollisionGroupSetCollidable(deadGroup,W.Terrain.CollisionGroup,true)
 local Policy=require(script.Parent:WaitForChild("RSGameplayPolicy"))
 local root=W:WaitForChild("RSCentralSpawns")
 local T=W.Terrain
@@ -131,6 +137,27 @@ local function recover(player,character)
     if hrp then hrp.AssemblyLinearVelocity=Vector3.zero;hrp.AssemblyAngularVelocity=Vector3.zero end
     player:SetAttribute("RSRecoveryStatus","recovered_"..method)
 end
+local function corpseColliders(player,character)
+    local count=0
+    -- Native joint breaking remains enabled. Independent welded proxies are
+    -- not Humanoid body parts, so the Humanoid cannot reset their CanCollide.
+    for _,name in {"UpperTorso","LowerTorso","Torso","Head","LeftUpperLeg","RightUpperLeg","LeftLowerLeg","RightLowerLeg","Left Leg","Right Leg","LeftUpperArm","RightUpperArm","Left Arm","Right Arm"} do
+        local limb=character:FindFirstChild(name)
+        if limb and limb:IsA("BasePart") and not limb.Anchored then
+            local proxy=Instance.new("Part")
+            proxy.Name="RSDeadCollider";proxy.Size=limb.Size*0.82;proxy.CFrame=limb.CFrame
+            proxy.Transparency=1;proxy.CanCollide=true;proxy.CanTouch=false;proxy.CastShadow=false
+            proxy.Massless=true;proxy.CollisionGroup=deadGroup;proxy.Parent=character
+            local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=proxy;weld.Parent=proxy
+            -- Keep the same client that simulated the living avatar. Record
+            -- whether ownership can be retained; do not force server ownership
+            -- while server Terrain queries are under investigation.
+            pcall(function() if limb:CanSetNetworkOwnership() then limb:SetNetworkOwner(player) end end)
+            count+=1
+        end
+    end
+    player:SetAttribute("RSDeathColliders",count)
+end
 local watched=setmetatable({},{__mode="k"})
 local function onCharacter(player,character)
     if watched[character] then return end
@@ -148,10 +175,7 @@ local function onCharacter(player,character)
         task.defer(function()
             RunService.Heartbeat:Wait()
             if player.Character~=character then return end
-            for _,name in {"UpperTorso","LowerTorso","Torso","Head"} do
-                local part=character:FindFirstChild(name)
-                if part and part:IsA("BasePart") then part.CanCollide=true;part.CollisionGroup="Default" end
-            end
+            corpseColliders(player,character)
             local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
             local minY=torso and torso.Position.Y
             for _=1,12 do
@@ -231,13 +255,26 @@ task.spawn(function()
     end
     root:SetAttribute("RSPropsPass",pass);root:SetAttribute("RSPropsEstimate",estimate);root:SetAttribute("RSPropsReview",review)
 end)
+task.spawn(function()
+    task.wait(5)
+    local s=root:FindFirstChildWhichIsA("SpawnLocation")
+    if not s then return end
+    local probe=Instance.new("Part");probe.Name="RSPhysicsProbe";probe.Size=Vector3.new(1,1,1)
+    probe.Transparency=1;probe.CanCollide=true;probe.CanTouch=false;probe.CastShadow=false
+    probe.Position=s.Position+Vector3.new(0,12,0);probe.Parent=W
+    probe:SetNetworkOwner(nil)
+    task.wait(2)
+    root:SetAttribute("RSServerProbeY",math.round(probe.Position.Y*100)/100)
+    root:SetAttribute("RSServerProbeStatus",if math.abs(probe.Position.Y-(s.Position.Y-2))<4 then "supported" else "not_supported")
+    probe:Destroy()
+end)
 while true do
     task.wait(0.5)
     for _,p in Players:GetPlayers() do
         local c=p.Character
         if alive(c) then
             local hrp=c:FindFirstChild("HumanoidRootPart")
-            if hrp and not Policy.inWorld(hrp.Position.X,hrp.Position.Y,hrp.Position.Z,384,-40) then recover(p,c) end
+            if hrp and (math.abs(hrp.Position.X)>396 or math.abs(hrp.Position.Z)>396 or hrp.Position.Y>192) then recover(p,c) end
         end
     end
 end
