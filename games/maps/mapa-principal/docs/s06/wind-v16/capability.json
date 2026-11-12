@@ -1,0 +1,61 @@
+{
+  "canopies": [
+    {
+      "mesh": "rbxassetid://18720998648",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "species": "Bush_01",
+      "status": "denied"
+    },
+    {
+      "mesh": "rbxassetid://18721169682",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "species": "Bush_03",
+      "status": "denied"
+    },
+    {
+      "mesh": "rbxassetid://17718985299",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "species": "Pine_01.1",
+      "status": "denied"
+    },
+    {
+      "mesh": "rbxassetid://17718985397",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "species": "Pine_03.1",
+      "status": "denied"
+    },
+    {
+      "mesh": "rbxassetid://18716595527",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "species": "Tree_01",
+      "status": "denied"
+    },
+    {
+      "mesh": "rbxassetid://18720235867",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "species": "Tree_03",
+      "status": "denied"
+    },
+    {
+      "mesh": "rbxassetid://18720273012",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "species": "Tree_08",
+      "status": "denied"
+    },
+    {
+      "mesh": "rbxassetid://18720345647",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "species": "Tree_12",
+      "status": "denied"
+    }
+  ],
+  "clientVerified": false,
+  "loadedVersion": 16,
+  "noPlaceWrites": true,
+  "originalControl": {
+    "reason": "EditableMesh is not accessible. Go to the Security Tab in Experience Settings to enable this API.",
+    "status": "unavailable"
+  },
+  "placeId": "93428341652658",
+  "universeId": "10769712441"
+}

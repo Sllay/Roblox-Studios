@@ -1,0 +1,26 @@
+{
+  "forestDigest": "ed0c552053b8116dfb628efbf2fb45bbab7286e21ec481901714d822a455dc55",
+  "largeRocks": 6,
+  "loadedVersion": 16,
+  "metrics": {
+    "centralClusters": 6,
+    "paintAreaStuds2": 2304,
+    "paintCells": 144,
+    "stickLength": [
+      1.1510641768924093,
+      1.846776064792642
+    ],
+    "stoneWidth": [
+      0.951596100521852,
+      1.443846705516602
+    ],
+    "within100": {
+      "stick": 18,
+      "stone": 18
+    }
+  },
+  "noPlaceWrites": true,
+  "pines": 12,
+  "planDigest": "3781a684d34a10fe832f1851c49a4c6b4db32d17a816920e43d6f02b4ceb0895",
+  "resources": 216
+}
