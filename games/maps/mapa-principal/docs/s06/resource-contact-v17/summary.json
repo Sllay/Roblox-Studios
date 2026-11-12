@@ -1,0 +1,416 @@
+{
+  "assets": {
+    "stick": {
+      "edit": {
+        "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+        "status": "unavailable"
+      },
+      "error": "",
+      "meshId": "rbxassetid://123968188",
+      "preload": true,
+      "statuses": {
+        "rbxassetid://123968188": "Success",
+        "rbxassetid://123968836": "Success"
+      },
+      "textureId": "rbxassetid://123968836"
+    },
+    "stone": {
+      "edit": {
+        "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+        "status": "unavailable"
+      },
+      "error": "",
+      "meshId": "rbxassetid://122505516420043",
+      "preload": true,
+      "statuses": {
+        "rbxassetid://122505516420043": "Success"
+      },
+      "textureId": ""
+    }
+  },
+  "categories": {
+    "stick": {
+      "belowEstimatedSurface": 0,
+      "burial": [
+        0.010691577587031943,
+        0.017153647884265308
+      ],
+      "count": 108,
+      "height": [
+        0.13364186882972717,
+        0.2144160121679306
+      ],
+      "materials": {
+        "Ground": 108
+      },
+      "maxBoundsError": 4.586821422197764e-06,
+      "maxExpectedVoxelDelta": 2.298448919191287e-06,
+      "maxPositionError": 1.642645365791936e-05,
+      "meshRays": 108,
+      "minDimension": [
+        0.07035430520772934,
+        0.11287698149681091
+      ],
+      "terrainRays": 0,
+      "transparent": 0,
+      "voxelBaseGap": [
+        -0.017153184458429394,
+        -0.010691382604484545
+      ],
+      "voxelTopGap": [
+        0.12295048622524263,
+        0.1972628277095012
+      ]
+    },
+    "stone": {
+      "belowEstimatedSurface": 0,
+      "burial": [
+        0.025,
+        0.025
+      ],
+      "count": 108,
+      "height": [
+        0.6870262622833252,
+        1.0424177646636963
+      ],
+      "materials": {
+        "Ground": 108
+      },
+      "maxBoundsError": 3.5780281062495474e-07,
+      "maxExpectedVoxelDelta": 0.000617091825807492,
+      "maxPositionError": 1.687323523450187e-05,
+      "meshRays": 108,
+      "minDimension": [
+        0.6870262622833252,
+        1.0424177646636963
+      ],
+      "terrainRays": 0,
+      "transparent": 0,
+      "voxelBaseGap": [
+        -0.0254856294597392,
+        -0.024379518599019434
+      ],
+      "voxelTopGap": [
+        0.6620509755108301,
+        1.0172757197134956
+      ]
+    }
+  },
+  "clientRenderVerified": false,
+  "controlPartRay": true,
+  "loadedVersion": 17,
+  "nearestStoneStickDistance": [
+    1.8418931369604365,
+    2.5594204429583964
+  ],
+  "noPlaceWrites": true,
+  "selected": [
+    {
+      "anchored": true,
+      "bboxPosition": [
+        149.39280700683594,
+        11.427396774291992,
+        -230.10264587402344
+      ],
+      "bboxSize": [
+        1.3398464918136597,
+        0.15556004643440247,
+        0.08189292997121811
+      ],
+      "bottom": 11.349616751074791,
+      "burial": 0.012445070145998173,
+      "canCollide": true,
+      "canQuery": true,
+      "category": "stick",
+      "collisionGroup": "RSNaturalResource",
+      "color": [
+        0.29411765933036804,
+        0.5921568870544434,
+        0.29411765933036804
+      ],
+      "contacts": [
+        {
+          "estimatedY": 11.362061623965994,
+          "ray": false,
+          "x": 149.39280700683594,
+          "z": -230.10264587402344
+        },
+        {
+          "estimatedY": 11.371277274337471,
+          "ray": false,
+          "x": 149.01829528808594,
+          "z": -230.38485717773438
+        },
+        {
+          "estimatedY": 11.361255149194498,
+          "ray": false,
+          "x": 149.76731872558594,
+          "z": -229.8204345703125
+        },
+        {
+          "estimatedY": 11.362622309666056,
+          "ray": false,
+          "x": 149.41004943847656,
+          "z": -230.1255340576172
+        },
+        {
+          "estimatedY": 11.361500938265934,
+          "ray": false,
+          "x": 149.3755645751953,
+          "z": -230.0797576904297
+        }
+      ],
+      "descendants": 1,
+      "expectedGround": 11.362061972044398,
+      "id": "p45-stick-chunk-1--1-06",
+      "localTransparency": 0,
+      "material": "Plastic",
+      "meshId": "rbxassetid://123968188",
+      "meshQueryHit": true,
+      "meshSize": [
+        0.6624240279197693,
+        5.70536994934082,
+        0.3487184941768646
+      ],
+      "nearestColumn": {
+        "height": 11.356862745098042,
+        "material": "Ground",
+        "occupancy": 0.8392156862745098,
+        "wet": false,
+        "x": 148,
+        "z": -232
+      },
+      "partPosition": [
+        149.39280700683594,
+        11.427398681640625,
+        -230.10264587402344
+      ],
+      "partSize": [
+        0.1555633693933487,
+        1.3398466110229492,
+        0.08189290016889572
+      ],
+      "patch": "clearing-chunk-1--1-01",
+      "position": [
+        149.39280700683594,
+        11.427398681640625,
+        -230.10264587402344
+      ],
+      "ray": false,
+      "renderFidelity": "Automatic",
+      "scale": 0.2348395586013794,
+      "textureId": "rbxassetid://123968836",
+      "tile": "chunk-1--1",
+      "top": 11.505176797509193,
+      "transparency": 0,
+      "voxelBaseGap": -0.012444872891203218,
+      "voxelGround": 11.362061623965994,
+      "voxelTopGap": 0.14311517354319925
+    },
+    {
+      "anchored": true,
+      "bboxPosition": [
+        205.21388244628906,
+        12.000616073608398,
+        -221.79087829589844
+      ],
+      "bboxSize": [
+        1.4191980361938477,
+        0.16477298736572266,
+        0.08674294501543045
+      ],
+      "bottom": 11.918229579925537,
+      "burial": 0.013182120115996272,
+      "canCollide": true,
+      "canQuery": true,
+      "category": "stick",
+      "collisionGroup": "RSNaturalResource",
+      "color": [
+        0.29411765933036804,
+        0.5921568870544434,
+        0.29411765933036804
+      ],
+      "contacts": [
+        {
+          "estimatedY": 11.931411615740418,
+          "ray": false,
+          "x": 205.21388244628906,
+          "z": -221.79087829589844
+        },
+        {
+          "estimatedY": 11.933886681871451,
+          "ray": false,
+          "x": 205.49163818359375,
+          "z": -221.3790740966797
+        },
+        {
+          "estimatedY": 11.929282830064823,
+          "ray": false,
+          "x": 204.93612670898438,
+          "z": -222.2026824951172
+        },
+        {
+          "estimatedY": 11.93125148886066,
+          "ray": false,
+          "x": 205.18870544433594,
+          "z": -221.77389526367188
+        },
+        {
+          "estimatedY": 11.931573419411686,
+          "ray": false,
+          "x": 205.2390594482422,
+          "z": -221.807861328125
+        }
+      ],
+      "descendants": 1,
+      "expectedGround": 11.931411485387697,
+      "id": "p45-stick-chunk-1-0-03",
+      "localTransparency": 0,
+      "material": "Plastic",
+      "meshId": "rbxassetid://123968188",
+      "meshQueryHit": true,
+      "meshSize": [
+        0.6624240279197693,
+        5.70536994934082,
+        0.3487184941768646
+      ],
+      "nearestColumn": {
+        "height": 11.937254901960785,
+        "material": "Ground",
+        "occupancy": 0.984313725490196,
+        "wet": false,
+        "x": 204,
+        "z": -224
+      },
+      "partPosition": [
+        205.21388244628906,
+        12.000617980957031,
+        -221.79087829589844
+      ],
+      "partSize": [
+        0.1647765040397644,
+        1.4191980361938477,
+        0.08674294501543045
+      ],
+      "patch": "clearing-chunk-1--1-04",
+      "position": [
+        205.21388244628906,
+        12.000617980957031,
+        -221.79087829589844
+      ],
+      "ray": false,
+      "renderFidelity": "Automatic",
+      "scale": 0.24874776601791382,
+      "textureId": "rbxassetid://123968836",
+      "tile": "chunk-1--1",
+      "top": 12.08300256729126,
+      "transparency": 0,
+      "voxelBaseGap": -0.013182035814880422,
+      "voxelGround": 11.931411615740418,
+      "voxelTopGap": 0.15159095155084223
+    },
+    {
+      "anchored": true,
+      "bboxPosition": [
+        206.1132049560547,
+        12.344239234924316,
+        -220.0561981201172
+      ],
+      "bboxSize": [
+        1.1991345882415771,
+        0.8657422661781311,
+        1.1402696371078491
+      ],
+      "bottom": 11.91136810183525,
+      "burial": 0.025,
+      "canCollide": true,
+      "canQuery": true,
+      "category": "stone",
+      "collisionGroup": "RSNaturalResource",
+      "color": [
+        0.6392157077789307,
+        0.6352941393852234,
+        0.6470588445663452
+      ],
+      "contacts": [
+        {
+          "estimatedY": 11.93637949427745,
+          "ray": false,
+          "x": 206.1132049560547,
+          "z": -220.0561981201172
+        },
+        {
+          "estimatedY": 11.935303911278208,
+          "ray": false,
+          "x": 206.2288818359375,
+          "z": -219.6527557373047
+        },
+        {
+          "estimatedY": 11.937242980305946,
+          "ray": false,
+          "x": 205.99752807617188,
+          "z": -220.4596405029297
+        },
+        {
+          "estimatedY": 11.936222915396131,
+          "ray": false,
+          "x": 205.7295684814453,
+          "z": -219.94619750976562
+        },
+        {
+          "estimatedY": 11.933520017043852,
+          "ray": false,
+          "x": 206.49684143066406,
+          "z": -220.16619873046875
+        }
+      ],
+      "descendants": 1,
+      "expectedGround": 11.936365944208024,
+      "id": "p45-stone-chunk-1--1-12",
+      "localTransparency": 0,
+      "material": "Plastic",
+      "meshId": "rbxassetid://122505516420043",
+      "meshQueryHit": true,
+      "meshSize": [
+        183.99826049804688,
+        132.84170532226562,
+        174.97006225585938
+      ],
+      "nearestColumn": {
+        "height": 11.937254901960785,
+        "material": "Ground",
+        "occupancy": 0.984313725490196,
+        "wet": false,
+        "x": 204,
+        "z": -224
+      },
+      "partPosition": [
+        206.1132049560547,
+        12.344239234924316,
+        -220.05618286132812
+      ],
+      "partSize": [
+        1.1991345882415771,
+        0.8657422661781311,
+        1.1402969360351562
+      ],
+      "patch": "clearing-chunk-1--1-04",
+      "position": [
+        206.11497497558594,
+        12.344237327575684,
+        -220.0566864013672
+      ],
+      "ray": false,
+      "renderFidelity": "Automatic",
+      "scale": 0.006517096888273954,
+      "textureId": "",
+      "tile": "chunk-1--1",
+      "top": 12.777110368013382,
+      "transparency": 0,
+      "voxelBaseGap": -0.025011392442198854,
+      "voxelGround": 11.93637949427745,
+      "voxelTopGap": 0.8407308737359322
+    }
+  ],
+  "stateDigest": "a44bcd60970d3049cace86cfb3787ddaeb19364c94779e819291d552f378bceb"
+}
