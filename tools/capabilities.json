@@ -509,6 +509,19 @@
         "native inverse proof",
         "budget evidence"
       ]
+    },
+    {
+      "id": "asset.original_canopy_import_probe",
+      "entry": "tools/imported_canopy_probe.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Verify original GLB model 91515745821527 after authorized upload, native mesh preload and bone structure; not skinning/client render or Place publication",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "imported model structure proof"
+      ]
     }
   ]
 }

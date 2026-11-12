@@ -32,3 +32,6 @@ Resources/clearings native preview verified 43281759955, all 216 IDs and 49 rest
 
 ## S06.5 compatibility checkpoint
 Exact sharded v16 parity, 16 identical PlayerModule subtrees, disposable reduction/recovery proof and 45/45 installed asset dependency fetch success. No live cleanup or regeneration published. S06.4 retry requires user key rotation and explicit authorization; S06.6 final integrated writer and runtime acceptance pending.
+
+## S06.4-C permission retry
+Original canopy GLB created successfully (91515745821527); native proof confirms one loaded mesh, 20 bones and 18 branch transform round-trips. No scripts, no Place writes. Vertex editing still blocked by staging Mesh/Image APIs setting and third-party ownership; client render/skin weights pending. Evidence in docs/s06/wind-v16/permission-retry. No reupload.

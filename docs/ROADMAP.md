@@ -129,3 +129,5 @@ A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (
 - [ ] S06.4 branch wind: stronger macro and authored-rig controller, original GLB and native bone proof implemented; actual skinned asset import blocked HTTP 403 (43282633795). Keep original visual assets until authorized import and review. See NEXT_STEPS.md.
 
 - [x] S06.5 read-only compatibility: v16 sharded exact parity, 16 default subtrees identified, isolated removal/restoration, 45/45 installed dependency fetch confirmations using actual MeshPart instances. Writer budget and persistent cleanup/runtime acceptance remain pending; S06.4 upload awaiting user key rotation. See NEXT_STEPS.md.
+
+- [ ] S06.4-C: asset upload unblocked, original Model 91515745821527 native structure verified (20 bones, 18 branch transforms, 1 loaded mesh). EditableMesh still disabled in staging; vertex/skinning client proof and integration pending. No Place save.

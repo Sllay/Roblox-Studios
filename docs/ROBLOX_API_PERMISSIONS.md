@@ -21,3 +21,6 @@ Official references:
 - https://create.roblox.com/docs/cloud/auth/api-keys
 - https://create.roblox.com/docs/cloud/reference/scopes
 - https://create.roblox.com/docs/reference/engine/classes/EditableMesh
+
+## Confirmed retry (2026-11-12)
+Editing the existing key's access permissions worked without changing the secret value. Assets POST returned HTTP 200 and original Model 91515745821527 was approved. Native read-back confirms the model and 20 bones, but vertex operations still fail because staging Mesh/Image APIs are disabled. No further key regeneration or upload is necessary. Enable the separate setting on staging only and retest the existing mesh 91110653005310. Do not use additional advertising, commerce, inventory or permission-write scopes without a separate authorized task.
