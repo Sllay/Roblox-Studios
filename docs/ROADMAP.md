@@ -135,3 +135,5 @@ A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (
 - [ ] S06.4-D: owned EditableMesh vertex deformation verified natively after enabling game setting; 738 vertices, 384 fixed, 24 exact updates and restoration. Eight third-party canopies still protected. Client runtime/visual integration pending; no Place save.
 
 - [x] S06.6 integrated staging v17 published and independently verified (43306041111): 212 vegetation, 216 resources, 132 tree profiles, 36 clearings, diagnostic vertex demo. Native proof and recovery passed; mobile visual/physical acceptance and third-party canopy deformation remain pending. No production.
+
+- [ ] S06.7: mobile v17 resource invisibility root cause proven, 216/216 fully buried by physical terrain height estimation error. Native correction preview passed 43310008338; publication and client acceptance pending. Six large rocks also overembedded; separate review. No Place write.

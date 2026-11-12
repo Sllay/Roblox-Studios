@@ -570,6 +570,35 @@
         "asset fetch proof",
         "client visibility limitations"
       ]
+    },
+    {
+      "id": "terrain.surface_rebuild_probe",
+      "entry": "tools/resource_surface_rebuild_probe.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Disposable exact voxel-channel rehydration and physical Terrain surface ray proof; all registered hashes restored, never run as live world mutation",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "actual surface ray samples",
+        "exact terrain inverse"
+      ]
+    },
+    {
+      "id": "scene.resource_contact_fix_preview",
+      "entry": "tools/resource_contact_fix_preview.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Preview measured vertical resource placement and bounded material-only clearings with zero burial and exact inverse; no Place save or client render claim",
+      "requires": [
+        "scene.sync",
+        "terrain.surface_rebuild_probe"
+      ],
+      "produces": [
+        "reviewable v17 contact plan",
+        "terrain and resource inverse proof"
+      ]
     }
   ]
 }
