@@ -1,0 +1,41 @@
+name: S04 persist verified physics evidence
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s04-checkpoint.trigger']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: s04-physics-preview
+          run-id: 43268376332
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s04
+      - name: Verify and persist
+        run: |
+          python - <<'PY'
+          import json,hashlib,shutil
+          from pathlib import Path
+          root=Path("games/maps/mapa-principal");src=Path("dist/s04");out=root/"docs/spatial/v14/s04";out.mkdir(parents=True,exist_ok=True)
+          def load(p):return json.loads(p.read_text())
+          def sha(v):return hashlib.sha256(json.dumps(v,sort_keys=True,ensure_ascii=False,separators=(",",":"),allow_nan=False).encode()).hexdigest()
+          p=load(src/"collider-plan.json");v=load(src/"collider-preview.json");w=load(src/"wind-proof.json");b=load(root/"docs/sync/main/staging.summary.json")
+          assert p["planDigest"]==sha({k:v for k,v in p.items() if k!="planDigest"})=="dd8dded03482f904562c979d2d3efcdc44e653fb659d7297ae5df5bd11bb53cf"
+          assert p["stateDigest"]==b["stateDigest"] and p["loadedVersion"]==b["loadedVersion"]==14
+          assert v["planDigest"]==p["planDigest"] and v["checked"]==94 and not v["runtimePhysicsVerified"]
+          assert p["noPlaceWrites"] and not p["applyAuthorized"] and w["eligible"]==162 and not w["clientMotionVerified"]
+          for name in ("inventory.json","collider-plan.json","collider-summary.json","collider-preview.json","wind-proof.json"):
+              shutil.copyfile(src/name,out/name)
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/spatial/v14/s04
+          git commit -m "evidence(s04): persist exact collider plan and wind proof"
+          git push origin HEAD:main

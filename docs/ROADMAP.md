@@ -116,3 +116,5 @@ A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (
 - [x] S02 native spatial index core live-verified v14 (43263487282): 36,864 samples, 9 tiles, p80 26.51, 44 prior placement heights reproduced, 216 provisional resource points, identical offline replay. Pine species visual identity and final asset contact pending; no Place writes. Next S03.
 
 - [x] S03 Asset Lab core: exact inert legacy stick conversion, 108+108 resource preview including 8 reused rock IDs, 3 Bush_03 moves; native detached scale proof and deterministic replay validated, evidence 472d9e3/run 43265161056. No Place write; final mobile contact and coupled writer pending. Next S04.
+
+- [x] S04 Physics Builder core verified: 94 detached rounded collider profiles (93 replacements + 1 new), 162 foliage candidates, 126 tests and native preview 43268376332. 86 Yasu widths provisional, mobile physics/visual pending. Next S05 coupled transaction and publication gates; no Place writes.

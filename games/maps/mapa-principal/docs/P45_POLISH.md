@@ -14,3 +14,6 @@ A correção de vento foi publicada e verificada no run 43257825675, sync dd359a
 
 ## S03 resource preparation
 108 small stones (8 existing Rock IDs reused, 100 new), 108 new sticks and 3 of 8 Bush_03 relocations planned; exact evidence and plan in docs/spatial/v14/s03. Stick converted from legacy mesh/wood texture, all five pack scripts excluded. Native scale proof passed. No staging write, physical contact and mobile visibility pending. Preserve large moss rocks, existing pine identity pending. Next S04 collider profiles and runtime wind diagnostic; S05 combines approved coupled edits.
+
+## S04 physics and wind preparation
+94 playable tree profiles prepared (93 replacements, standalone yasu-tree-01 added). Native detached geometry, shape/axis/top/bottom/seam and serialization verified. 86 Yasu widths provisional; 8 pines use branchless trunk bounds. No exact cross-section available; real slide/jump and visual trunk fit pending. 162 foliage candidates verified against published v14 policy, peak sampled 2.764°/1.382°, fixed pivot and wind direction. Added throttled diagnostic source for future deployment; no staging write. S05 requires coupled transaction/recovery and combined plan review.

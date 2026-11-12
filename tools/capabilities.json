@@ -355,6 +355,34 @@
         "resource plan",
         "placement summary"
       ]
+    },
+    {
+      "id": "scene.physics_preview",
+      "entry": "tools/physics_builder.py",
+      "mode": "offline",
+      "status": "live_verified",
+      "purpose": "Tree collider profile planning and detached native verification; width calibration and runtime physics separate",
+      "requires": [
+        "terrain.spatial_index",
+        "scene.sync"
+      ],
+      "produces": [
+        "collider plan",
+        "native geometry proof"
+      ]
+    },
+    {
+      "id": "runtime.wind_policy_probe",
+      "entry": "tools/wind_policy_probe.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Verify published wind policy and candidate coverage, not client motion",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "wind policy evidence"
+      ]
     }
   ]
 }
