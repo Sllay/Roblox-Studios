@@ -259,13 +259,30 @@
       "id": "cloud.api_probe",
       "entry": "tools/roblox_api_probe.py",
       "mode": "read",
-      "status": "implemented",
+      "status": "live_verified",
       "purpose": "Pinned staging version API support probe for native terrain, physics, navigation, mesh and serialization",
       "requires": [
         "scene.sync"
       ],
       "produces": [
         "context-specific support evidence"
+      ]
+    },
+    {
+      "id": "terrain.map_atlas",
+      "entry": "tools/terrain_atlas.py",
+      "mode": "read",
+      "status": "implemented",
+      "purpose": "Versioned terrain map overlays and real placement overview from native voxel samples",
+      "requires": [
+        "scene.sync",
+        "terrain.surface"
+      ],
+      "produces": [
+        "terrain atlas",
+        "height/material samples",
+        "placement map",
+        "altitude evidence"
       ]
     }
   ]

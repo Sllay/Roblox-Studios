@@ -25,3 +25,5 @@ Added tools/verified_script_stage.py wrapping existing Scene Patch with versione
 
 ## Official API research
 See docs/ROBLOX_API_RESEARCH.md. Studio MCP is a local optional visual/playtest backend, not currently connected. Pinned read transport and capability probe added; live result pending. Script transaction verified v14, 49 terrain hashes unchanged.
+
+Pinned v14 API probe completed; documented context-specific support matrix in ROBLOX_API_RESEARCH.md. Native terrain, pathfinding and serialization work in sampled context; physics queries returned no hits and EditableMesh permission denied. Terrain atlas implemented as first visual spatial evidence layer; live run pending.

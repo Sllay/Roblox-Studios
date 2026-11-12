@@ -100,3 +100,5 @@
 
 - [x] P4.5 wind script transaction verified staging v14 (43257825675), sync dd359a0; 49 terrain hashes unchanged. Mobile motion still pending.
 - [ ] Roblox API capability research and pinned read probe: official Studio MCP, native geometry/physics, binary input, asset versioning, serialization, testing and runtime stats. Live probe pending; see docs/ROBLOX_API_RESEARCH.md.
+
+- [x] Pinned v14 API probe 43258355023: terrain voxels, pathfinding (8 waypoints), serialization roundtrip observed; headless physical queries returned no hits and EditableMesh permission denied. Evidence persisted. Terrain atlas (materials, altitude, placement) implemented, read-only live validation pending.

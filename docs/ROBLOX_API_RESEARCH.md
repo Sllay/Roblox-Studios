@@ -28,3 +28,6 @@ Pinned historical read transport and checked-in API capability probe (terrain ra
 5. Agent policy: discover documented APIs and actual probe status, use typed plans, explicit staging authorization, evidence of expected outcome, no production or arbitrary external scripts.
 
 First priorities: geometry/physics probe and terrain spatial cache -> placement/collider rules -> runtime test harness -> Studio backend when available. Research does not claim all these APIs are enabled in our current environment.
+
+## Live staging v14 evidence — run 43258355023
+Pinned version transport succeeded. 8 probes: native voxel read succeeded (solid occupancy sum 17.5686); Pathfinding returned Success and 8 waypoints; Serialization roundtrip 2885 bytes matched sample. Terrain ray/sphere, sample part ray and overlap had no hits in this headless edit context; do not infer a working physics test. EditableMesh denied asset permission; do not enable settings or bypass ownership. Persisted result at games/maps/mapa-principal/docs/api-probes/staging-v14.json. No Place writes. CI 43258355108 passed. Next, terrain atlas samples nine playable regions at 8 studs from native 4-stud voxel channels, verifies full region hashes, and creates material, altitude and observed placement maps. Coarse overview, not physical raycasts or PBR render. No new game edits.

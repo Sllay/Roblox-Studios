@@ -1,0 +1,63 @@
+{
+  "runId": 43258355023,
+  "sourceCommit": "a49aa65baba7b88e3e6922238fe99f841049dc1f",
+  "universeId": "10769712441",
+  "noPlaceWrites": true,
+  "results": {
+    "serialization.roundtrip": {
+      "status": "executed",
+      "value": {
+        "bytes": 2885,
+        "matchingSample": true
+      }
+    },
+    "terrain.raycast": {
+      "status": "executed",
+      "value": {
+        "hit": false
+      }
+    },
+    "physics.overlap": {
+      "status": "executed",
+      "value": {
+        "count": 0,
+        "containsSample": false
+      }
+    },
+    "terrain.voxel": {
+      "status": "executed",
+      "value": {
+        "solidOccupancySum": 17.56862745098039,
+        "liquidOccupancySum": 0
+      }
+    },
+    "physics.part_raycast": {
+      "status": "executed",
+      "value": {
+        "hit": false
+      }
+    },
+    "terrain.spherecast": {
+      "status": "executed",
+      "value": {
+        "hit": false
+      }
+    },
+    "mesh.editable_read": {
+      "status": "error",
+      "value": "AssetService::CreateEditableMeshAsync failed because no permission to load asset"
+    },
+    "navigation.path": {
+      "status": "executed",
+      "value": {
+        "status": "Success",
+        "waypoints": 8
+      }
+    }
+  },
+  "context": "headless_edit",
+  "placeId": "93428341652658",
+  "schemaVersion": 1,
+  "sampleSpawn": "Valley_01",
+  "loadedVersion": 14
+}
