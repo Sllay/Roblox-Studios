@@ -39,6 +39,16 @@ for _,obj in model:GetDescendants() do
         table.insert(mesh,{name=obj.Name,mesh=obj.MeshId,texture=obj.TextureID,material=obj.Material.Name,variant=obj.MaterialVariant})
     end
 end
+local preloads={}
+local cp=game:GetService("ContentProvider")
+local ids={}
+for _,item in maps do
+    for _,field in item.fields do if field.uri then table.insert(ids,field.uri) end end
+end
+for _,item in mesh do table.insert(ids,item.mesh) end
+local okPreload,err=pcall(function()
+    cp:PreloadAsync(ids,function(id,status) preloads[id]=status.Name end)
+end)
 local grounds={}
 for _,obj in workspace:GetDescendants() do
     if obj:IsA("BasePart") then
@@ -47,4 +57,4 @@ for _,obj in workspace:GetDescendants() do
 end
 model:Destroy()
 root:Destroy()
-return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),maps=maps,mesh=mesh,ground=grounds,serializedBytes=buffer.len(blob),digest=hash,serializedBase64=buffer.tostring(encoding:Base64Encode(blob))})
+return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),maps=maps,mesh=mesh,ground=grounds,preloads=preloads,preloadError=if okPreload then nil else tostring(err),serializedBytes=buffer.len(blob),digest=hash,serializedBase64=buffer.tostring(encoding:Base64Encode(blob))})

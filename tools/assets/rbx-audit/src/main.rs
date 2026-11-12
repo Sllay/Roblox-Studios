@@ -12,8 +12,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let name=key.as_str();
             if name.contains("Map") || name.contains("TexturePack") || name.contains("EmissiveMask") {
                 props.insert(name.to_string(),match val {
-                    Variant::Content(v)=>json!(format!("{:?}",v)),
-                    Variant::ContentId(v)=>json!(v.as_ref() as &str),
+                    Variant::Content(v)=>json!(v),
+                    Variant::ContentId(v)=>json!(v.as_str()),
                     Variant::String(v)=>json!(v),
                     _=>json!(format!("{:?}",val)),
                 });
