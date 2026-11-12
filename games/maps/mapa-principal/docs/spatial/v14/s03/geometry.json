@@ -1,0 +1,193 @@
+{
+  "loadedVersion": 14,
+  "noPlaceWrites": true,
+  "planDigest": "fd72ec0575c55a1eda4672a65c2ca03eae969d6e87beb4a56425012329bc5ce6",
+  "rock": {
+    "assetId": "80215326989711",
+    "codeExecuted": false,
+    "dependencyFetch": {
+      "meshes": {
+        "rbxassetid://122505516420043": "Success"
+      },
+      "textures": [],
+      "verified": true
+    },
+    "digest": "rZcqzI88GVL86l75hTREzIaWgSbyv7MSE7HKCefH97k=",
+    "loadedVersion": 14,
+    "noPlaceWrites": true,
+    "placeId": "93428341652658",
+    "scaledSamples": [
+      {
+        "bounds": [
+          0.6619369387626648,
+          0.47790035605430603,
+          0.6294427514076233
+        ],
+        "factor": 0.003597517510746736,
+        "modelScale": 0.0035975174978375435
+      },
+      {
+        "bounds": [
+          1.430648684501648,
+          1.0328891277313232,
+          1.3604187965393066
+        ],
+        "factor": 0.0077753378805816955,
+        "modelScale": 0.007775337900966406
+      }
+    ],
+    "sourceBounds": [
+      183.99826049804688,
+      132.84170532226562,
+      174.96588134765625
+    ],
+    "universeId": "10769712441"
+  },
+  "rockMaxBoundsError": 7.052380579519735e-08,
+  "schemaVersion": 1,
+  "stateDigest": "fc6d1050b100b87ead072c99e4fd60a3a85781c840e7e11e39cbff81c76e4c08",
+  "stick": {
+    "assetId": "9204066145",
+    "codeExecuted": false,
+    "dependencies": {
+      "rbxassetid://123968188": "Success",
+      "rbxassetid://123968836": "Success"
+    },
+    "digest": "5NFHPQgF41hsQmm4yfKth/sEcH80jt9Nix6njVQS8rE=",
+    "geometryStatus": "converted_file_mesh_native_bounds",
+    "importAuthorized": false,
+    "loadedVersion": 14,
+    "meshId": "rbxassetid://123968188",
+    "meshSize": [
+      0.6624240279197693,
+      5.70536994934082,
+      0.3487184941768646
+    ],
+    "noPlaceWrites": true,
+    "outputClasses": [
+      "MeshPart"
+    ],
+    "placeId": "93428341652658",
+    "roundtripVerified": true,
+    "scaledSamples": [
+      {
+        "bounds": [
+          0.09878742694854736,
+          0.8508613705635071,
+          0.052005585283041
+        ],
+        "factor": 0.14913343310673804,
+        "size": [
+          0.09878956526517868,
+          0.8508613705635071,
+          0.052005585283041
+        ]
+      },
+      {
+        "bounds": [
+          0.22625470161437988,
+          1.9487438201904297,
+          0.1191093698143959
+        ],
+        "factor": 0.3415631008144104,
+        "size": [
+          0.22625960409641266,
+          1.9487438201904297,
+          0.1191093698143959
+        ]
+      }
+    ],
+    "schemaVersion": 1,
+    "size": [
+      0.6624240279197693,
+      5.70536994934082,
+      0.3487184941768646
+    ],
+    "source": {
+      "cframe": [
+        -356.6015930175781,
+        19.97531509399414,
+        -252.6056365966797,
+        -0.9955965280532837,
+        -0.06979889422655106,
+        0.06258244067430496,
+        0.06467751413583755,
+        -0.02816792018711567,
+        0.9975094795227051,
+        -0.06786245107650757,
+        0.9971631169319153,
+        0.03255819156765938
+      ],
+      "class": "Part",
+      "color": [
+        0.29411765933036804,
+        0.5921568870544434,
+        0.29411765933036804
+      ],
+      "material": "Plastic",
+      "meshes": [
+        {
+          "meshId": "http://www.roblox.com/asset/?id=123968188",
+          "meshType": "FileMesh",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "selector": [
+            {
+              "class": "Tool",
+              "index": 1,
+              "name": "Punishment stick"
+            },
+            {
+              "class": "Part",
+              "index": 5,
+              "name": "Part"
+            },
+            {
+              "class": "SpecialMesh",
+              "index": 1,
+              "name": "Mesh"
+            }
+          ],
+          "textureId": "http://www.roblox.com/asset/?id=123968836",
+          "vertexColor": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "name": "Part",
+      "selector": [
+        {
+          "class": "Tool",
+          "index": 1,
+          "name": "Punishment stick"
+        },
+        {
+          "class": "Part",
+          "index": 5,
+          "name": "Part"
+        }
+      ],
+      "size": [
+        1,
+        3.6000001430511475,
+        1
+      ],
+      "transparency": 0
+    },
+    "sourceScripts": 5,
+    "status": "extracted",
+    "textureId": "rbxassetid://123968836",
+    "universeId": "10769712441"
+  },
+  "stickMaxBoundsError": 4.903415868062755e-06
+}

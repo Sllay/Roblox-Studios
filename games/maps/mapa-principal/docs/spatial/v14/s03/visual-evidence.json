@@ -1,0 +1,17 @@
+{
+  "artifactId": 13966226164,
+  "assetReviews": {
+    "Bush_03": "separate foliage cluster and branching trunk; final color/visibility pending",
+    "stick": "slender branch with irregular small offshoots; source texture wood grain",
+    "stone": "faceted irregular small rock"
+  },
+  "runId": 43264800702,
+  "scope": "official component thumbnails; geometry and wood texture reviewed, not final assembled PBR or mobile appearance",
+  "thumbnailSha256": {
+    "122505516420043": "3b2511c1f02dc6cdce0b30e32f3a282394cc882aac1a7aa1c7a3319e2f630a6a",
+    "123968188": "5ec8306d757be037b872679c70df414c44463d8bb5e38050616ed77e284990bd",
+    "123968836": "a59fa85125e42040591da77d52766a1e1682e2549734968c912eec7ce5accaf4",
+    "18721003328": "87bba27a7705f1b8c1ff315d1ad98dfc35145e1dfbaa51a70ad042684bdf2038",
+    "18721169682": "ab61eacb441297f2caf182fb07d64e2443b8c4f21788c4798b0e8571708c629a"
+  }
+}
