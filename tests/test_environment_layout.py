@@ -13,3 +13,7 @@ class EnvironmentLayoutTests(unittest.TestCase):
     def test_incomplete_layout(self):
         with self.assertRaises(WorkspaceError):
             verify_layout(read(SPEC),[])
+
+    def test_invalid_root(self):
+        p=read(SPEC);p["rootName"]="Workspace"
+        with self.assertRaises(WorkspaceError):validate(p)
