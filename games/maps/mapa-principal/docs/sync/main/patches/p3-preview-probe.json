@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "expectedVersion": 7,
+  "baselineDigest": "bd0d2b06ba6dab8420b7f30dd86042cff7ae8ffd2f39ec0aefcceca5b545f497",
+  "operations": [
+    {
+      "kind": "add_part",
+      "parentKey": "service:Workspace",
+      "name": "RSSceneSyncProbe",
+      "id": "scene-sync-probe",
+      "changes": {
+        "cframe": [
+          0,
+          -10,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ],
+        "size": [
+          1,
+          1,
+          1
+        ],
+        "transparency": 1,
+        "canCollide": false
+      }
+    },
+    {
+      "kind": "update_script",
+      "targetKey": "path:[\"ServerScriptService\",[{\"class\":\"Script\",\"name\":\"RSCentralSpawnSafety\",\"ordinal\":1}]]",
+      "archiveId": "spawn-safety-probe",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSCentralSpawnSafety.server.luau"
+    }
+  ]
+}

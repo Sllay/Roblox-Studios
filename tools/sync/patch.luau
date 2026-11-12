@@ -27,6 +27,7 @@ end
 local inert={Model=true,Folder=true,Part=true,MeshPart=true,SurfaceAppearance=true,Texture=true,Decal=true,SpecialMesh=true,WedgePart=true,CornerWedgePart=true}
 local function inertTree(obj)
     assert(inert[obj.ClassName],"Unsupported archive/edit class")
+    if obj:IsA("BasePart") then assert(obj.Anchored,"Unanchored root") end
     for _,c in obj:GetDescendants() do
         assert(inert[c.ClassName],"Unsupported descendant; cannot archive safely")
         if c:IsA("BasePart") then assert(c.Anchored,"Unanchored subtree") end
@@ -58,6 +59,7 @@ for _,op in cfg.operations do
     if op.parent then parent=getParent(op.parent) end
     if op.kind=="add_part" then
         assert(parent and (parent==W or parent:IsA("Folder")) and (parent==W or parent:IsDescendantOf(W)),"Unsupported parent")
+        if parent~=W then noCritical(parent) end
         assert(not parent:FindFirstChild(op.name),"Name collision")
     elseif op.kind=="set_part" then
         assert(obj:IsA("Part") and obj.Anchored,"Only anchored Part edits")
@@ -77,9 +79,14 @@ for _,op in cfg.operations do
         assert(obj:IsA("Folder") and obj.Parent==a and #obj:GetChildren()==1,"Archive entry mismatch")
         local original=obj:GetChildren()[1]
         assert(parent and (parent==W or parent:IsDescendantOf(W)) and not parent:FindFirstChild(original.Name),"Restore parent/name conflict")
+        if parent~=W then noCritical(parent) end
         local expectedParent=obj:GetAttribute("RSOriginalParent")
         assert(expectedParent==op.parentToken,"Restore parent differs from archive")
         inertTree(original)
+    elseif op.kind=="update_script" then
+        assert(obj:IsA("LuaSourceContainer") and #obj:GetChildren()==0 and obj.Archivable,"Unsupported script edit")
+        assert(hash(obj.Source)==op.target.properties.sourceHash and hash(op.source)==op.sourceHash,"Script source mismatch")
+        local a=archiveRoot(false);assert(not a or not a:FindFirstChild(op.archiveId),"Script backup ID collision")
     elseif op.kind=="create_script" then
         assert(parent and not parent:FindFirstChild(op.name),"Script parent/name collision")
         assert((op.class=="Script" and parent==game:GetService("ServerScriptService")) or
@@ -95,6 +102,7 @@ local results={}
 for _,item in prepared do
     local op,obj,parent=item.op,item.obj,item.parent
     if op.kind=="add_part" then
+        assert(not parent:FindFirstChild(op.name),"Destination changed")
         obj=Instance.new("Part");obj.Name=op.name;obj.Anchored=true;obj.CanTouch=false
         setPart(obj,op.changes);obj:SetAttribute("RSSceneSyncId",op.id);obj.Parent=parent
     elseif op.kind=="set_part" then setPart(obj,op.changes)
@@ -102,10 +110,19 @@ for _,item in prepared do
     elseif op.kind=="adopt" then obj:SetAttribute("RSSceneSyncId",op.id)
     elseif op.kind=="archive" then
         local a=archiveRoot(true)
+        assert(not a:FindFirstChild(op.archiveId),"Archive destination changed")
         local entry=Instance.new("Folder");entry.Name=op.archiveId;entry:SetAttribute("RSOwner","RSScenePatchV1")
         entry:SetAttribute("RSOriginalParent",op.parentToken);entry.Parent=a;obj.Parent=entry
     elseif op.kind=="restore" then
-        local original=obj:GetChildren()[1];original.Parent=parent;obj:Destroy();obj=original
+        local original=obj:GetChildren()[1];assert(not parent:FindFirstChild(original.Name),"Restore destination changed");original.Parent=parent;obj:Destroy();obj=original
+    elseif op.kind=="update_script" then
+        local a=archiveRoot(true)
+        local entry=Instance.new("Folder");entry.Name=op.archiveId;entry:SetAttribute("RSOwner","RSScenePatchV1");entry:SetAttribute("RSOriginalTarget",op.targetToken);entry.Parent=a
+        local backup=obj:Clone();assert(backup and hash(backup.Source)==op.target.properties.sourceHash,"Script backup failed")
+        if backup:IsA("BaseScript") then entry:SetAttribute("RSOriginalEnabled",backup.Enabled);backup.Enabled=false end
+        -- backup must not duplicate the managed identity in the observed inventory
+        backup:SetAttribute("RSSceneSyncId",nil);backup:SetAttribute("RSManagedId",nil);backup.Parent=entry
+        obj.Source=op.source
     elseif op.kind=="create_script" then
         obj=Instance.new(op.class);obj.Name=op.name;obj.Source=op.source;obj:SetAttribute("RSSceneSyncId",op.id);obj.Parent=parent
     end

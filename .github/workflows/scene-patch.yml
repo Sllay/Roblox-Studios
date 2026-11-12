@@ -18,14 +18,16 @@ on:
       confirm_staging:
         type: boolean
         default: false
+  push:
+    paths: ['games/maps/mapa-principal/docs/patch-preview-once.trigger']
 permissions:
   contents: read
 concurrency:
-  group: roblox-place-write-${{ inputs.game }}-${{ inputs.place }}-staging
+  group: roblox-place-write-${{ inputs.game || 'mapa-principal' }}-${{ inputs.place || 'main' }}-staging
   cancel-in-progress: false
 jobs:
   patch:
-    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation == 'preview' || inputs.confirm_staging) }}
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'preview' || inputs.confirm_staging) }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -39,10 +41,10 @@ jobs:
       - run: python tools/script_quality.py
       - name: Preview or apply exact scene patch
         env:
-          GAME: ${{ inputs.game }}
-          PLACE: ${{ inputs.place }}
-          PLAN: ${{ inputs.plan }}
-          OP: ${{ inputs.operation }}
+          GAME: ${{ inputs.game || 'mapa-principal' }}
+          PLACE: ${{ inputs.place || 'main' }}
+          PLAN: ${{ inputs.plan || 'p3-preview-probe.json' }}
+          OP: ${{ inputs.operation || 'preview' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           [[ "$GAME" =~ ^[a-z0-9-]+$ && "$PLACE" =~ ^[a-z0-9-]+$ && "$PLAN" =~ ^[a-z0-9-]+\.json$ ]] || exit 1

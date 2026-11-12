@@ -18,8 +18,6 @@ on:
       record:
         type: boolean
         default: true
-  push:
-    paths: ['games/maps/mapa-principal/docs/sync-v7-once.trigger']
 permissions:
   contents: write
 concurrency:
@@ -41,7 +39,7 @@ jobs:
           GAME: ${{ inputs.game || 'mapa-principal' }}
           PLACE: ${{ inputs.place || 'main' }}
           ENVIRONMENT: ${{ inputs.environment || 'staging' }}
-          RECORD: ${{ github.event_name == 'push' || inputs.record }}
+          RECORD: ${{ inputs.record }}
           DESIRED: ${{ inputs.desired }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |

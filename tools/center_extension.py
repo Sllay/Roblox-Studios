@@ -26,7 +26,7 @@ def main():
         require(len(matches)==1 and not matches[0]["ambiguous"],"Default identity not unique")
         rows.append(matches[0])
     source=(ROOT/"tools/sync/center_extension.luau").read_text()
-    runtime=(ROOT/"tools/sync/central_spawn.server.luau").read_text()
+    runtime=(ROOT/"games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSCentralSpawnSafety.server.luau").read_text()
     # dispatch returns before final inventory return, wrapped in do for Luau syntax.
     dispatch="do\n"+source+"\nend"
     opts=dict(plan=p,targets=rows,runtimeSource=runtime,environment="staging")
