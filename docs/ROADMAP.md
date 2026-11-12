@@ -59,3 +59,5 @@
 
 - [x] Scene Sync v8 registered 25 native regions, 2,162 observed instances and environment coverage (43147668959); exact world tile hashes match receipt.
 - [x] Dedicated prop support reconciliation preview/apply tool, no Terrain writes; paint transform preservation check added. Live read-only central chunk preview 43147865460 passed: 7 supported props, zero moves/reviews/unmanaged; no save.
+
+- [x] v8 mobile regression: no_safe_spawn prevented character creation. v9 native automatic lifecycle hotfix published; separate ray/voxel diagnostics, two trusted scripts updated, terrain and vegetation unchanged. Patch scope rejected default-module delta, reviewed independently; live mobile retest pending.
