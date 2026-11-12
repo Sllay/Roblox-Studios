@@ -1,0 +1,61 @@
+name: Scene Sync (published Place inventory)
+on:
+  workflow_dispatch:
+    inputs:
+      game:
+        type: string
+        default: mapa-principal
+      place:
+        type: string
+        default: main
+      environment:
+        type: choice
+        options: [staging, production]
+        default: staging
+      record:
+        type: boolean
+        default: true
+  push:
+    paths: ['games/maps/mapa-principal/docs/sync-once.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: roblox-place-write-${{ inputs.game || 'mapa-principal' }}-${{ inputs.place || 'main' }}-${{ inputs.environment || 'staging' }}
+  cancel-in-progress: false
+jobs:
+  sync:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Read published Place and reconcile
+        env:
+          GAME: ${{ inputs.game || 'mapa-principal' }}
+          PLACE: ${{ inputs.place || 'main' }}
+          ENVIRONMENT: ${{ inputs.environment || 'staging' }}
+          RECORD: ${{ github.event_name == 'push' || inputs.record }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          args=()
+          if [[ "$RECORD" == true ]]; then args+=(--record); fi
+          python tools/scene_sync.py --game "$GAME" --place "$PLACE" --environment "$ENVIRONMENT" "${args[@]}"
+          if [[ "$RECORD" == true ]]; then
+            git config user.name "roblox-scene-sync[bot]"
+            git config user.email "scene-sync@users.noreply.github.com"
+            git add -- "games/maps/$GAME/docs/sync/$PLACE/$ENVIRONMENT.json"
+            if ! git diff --cached --quiet; then
+              git commit -m "sync: $GAME/$PLACE/$ENVIRONMENT observed Roblox state"
+              git push origin HEAD:main
+            fi
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scene-sync-evidence
+          path: dist/scene-sync/
+          if-no-files-found: warn
