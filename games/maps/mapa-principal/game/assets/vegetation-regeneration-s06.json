@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "seed": 260612,
+  "speciesTargets": {
+    "Tree_01": 58,
+    "Tree_08": 42,
+    "Tree_03": 10,
+    "Tree_12": 10,
+    "Pine_01.1": 6,
+    "Pine_03.1": 6,
+    "Bush_01": 55,
+    "Bush_03": 25
+  },
+  "pineMinPercentile": 0.9,
+  "maxSlope": 22,
+  "maxRelief": 3,
+  "notes": "Target 132 trees (12 pines) and 80 bushes inside barrier; preserve 24 outer vegetation models. Both pine variants high; reserve 64–76 stud height; no visual identity assumption. Canopy spacing 0.62 radius allows moderate overlap; ground clearances independent. No publication until budget and coupled inverse proven."
+}
