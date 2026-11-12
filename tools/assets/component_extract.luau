@@ -14,6 +14,8 @@ local function path(obj)
     return p
 end
 local function uri(v)
+    local old=string.match(v,"^https?://www%.roblox%.com/asset/%?id=([1-9]%d*)$")
+    if old then v="rbxassetid://"..old end
     assert(v=="" or string.match(v,"^rbxassetid://[1-9]%d*$"),"Unsupported URI: "..v)
     return v
 end
@@ -66,6 +68,7 @@ else
     local mesh=selected:FindFirstChildOfClass("SpecialMesh")
     assert(mesh and mesh.MeshType==Enum.MeshType.FileMesh,"FileMesh required")
     local meshId=uri(mesh.MeshId);local textureId=uri(mesh.TextureId)
+    assert(mesh.Scale==Vector3.one and mesh.Offset==Vector3.zero and mesh.VertexColor==Vector3.one,"Legacy nonidentity transform requires calibration")
     assert(meshId~="","Missing mesh")
     -- Use actual native MeshPart geometry if permitted; legacy SpecialMesh scale
     -- is not a stud-space bound and must never be treated as one.
