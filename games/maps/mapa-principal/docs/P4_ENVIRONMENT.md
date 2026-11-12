@@ -17,3 +17,6 @@ User authorized staging and sequential P4.4. Creator Store terms reviewed for pl
 
 ## v11 recovery
 Run 43182382445 saved 24 models / 8 colliders; independent inventory v11 confirmed additions. Scope check stopped on 162 additional PlayerModule records matching previous ordinal exactly, plus an AtomicBinding duplicate and one parent child-count change. No terrain or existing authored changes in artifact. Recovery compares exact clone identity to v10 and rejects any other delta, verifies saved models/materials/colliders, then syncs. Does not repeat the asset save. Default duplication accumulates on save and remains an explicit issue to investigate, not an approval of arbitrary changes.
+
+## P4.3 completed
+Run 43182858125 recovered and verified v11 (24 objects, 8 colliders, sampled offline PBR), synchronized 5b594a5, applied seven scripts and independently verified v12, synchronized ebc235a. All 49 recorded terrain region digests preserved. Script hashes checked; 175 total delta records including exact default clones. Production unchanged. Mobile appearance, wind and clock behavior pending P4.5. Default-module duplicate accumulation remains a technical issue; do not normalize away arbitrary changes.

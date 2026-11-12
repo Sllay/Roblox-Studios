@@ -4,3 +4,5 @@ Sequence: only after P4.3 verified. Candidates taken from actual intake artifact
 
 ## Placement architecture
 The environment layout engine supports a separate owned root RSEnvironmentP4Detail with a 20-model budget. Existing first-batch plants/rocks now participate in spacing. Exact verified default-module clone deltas are separately recorded; no unrelated changes are accepted. No generic bypass. The detail plan requires exact source fingerprints, contact profiles, explicit approval and current scene digest before applying. The first pass keeps new pines static until explicit foliage mapping is verified; existing Yasu motion remains unchanged. A wall/steep-slope mount solver is separate from the dry-ground placement engine.
+
+P4.3 verified v12, so P4.4 exact preflight is now running after that checkpoint. The detail staging workflow requires a reviewed exact layout file and fresh baseline, and only writes to staging with explicit user authorization. No production deployment.

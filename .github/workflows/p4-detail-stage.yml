@@ -1,0 +1,64 @@
+name: P4.4 detailed environment (staging)
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/p4-detail-stage-once.trigger']
+  workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        options: [preview, apply]
+        default: preview
+      confirm_staging:
+        type: boolean
+        default: false
+permissions:
+  contents: write
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  detail:
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.phase == 'preview' || inputs.confirm_staging) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/script_quality.py
+      - run: bash tools/install-luau-lsp.sh
+      - run: python tools/quality_gate_v2.py
+      - name: Run reviewed detail preview or apply
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          EVENT: ${{ github.event_name }}
+          INPUT_PHASE: ${{ inputs.phase }}
+        run: |
+          if [[ "$EVENT" == push ]]; then
+            phase=$(cat games/maps/mapa-principal/docs/p4-detail-stage-once.trigger)
+          else
+            phase="$INPUT_PHASE"
+          fi
+          case "$phase" in
+            preview) python tools/p4_detail_stage.py preview ;;
+            apply) python tools/p4_detail_stage.py apply
+              git config user.name "roblox-scene-sync[bot]"
+              git config user.email "scene-sync@users.noreply.github.com"
+              git add games/maps/mapa-principal/docs/sync/main/staging.json games/maps/mapa-principal/docs/sync/main/staging.summary.json
+              git commit -m "sync: P4.4 verified detailed environment"
+              git push origin HEAD:main ;;
+            *) exit 1 ;;
+          esac
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p4-detail-layout
+          path: |
+            dist/p4-detail-layout/
+            dist/scene-sync/
+          if-no-files-found: warn
