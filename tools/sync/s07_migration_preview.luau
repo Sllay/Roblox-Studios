@@ -7,7 +7,7 @@ local channels={"SolidMaterial","SolidOccupancy","LiquidOccupancy"}
 local function write(region,d)
     T:WriteVoxelChannels(region,4,{SolidMaterial=d.SolidMaterial,SolidOccupancy=d.SolidOccupancy,LiquidOccupancy=d.LiquidOccupancy})
 end
-assert(game.PlaceId==93428341652658 and #F:GetChildren()==216 and #cfg.rows==2000,"Target/count")
+assert(game.PlaceId==93428341652658 and #cfg.rows==2000,"Target/count")
 local function fingerprint()
     local hashes={};local records={}
     for _,name in cfg.services do
@@ -29,6 +29,14 @@ local function fingerprint()
     table.sort(hashes);return hash(table.concat(hashes,";")),records
 end
 local beforeFingerprint,beforeRecords=fingerprint()
+if cfg.mode=="verify" then
+    assert(#F:GetChildren()==2000,"Persisted count")
+    assert(beforeFingerprint==cfg.expectedAfter,"Persisted fingerprint")
+    local terrain=terrainState();for _,r in terrain do assert(cfg.expectedTerrain[r.id]==r.digest,"Persisted terrain") end
+    return syncResult({verified=true,noPlaceWrites=true,afterFingerprint=beforeFingerprint,terrain=terrain})
+end
+assert(#F:GetChildren()==216,"Baseline count")
+if cfg.mode=="apply" then assert(beforeFingerprint==cfg.expectedBefore,"Reviewed baseline") end
 local before=terrainState()
 for _,r in before do assert(cfg.terrainExpected[r.id]==r.digest,"Terrain baseline") end
 local templates={}
@@ -103,6 +111,13 @@ end
 local afterFingerprint=fingerprint()
 local after=terrainState()
 for i,r in after do assert(r.solidVoxels==before[i].solidVoxels and r.waterVoxels==before[i].waterVoxels,"Terrain volume") end
+if cfg.mode=="apply" then
+    assert(afterFingerprint==cfg.expectedAfter,"Reviewed after fingerprint")
+    for _,r in after do assert(cfg.expectedTerrain[r.id]==r.digest,"Reviewed terrain") end
+    assert(changed==864 and #rotated==212,"Reviewed counts")
+    game:GetService("AssetService"):SavePlaceAsync({SaveWithoutPublish=false})
+    return syncResult({saved=true,afterFingerprint=afterFingerprint})
+end
 V:Destroy();originalVegetation.Parent=W
 for _,m in created do m:Destroy() end
 for _,m in old do m.Parent=F end
