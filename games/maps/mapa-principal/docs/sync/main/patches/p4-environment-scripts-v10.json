@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "expectedVersion": 10,
+  "baselineDigest": "164650009277020f7e8d76b151fa7cc9ca4c81044909983f4013c7854b017c68",
+  "operations": [
+    {
+      "kind": "create_script",
+      "name": "RSWorldClock",
+      "class": "ModuleScript",
+      "id": "p4-modulescript-rsworldclock",
+      "parentKey": "service:ReplicatedStorage",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/ReplicatedStorage/RSWorldClock.luau"
+    },
+    {
+      "kind": "create_script",
+      "name": "RSWorldTime",
+      "class": "Script",
+      "id": "p4-script-rsworldtime",
+      "parentKey": "service:ServerScriptService",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSWorldTime.server.luau"
+    },
+    {
+      "kind": "create_script",
+      "name": "RSWorldTime",
+      "class": "LocalScript",
+      "id": "p4-localscript-rsworldtime",
+      "parentKey": "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1}]]",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSWorldTime.client.luau"
+    },
+    {
+      "kind": "create_script",
+      "name": "RSWindPolicy",
+      "class": "ModuleScript",
+      "id": "p4-modulescript-rswindpolicy",
+      "parentKey": "service:ReplicatedStorage",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/ReplicatedStorage/RSWindPolicy.luau"
+    },
+    {
+      "kind": "create_script",
+      "name": "RSWind",
+      "class": "Script",
+      "id": "p4-script-rswind",
+      "parentKey": "service:ServerScriptService",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSWind.server.luau"
+    },
+    {
+      "kind": "create_script",
+      "name": "RSWind",
+      "class": "LocalScript",
+      "id": "p4-localscript-rswind",
+      "parentKey": "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1}]]",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSWind.client.luau"
+    },
+    {
+      "kind": "update_script",
+      "targetKey": "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1},{\"class\":\"LocalScript\",\"name\":\"RSBoundaryGrid\",\"ordinal\":1}]]",
+      "archiveId": "p4-boundary-v10",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSBoundaryGrid.client.luau"
+    }
+  ]
+}

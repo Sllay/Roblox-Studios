@@ -1,0 +1,418 @@
+{
+  "schemaVersion": 1,
+  "runId": 43181270756,
+  "sourceCommit": "f0fd07ca4d29f0b744f353f49dab312dab39b8a9",
+  "loadedVersion": 10,
+  "scope": "exact Safe Import v2 audit with serialized PBR cross-check and dependency fetch; geometry and source digest; no rights or placement approval",
+  "noPlaceWrites": true,
+  "existingMeshes": {
+    "Trunk_01|Wood": 52,
+    "Canopy_01|LeafyGrass": 52,
+    "Trunk_08|Wood": 38,
+    "Canopy_08|LeafyGrass": 38,
+    "Bush_Canopy_01|LeafyGrass": 47,
+    "Bush_Trunk_01|Wood": 47
+  },
+  "results": [
+    {
+      "name": "Tree_03",
+      "assetId": "79689531752352",
+      "status": "exact_v2_pass",
+      "loadedVersion": 10,
+      "digest": "nF0l9I9hAfDhU7B3cpB5qM9exB7AAvzxCt5Vg7JD4dM=",
+      "parts": 2,
+      "surfaces": 2,
+      "bounds": [
+        49.876495361328125,
+        45.20967483520508,
+        38.66557693481445
+      ],
+      "meshNames": [
+        "Canopy_03",
+        "Trunk_03"
+      ],
+      "meshRows": [
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Canopy_03"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            49.876522064208984,
+            29.028034210205078,
+            38.66559600830078
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            0.031097412109375,
+            22.573678970336914,
+            0.1580810546875,
+            0.999999463558197,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0.999999463558197
+          ],
+          "material": "LeafyGrass",
+          "mesh": "rbxassetid://18720235867",
+          "texture": ""
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 2,
+              "name": "Trunk_03"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Default",
+          "transparency": 0,
+          "size": [
+            38.34587097167969,
+            39.83283233642578,
+            25.569252014160156
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -2.2339324951171875,
+            11.793462753295898,
+            -0.44231414794921875,
+            0.999999463558197,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0.999999463558197
+          ],
+          "material": "Wood",
+          "mesh": "rbxassetid://18720235894",
+          "texture": ""
+        }
+      ],
+      "dependencies": [
+        "rbxassetid://13244568809",
+        "rbxassetid://13255359293",
+        "rbxassetid://18718123628",
+        "rbxassetid://18718124198",
+        "rbxassetid://18718124854",
+        "rbxassetid://18720235867",
+        "rbxassetid://18720235894"
+      ],
+      "importAuthorized": false
+    },
+    {
+      "name": "Tree_12",
+      "assetId": "79689531752352",
+      "status": "exact_v2_pass",
+      "loadedVersion": 10,
+      "digest": "iGYayNDLOjAZFFbar+5ve8neTklTXHsEb90YPqw2q6E=",
+      "parts": 2,
+      "surfaces": 2,
+      "bounds": [
+        27.668298721313477,
+        44.01524353027344,
+        22.939640045166016
+      ],
+      "meshNames": [
+        "Trunk_12",
+        "Canopy_12"
+      ],
+      "meshRows": [
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Trunk_12"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Default",
+          "transparency": 0,
+          "size": [
+            19.288955688476562,
+            39.03192138671875,
+            14.235082626342773
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            1.0015792846679688,
+            12.20997142791748,
+            0.799896240234375,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Wood",
+          "mesh": "rbxassetid://18720345648",
+          "texture": ""
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 2,
+              "name": "Canopy_12"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            27.668298721313477,
+            25.568683624267578,
+            22.939640045166016
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -0.24048614501953125,
+            23.925867080688477,
+            0.7193145751953125,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "LeafyGrass",
+          "mesh": "rbxassetid://18720345647",
+          "texture": ""
+        }
+      ],
+      "dependencies": [
+        "rbxassetid://13244568809",
+        "rbxassetid://13255387220",
+        "rbxassetid://18718123628",
+        "rbxassetid://18718124198",
+        "rbxassetid://18718124854",
+        "rbxassetid://18720345647",
+        "rbxassetid://18720345648"
+      ],
+      "importAuthorized": false
+    },
+    {
+      "name": "Bush_03",
+      "assetId": "79689531752352",
+      "status": "exact_v2_pass",
+      "loadedVersion": 10,
+      "digest": "udcOFfB1lpmKnD6t4Gj5iWFkcdOW6LCdmH98guLtISg=",
+      "parts": 2,
+      "surfaces": 2,
+      "bounds": [
+        8.903797149658203,
+        6.376905918121338,
+        8.118144035339355
+      ],
+      "meshNames": [
+        "Bush_Canopy_03",
+        "Bush_Trunk_03"
+      ],
+      "meshRows": [
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Bush_Canopy_03"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            8.903797149658203,
+            5.724263668060303,
+            8.118144035339355
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -0.07989120483398438,
+            3.0316810607910156,
+            0.39093017578125,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "LeafyGrass",
+          "mesh": "rbxassetid://18721169682",
+          "texture": ""
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 2,
+              "name": "Bush_Trunk_03"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Hull",
+          "transparency": 0,
+          "size": [
+            3.738257884979248,
+            4.302135467529297,
+            2.690828323364258
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            0.18768692016601562,
+            1.6679749488830566,
+            0.3327789306640625,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Wood",
+          "mesh": "rbxassetid://18721003328",
+          "texture": ""
+        }
+      ],
+      "dependencies": [
+        "rbxassetid://13244568809",
+        "rbxassetid://13255387277",
+        "rbxassetid://18718123628",
+        "rbxassetid://18718124198",
+        "rbxassetid://18718124854",
+        "rbxassetid://18721003328",
+        "rbxassetid://18721169682"
+      ],
+      "importAuthorized": false
+    },
+    {
+      "name": "Rock",
+      "assetId": "80215326989711",
+      "status": "exact_v2_pass",
+      "loadedVersion": 10,
+      "digest": "rZcqzI88GVL86l75hTREzIaWgSbyv7MSE7HKCefH97k=",
+      "parts": 1,
+      "surfaces": 0,
+      "bounds": [
+        183.99826049804688,
+        132.84170532226562,
+        174.96588134765625
+      ],
+      "meshNames": [
+        "Icosphere"
+      ],
+      "meshRows": [
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Icosphere"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Default",
+          "transparency": 0,
+          "size": [
+            183.99826049804688,
+            132.84170532226562,
+            174.97006225585938
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -10.068195343017578,
+            21.616230010986328,
+            -1.9115753173828125,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://122505516420043",
+          "texture": ""
+        }
+      ],
+      "dependencies": [
+        "rbxassetid://122505516420043"
+      ],
+      "importAuthorized": false
+    }
+  ]
+}

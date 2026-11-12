@@ -1,0 +1,208 @@
+-- Read-only preview, or explicit staging apply of an exact reviewed layout.
+-- __RS_ASSET_HELPERS__
+local W=workspace
+local T=W.Terrain
+local plan=cfg.plan
+assert(cfg.environment=="staging" and game.PlaceVersion==cfg.expectedVersion,"Stale environment plan")
+assert(not W:FindFirstChild("RSEnvironmentP4"),"Environment already installed")
+local tiles={}
+local channels={"SolidMaterial","SolidOccupancy","LiquidOccupancy"}
+for _,region in cfg.regions do
+    local expected=cfg.terrainExpected[region.id]
+    if not expected then continue end
+    local b=region.bounds
+    local nx,ny,nz=(b[4]-b[1])/4,(b[5]-b[2])/4,(b[6]-b[3])/4
+    local d=T:ReadVoxelChannels(Region3.new(Vector3.new(b[1],b[2],b[3]),Vector3.new(b[4],b[5],b[6])),4,channels)
+    local bytes=buffer.create(nx*ny*nz*6)
+    local at=0;local grid={}
+    for x=1,nx do
+        grid[x]={}
+        for z=1,nz do grid[x][z]={h=b[2],grass=false,wet=false} end
+        for y=1,ny do for z=1,nz do
+            local s,w=d.SolidOccupancy[x][y][z],d.LiquidOccupancy[x][y][z]
+            local m=d.SolidMaterial[x][y][z]
+            buffer.writeu16(bytes,at,math.round(s*65535));buffer.writeu16(bytes,at+2,math.round(w*65535))
+            buffer.writeu16(bytes,at+4,m.Value);at+=6
+            local c=grid[x][z]
+            if w>0.02 then c.wet=true end
+            if s>0.02 then c.h=b[2]+(y-1+s)*4;c.grass=m==Enum.Material.Grass end
+        end end
+    end
+    local digest=buffer.tostring(Encoding:Base64Encode(Encoding:ComputeBufferHash(bytes,Enum.HashAlgorithm.Sha256)))
+    assert(digest==expected,"Terrain changed: "..region.id)
+    table.insert(tiles,{id=region.id,b=b,nx=nx,nz=nz,grid=grid})
+end
+table.sort(tiles,function(a,b) return a.id<b.id end)
+assert(#tiles==#plan.placement.regionIds,"Missing terrain tiles")
+local function cell(tile,x,z)
+    local i,j=math.floor((x-tile.b[1])/4)+1,math.floor((z-tile.b[3])/4)+1
+    return tile.grid[i] and tile.grid[i][j]
+end
+local function height(tile,x,z)
+    local gx,gz=(x-tile.b[1])/4+0.5,(z-tile.b[3])/4+0.5
+    local i,j=math.floor(gx),math.floor(gz)
+    if i<1 or i>=tile.nx or j<1 or j>=tile.nz then return nil end
+    local a,c,d,f=tile.grid[i][j],tile.grid[i+1][j],tile.grid[i][j+1],tile.grid[i+1][j+1]
+    for _,v in {a,c,d,f} do if not v.grass or v.wet then return nil end end
+    local tx,tz=gx-i,gz-j
+    return (a.h+(c.h-a.h)*tx)*(1-tz)+(d.h+(f.h-d.h)*tx)*tz
+end
+local function dry(tile,x,z,r)
+    local b=tile.b
+    if x-r<b[1]+4 or x+r>b[4]-4 or z-r<b[3]+4 or z+r>b[6]-4 then return false end
+    local i0,i1=math.floor((x-r-b[1])/4)+1,math.floor((x+r-b[1])/4)+1
+    local j0,j1=math.floor((z-r-b[3])/4)+1,math.floor((z+r-b[3])/4)+1
+    for i=i0,i1 do for j=j0,j1 do
+        local dx,dz=b[1]+(i-0.5)*4-x,b[3]+(j-0.5)*4-z
+        if dx*dx+dz*dz<=(r+2.83)^2 then
+            local c=tile.grid[i] and tile.grid[i][j]
+            if not c or not c.grass or c.wet then return false end
+        end
+    end end
+    return true
+end
+local occupied={}
+local function modelRadius(m)
+    local bb,size=m:GetBoundingBox()
+    local p=m:GetPivot().Position
+    local offset=Vector3.new(bb.Position.X-p.X,0,bb.Position.Z-p.Z).Magnitude
+    return offset+math.sqrt(size.X^2+size.Z^2)/2
+end
+for _,rootName in {"RSSceneBuilder","RSWorldVegetation","RSManagedAssets"} do
+    local root=W:FindFirstChild(rootName)
+    local models=root and (if rootName=="RSManagedAssets" then root else root:FindFirstChild("Models"))
+    if models then for _,m in models:GetChildren() do
+        if m:IsA("Model") then
+            local p=m:GetPivot().Position
+            table.insert(occupied,{x=p.X,z=p.Z,r=modelRadius(m)})
+        end
+    end end
+end
+local existingCount=#occupied
+for _,obj in W:GetDescendants() do
+    if obj:IsA("SpawnLocation") then
+        table.insert(occupied,{x=obj.Position.X,z=obj.Position.Z,r=8})
+    end
+end
+local function spaced(x,z,r)
+    for _,o in occupied do
+        if (x-o.x)^2+(z-o.z)^2<(r+o.r+2)^2 then return false end
+    end
+    return true
+end
+local sources,packRoots={},{}
+for _,spec in plan.assets do
+    local root=packRoots[spec.assetId]
+    if not root then
+        root=Assets:LoadAssetAsync(tonumber(spec.assetId))
+        assert(root:IsA("Model") and root.Parent==nil,"Detached pack required")
+        packRoots[spec.assetId]=root
+    end
+    local cursor=root
+    for _,seg in spec.selector do
+        local nextObj=cursor:GetChildren()[seg.index]
+        assert(nextObj and nextObj.Name==seg.name and nextObj.ClassName==seg.class,"Source selector changed")
+        cursor=nextObj
+    end
+    assert(cursor:IsA("Model"),"Source model required")
+    local model=cursor:Clone()
+    assert(model and model.Parent==nil and #model:GetDescendants()==#cursor:GetDescendants(),"Incomplete clone")
+    local a=audit(model)
+    local _,digest=serialize(model)
+    assert(digest==spec.sourceDigest,"Source digest changed: "..spec.name)
+    fetchDependencies(model,a)
+    model:PivotTo(CFrame.new())
+    local bb,size=model:GetBoundingBox()
+    sources[spec.name]={model=model,digest=digest,radius=modelRadius(model),bottom=bb.Position.Y-size.Y/2,height=size.Y}
+end
+for _,root in packRoots do root:Destroy() end
+local rows,stats={},{}
+local rng=Random.new(plan.seed)
+for _,spec in plan.assets do
+    local n=0
+    local rejected={mask=0,spacing=0,slope=0}
+    local source=sources[spec.name]
+    local p=spec.profile
+    for _=1,2500 do
+        if n>=spec.count then break end
+        local tile=tiles[rng:NextInteger(1,#tiles)]
+        local b=tile.b
+        local x,z=rng:NextNumber(b[1]+20,b[4]-20),rng:NextNumber(b[3]+20,b[6]-20)
+        x,z=math.round(x*10)/10,math.round(z*10)/10
+        local scale=math.round(rng:NextNumber(p.scale[1],p.scale[2])*1000)/1000
+        local yaw=rng:NextInteger(0,359)
+        local radius=source.radius*scale
+        local clearance=math.max(3,radius*0.6)
+        if x*x+z*z<45^2 or not dry(tile,x,z,clearance) then rejected.mask+=1;continue end
+        if not spaced(x,z,radius) then rejected.spacing+=1;continue end
+        local support=p.support*scale
+        local h=height(tile,x,z)
+        local h1,h2,h3,h4=height(tile,x+support,z),height(tile,x-support,z),height(tile,x,z+support),height(tile,x,z-support)
+        if not h or not h1 or not h2 or not h3 or not h4 then rejected.slope+=1;continue end
+        local slope=math.deg(math.atan(math.sqrt(((h1-h2)/(2*support))^2+((h3-h4)/(2*support))^2)))
+        if slope>15 or math.max(h,h1,h2,h3,h4)-math.min(h,h1,h2,h3,h4)>1.5 then rejected.slope+=1;continue end
+        local burial=p.burial*scale
+        assert(burial<source.height*scale*0.45,"Invalid contact profile")
+        n+=1
+        local row={id=string.format("p4-%s-%02d",string.lower(spec.name):gsub("_","-"),n),
+            name=spec.name,assetId=spec.assetId,sourceDigest=spec.sourceDigest,position={x,h-source.bottom*scale-burial,z},
+            groundY=h,yaw=yaw,scale=scale,radius=radius,buriedDepth=burial,supportRadius=support,slope=slope,tile=tile.id}
+        table.insert(rows,row);table.insert(occupied,{x=x,z=z,r=radius})
+    end
+    stats[spec.name]={placed=n,requested=spec.count,rejected=rejected}
+end
+assert(#rows>0 and #rows<=plan.maxNewModels,"Layout budget")
+local function output(r)
+    r.universeId=tostring(game.GameId);r.placeId=tostring(game.PlaceId)
+    return Http:JSONEncode(r)
+end
+if cfg.mode=="preview" then
+    for _,s in sources do s.model:Destroy() end
+    return output({preview=true,rows=rows,stats=stats,existingCount=existingCount,noPlaceWrites=true})
+end
+assert(cfg.mode=="apply" and cfg.confirmStaging==true,"Explicit staging confirmation required")
+local function same(a,b)
+    if typeof(a)~=typeof(b) then return false end
+    if typeof(a)=="number" then return math.abs(a-b)<0.0001 end
+    if typeof(a)~="table" then return a==b end
+    for k,v in a do if not same(v,b[k]) then return false end end
+    for k in b do if a[k]==nil then return false end end
+    return true
+end
+assert(same(rows,cfg.layoutRows) and #rows==plan.maxNewModels,"Layout changed or incomplete")
+local root=Instance.new("Folder");root.Name="RSEnvironmentP4";root:SetAttribute("RSOwner","RSEnvironmentP4V1")
+root:SetAttribute("RSPlanDigest",cfg.planDigest)
+local models=Instance.new("Folder");models.Name="Models";models.Parent=root
+local collisions=Instance.new("Folder");collisions.Name="Collisions";collisions.Parent=root
+local specs={}
+for _,s in plan.assets do specs[s.name]=s end
+local tags=game:GetService("CollectionService")
+for _,row in rows do
+    local spec=specs[row.name]
+    local m=sources[row.name].model:Clone()
+    for _,obj in {m,table.unpack(m:GetDescendants())} do
+        for k in obj:GetAttributes() do obj:SetAttribute(k,nil) end
+        for _,tag in tags:GetTags(obj) do tags:RemoveTag(obj,tag) end
+        if obj:IsA("BasePart") then obj.Anchored=true;obj.CanCollide=false;obj.CanTouch=false;obj.CanQuery=false end
+    end
+    m:ScaleTo(row.scale)
+    m:PivotTo(CFrame.new(table.unpack(row.position))*CFrame.Angles(0,math.rad(row.yaw),0))
+    m.Name=row.id;m:SetAttribute("RSManagedId",row.id);m:SetAttribute("RSAssetId",row.assetId)
+    m:SetAttribute("RSModelDigest",row.sourceDigest);m:SetAttribute("RSSpecies",row.name)
+    m:SetAttribute("RSExpectedGroundY",row.groundY);m:SetAttribute("RSBuriedDepth",row.buriedDepth)
+    m:SetAttribute("RSSupportRadius",row.supportRadius);m.Parent=models
+    local c=spec.profile.collider
+    if c then
+        local part=Instance.new("Part");part.Name=row.id;part.Shape=Enum.PartType.Cylinder
+        local h,r=c.height*row.scale,c.radius*row.scale
+        part.Size=Vector3.new(h,2*r,2*r)
+        part.CFrame=CFrame.new(row.position[1],row.groundY+h/2,row.position[3])*CFrame.Angles(0,0,math.pi/2)
+        part.Transparency=1;part.Anchored=true;part.CanCollide=true;part.CanTouch=false;part.CanQuery=true;part.CastShadow=false
+        part:SetAttribute("RSOwner","RSEnvironmentP4V1");part.Parent=collisions
+    end
+end
+for _,s in sources do s.model:Destroy() end
+local runtime=Instance.new("Script");runtime.Name="RuntimeGroundCheck";runtime.Source=cfg.runtimeSource;runtime.Parent=root
+root.Parent=W
+Assets:SavePlaceAsync({SaveWithoutPublish=false})
+return output({saved=true,models=#rows,colliders=#collisions:GetChildren(),planDigest=cfg.planDigest})

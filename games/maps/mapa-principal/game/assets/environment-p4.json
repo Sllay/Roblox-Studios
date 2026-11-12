@@ -33,8 +33,25 @@
       "role": "tree",
       "visualStatus": "geometry_reviewed",
       "modelKey": "9154d273e0b18a57b560150cffe563476ab63991bd54734e2323d61535004d87",
-      "auditStatus": "pending_exact_v2",
-      "count": 4
+      "auditStatus": "exact_v2_pass",
+      "count": 4,
+      "sourceDigest": "nF0l9I9hAfDhU7B3cpB5qM9exB7AAvzxCt5Vg7JD4dM=",
+      "auditRun": 43181270756,
+      "profile": {
+        "scale": [
+          0.45,
+          0.55
+        ],
+        "burial": 3.5,
+        "support": 2,
+        "collider": {
+          "radius": 1.6,
+          "height": 8
+        },
+        "calibrationStatus": "provisional"
+      },
+      "rightsStatus": "user_acquired_reported_platform_use_review_pending",
+      "importAuthorized": false
     },
     {
       "assetId": "79689531752352",
@@ -64,8 +81,25 @@
       "role": "tree",
       "visualStatus": "geometry_reviewed",
       "modelKey": "658a919c8a178cabb24812df223b98799ae418a21de7dbbf5643ff07b0eefe1f",
-      "auditStatus": "pending_exact_v2",
-      "count": 4
+      "auditStatus": "exact_v2_pass",
+      "count": 4,
+      "sourceDigest": "iGYayNDLOjAZFFbar+5ve8neTklTXHsEb90YPqw2q6E=",
+      "auditRun": 43181270756,
+      "profile": {
+        "scale": [
+          0.55,
+          0.7
+        ],
+        "burial": 3.5,
+        "support": 2,
+        "collider": {
+          "radius": 1.3,
+          "height": 8
+        },
+        "calibrationStatus": "provisional"
+      },
+      "rightsStatus": "user_acquired_reported_platform_use_review_pending",
+      "importAuthorized": false
     },
     {
       "assetId": "79689531752352",
@@ -95,8 +129,22 @@
       "role": "bush",
       "visualStatus": "geometry_reviewed",
       "modelKey": "39f2ad0bb8ca42c38bd1acb302ff4fc044279c13bac6cda602768ae5aa2c106a",
-      "auditStatus": "pending_exact_v2",
-      "count": 8
+      "auditStatus": "exact_v2_pass",
+      "count": 8,
+      "sourceDigest": "udcOFfB1lpmKnD6t4Gj5iWFkcdOW6LCdmH98guLtISg=",
+      "auditRun": 43181270756,
+      "profile": {
+        "scale": [
+          0.75,
+          0.95
+        ],
+        "burial": 0.7,
+        "support": 1.5,
+        "collider": null,
+        "calibrationStatus": "provisional"
+      },
+      "rightsStatus": "user_acquired_reported_platform_use_review_pending",
+      "importAuthorized": false
     },
     {
       "assetId": "80215326989711",
@@ -110,14 +158,39 @@
       ],
       "role": "rock",
       "visualStatus": "user_selected",
-      "auditStatus": "static_v1_pass_exact_v2_pending",
-      "count": 8
+      "auditStatus": "exact_v2_pass",
+      "count": 8,
+      "sourceDigest": "rZcqzI88GVL86l75hTREzIaWgSbyv7MSE7HKCefH97k=",
+      "auditRun": 43181270756,
+      "profile": {
+        "scale": [
+          0.035,
+          0.06
+        ],
+        "burial": 10,
+        "support": 18,
+        "collider": null,
+        "calibrationStatus": "provisional"
+      },
+      "rightsStatus": "user_acquired_reported_platform_use_review_pending",
+      "importAuthorized": false
     }
   ],
   "placement": {
-    "status": "pending_exact_geometry_and_terrain_preview",
+    "status": "preview_pending",
     "preserveExisting": true,
-    "terrainWrites": false
+    "terrainWrites": false,
+    "regionIds": [
+      "chunk--1--1",
+      "chunk--1-0",
+      "chunk--1-1",
+      "chunk-0--1",
+      "chunk-0-0",
+      "chunk-0-1",
+      "chunk-1--1",
+      "chunk-1-0",
+      "chunk-1-1"
+    ]
   },
   "importAuthorized": false
 }

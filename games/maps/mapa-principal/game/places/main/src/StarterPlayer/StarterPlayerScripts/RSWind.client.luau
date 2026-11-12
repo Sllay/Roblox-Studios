@@ -8,9 +8,9 @@ local module=ReplicatedStorage:WaitForChild("RSWindPolicy",15)
 if not module or not module:IsA("ModuleScript") then return end
 local Policy=require(module)
 local player=Players.LocalPlayer
-local roots={RSSceneBuilder="RSSceneBuilderV1",RSWorldVegetation="RSWorldV1",RSEnvironmentP4="RSEnvironmentP4V1"}
+local roots={RSSceneBuilder="RSSceneBuilderV1",RSWorldVegetation="RSWorldV1",RSEnvironmentP4="RSEnvironmentP4V1",RSManagedAssets="RobloxStudiosStaticV1"}
 local asset="79689531752352"
-local speciesSet={Tree_01=true,Tree_08=true,Tree_03=true,Tree_12=true,Bush_01=true,Bush_03=true}
+local canopies:{[string]:string}={Tree_01="Canopy_01",Tree_08="Canopy_08",Tree_03="Canopy_03",Tree_12="Canopy_12",Bush_01="Bush_Canopy_01",Bush_03="Bush_Canopy_03"}
 type Entry={part:MeshPart,rest:CFrame,pivot:Vector3,phase:number,bush:boolean,active:boolean}
 local entries:{[MeshPart]:Entry}={}
 local function eligible(part:MeshPart): boolean
@@ -21,25 +21,26 @@ local function scan()
     for name,owner in roots do
         local root=Workspace:FindFirstChild(name)
         if not root or root:GetAttribute("RSOwner")~=owner then continue end
-        local models=root:FindFirstChild("Models")
+        local models=if name=="RSManagedAssets" then root else root:FindFirstChild("Models")
         if not models then continue end
         for _,model in models:GetChildren() do
             if not model:IsA("Model") or model:GetAttribute("RSAssetId")~=asset then continue end
             local species=model:GetAttribute("RSSpecies")
             if typeof(species)~="string" then
                 local id=model:GetAttribute("RSManagedId")
-                if typeof(id)=="string" then
+                if id=="yasu-tree-01" then species="Tree_01"
+                elseif typeof(id)=="string" then
                     local lower=string.match(id,"^forest%-([a-z]+_%d+)%-%d+$")
                     if lower then species=string.upper(string.sub(lower,1,1))..string.sub(lower,2) end
                 end
             end
-            if typeof(species)~="string" or not speciesSet[species] then continue end
+            if typeof(species)~="string" or not canopies[species] then continue end
             local bush=string.sub(species,1,4)=="Bush"
             for _,obj in model:GetChildren() do
                 if not obj:IsA("MeshPart") or not eligible(obj) then continue end
-                -- Only explicit canopy names + the authored foliage material.
+                -- Only audited per-species canopy names + authored foliage material.
                 -- Unknown mesh layouts fail closed; never infer from height alone.
-                if not string.match(obj.Name,"^Canopy_%d+$") or obj.Material~=Enum.Material.LeafyGrass then continue end
+                if obj.Name~=canopies[species] or obj.Material~=Enum.Material.LeafyGrass then continue end
                 seen[obj]=true
                 if not entries[obj] then
                     local rest=obj.CFrame
