@@ -102,6 +102,7 @@ def build(base,native,inventory,rules):
     require(set(byspecies)==set(rules["speciesTargets"]),"Unhandled vegetation species")
     requests.sort(key=lambda q:({"pine":0,"tree":1,"bush":2}[kind(q[0])],q[2],q[0]["species"]))
     planned=[];reject=Counter();tileCounts=defaultdict(Counter)
+    nearest={p:math.inf for p in pool}
     for src,reuse,i in requests:
         k=kind(src);sp=src["species"];id=src["id"] if reuse else "s06-"+sp.lower().replace("_","-").replace(".","-")+"-"+str(i+1).zfill(3)
         # Reserve final pine size now so S06.3 does not invalidate the layout.
@@ -109,15 +110,20 @@ def build(base,native,inventory,rules):
         factor=rng.uniform(1.0,1.0) if k!="pine" else rng.uniform(64,76)/height
         radius=src["radius"]*factor
         d=src["collider"]["diameter"]*factor if src.get("collider") else 0
-        tr=max(2,d/2+1) if k!="bush" else max(2,radius*.55)
+        offset=math.hypot(src["collider"]["shaft"][0]-src["pivot"][0],src["collider"]["shaft"][2]-src["pivot"][2])*factor if src.get("collider") else 0
+        tr=max(2,d/2+1+offset) if k!="bush" else max(2,radius*.55)
         cr=radius*.62
         footprint=max(2,min(8,src["support"]*factor))
         require(0<footprint<=8 and d<=12,"Geometry profile range")
         def score(p):
             x,z,h,t=p;cluster=min(distance(p,a) for a in anchors[t])
             if k=="pine":return -h + tileCounts[t][k]*1.5 + cluster*.002
-            # Prefer well distributed tiles, but with local groves/clearings.
-            return tileCounts[t][k]*12+cluster*.38+rng.random()*13
+            # Two out of three broadleaf placements fill coverage gaps; one
+            # grows a local grove. Keep small random variation deterministic.
+            if k=="tree":
+                grove=i%3==0
+                return tileCounts[t][k]*9+cluster*(.23 if grove else .08)-min(nearest[p],65 if grove else 105)*(.32 if grove else .86)+rng.random()*7
+            return tileCounts[t][k]*12+cluster*.24+rng.random()*13
         ordered=sorted(pool,key=score)
         chosen=None
         for x,z,h,t in ordered:
@@ -138,13 +144,38 @@ def build(base,native,inventory,rules):
             out["collider"]=cylinder_profile(cx,cz,g,g+height*factor,d)
             out["collider"]["group"]=col["group"]
             trunk.add({"id":id,"x":x,"z":z,"radius":tr});canopy.add({"id":id,"x":x,"z":z,"radius":cr})
+            for p in pool:nearest[p]=min(nearest[p],distance(p,(x,z)))
         else:shrubs.add({"id":id,"x":x,"z":z,"radius":tr})
         tileCounts[t][k]+=1;planned.append(out)
     require(len({p["id"] for p in planned})==len(planned),"Duplicate destination identity")
     new=sum(p["sourceRecords"]+(2 if p["kind"]!="bush" else 0) for p in planned if p["action"]=="clone")+3
     budget=inventory_budget(base,[]);projected=base["total"]+budget["knownCloneEstimate"]+new
     result={"schemaVersion":1,"loadedVersion":base["loadedVersion"],"stateDigest":base["stateDigest"],"nativeSnapshotDigest":native["snapshotDigest"],"rulesDigest":sha(rules),"rows":planned,"preserveIds":[r["id"] for r in rows if not r["playable"] or kind(r)=="fixed"],"resourceReplanIds":[r["id"] for r in rows if r.get("resourceType") in ("Stone","Stick")],"noPlaceWrites":True,"applyAuthorized":False,"budget":{"current":base["total"],"newRecordsEstimate":new,"cloneEstimate":budget["knownCloneEstimate"],"projected":projected,"limit":5000,"reserve":500,"allowed":projected<=4500},"metrics":{"before":dict(Counter(kind(r) for r in old)),"after":dict(Counter(p["kind"] for p in planned)),"beforeTiles":counts_by_tile(old,idx),"afterTiles":counts_by_tile(planned,idx),"beforeCoverage35":coverage(idx,old),"afterCoverage35":coverage(idx,planned),"pineMinGround":min(p["groundY"] for p in planned if p["kind"]=="pine"),"broadleafMaxGround":max(p["groundY"] for p in planned if p["kind"]=="tree"),"pineThreshold":high,"pineHeightRange":[min(p["physicalHeight"] for p in planned if p["kind"]=="pine"),max(p["physicalHeight"] for p in planned if p["kind"]=="pine")],"rejections":dict(reject)},"limitations":["Preview only: resource positions must be replanned against final vegetation; no physical/visual client proof.","Canopy spacing is a conservative circle policy, not exact leaf intersection; trunk offsets and terrain contact need native coupled preview.","Existing Yasu width calibration remains provisional. Pine scaling is a reservation for S06.3.","New root requires wind and diagnostic consumer migration before publishing; no existing root deleted in this step."]}
+    validate_layout(base,idx,rows,result,rules)
     return result,idx
+
+def validate_layout(base,idx,rows,plan,rules):
+    old={r["id"]:r for r in rows if r["playable"] and kind(r)!="fixed"}
+    ids={r["id"] for r in plan["rows"] if r["action"]=="reuse"}
+    require(ids==set(old),"Every existing playable vegetation ID must be reused exactly once")
+    require(Counter(r["species"] for r in plan["rows"])==Counter(rules["speciesTargets"]),"Species targets")
+    require(plan["metrics"]["afterCoverage35"]>=plan["metrics"]["beforeCoverage35"]+.08,"Coverage must improve by at least eight percentage points")
+    require(plan["metrics"]["pineMinGround"]>plan["metrics"]["broadleafMaxGround"],"Pine altitude priority")
+    require(all(64<=r["physicalHeight"]<=76 for r in plan["rows"] if r["kind"]=="pine"),"Pine size reservation")
+    occ=fixed_occupancy(base,rows);canopy=Occupancy()
+    for r in plan["rows"]:
+        x,y,z=r["position"];rad=r["groundRadius"]
+        require(not occ.blocked(x,z,rad),"Final ground overlap")
+        require(tile_of(idx,x,z)==r["tile"] and idx.dry(x,z,r["supportRadius"]) and idx.water_clearance(x,z,8)>=8,"Final terrain mask")
+        s=idx.support(x,z,r["supportRadius"])
+        require(s is not None and abs(s["height"]-r["groundY"])<1e-7 and s["slope"]<=rules["maxSlope"] and s["relief"]<=rules["maxRelief"],"Final support")
+        occ.add({"id":r["id"],"x":x,"z":z,"radius":rad})
+        if r["kind"]!="bush":
+            cr=r["canopySpacingRadius"];require(not canopy.blocked(x,z,cr),"Final canopy overlap")
+            canopy.add({"id":r["id"],"x":x,"z":z,"radius":cr})
+            col=r["collider"];require(abs(col["top"]-r["groundY"]-r["physicalHeight"])<1e-7,"Collider height")
+    require(not plan["applyAuthorized"] and plan["noPlaceWrites"],"Preview only")
+
 def render(idx,rows,plan,out):
     im=Image.new("RGB",(768,768),(29,34,39))
     d=ImageDraw.Draw(im)

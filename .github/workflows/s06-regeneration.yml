@@ -1,4 +1,4 @@
-name: S06.2 unified vegetation preview
+name: S06.2 unified vegetation preview v2
 on:
   push:
     branches: [main]
