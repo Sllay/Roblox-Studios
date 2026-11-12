@@ -143,6 +143,7 @@ local function managed()
     if root then assert(root:IsA("Folder") and root:GetAttribute("RSOwner")=="RobloxStudiosStaticV1","Managed root collision") end
     return root
 end
+-- __RS_PLACEMENT__
 if cfg.mode=="verify" then
     local root=managed()
     assert(root,"Managed root missing")
@@ -155,19 +156,27 @@ if cfg.mode=="verify" then
     local expected=CFrame.new(cfg.position[1],cfg.position[2],cfg.position[3])*CFrame.Angles(0,math.rad(cfg.yaw),0)
     local actual={model:GetPivot():GetComponents()}
     for i,v in {expected:GetComponents()} do assert(math.abs(v-actual[i])<0.02,"Pivot mismatch") end
+    local placementEvidence=nil
+    if cfg.placementProfile then
+        local detached=model:Clone()
+        placementEvidence=solvePlacement(detached,cfg.position[1],cfg.position[3],cfg.yaw,cfg.placementProfile)
+        detached:Destroy()
+        assert(math.abs(placementEvidence.position[2]-cfg.position[2])<0.05,"Ground verification differs")
+    end
+    local controlReport=nil
     if cfg.verifyLab then
         local control=game:GetService("ReplicatedStorage"):FindFirstChild("RSLightingLabSource")
         local lab=game:GetService("StarterPlayer"):WaitForChild("StarterPlayerScripts"):FindFirstChild("RSLightingLab")
         assert(control and control:IsA("Model") and control:GetAttribute("RSOwner")=="RSLightingLabV1" and control:GetAttribute("RSModelDigest")==cfg.digest,"Control missing")
         assert(lab and lab:IsA("LocalScript") and lab:GetAttribute("RSOwner")=="RSLightingLabV1" and lab.Source==cfg.clientSource,"Lab script missing or changed")
         assert(model:GetAttribute("RSPlacementProfile")~=nil,"Placement profile missing")
+        controlReport=audit(control)
     end
     local report=audit(model)
     local fetched=fetchDependencies(model,report)
     local blob,digest=serialize(model)
-    return output({verified=true,audit=report,dependencyFetch=fetched,persistedDigest=digest,serializedBase64=buffer.tostring(Encoding:Base64Encode(blob))})
+    return output({verified=true,audit=report,placement=placementEvidence,controlAudit=controlReport,dependencyFetch=fetched,persistedDigest=digest,serializedBase64=buffer.tostring(Encoding:Base64Encode(blob))})
 end
--- __RS_PLACEMENT__
 local model=cloneSelected()
 local report=audit(model)
 local fetched=fetchDependencies(model,report)

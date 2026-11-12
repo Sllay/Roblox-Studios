@@ -17,3 +17,9 @@ class PlacementTests(unittest.TestCase):
         p=self.profile();p["mountType"]="sit_on_ground"
         with self.assertRaises(ValueError):validate_profile(p)
         p["buryDepthStuds"]=0;self.assertEqual(validate_profile(p),p)
+
+    def test_custom_anchor(self):
+        p=self.profile();p["contactRule"]="local_anchor"
+        with self.assertRaises(ValueError):validate_profile(p)
+        p["contactLocal"]=[1,-2,3]
+        self.assertEqual(validate_profile(p),p)

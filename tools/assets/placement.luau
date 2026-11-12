@@ -7,7 +7,12 @@ local function solvePlacement(model: Model, x: number, z: number, yaw: number, p
     local depth=profile.buryDepthStuds
     assert(typeof(depth)=="number" and depth>=0 and depth<=64,"Invalid burial")
     assert(profile.mountType~="sit_on_ground" or depth==0,"Invalid sit profile")
-    assert(profile.contactRule=="bounds_bottom_plus_burial","Unsupported contact rule")
+    assert(profile.contactRule=="bounds_bottom_plus_burial" or profile.contactRule=="local_anchor","Unsupported contact rule")
+    local anchor=Vector3.zero
+    if profile.contactRule=="local_anchor" then
+        assert(typeof(profile.contactLocal)=="table" and #profile.contactLocal==3,"Missing contact anchor")
+        anchor=CFrame.Angles(0,math.rad(yaw),0):VectorToWorldSpace(Vector3.new(profile.contactLocal[1],profile.contactLocal[2],profile.contactLocal[3]))
+    end
     local ground={}
     for _,name in profile.groundNames do
         local obj=Workspace:FindFirstChild(name)
@@ -25,7 +30,7 @@ local function solvePlacement(model: Model, x: number, z: number, yaw: number, p
     local hitNames={}
     local normals={}
     for _,offset in {{0,0},{radius,0},{-radius,0},{0,radius},{0,-radius}} do
-        local hit=Workspace:Raycast(Vector3.new(x+offset[1],profile.rayTop,z+offset[2]),Vector3.new(0,profile.rayBottom-profile.rayTop,0),params)
+        local hit=Workspace:Raycast(Vector3.new(x+anchor.X+offset[1],profile.rayTop,z+anchor.Z+offset[2]),Vector3.new(0,profile.rayBottom-profile.rayTop,0),params)
         assert(hit,"Ground missing under support footprint")
         assert(hit.Material~=Enum.Material.Water,"Water is not ground")
         local slope=math.deg(math.acos(math.clamp(hit.Normal.Y,-1,1)))
@@ -43,7 +48,9 @@ local function solvePlacement(model: Model, x: number, z: number, yaw: number, p
     local bottom=bb.Position.Y-size.Y/2
     model:PivotTo(old)
     assert(depth<size.Y*0.5,"Burial exceeds half model height")
-    local y=heights[1]-bottom-depth
+    local contactOffset=if profile.contactRule=="local_anchor" then anchor.Y else bottom
+    assert(contactOffset>=bottom-0.05 and contactOffset<=bottom+size.Y,"Contact anchor outside vertical model bounds")
+    local y=heights[1]-contactOffset-depth
     return {position={x,y,z},groundY=heights[1],bottomOffset=bottom,
-        contactY=heights[1],buriedDepth=depth,groundPaths=hitNames,supportHeights=heights,supportNormals=normals}
+        contactY=heights[1]-depth,buriedDepth=depth,bottomBelowGround=heights[1]-(y+bottom),contactOffset=contactOffset,groundPaths=hitNames,supportHeights=heights,supportNormals=normals}
 end

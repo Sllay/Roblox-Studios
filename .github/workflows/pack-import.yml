@@ -4,7 +4,7 @@ on:
     inputs:
       operation:
         type: choice
-        options: [audit, apply]
+        options: [audit, placement-probe, apply]
         default: audit
       game:
         type: string
@@ -21,6 +21,15 @@ on:
       plan:
         type: string
         default: tree-01-p1.json
+      x:
+        type: string
+        default: '40'
+      z:
+        type: string
+        default: '-18'
+      yaw:
+        type: string
+        default: '0'
       confirm_staging:
         type: boolean
         default: false
@@ -31,7 +40,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   pack:
-    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation == 'audit' || (inputs.operation == 'apply' && inputs.confirm_staging)) }}
+    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation == 'audit' || inputs.operation == 'placement-probe' || (inputs.operation == 'apply' && inputs.confirm_staging)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -50,12 +59,17 @@ jobs:
           PLACE: ${{ inputs.place || 'main' }}
           ASSET: ${{ inputs.asset_id || '79689531752352' }}
           SELECTOR: ${{ inputs.selector || 'tree-01-selector.json' }}
+          X: ${{ inputs.x }}
+          Z: ${{ inputs.z }}
+          YAW: ${{ inputs.yaw }}
           PLAN: ${{ inputs.plan || 'tree-01-p1.json' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           [[ "$GAME" =~ ^[a-z][a-z0-9-]*$ && "$SELECTOR" =~ ^[a-z0-9-]+\.json$ && "$PLAN" =~ ^[a-z0-9-]+\.json$ ]] || exit 1
           if [[ "$OP" == audit ]]; then
             python tools/assets/pack_import.py audit --game "$GAME" --place "$PLACE" --asset-id "$ASSET" --selector "games/maps/$GAME/docs/$SELECTOR"
+          elif [[ "$OP" == placement-probe ]]; then
+            python tools/assets/pack_import.py placement-probe --game "$GAME" --place "$PLACE" --asset-id "$ASSET" --selector "games/maps/$GAME/docs/$SELECTOR" --position "$X" 0 "$Z" --yaw "$YAW"
           else
             python tools/assets/pack_import.py apply --game "$GAME" --place "$PLACE" --plan "games/maps/$GAME/game/assets/imports/$PLAN" --confirm-staging
           fi

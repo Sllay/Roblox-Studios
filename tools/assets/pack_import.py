@@ -151,6 +151,7 @@ def apply(t,key,p,output):
     v["offlinePbr"]=inspect_blob(v)
     validate_evidence(v)
     write(output/"verification.json",v)
+    if not v.get("placement") or not equivalent(v["placement"]["position"],p["position"]):raise WorkspaceError("Persisted ground placement mismatch")
     if not v["verified"] or v["loadedVersion"]<=before["loadedVersion"] or not equivalent(p["evidence"]["audit"],v["audit"]):
         raise WorkspaceError("Persisted model differs from reviewed source")
     # Authoring maps and engine-packed references must remain identical.
