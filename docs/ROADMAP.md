@@ -20,7 +20,10 @@
 
 - [x] Inventário de packs e extração individual em memória (29 Models, Bush_01 e Tree_01 clonados e serializados).
 - [x] Seletor de submodelo, auditoria PBR e plano versionado de importação integrados.
-- [ ] Conferir visual e desempenho da Tree_01 no cliente mobile; não houve teste de renderização do cliente.
+- [x] Tree_01 renderizada no cliente mobile, screenshots confirmam materiais visíveis; usuário identificou ponta do tronco exposta e brilho excessivo.
+- [x] P1.1 perfil de assentamento, raycasts e correção staging v3; verificação estrutural completa.
+- [x] P1.2/P1.3 laboratório visual A/B e controles locais de iluminação instalados e verificados estruturalmente.
+- [ ] Validar visualmente enterramento de 6 studs e executar diagnóstico do brilho pelo cliente; FPS não medido.
 
 - [x] Memória visual de 23 plantas com descrição baseada em miniaturas reais de componentes; consulta offline, correspondência de evidências e atualização controlada.
 - [ ] Preview texturizado de submodelos e confirmação de cores PBR por planta.

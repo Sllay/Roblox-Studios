@@ -19,7 +19,7 @@
         "verificationRun": "43131666285",
         "userAcquired": true
       },
-      "note": "Whole pack not imported. Tree_01 individually audited, imported and persistence verified in staging version 2; remaining models require individual audit.",
+      "note": "Whole pack not imported. Tree_01 individually audited, imported, rendered on mobile and repositioned in staging version 3; PBR preserved, lighting diagnosis pending client. Remaining models require individual audit and placement profile.",
       "auditSummary": {
         "instances": 1096,
         "inspectedInstancesLimit": 350,
@@ -45,10 +45,11 @@
           "name": "Tree_01",
           "managedId": "yasu-tree-01",
           "environment": "staging",
-          "version": 2,
-          "verificationRun": "43134660278",
+          "version": 3,
+          "verificationRun": "43137024725",
           "status": "staging_verified",
-          "clientVisualValidation": "pending"
+          "clientVisualValidation": "version 2 rendered; version 3 calibration and lighting lab pending",
+          "burialDepthStuds": 6
         }
       ]
     }

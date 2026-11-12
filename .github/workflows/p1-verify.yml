@@ -1,8 +1,6 @@
 name: P1 verification resume (read only)
 on:
   workflow_dispatch:
-  push:
-    paths: ['games/maps/mapa-principal/docs/p1-verify-once.trigger']
 permissions:
   contents: read
   actions: read

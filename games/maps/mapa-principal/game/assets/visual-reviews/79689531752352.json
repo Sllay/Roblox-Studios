@@ -293,12 +293,40 @@
       "stagingImport": {
         "universeId": "10769712441",
         "placeId": "93428341652658",
-        "version": 2,
+        "version": 3,
         "managedId": "yasu-tree-01",
-        "run": "43134660278",
-        "clientVisualValidation": "rendered_with_placement_and_lighting_issues",
+        "run": "43137024725",
+        "clientVisualValidation": "v2 rendered; v3 burial and lighting lab pending mobile retest",
         "plan": "game/assets/imports/tree-01-p1.json",
-        "dependencyFetch": "source textures and MeshPart instances successful; serialized PBR references preserved"
+        "dependencyFetch": "source textures and MeshPart instances successful; serialized PBR references preserved",
+        "previousVersion": 2,
+        "placement": {
+          "position": [
+            40,
+            1.9986114501953125,
+            -18
+          ],
+          "groundY": 0,
+          "buriedDepth": 6,
+          "supportPoints": 5,
+          "status": "engine_verified_visual_calibration_pending"
+        },
+        "lightingLab": {
+          "status": "installed_verified_source_pending_client",
+          "baseline": {
+            "brightness": 3,
+            "exposure": 0,
+            "specular": 1,
+            "diffuse": 1,
+            "clockTime": 14.5,
+            "style": "Soft",
+            "sunRays": true,
+            "bloom": true
+          },
+          "control": "RSLightingLabSource",
+          "script": "RSLightingLab",
+          "materialReferencesPreserved": true
+        }
       },
       "placementProfile": {
         "schemaVersion": 1,
