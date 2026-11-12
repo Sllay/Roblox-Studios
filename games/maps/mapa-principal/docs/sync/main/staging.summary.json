@@ -6,16 +6,16 @@
     "Clouds": 1,
     "Decal": 1,
     "DepthOfFieldEffect": 1,
-    "Folder": 22,
-    "InputAction": 270,
-    "InputBinding": 630,
-    "InputContext": 36,
-    "LocalScript": 3,
+    "Folder": 24,
+    "InputAction": 300,
+    "InputBinding": 700,
+    "InputContext": 40,
+    "LocalScript": 4,
     "MeshPart": 276,
     "Model": 138,
-    "ModuleScript": 487,
-    "Part": 78,
-    "Script": 39,
+    "ModuleScript": 542,
+    "Part": 83,
+    "Script": 43,
     "Sky": 1,
     "SpawnLocation": 63,
     "StarterCharacterScripts": 1,
@@ -26,10 +26,10 @@
     "Texture": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 9,
+  "loadedVersion": 10,
   "placeId": "93428341652658",
   "schemaVersion": 1,
-  "stateDigest": "cde27b98ca109b39af27acc6f946391cc7b4467b81614c9851f1e8f765c51e70",
+  "stateDigest": "164650009277020f7e8d76b151fa7cc9ca4c81044909983f4013c7854b017c68",
   "terrain": {
     "terrain:chunk--1--1": {
       "bounds": [
@@ -57,6 +57,20 @@
       "digest": "eDh/OYlTMufPWRSJX2LRmt2oj0Ss7/9veuJfrv3CusU=",
       "id": "chunk--1--2",
       "solidVoxels": 79241,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--1--3": {
+      "bounds": [
+        -384,
+        -32,
+        -896,
+        -128,
+        112,
+        -640
+      ],
+      "digest": "+bc3WdBkV2YQFPw9XhCntcBVgWm0D4aB3mgBim2Rd1U=",
+      "id": "chunk--1--3",
+      "solidVoxels": 96172,
       "waterVoxels": 0
     },
     "terrain:chunk--1-0": {
@@ -101,6 +115,20 @@
       "solidVoxels": 87575,
       "waterVoxels": 0
     },
+    "terrain:chunk--1-3": {
+      "bounds": [
+        -384,
+        -32,
+        640,
+        -128,
+        112,
+        896
+      ],
+      "digest": "Q3y6a1efIL9o9YUrESPqZhRmrQYIXNPrrn7IS1y38qU=",
+      "id": "chunk--1-3",
+      "solidVoxels": 107398,
+      "waterVoxels": 0
+    },
     "terrain:chunk--2--1": {
       "bounds": [
         -640,
@@ -127,6 +155,20 @@
       "digest": "71mNvPb57wcv+oSmU8QwEB43iyz+zuG0PCBvyN6scnw=",
       "id": "chunk--2--2",
       "solidVoxels": 91803,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--2--3": {
+      "bounds": [
+        -640,
+        -32,
+        -896,
+        -384,
+        112,
+        -640
+      ],
+      "digest": "33Mi5Le8ytDykCgYylY91bsLiSHg1PHmHDN6PtOiMjk=",
+      "id": "chunk--2--3",
+      "solidVoxels": 107266,
       "waterVoxels": 0
     },
     "terrain:chunk--2-0": {
@@ -171,6 +213,118 @@
       "solidVoxels": 94146,
       "waterVoxels": 0
     },
+    "terrain:chunk--2-3": {
+      "bounds": [
+        -640,
+        -32,
+        640,
+        -384,
+        112,
+        896
+      ],
+      "digest": "SRW5TQsIWlFaSShLM5rxIlTGOLFkhs4ZCSsD0R46cQ8=",
+      "id": "chunk--2-3",
+      "solidVoxels": 102445,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--3--1": {
+      "bounds": [
+        -896,
+        -32,
+        -384,
+        -640,
+        112,
+        -128
+      ],
+      "digest": "3+sGWdFvaljyBAPAOxsL+T3SzfS5qi0s+hPN8t/Hs94=",
+      "id": "chunk--3--1",
+      "solidVoxels": 101688,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--3--2": {
+      "bounds": [
+        -896,
+        -32,
+        -640,
+        -640,
+        112,
+        -384
+      ],
+      "digest": "gdfup8zQjaU8XwN1EmpveUHhnORYEAQEwaeE3gv4WJ4=",
+      "id": "chunk--3--2",
+      "solidVoxels": 97161,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--3--3": {
+      "bounds": [
+        -896,
+        -32,
+        -896,
+        -640,
+        112,
+        -640
+      ],
+      "digest": "HYGrTIpBDsGIibiqT+pjoeemcUzU8SoJeVemw2xF4FY=",
+      "id": "chunk--3--3",
+      "solidVoxels": 98805,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--3-0": {
+      "bounds": [
+        -896,
+        -32,
+        -128,
+        -640,
+        112,
+        128
+      ],
+      "digest": "8fU312VfCxFyW0L0Y0Jx7/qc91/2i5eYbp+kO3vIVyI=",
+      "id": "chunk--3-0",
+      "solidVoxels": 102486,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--3-1": {
+      "bounds": [
+        -896,
+        -32,
+        128,
+        -640,
+        112,
+        384
+      ],
+      "digest": "9tUpwvOFfME314Q4xITak2E9MhQTRDabCGteU9fwfKA=",
+      "id": "chunk--3-1",
+      "solidVoxels": 99971,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--3-2": {
+      "bounds": [
+        -896,
+        -32,
+        384,
+        -640,
+        112,
+        640
+      ],
+      "digest": "K/KzM2lbtaGDjBPEZxHnPRtw93vE5lUQwyxS7VVgiO0=",
+      "id": "chunk--3-2",
+      "solidVoxels": 102883,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--3-3": {
+      "bounds": [
+        -896,
+        -32,
+        640,
+        -640,
+        112,
+        896
+      ],
+      "digest": "Gd9dU0/KeqLsq7xgto2mfMwUdf1NNFOMBk91L8ziJLE=",
+      "id": "chunk--3-3",
+      "solidVoxels": 105311,
+      "waterVoxels": 0
+    },
     "terrain:chunk-0--1": {
       "bounds": [
         -128,
@@ -197,6 +351,20 @@
       "digest": "F0pTnH/TxhpRIcGOfVKzfqDV++rl3Jduj+JvYuIa3CM=",
       "id": "chunk-0--2",
       "solidVoxels": 87254,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-0--3": {
+      "bounds": [
+        -128,
+        -32,
+        -896,
+        128,
+        112,
+        -640
+      ],
+      "digest": "VPxYRUeSTSlHfKHDhEZCoRl4aQExWp0Q3njO5dNhcTw=",
+      "id": "chunk-0--3",
+      "solidVoxels": 104007,
       "waterVoxels": 0
     },
     "terrain:chunk-0-0": {
@@ -241,6 +409,20 @@
       "solidVoxels": 88146,
       "waterVoxels": 0
     },
+    "terrain:chunk-0-3": {
+      "bounds": [
+        -128,
+        -32,
+        640,
+        128,
+        112,
+        896
+      ],
+      "digest": "l6fWXEjeaVoXDy6V9YaCjyKEnncQxpiDxkT58nujDpI=",
+      "id": "chunk-0-3",
+      "solidVoxels": 99820,
+      "waterVoxels": 0
+    },
     "terrain:chunk-1--1": {
       "bounds": [
         128,
@@ -269,6 +451,20 @@
       "solidVoxels": 78138,
       "waterVoxels": 0
     },
+    "terrain:chunk-1--3": {
+      "bounds": [
+        128,
+        -32,
+        -896,
+        384,
+        112,
+        -640
+      ],
+      "digest": "UKGAo8VK9OyFbp3LYOlUev+57f7i9BCHbcFxp2+HTkA=",
+      "id": "chunk-1--3",
+      "solidVoxels": 98263,
+      "waterVoxels": 0
+    },
     "terrain:chunk-1-0": {
       "bounds": [
         128,
@@ -278,10 +474,10 @@
         112,
         128
       ],
-      "digest": "d5qxj3yL1VCx6Z6U5mAAldao62fm7uy+lbwGQFqYoZY=",
+      "digest": "5OhtKGN1lP2EECMpeUuBFtvFXmCBh5Z7hVTeTWbr5mQ=",
       "id": "chunk-1-0",
-      "solidVoxels": 54179,
-      "waterVoxels": 462
+      "solidVoxels": 54323,
+      "waterVoxels": 529
     },
     "terrain:chunk-1-1": {
       "bounds": [
@@ -292,10 +488,10 @@
         112,
         384
       ],
-      "digest": "k4NDh7zL8A3KOG/Lp6XX0g7M/E28AYIuPlkyJeGBEds=",
+      "digest": "yqpbSP2bNy6uYbht2rhqyB+Jl2bQKQDYXqc+VZnrZf8=",
       "id": "chunk-1-1",
-      "solidVoxels": 59525,
-      "waterVoxels": 423
+      "solidVoxels": 61498,
+      "waterVoxels": 580
     },
     "terrain:chunk-1-2": {
       "bounds": [
@@ -309,6 +505,20 @@
       "digest": "I9nj+amYtfzHqVtLDr7l+mt5olYtbLu557ibh779mUQ=",
       "id": "chunk-1-2",
       "solidVoxels": 85542,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-1-3": {
+      "bounds": [
+        128,
+        -32,
+        640,
+        384,
+        112,
+        896
+      ],
+      "digest": "j44zWy4gIyaB3OxZnDclu8q6Kw/gVF4cIk2MXZYc4ss=",
+      "id": "chunk-1-3",
+      "solidVoxels": 101855,
       "waterVoxels": 0
     },
     "terrain:chunk-2--1": {
@@ -337,6 +547,20 @@
       "digest": "r+plXQjxBpkh5DOc/356ebfCEwko0/M3bma5uzuRp28=",
       "id": "chunk-2--2",
       "solidVoxels": 85769,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-2--3": {
+      "bounds": [
+        384,
+        -32,
+        -896,
+        640,
+        112,
+        -640
+      ],
+      "digest": "DnW/F6Cwro+WBFAltNHHdDJnnEAsFkOxrtUqfgbFxN0=",
+      "id": "chunk-2--3",
+      "solidVoxels": 102000,
       "waterVoxels": 0
     },
     "terrain:chunk-2-0": {
@@ -380,9 +604,121 @@
       "id": "chunk-2-2",
       "solidVoxels": 92425,
       "waterVoxels": 0
+    },
+    "terrain:chunk-2-3": {
+      "bounds": [
+        384,
+        -32,
+        640,
+        640,
+        112,
+        896
+      ],
+      "digest": "VK8zP+xj5/FRoidW2C8uGzkPzzU/vgSai66Cdh3jAuc=",
+      "id": "chunk-2-3",
+      "solidVoxels": 101886,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-3--1": {
+      "bounds": [
+        640,
+        -32,
+        -384,
+        896,
+        112,
+        -128
+      ],
+      "digest": "2fcDILzMLCXeWsBeTY8GzXHMIr9LF04kslmmwVPrSmc=",
+      "id": "chunk-3--1",
+      "solidVoxels": 100826,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-3--2": {
+      "bounds": [
+        640,
+        -32,
+        -640,
+        896,
+        112,
+        -384
+      ],
+      "digest": "ZLgADzyoAGA4TBKVnvKTYVhu+8fdmjSdPxzyBO3RWYs=",
+      "id": "chunk-3--2",
+      "solidVoxels": 111275,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-3--3": {
+      "bounds": [
+        640,
+        -32,
+        -896,
+        896,
+        112,
+        -640
+      ],
+      "digest": "eDbZUS/B0BbkJkiLRIZPbhCUK4ELFhQITgRPhnclMBM=",
+      "id": "chunk-3--3",
+      "solidVoxels": 103853,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-3-0": {
+      "bounds": [
+        640,
+        -32,
+        -128,
+        896,
+        112,
+        128
+      ],
+      "digest": "kfwohQWeWY2AEXYFz7bYCkESLT31dzdawNhfVDmVwXI=",
+      "id": "chunk-3-0",
+      "solidVoxels": 105369,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-3-1": {
+      "bounds": [
+        640,
+        -32,
+        128,
+        896,
+        112,
+        384
+      ],
+      "digest": "/XLxG7QPb4jj0sSXzD4GL3SHNBVDiZ7DCIeW/Ggnk54=",
+      "id": "chunk-3-1",
+      "solidVoxels": 105676,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-3-2": {
+      "bounds": [
+        640,
+        -32,
+        384,
+        896,
+        112,
+        640
+      ],
+      "digest": "ilh+isMhdhYlKqEzXlaH1NWyCCGqKCzQ4CsaXQgsnnE=",
+      "id": "chunk-3-2",
+      "solidVoxels": 106878,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-3-3": {
+      "bounds": [
+        640,
+        -32,
+        640,
+        896,
+        112,
+        896
+      ],
+      "digest": "zDvpBNHpE0T2FU5KqgGToKy5Sw2Vn2PUBHIZtzTIgvk=",
+      "id": "chunk-3-3",
+      "solidVoxels": 102899,
+      "waterVoxels": 0
     }
   },
-  "total": 2330,
+  "total": 2501,
   "universeId": "10769712441",
   "workspaceRoots": [
     {
@@ -420,6 +756,12 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSCentralSpawns\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "RSCentralSpawns"
+    },
+    {
+      "class": "Folder",
+      "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSWorldBoundary\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "RSWorldBoundary"
     }
   ]
 }
