@@ -522,6 +522,20 @@
       "produces": [
         "imported model structure proof"
       ]
+    },
+    {
+      "id": "runtime.owned_canopy_vertex_probe",
+      "entry": "tools/owned_canopy_vertex_probe.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Verify owned canopy EditableMesh vertex displacement and exact restoration in disposable staging session; no client or Place publication claim",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "owned vertex proof",
+        "update timing"
+      ]
     }
   ]
 }
