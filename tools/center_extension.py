@@ -10,6 +10,7 @@ def main():
     ap.add_argument("mode",choices=["preview","apply","verify","rollback"])
     ap.add_argument("--confirm-staging",action="store_true")
     ap.add_argument("--evidence",type=Path)
+    ap.add_argument("--reviewed-after",type=Path,help="Explicit previously observed post-save inventory for read-only reconciliation")
     a=ap.parse_args()
     games,targets=load_all();t=resolve(games,targets,"mapa-principal","main","staging")
     require((t["universeId"],t["placeId"])==("10769712441","93428341652658"),"Wrong target")
@@ -17,6 +18,7 @@ def main():
     p=read(ROOT/"games/maps/mapa-principal/game/terrain/center-extension.json")
     out=ROOT/"dist/center-extension"
     base=read(state_path(t))
+    require(a.mode in ("preview","apply") or a.evidence is not None,"Evidence required")
     baseline=base if a.mode in ("preview","apply") else read(a.evidence)["baseline"]
     rows=[]
     for name in ("Baseplate","SpawnLocation"):
@@ -60,11 +62,20 @@ def main():
     require(v["verified"] is True and v["loadedVersion"]>p["expectedVersion"],"Persistence failed")
     after=capture(t,key);write(out/"after.json",after)
     delta=reconcile(baseline,after);write(out/"changes.json",delta)
-    # All previously observed objects outside archived defaults must be equal.
+    # The migration initially failed closed on an unrelated engine-default delta.
+    # A later read-only review may acknowledge only the exact recorded state;
+    # never waive unexpected changes during apply.
+    reviewed=read(a.reviewed_after) if a.mode=="verify" and a.reviewed_after else None
+    if reviewed:
+        require(after==reviewed,"Reviewed post-save inventory changed")
+    unexpected=[]
     for k,r in baseline["records"].items():
         path=r.get("path",[])
         if r.get("service")=="Workspace" and path and path[0]["name"] in ("Baseplate","SpawnLocation"):continue
-        require(after["records"].get(k)==r,"Unrelated record changed: "+k)
+        if after["records"].get(k)!=r:unexpected.append(k)
+    if unexpected:
+        require(reviewed is not None,"Unrelated record changed: "+unexpected[0])
+        print("REVIEWED_UNRELATED_DELTA",json.dumps(unexpected),flush=True)
     require(after["loadedVersion"]==v["loadedVersion"],"Version changed")
     print("CENTER_VERIFIED",json.dumps(v),flush=True)
 if __name__=="__main__":

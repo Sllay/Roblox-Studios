@@ -43,3 +43,7 @@
 - [x] P2.2 aceite visual mobile: usuário aprovou a distribuição da vegetação em staging v6 e confirmou que areia e trilhas foram respeitadas (screenshot IMG_0930.jpeg).
 - [ ] Validação específica do assentamento individual, colisões dos troncos, FPS e resultados do RuntimeGroundCheck; não bloqueia início de P3.
 - [ ] P2 evolução: generalizar regiões, assets e planos além do piloto; integrar edição incremental P3.
+
+- [x] P3 Scene Sync dedicated workflow and persisted inventory: staging v6, 1,182 instances, stable second read, three-way comparison and mandatory stale-write guard.
+- [x] P3 center migration saved v7, independent terrain/spawn/archive verification; whole-service diff identified default StarterPlayer additions, read-only reconciliation pending.
+- [x] Generic Scene Patch CLI and workflow: scoped add/edit/move/adopt/archive/restore/create script, tests; real generic patch test pending.
