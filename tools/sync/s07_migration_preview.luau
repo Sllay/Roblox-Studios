@@ -19,7 +19,8 @@ local old=F:GetChildren()
 for _,m in old do m.Parent=nil end
 local created={}
 local counts={Branch=0,Stone=0}
-for _,r in cfg.rows do
+for _,a in cfg.rows do
+    local r={id=a[1],kind=a[2],tile=a[3],source=a[4],size=a[5],frame=a[6],groundY=a[7],radius=a[8]}
     local m=templates[r.source]:Clone()
     local p=m:FindFirstChildWhichIsA("MeshPart",true)
     assert(p and #m:GetDescendants()==1,"Single mesh source")
