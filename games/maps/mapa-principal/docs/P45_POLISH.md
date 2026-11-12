@@ -20,3 +20,6 @@ A correção de vento foi publicada e verificada no run 43257825675, sync dd359a
 
 ## S05 published v15
 Run 43270255683, sync b07058b. 108 stones, 108 sticks, 3 Bush_03 moves, 94 tree profiles (188 parts) and wind diagnostics persisted; 49 terrain hashes unchanged. 105 preimages stored and isolated inverse proved, one save. 129 Python tests and Luau/LSP/Quality Gate passed. 86 Yasu widths provisional, yellow pine relocation excluded, runtime contact/visibility/collision/slide/foliage and performance not yet accepted. Staging play link https://www.roblox.com/games/93428341652658/ . Next S06 client development lab and manual mobile checklist. No production.
+
+## Mobile v15 feedback and S06.1
+User found no small stones/sticks, pines too small/low, vegetation too sparse and apparent overlapping old/new generation, large rocks noncolliding, wind needs branch deformation; old panel unchanged. v16 published diagnostic lab and server collision policy (small resources collide with environment, not living player; large rocks solid). No geometry regeneration yet. Next S06.2 unified vegetation preview, S06.3 pines/resources, S06.4 wind deformation, S06.5 compatibility, S06.6 acceptance. See NEXT_STEPS.md. Mobile v16 verification pending.

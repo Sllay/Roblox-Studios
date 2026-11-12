@@ -120,3 +120,5 @@ A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (
 - [x] S04 Physics Builder core verified: 94 detached rounded collider profiles (93 replacements + 1 new), 162 foliage candidates, 126 tests and native preview 43268376332. 86 Yasu widths provisional, mobile physics/visual pending. Next S05 coupled transaction and publication gates; no Place writes.
 
 - [x] S05 integrated P4.5 staged v15: 216 resources, 3 bush moves, 94 rounded tree profiles, wind diagnostics, 49 terrain regions unchanged. One save, independent verification and scoped inverse proof; run 43270255683, sync b07058b. Mobile/runtime, yellow pine altitude and default-module cleanup pending. Next S06.
+
+- [x] S06.1 v16 staging: RS Development Lab and server player-only small-resource collision policy; WorldRoot matrix probe passed, scripts persisted and 49 terrain hashes unchanged. Run 43278748110. Client tests pending; S06.2 unified vegetation/density plan next. See revised S06 sequence in NEXT_STEPS.md.

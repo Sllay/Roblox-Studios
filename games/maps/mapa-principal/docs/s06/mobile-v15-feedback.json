@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "version": 15,
+  "source": "user mobile test",
+  "acceptance": "failed_visual_environment",
+  "observations": {
+    "smallResources": "not found during map exploration",
+    "pines": "too short, dry and green, lower than some broadleaf trees",
+    "vegetation": "too sparse; possible competing old/new distributions",
+    "largeRocks": "player passes through",
+    "wind": "need stronger sway and upper canopy branch deformation",
+    "panel": "still old P4 Tests"
+  },
+  "forensic": {
+    "stoneCount": 108,
+    "stickCount": 108,
+    "stoneHeightRange": [
+      0.47790036105430844,
+      1.032889143513283
+    ],
+    "stickHeightRange": [
+      0.09878956945606888,
+      0.22625960503024795
+    ],
+    "stoneWithin100Center": 6,
+    "stickWithin100Center": 2,
+    "causeProven": false
+  },
+  "nextVersion": 16,
+  "geometryChanged": false,
+  "runtimeAcceptancePending": true
+}

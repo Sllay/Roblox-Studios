@@ -403,6 +403,21 @@
         "publication receipt",
         "persisted verification"
       ]
+    },
+    {
+      "id": "runtime.resource_collision_probe",
+      "entry": "tools/s06_diagnostics.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Probe WorldRoot resource/player collision filtering in disposable staging session, prepare reviewed diagnostic scripts; not runtime client simulation",
+      "requires": [
+        "scene.sync",
+        "quality.gate"
+      ],
+      "produces": [
+        "physics matrix evidence",
+        "script plan"
+      ]
     }
   ]
 }
