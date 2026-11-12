@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"tools/assets"))
-from intake import load_intake, run_batch
+from intake import load_intake, run_batch, pending_rows
 from pipeline import WorkspaceError
 
 class P4IntakeTests(unittest.TestCase):
@@ -45,3 +45,9 @@ class P4IntakeTests(unittest.TestCase):
             result=run_batch({}, "test", [{"id":"1"},{"id":"2"}], Path(d),fake)
             self.assertEqual([r["status"] for r in result],["inventory_truncated","inventory_observed"])
             self.assertTrue(all(not r["importAuthorized"] for r in result))
+
+    def test_resume_skips_observed_and_retries_rate_limit(self):
+        rows=[{"id":"1","auditEvidence":{"inventoryStatus":"inventory_observed"}},
+              {"id":"2","auditEvidence":{"inventoryStatus":"inventory_truncated"}},
+              {"id":"3","auditEvidence":{"inventoryStatus":"rate_limited"}},{"id":"4"}]
+        self.assertEqual([r["id"] for r in pending_rows(rows)],["3","4"])

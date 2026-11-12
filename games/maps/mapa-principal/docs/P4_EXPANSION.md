@@ -18,3 +18,6 @@ Server publishes epoch + 180/60-second settings once; clients derive synchronize
 4. Run mobile scenario: full 240s cycle, sun/moon visibility, join mid-cycle, respawn, river/lake traversal, wall/corners/ceiling, props/physics, FPS p50/p95 and memory, VFX budgets. Expand typed coverage and runtime tests. Retain raycast diagnostic limitation as open. No production publish.
 
 This change is repository implementation/intake only; not a remote Roblox save or asset approval.
+
+## Real audit — run 43179500783
+Seven packs loaded at staging v10; complete hierarchy counts, bounded model/component details, static root policy and first eligible model audit, source hashes and heuristic signals recorded in game/assets/audits/p4-intake-43179500783.json. Rock and VFX Ball passed initial static policy; neither has import authorization. Other packs require extraction and dedicated code/VFX/UI/PBR review. HTTP 429 stopped at Lowpoly Fruits Vegetables; resume skips recorded inventories and checks the five outstanding assets. A source hash and heuristic signal list are not a security approval. No external code executed, no Place writes.

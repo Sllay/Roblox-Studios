@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "game": "mapa-principal",
+  "environment": "staging",
+  "runId": 43179500783,
+  "loadedVersion": 10,
+  "sourceCommit": "a76bcfb433291c2abf867da3e1358c9a0e36e455",
+  "scope": "detached inventory, static root and one candidate policy; script hashes and heuristic signals only, not full code review or dependency approval",
+  "noPlaceWrites": true,
+  "codeExecuted": false,
+  "complete": false,
+  "results": [
+    {
+      "id": "15261348321",
+      "status": "inventory_observed",
+      "models": 0,
+      "scripts": 0,
+      "components": 235,
+      "classes": {
+        "Part": 106,
+        "Attachment": 70,
+        "Folder": 13,
+        "ParticleEmitter": 235
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [
+          "Instance budget exceeded",
+          "Disallowed class: ParticleEmitter",
+          "Disallowed class: Attachment"
+        ],
+        "allowed": false,
+        "parts": 82
+      },
+      "sampleAudit": null,
+      "codeReview": [],
+      "codeReviewTruncated": false,
+      "modelCandidates": []
+    },
+    {
+      "id": "9204066145",
+      "status": "inventory_observed",
+      "models": 1,
+      "scripts": 5,
+      "components": 6,
+      "classes": {
+        "RemoteEvent": 1,
+        "Script": 3,
+        "Part": 3,
+        "SpotLight": 1,
+        "WeldConstraint": 4,
+        "ObjectValue": 31,
+        "Weld": 1,
+        "Sound": 1,
+        "SpecialMesh": 1,
+        "CFrameValue": 60,
+        "Tool": 1,
+        "LocalScript": 2
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [
+          "Disallowed class: Tool",
+          "Disallowed class: LocalScript",
+          "Embedded code: LocalScript",
+          "Disallowed class: Script",
+          "Embedded code: Script",
+          "Disallowed class: RemoteEvent",
+          "Disallowed class: WeldConstraint",
+          "Disallowed class: SpotLight",
+          "Disallowed class: ObjectValue",
+          "Disallowed class: CFrameValue"
+        ],
+        "allowed": false,
+        "parts": 3
+      },
+      "sampleAudit": null,
+      "codeReview": [
+        {
+          "sourceBytes": 433,
+          "name": "Client",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "LocalScript",
+          "sha256": "uhJTgNeNjOrAJRQBbHC1mz4WyC0X89VMMgsrg4Lqavg=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 1473,
+          "name": "Server",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "Script",
+          "sha256": "DlT7jHuUK/rTwU4+xVq3OnFWIDxfygPPYbE1N1PLGh4=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 438,
+          "name": "WeldBackup",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "LocalScript",
+          "sha256": "e560UET/UuWn3MGKdMiGAMeTMRDw8FbkEaH72mN/N2E=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 438,
+          "name": "Weld",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "Script",
+          "sha256": "e560UET/UuWn3MGKdMiGAMeTMRDw8FbkEaH72mN/N2E=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 1416,
+          "name": "Script",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "Script",
+          "sha256": "iTbSVz4byYjRJ6ORLgsKojxTHRfsp5MtTfrnjYzNm/4=",
+          "sourceReadable": true
+        }
+      ],
+      "codeReviewTruncated": false,
+      "modelCandidates": [
+        {
+          "name": "Punishment stick",
+          "parts": 3,
+          "pbr": 0,
+          "eligible": false
+        }
+      ]
+    },
+    {
+      "id": "80215326989711",
+      "status": "inventory_observed",
+      "models": 1,
+      "scripts": 0,
+      "components": 0,
+      "classes": {
+        "MeshPart": 1,
+        "Model": 1
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [],
+        "allowed": true,
+        "parts": 1
+      },
+      "sampleAudit": {
+        "name": "Rock",
+        "parts": 1,
+        "inspectionComplete": true,
+        "issues": [],
+        "allowed": true,
+        "selector": [
+          {
+            "class": "Model",
+            "index": 1,
+            "name": "Rock"
+          }
+        ]
+      },
+      "codeReview": [],
+      "codeReviewTruncated": false,
+      "modelCandidates": [
+        {
+          "name": "Rock",
+          "parts": 1,
+          "pbr": 0,
+          "eligible": true
+        }
+      ]
+    },
+    {
+      "id": "103581254866679",
+      "status": "inventory_observed",
+      "models": 0,
+      "scripts": 3,
+      "components": 3,
+      "classes": {
+        "Camera": 1,
+        "Script": 1,
+        "ModuleScript": 2,
+        "SurfaceAppearance": 1,
+        "MeshPart": 2,
+        "NumberPose": 1
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": false,
+        "issues": [
+          "Disallowed class: Script",
+          "Embedded code: Script",
+          "Disallowed class: ModuleScript",
+          "Embedded code: ModuleScript",
+          "Disallowed class: NumberPose",
+          "Disallowed class: Camera",
+          "SurfaceAppearance texture dependencies not fully inspectable in Open Cloud"
+        ],
+        "allowed": false,
+        "parts": 2
+      },
+      "sampleAudit": null,
+      "codeReview": [
+        {
+          "sourceBytes": 6800,
+          "name": "LightConfig",
+          "importAuthorized": false,
+          "signals": [
+            "require"
+          ],
+          "class": "Script",
+          "sha256": "aZwmPpa5Puzrradhz0XxVDAfSna19Uur/ivnjehndnc=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 6575,
+          "name": "Type",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "ModuleScript",
+          "sha256": "kEhskJ2N1b+xxFo2mIwkBcFdT/VQuHwyuqYHyi/FaxU=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 4353,
+          "name": "EasyConfiguration",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "ModuleScript",
+          "sha256": "BMR3ZFK3fr8R8z0wXDbP7+CIjmh2DTUHWcpgL0synBU=",
+          "sourceReadable": true
+        }
+      ],
+      "codeReviewTruncated": false,
+      "modelCandidates": []
+    },
+    {
+      "id": "7564537285",
+      "status": "inventory_observed",
+      "models": 6,
+      "scripts": 0,
+      "components": 32,
+      "classes": {
+        "Decal": 32,
+        "DialogChoice": 1,
+        "Part": 12,
+        "MeshPart": 200,
+        "SpecialMesh": 5,
+        "WeldConstraint": 1,
+        "Folder": 2,
+        "UnionOperation": 2,
+        "Weld": 14,
+        "Model": 6,
+        "BoolValue": 1,
+        "NumberValue": 3,
+        "IntValue": 1,
+        "Dialog": 1
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [
+          "Disallowed class: Weld",
+          "Unsupported content URI",
+          "Disallowed class: UnionOperation",
+          "Disallowed class: IntValue",
+          "Disallowed class: BoolValue",
+          "Disallowed class: NumberValue",
+          "Disallowed class: Dialog",
+          "Disallowed class: DialogChoice",
+          "Disallowed class: WeldConstraint",
+          "Part budget exceeded",
+          "Dependency budget exceeded"
+        ],
+        "allowed": false,
+        "parts": 214
+      },
+      "sampleAudit": {
+        "name": "Ball",
+        "parts": 2,
+        "inspectionComplete": true,
+        "issues": [],
+        "allowed": true,
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "VFX"
+          },
+          {
+            "class": "Model",
+            "index": 56,
+            "name": "Ball"
+          }
+        ]
+      },
+      "codeReview": [],
+      "codeReviewTruncated": false,
+      "modelCandidates": [
+        {
+          "name": "Ball",
+          "parts": 2,
+          "pbr": 0,
+          "eligible": true
+        },
+        {
+          "name": "Red Explosion",
+          "parts": 4,
+          "pbr": 0,
+          "eligible": true
+        },
+        {
+          "name": "Blue Explosion",
+          "parts": 4,
+          "pbr": 0,
+          "eligible": true
+        },
+        {
+          "name": "skill2",
+          "parts": 5,
+          "pbr": 0,
+          "eligible": true
+        },
+        {
+          "name": "skill8",
+          "parts": 13,
+          "pbr": 0,
+          "eligible": true
+        },
+        {
+          "name": "skill2",
+          "parts": 5,
+          "pbr": 0,
+          "eligible": false
+        }
+      ]
+    },
+    {
+      "id": "99176447965360",
+      "status": "inventory_observed",
+      "models": 0,
+      "scripts": 0,
+      "components": 125,
+      "classes": {
+        "Decal": 125,
+        "Camera": 1,
+        "TextLabel": 20,
+        "Part": 177,
+        "UIStroke": 20,
+        "Folder": 17,
+        "SurfaceGui": 20
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [
+          "Instance budget exceeded",
+          "Disallowed class: SurfaceGui",
+          "Disallowed class: TextLabel",
+          "Disallowed class: UIStroke",
+          "Part budget exceeded",
+          "Dependency budget exceeded"
+        ],
+        "allowed": false,
+        "parts": 163
+      },
+      "sampleAudit": null,
+      "codeReview": [],
+      "codeReviewTruncated": false,
+      "modelCandidates": []
+    },
+    {
+      "id": "130425813530814",
+      "status": "inventory_observed",
+      "models": 1,
+      "scripts": 4,
+      "components": 92,
+      "classes": {
+        "UIPadding": 92,
+        "CanvasGroup": 4,
+        "MeshPart": 36,
+        "Folder": 2,
+        "InputContext": 2,
+        "Weld": 35,
+        "UIScale": 74,
+        "TextButton": 12,
+        "UIStroke": 100,
+        "Sound": 2,
+        "ImageLabel": 88,
+        "Camera": 1,
+        "Script": 2,
+        "LocalScript": 2,
+        "UICorner": 92,
+        "RemoteFunction": 2,
+        "TextLabel": 86,
+        "UIListLayout": 76,
+        "ScrollingFrame": 4,
+        "InputAction": 18,
+        "ScreenGui": 2,
+        "Model": 1,
+        "TextBox": 2,
+        "Frame": 112,
+        "UISizeConstraint": 2,
+        "InputBinding": 40
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [
+          "Instance budget exceeded",
+          "Disallowed class: Weld",
+          "Disallowed class: Script",
+          "Embedded code: Script",
+          "Disallowed class: InputContext",
+          "Disallowed class: InputAction",
+          "Disallowed class: InputBinding",
+          "Disallowed class: ScreenGui",
+          "Disallowed class: Sound",
+          "Disallowed class: CanvasGroup",
+          "Disallowed class: Frame",
+          "Disallowed class: TextLabel",
+          "Disallowed class: UICorner",
+          "Disallowed class: UISizeConstraint",
+          "Disallowed class: TextButton",
+          "Disallowed class: UIStroke",
+          "Disallowed class: ImageLabel",
+          "Disallowed class: UIScale",
+          "Disallowed class: ScrollingFrame",
+          "Disallowed class: UIListLayout",
+          "Disallowed class: UIPadding",
+          "Disallowed class: TextBox",
+          "Disallowed class: RemoteFunction",
+          "Disallowed class: LocalScript",
+          "Embedded code: LocalScript"
+        ],
+        "allowed": false,
+        "parts": 1
+      },
+      "sampleAudit": null,
+      "codeReview": [
+        {
+          "sourceBytes": 5655,
+          "name": "Runtime",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "Script",
+          "sha256": "PgnXdpndH8B8FWEgwXlYYB9c4OXG0av0e6up4od3x7k=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 35652,
+          "name": "ScreenBuilder",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "LocalScript",
+          "sha256": "irEAhrnObQ7grk/qs5Oar/qQDRiPDgvH2Mfmcjyc1eQ=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 5655,
+          "name": "Runtime",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "Script",
+          "sha256": "YntVvkN5XcPjJkHF3hO7NILAdNkv4+Jk6FYaqJWZMXk=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 35652,
+          "name": "ScreenBuilder",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "LocalScript",
+          "sha256": "9inwCIWrrUH5DLGG/W0xg+BPBox1YDiIaDrQHJlFCDc=",
+          "sourceReadable": true
+        }
+      ],
+      "codeReviewTruncated": false,
+      "modelCandidates": [
+        {
+          "name": "Model",
+          "parts": 36,
+          "pbr": 0,
+          "eligible": false
+        }
+      ]
+    }
+  ],
+  "stoppedAt": {
+    "id": "106208631832795",
+    "status": "rate_limited",
+    "diagnostic": "Roblox API HTTP 429: {\"errors\":[{\"code\":0,\"message\":\"\"}]}\n",
+    "nextAction": "Stop the batch; retry later.",
+    "importAuthorized": false
+  }
+}

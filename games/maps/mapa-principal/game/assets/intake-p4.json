@@ -12,8 +12,17 @@
       "kindHint": "vfx",
       "intendedUse": "environment particles",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "requires_component_review",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179500783,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 0,
+        "scripts": 0,
+        "components": 235,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      }
     },
     {
       "id": "9204066145",
@@ -23,8 +32,17 @@
       "kindHint": "prop_or_tool",
       "intendedUse": "stick; no combat behavior approved",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "embedded_code_blocked",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179500783,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 1,
+        "scripts": 5,
+        "components": 6,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      }
     },
     {
       "id": "80215326989711",
@@ -34,8 +52,17 @@
       "kindHint": "static",
       "intendedUse": "natural rock",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "static_policy_initial_pass",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179500783,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 1,
+        "scripts": 0,
+        "components": 0,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      }
     },
     {
       "id": "103581254866679",
@@ -45,8 +72,17 @@
       "kindHint": "mixed",
       "intendedUse": "farm plot, tools and cultivation props",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "embedded_code_blocked",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179500783,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 0,
+        "scripts": 3,
+        "components": 3,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      }
     },
     {
       "id": "7564537285",
@@ -56,8 +92,17 @@
       "kindHint": "vfx",
       "intendedUse": "effects library",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "requires_component_review",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179500783,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 6,
+        "scripts": 0,
+        "components": 32,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      }
     },
     {
       "id": "99176447965360",
@@ -67,8 +112,17 @@
       "kindHint": "ui",
       "intendedUse": "interface icons",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "requires_component_review",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179500783,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 0,
+        "scripts": 0,
+        "components": 125,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      }
     },
     {
       "id": "130425813530814",
@@ -78,8 +132,17 @@
       "kindHint": "static",
       "intendedUse": "food meshes",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "embedded_code_blocked",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179500783,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 1,
+        "scripts": 4,
+        "components": 92,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      }
     },
     {
       "id": "106208631832795",
@@ -90,7 +153,12 @@
       "intendedUse": "food and cultivation props",
       "reviewStatus": "user_selected",
       "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179500783,
+        "inventoryStatus": "rate_limited",
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      }
     },
     {
       "id": "85389927254160",

@@ -67,3 +67,5 @@
 - [ ] P4: 4-stud hex barrier source implemented with bounded GUI pool; stage/verify visual effect, expand vegetation/rocks/vines, validate full cycle and performance; no production promotion.
 
 - [ ] P4 asset intake: first run 43172677254 loaded three assets in staging v10; Particle effects has 235 emitters and was truncated at 128, stopping the old shell loop. Punishment stick contains 5 scripts; Rock contains a MeshPart and no scripts. Revised intake keeps bounded partial results, continues other batches unless cloud/system failure, records static policy and source-risk signals without execution. No imports authorized.
+
+- [x] P4 intake audit resumed successfully through 7/12 assets in run 43179500783: static Rock pass, other packs require individual component/code/PBR review. HTTP 429 stopped at eighth asset; evidence recorded in games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json. Resume mode skips observed assets; no Place writes or import approvals.
