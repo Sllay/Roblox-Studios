@@ -1,0 +1,62 @@
+name: S03 persist plan and verify native resource scale
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s03-checkpoint.trigger']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - uses: actions/download-artifact@v4
+        with:
+          name: s03-resource-plan
+          run-id: 43264800702
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s03
+      - name: Verify actual detached resource scale endpoints
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/assets/resource_geometry_probe.py --plan dist/s03/resource-plan.json --output dist/s03
+      - name: Record immutable preview and evidence
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          from scene_sync import read,write,sha,require
+          from pathlib import Path
+          import shutil
+          root=Path("games/maps/mapa-principal")
+          out=root/"docs/spatial/v14/s03"
+          out.mkdir(parents=True,exist_ok=True)
+          src=Path("dist/s03")
+          p=read(src/"resource-plan.json");g=read(src/"geometry.json")
+          assert p["planDigest"]==sha({k:v for k,v in p.items() if k!="planDigest"})=="fd72ec0575c55a1eda4672a65c2ca03eae969d6e87beb4a56425012329bc5ce6"
+          assert g["planDigest"]==p["planDigest"] and p["noPlaceWrites"] and not p["applyAuthorized"]
+          assert p["stateDigest"]==read(root/"docs/sync/main/staging.summary.json")["stateDigest"]
+          for name in ("resource-plan.json","resource-summary.json","geometry.json"):
+              shutil.copyfile(src/name,out/name)
+          import hashlib
+          write(out/"visual-evidence.json",{"runId":43264800702,"artifactId":13966226164,"thumbnailSha256":{p.stem:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((src/"thumbs").glob("*.png"))},"scope":"official component thumbnails; geometry and wood texture reviewed, not final assembled PBR or mobile appearance","assetReviews":{"stick":"slender branch with irregular small offshoots; source texture wood grain","stone":"faceted irregular small rock","Bush_03":"separate foliage cluster and branching trunk; final color/visibility pending"}})
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/spatial/v14/s03
+          git commit -m "evidence(s03): persist resource layout and native detached scale proof"
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s03-native-geometry
+          path: dist/s03/
+          if-no-files-found: warn

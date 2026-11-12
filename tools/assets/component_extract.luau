@@ -123,5 +123,19 @@ assert(not restored.CanCollide and not restored.CanTouch and not restored.CanQue
 for _,o in clones[1]:GetDescendants() do assert(o:IsA("MeshPart") or o:IsA("SurfaceAppearance"),"Unsafe roundtrip") end
 local report={schemaVersion=1,assetId=cfg.assetId,source=source,status="extracted",geometryStatus=geometryStatus,sourceScripts=scripts,outputClasses={},meshId=meshId,textureId=textureId,size=vec(visual.Size),meshSize=vec(visual.MeshSize),dependencies=deps,digest=digest,serializedBase64=buffer.tostring(Encoding:Base64Encode(blob)),roundtripVerified=true,noPlaceWrites=true,codeExecuted=false,importAuthorized=false}
 for _,o in result:GetDescendants() do table.insert(report.outputClasses,o.ClassName) end
+if cfg.scaleFactors then
+    assert(#cfg.scaleFactors<=8,"Scale sample budget")
+    report.scaledSamples={}
+    for _,factor in cfg.scaleFactors do
+        assert(factor>0 and factor<=2,"Scale sample range")
+        local copy=result:Clone()
+        copy:ScaleTo(copy:GetScale()*factor)
+        local _,bounds=copy:GetBoundingBox()
+        local part=copy:FindFirstChild("Visual")
+        assert(part and part:IsA("MeshPart") and part.MeshId==meshId and part.TextureID==textureId,"Scaled visual changed")
+        table.insert(report.scaledSamples,{factor=factor,bounds=vec(bounds),size=vec(part.Size)})
+        copy:Destroy()
+    end
+end
 clones[1]:Destroy();result:Destroy();root:Destroy()
 return syncResult(report)
