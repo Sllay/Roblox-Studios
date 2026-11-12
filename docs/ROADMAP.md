@@ -39,4 +39,6 @@
 - [ ] P2 continuation: terrain-aware region catalog, multi-feature sculpt editing with baseline, procedural vegetation and collision budgets; dedicated lake traversal and performance tests.
 
 - [x] P2.2 Scene Builder pilot implementation: deterministic vegetation distribution, native voxel material masks, per-species audits, scaled burial and trunk proxies.
-- [ ] P2.2 real staging publication and live mobile validation; edit-time Terrain raycast unavailable, native occupancy interpolation plus live server support diagnostic.
+- [x] P2.2 publicação e verificação estrutural: staging v6, 32 plantas, 20 colisores, PBR preservado e terreno intacto (43140641424).
+- [ ] P2.2 aceite mobile: assentamento das três espécies, colisão dos troncos, trilhas livres, aparência e desempenho; RuntimeGroundCheck ainda não observado em gameplay.
+- [ ] P2 evolução: generalizar regiões, assets e planos além do piloto; integrar edição incremental P3.

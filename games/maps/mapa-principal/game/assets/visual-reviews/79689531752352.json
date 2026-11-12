@@ -75,8 +75,17 @@
         "scripts": 0
       },
       "evidenceKey": "c50d1574fca8e8d53eec51e88d4baa095b71527fe5ef090442ece1451142b6a0",
-      "securityStatus": "not_approved",
-      "importStatus": "not_imported"
+      "securityStatus": "static_policy_v2_passed",
+      "importStatus": "not_imported",
+      "forestPilot": {
+        "version": 6,
+        "count": 12,
+        "sourceDigest": "a6nyYrkF3YlEsDWzkl1PzXmV9ksQqchs0OKZQKjdPMs=",
+        "run": "43140641424",
+        "status": "staging_verified",
+        "placement": "provisional_terrain_scaled",
+        "clientVisualValidation": "pending"
+      }
     },
     {
       "name": "Bush_02",
@@ -352,6 +361,15 @@
         ],
         "calibrationStatus": "verified",
         "note": "User accepted the 6-stud burial on staging v3 at original scale, upright, flat Baseplate. Do not generalize to other models or terrain; ground allowlist staging-specific."
+      },
+      "forestPilot": {
+        "version": 6,
+        "count": 12,
+        "sourceDigest": "MfM7bOoaA6wAmcvhc5ZLLF8IiO4MqPRLbPmuHu4nenA=",
+        "run": "43140641424",
+        "status": "staging_verified",
+        "placement": "provisional_terrain_scaled",
+        "clientVisualValidation": "pending"
       }
     },
     {
@@ -850,8 +868,17 @@
         "scripts": 0
       },
       "evidenceKey": "eca8bf293addbed8d3fb25cf1f507945941b680fc912a53890bab915de7c1607",
-      "securityStatus": "not_approved",
-      "importStatus": "not_imported"
+      "securityStatus": "static_policy_v2_passed",
+      "importStatus": "not_imported",
+      "forestPilot": {
+        "version": 6,
+        "count": 8,
+        "sourceDigest": "N5/fe0P84GTtrhzA+eH89m3a/DaaCzUNfdkda5jn9Xk=",
+        "run": "43140641424",
+        "status": "staging_verified",
+        "placement": "provisional_terrain_scaled",
+        "clientVisualValidation": "pending"
+      }
     },
     {
       "name": "Tree_09",

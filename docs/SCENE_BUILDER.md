@@ -13,3 +13,9 @@ Edit-time Open Cloud raycast on native Terrain returned no support for all sampl
 The region catalog uses material classes and one bounded pilot, not yet a universal multi-region scene manager. The current planner targets one acquired pack; no general arbitrary asset imports or automatic production promotion. Existing terrain is protected by exact digest. Source model count budget <=40, two MeshParts and two SurfaceAppearances per model, tree collider count <=20 in the pilot. This is a pilot budget, not measured performance. For later projects extend the validated plan schema and source review rather than bypassing these checks.
 
 Workflow: `Scene Builder forest pilot (staging)`: preview, apply with baseline_run and explicit confirmation, verify with same baseline. Production untouched.
+
+## Homologação real
+
+Preview 43140490888: 32 plantas (12 Tree_01, 8 Tree_08, 12 Bush_01), 3 fontes auditadas, 3.445 colunas de grama seca, 199 com água e 452 outros materiais. Aplicação 43140641424: staging v5 → v6, 32 modelos, 20 colisores, 64 MeshParts e 64 SurfaceAppearances, nenhum objeto preexistente removido; todas as adições dentro de Workspace.RSSceneBuilder. Verificação independente de todos os modelos e transformações, PBR offline de um exemplar por espécie, mesmo digest do terreno +9jG2LoEvoHDF4Ux6xX9R5w77c96xo21r22RIJsp5Bk=. Plan digest 5ff3b203d19f9ab580ddda047b765e0c48689e6f49c166db1daed2f4eb8a16c1. Workflow final manual-only. RuntimeGroundCheck foi persistido e seu Source conferido, mas ainda não foi observado executando no cliente/servidor de gameplay. Nenhuma medição FPS ou aceite de novos perfis de enterramento e colisão. Produção intacta.
+
+Evidências: https://github.com/Sllay/Roblox-Studios/actions/runs/43140490888 e https://github.com/Sllay/Roblox-Studios/actions/runs/43140641424. O manifesto histórico forest-pilot-v6.json registra posições e origens; não é um plano reaplicável sem o baseline integral da prévia.

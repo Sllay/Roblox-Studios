@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "kind": "historical_verified_scene",
+  "universeId": "10769712441",
+  "placeId": "93428341652658",
+  "loadedVersion": 6,
+  "previewRun": "43140490888",
+  "applyRun": "43140641424",
+  "planDigest": "5ff3b203d19f9ab580ddda047b765e0c48689e6f49c166db1daed2f4eb8a16c1",
+  "terrainDigest": "+9jG2LoEvoHDF4Ux6xX9R5w77c96xo21r22RIJsp5Bk=",
+  "rows": [
+    {
+      "id": "forest-tree_01-01",
+      "species": "Tree_01",
+      "position": [
+        294,
+        23.167518899955002,
+        -78
+      ],
+      "yaw": 62,
+      "scale": 0.8,
+      "groundY": 21.568627450980394,
+      "buriedDepth": 4.8
+    },
+    {
+      "id": "forest-tree_01-02",
+      "species": "Tree_01",
+      "position": [
+        310,
+        27.580932799694587,
+        78
+      ],
+      "yaw": 333,
+      "scale": 0.74,
+      "groundY": 26.101960784313725,
+      "buriedDepth": 4.44
+    },
+    {
+      "id": "forest-tree_01-03",
+      "species": "Tree_01",
+      "position": [
+        218,
+        24.633668745452283,
+        -42
+      ],
+      "yaw": 304,
+      "scale": 0.89,
+      "groundY": 22.854901960784314,
+      "buriedDepth": 5.34
+    },
+    {
+      "id": "forest-tree_01-04",
+      "species": "Tree_01",
+      "position": [
+        130,
+        23.284167863434437,
+        -2
+      ],
+      "yaw": 90,
+      "scale": 0.67,
+      "groundY": 21.945098039215686,
+      "buriedDepth": 4.02
+    },
+    {
+      "id": "forest-tree_01-05",
+      "species": "Tree_01",
+      "position": [
+        190,
+        29.80281301760206,
+        86
+      ],
+      "yaw": 320,
+      "scale": 0.8,
+      "groundY": 28.20392156862745,
+      "buriedDepth": 4.8
+    },
+    {
+      "id": "forest-tree_01-06",
+      "species": "Tree_01",
+      "position": [
+        302,
+        26.379143606447705,
+        -14
+      ],
+      "yaw": 341,
+      "scale": 0.9,
+      "groundY": 24.580392156862747,
+      "buriedDepth": 5.4
+    },
+    {
+      "id": "forest-tree_01-07",
+      "species": "Tree_01",
+      "position": [
+        150,
+        23.395484794167913,
+        -86
+      ],
+      "yaw": 30,
+      "scale": 0.71,
+      "groundY": 21.976470588235294,
+      "buriedDepth": 4.26
+    },
+    {
+      "id": "forest-tree_01-08",
+      "species": "Tree_01",
+      "position": [
+        162,
+        27.712236302693682,
+        70
+      ],
+      "yaw": 174,
+      "scale": 0.79,
+      "groundY": 26.133333333333333,
+      "buriedDepth": 4.74
+    },
+    {
+      "id": "forest-tree_01-09",
+      "species": "Tree_01",
+      "position": [
+        134,
+        25.087055789723117,
+        54
+      ],
+      "yaw": 109,
+      "scale": 0.85,
+      "groundY": 23.388235294117646,
+      "buriedDepth": 5.1
+    },
+    {
+      "id": "forest-tree_01-10",
+      "species": "Tree_01",
+      "position": [
+        134,
+        22.01357962814032,
+        26
+      ],
+      "yaw": 153,
+      "scale": 0.67,
+      "groundY": 20.67450980392157,
+      "buriedDepth": 4.02
+    },
+    {
+      "id": "forest-tree_01-11",
+      "species": "Tree_01",
+      "position": [
+        254,
+        24.744504402011046,
+        -94
+      ],
+      "yaw": 303,
+      "scale": 0.71,
+      "groundY": 23.32549019607843,
+      "buriedDepth": 4.26
+    },
+    {
+      "id": "forest-tree_01-12",
+      "species": "Tree_01",
+      "position": [
+        290,
+        27.204702848546646,
+        22
+      ],
+      "yaw": 14,
+      "scale": 0.85,
+      "groundY": 25.50588235294118,
+      "buriedDepth": 5.1
+    },
+    {
+      "id": "forest-tree_08-01",
+      "species": "Tree_08",
+      "position": [
+        294,
+        28.413919375550513,
+        90
+      ],
+      "yaw": 344,
+      "scale": 0.73,
+      "groundY": 25.490196078431374,
+      "buriedDepth": 2.92
+    },
+    {
+      "id": "forest-tree_08-02",
+      "species": "Tree_08",
+      "position": [
+        198,
+        26.763521423339846,
+        -50
+      ],
+      "yaw": 129,
+      "scale": 0.69,
+      "groundY": 24,
+      "buriedDepth": 2.76
+    },
+    {
+      "id": "forest-tree_08-03",
+      "species": "Tree_08",
+      "position": [
+        258,
+        26.54391358020259,
+        94
+      ],
+      "yaw": 77,
+      "scale": 0.69,
+      "groundY": 23.780392156862746,
+      "buriedDepth": 2.76
+    },
+    {
+      "id": "forest-tree_08-04",
+      "species": "Tree_08",
+      "position": [
+        290,
+        25.199900758032705,
+        -42
+      ],
+      "yaw": 346,
+      "scale": 0.75,
+      "groundY": 22.19607843137255,
+      "buriedDepth": 3
+    },
+    {
+      "id": "forest-tree_08-05",
+      "species": "Tree_08",
+      "position": [
+        150,
+        24.91086955949372,
+        42
+      ],
+      "yaw": 290,
+      "scale": 0.67,
+      "groundY": 22.227450980392156,
+      "buriedDepth": 2.68
+    },
+    {
+      "id": "forest-tree_08-06",
+      "species": "Tree_08",
+      "position": [
+        142,
+        25.426845146627986,
+        -30
+      ],
+      "yaw": 350,
+      "scale": 0.65,
+      "groundY": 22.823529411764707,
+      "buriedDepth": 2.6
+    },
+    {
+      "id": "forest-tree_08-07",
+      "species": "Tree_08",
+      "position": [
+        150,
+        29.789622446695965,
+        90
+      ],
+      "yaw": 147,
+      "scale": 0.58,
+      "groundY": 27.46666666666667,
+      "buriedDepth": 2.32
+    },
+    {
+      "id": "forest-tree_08-08",
+      "species": "Tree_08",
+      "position": [
+        318,
+        25.885090050790822,
+        -70
+      ],
+      "yaw": 286,
+      "scale": 0.69,
+      "groundY": 23.12156862745098,
+      "buriedDepth": 2.76
+    },
+    {
+      "id": "forest-bush_01-01",
+      "species": "Bush_01",
+      "position": [
+        238,
+        22.20339522118662,
+        -62
+      ],
+      "yaw": 123,
+      "scale": 0.83,
+      "groundY": 22.83921568627451,
+      "buriedDepth": 0.83
+    },
+    {
+      "id": "forest-bush_01-02",
+      "species": "Bush_01",
+      "position": [
+        206,
+        25.593457426183363,
+        90
+      ],
+      "yaw": 322,
+      "scale": 0.93,
+      "groundY": 26.305882352941175,
+      "buriedDepth": 0.93
+    },
+    {
+      "id": "forest-bush_01-03",
+      "species": "Bush_01",
+      "position": [
+        186,
+        26.957797354155897,
+        58
+      ],
+      "yaw": 233,
+      "scale": 0.91,
+      "groundY": 27.65490196078431,
+      "buriedDepth": 0.91
+    },
+    {
+      "id": "forest-bush_01-04",
+      "species": "Bush_01",
+      "position": [
+        170,
+        21.261487795511883,
+        -94
+      ],
+      "yaw": 77,
+      "scale": 0.79,
+      "groundY": 21.866666666666667,
+      "buriedDepth": 0.79
+    },
+    {
+      "id": "forest-bush_01-05",
+      "species": "Bush_01",
+      "position": [
+        186,
+        27.09204366609162,
+        -10
+      ],
+      "yaw": 290,
+      "scale": 0.96,
+      "groundY": 27.827450980392157,
+      "buriedDepth": 0.96
+    },
+    {
+      "id": "forest-bush_01-06",
+      "species": "Bush_01",
+      "position": [
+        178,
+        24.994456128139124,
+        -30
+      ],
+      "yaw": 323,
+      "scale": 0.77,
+      "groundY": 25.584313725490198,
+      "buriedDepth": 0.77
+    },
+    {
+      "id": "forest-bush_01-07",
+      "species": "Bush_01",
+      "position": [
+        290,
+        20.21269931494021,
+        -94
+      ],
+      "yaw": 217,
+      "scale": 0.91,
+      "groundY": 20.909803921568628,
+      "buriedDepth": 0.91
+    },
+    {
+      "id": "forest-bush_01-08",
+      "species": "Bush_01",
+      "position": [
+        138,
+        23.93654557732975,
+        70
+      ],
+      "yaw": 159,
+      "scale": 0.82,
+      "groundY": 24.564705882352943,
+      "buriedDepth": 0.82
+    },
+    {
+      "id": "forest-bush_01-09",
+      "species": "Bush_01",
+      "position": [
+        274,
+        22.91803416682225,
+        70
+      ],
+      "yaw": 170,
+      "scale": 0.88,
+      "groundY": 23.5921568627451,
+      "buriedDepth": 0.88
+    },
+    {
+      "id": "forest-bush_01-10",
+      "species": "Bush_01",
+      "position": [
+        274,
+        23.841697452021577,
+        90
+      ],
+      "yaw": 132,
+      "scale": 0.78,
+      "groundY": 24.43921568627451,
+      "buriedDepth": 0.78
+    },
+    {
+      "id": "forest-bush_01-11",
+      "species": "Bush_01",
+      "position": [
+        246,
+        21.484749460407333,
+        -46
+      ],
+      "yaw": 336,
+      "scale": 0.99,
+      "groundY": 22.24313725490196,
+      "buriedDepth": 0.99
+    },
+    {
+      "id": "forest-bush_01-12",
+      "species": "Bush_01",
+      "position": [
+        254,
+        21.474896911920286,
+        -30
+      ],
+      "yaw": 335,
+      "scale": 0.88,
+      "groundY": 22.149019607843137,
+      "buriedDepth": 0.88
+    }
+  ],
+  "note": "Historical record; source audits and exact preview baseline remain in workflow artifact. Do not reapply."
+}
