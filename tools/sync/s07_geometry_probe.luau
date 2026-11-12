@@ -9,7 +9,7 @@ local function hit(x,z)
     local h=W:Raycast(Vector3.new(x,112,z),Vector3.new(0,-144,0),ray)
     if h and h.Instance==T and (h.Material==Enum.Material.Grass or h.Material==Enum.Material.Ground) then return h end
 end
-local function write(region,d) T:WriteVoxelChannels(region,4,d) end
+local function write(region,d) T:WriteVoxelChannels(region,4,{SolidMaterial=d.SolidMaterial,SolidOccupancy=d.SolidOccupancy,LiquidOccupancy=d.LiquidOccupancy}) end
 local out={}
 for _,r in cfg.rows do
     local src=F:FindFirstChild(r.sourceId);assert(src and src:IsA("Model"),"Source")
