@@ -57,7 +57,7 @@ def check_rows(p,r):
         require(a["id"] not in ids and a["id"].startswith("forest-"),"Duplicate identity");ids.add(a["id"])
         require(len(a["position"])==3 and all(type(x) in (int,float) and math.isfinite(x) for x in a["position"]),"Position")
         require(s["scale"][0]<=a["scale"]<=s["scale"][1] and 0<=a["yaw"]<360,"Transform")
-        require(abs(a["buriedDepth"]-s["profile"]["buryDepthStuds"]*a["scale"])<0.01,"Scaled burial")
+        require(abs(a["buriedDepth"]-s["profile"]["buryDepthStuds"]*a["scale"])<0.01 and a["supportMethod"]=="native_voxel_surface_estimate","Scaled burial / support method")
     for k,n in counts.items():require(specs[k]["minCount"]<=n<=specs[k]["count"],"Species count")
     for i,a in enumerate(r["rows"]):
         for b in r["rows"][:i]:
@@ -102,7 +102,7 @@ def main():
     r=json.loads(a.baseline.read_text());check_rows(p,r)
     require(r["plan"]==p and r["universeId"]==t["universeId"] and r["placeId"]==t["placeId"] and r["planDigest"]==digest({"plan":p,"rows":r["rows"],"sources":r["sources"]}),"Preview identity")
     for s in r["sources"].values():validate_evidence(s)
-    opts=dict(rows=r["rows"],sources=r["sources"],planDigest=r["planDigest"])
+    opts=dict(rows=r["rows"],sources=r["sources"],planDigest=r["planDigest"],runtimeSource=(ROOT/"tools/scene_builder_ground.server.luau").read_text())
     if a.operation=="apply":
         require(a.confirm_staging,"Explicit confirmation")
         before=capture(t,key);save(out/"before.json",before)

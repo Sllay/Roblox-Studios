@@ -60,6 +60,39 @@ local function scaledProfile(spec,scale)
     p.maxHeightDeltaStuds=2
     return p
 end
+-- The edit-time cloud session does not expose collision raycasts on this
+-- native Terrain. Use the actual persisted occupancy field, not a guessed
+-- height or the historical generation plan. The live server verifies it.
+local function heightAt(x,z)
+    local gx=(x-b[1])/4+0.5
+    local gz=(z-b[3])/4+0.5
+    local i,j=math.floor(gx),math.floor(gz)
+    assert(i>=1 and i<nx and j>=1 and j<nz,"Outside terrain interpolation domain")
+    local tx,tz=gx-i,gz-j
+    local a,c,d,f=grid[i][j],grid[i+1][j],grid[i][j+1],grid[i+1][j+1]
+    for _,v in {a,c,d,f} do assert(v.material=="Grass" and not v.wet,"Non-grass support") end
+    local y0=a.height+(c.height-a.height)*tx
+    local y1=d.height+(f.height-d.height)*tx
+    return y0+(y1-y0)*tz
+end
+local function solveVoxel(model,x,z,yaw,profile)
+    local radius=profile.supportRadiusStuds
+    local heights={}
+    for _,off in {{0,0},{radius,0},{-radius,0},{0,radius},{0,-radius}} do
+        table.insert(heights,heightAt(x+off[1],z+off[2]))
+    end
+    local slope=math.deg(math.atan(math.sqrt(((heights[2]-heights[3])/(2*radius))^2+((heights[4]-heights[5])/(2*radius))^2)))
+    assert(slope<=profile.maxSlopeDegrees,"Voxel slope exceeds profile")
+    assert(math.max(table.unpack(heights))-math.min(table.unpack(heights))<=profile.maxHeightDeltaStuds,"Voxel support uneven")
+    local old=model:GetPivot()
+    model:PivotTo(CFrame.new(0,0,0)*CFrame.Angles(0,math.rad(yaw),0))
+    local bb,size=model:GetBoundingBox()
+    local bottom=bb.Position.Y-size.Y/2
+    model:PivotTo(old)
+    assert(profile.buryDepthStuds<size.Y*0.5,"Burial exceeds half model height")
+    return {position={x,heights[1]-bottom-profile.buryDepthStuds,z},groundY=heights[1],
+        buriedDepth=profile.buryDepthStuds,bottomOffset=bottom,slope=slope,supportHeights=heights,method="native_voxel_surface_estimate"}
+end
 local function normalized(model,scale)
     local a=audit(model)
     for _,row in a.rows do if row.class=="MeshPart" then
@@ -121,7 +154,7 @@ local function positionCheck(row,model)
     local clone=model:Clone()
     assert(clone,"Clone failed")
     clone:ScaleTo(row.scale)
-    local solved=solvePlacement(clone,row.position[1],row.position[3],row.yaw,p)
+    local solved=solveVoxel(clone,row.position[1],row.position[3],row.yaw,p)
     clone:Destroy()
     assert(equivalent(solved.position,row.position),"Ground changed")
     assert(clearGround(row.position[1],row.position[3],row.clearance),"Ground mask changed")
@@ -155,6 +188,8 @@ if cfg.mode=="verify" then
     local models=root:FindFirstChild("Models")
     local collisions=root:FindFirstChild("Collisions")
     assert(models and collisions and #models:GetChildren()==#cfg.rows,"Scene count mismatch")
+    local liveCheck=root:FindFirstChild("RuntimeGroundCheck")
+    assert(liveCheck and liveCheck:IsA("Script") and liveCheck.Source==cfg.runtimeSource and liveCheck:GetAttribute("RSOwner")=="RSSceneBuilderV1","Runtime check missing")
     local expectedColliders=0
     local samples={}
     for _,row in cfg.rows do
@@ -169,7 +204,7 @@ if cfg.mode=="verify" then
             assert(obj.Anchored and not obj.CanCollide and not obj.CanTouch and not obj.CanQuery,"Visual physics mismatch")
         end end
         local check=m:Clone()
-        local solved=solvePlacement(check,row.position[1],row.position[3],row.yaw,scaledProfile(spec,row.scale))
+        local solved=solveVoxel(check,row.position[1],row.position[3],row.yaw,scaledProfile(spec,row.scale))
         check:Destroy()
         assert(equivalent(solved.position,row.position) and clearGround(row.position[1],row.position[3],row.clearance),"Persisted placement mismatch")
         if not samples[row.species] then
@@ -221,7 +256,7 @@ if cfg.mode=="preview" then
             if not spaced then rejected.spacing+=1;continue end
             local clone=sources[spec.name]:Clone()
             clone:ScaleTo(scale)
-            local ok,solved=pcall(solvePlacement,clone,x,z,yaw,scaledProfile(spec,scale))
+            local ok,solved=pcall(solveVoxel,clone,x,z,yaw,scaledProfile(spec,scale))
             clone:Destroy()
             if not ok then
                 rejected.slope+=1
@@ -231,7 +266,7 @@ if cfg.mode=="preview" then
                 continue
             end
             n+=1
-            table.insert(rows,{id=string.format("forest-%s-%02d",string.lower(spec.name),n),species=spec.name,position=solved.position,groundY=solved.groundY,yaw=yaw,scale=scale,radius=radius,clearance=clearance,buriedDepth=solved.buriedDepth})
+            table.insert(rows,{id=string.format("forest-%s-%02d",string.lower(spec.name),n),species=spec.name,position=solved.position,groundY=solved.groundY,yaw=yaw,scale=scale,radius=radius,clearance=clearance,buriedDepth=solved.buriedDepth,supportMethod=solved.method,slope=solved.slope,bottomOffset=solved.bottomOffset})
         end
         stats[spec.name]={placed=n,rejected=rejected,failureReasons=failureReasons,failureSamples=failureSamples,minimum=spec.minCount}
     end
@@ -257,10 +292,12 @@ for _,row in cfg.rows do
     assert(equivalent(normalized(m,row.scale),sourceAudit(reports[row.species].audit)),"Scaled model changed appearance")
     m.Name=row.id;m:SetAttribute("RSManagedId",row.id);m:SetAttribute("RSAssetId",plan.assetId)
     m:SetAttribute("RSModelDigest",reports[row.species].digest);m:SetAttribute("Biome",spec.biome)
-    m:SetAttribute("RSSelector",Http:JSONEncode(spec.selector));m.Parent=models
+    m:SetAttribute("RSSelector",Http:JSONEncode(spec.selector));m:SetAttribute("RSExpectedGroundY",row.groundY);m:SetAttribute("RSBuriedDepth",row.buriedDepth);m:SetAttribute("RSSupportRadius",spec.profile.supportRadiusStuds*row.scale);m.Parent=models
     collider(row,collisions)
 end
 for _,m in sources do m:Destroy() end
+local runtime=Instance.new("Script")
+runtime.Name="RuntimeGroundCheck";runtime:SetAttribute("RSOwner","RSSceneBuilderV1");runtime.Source=cfg.runtimeSource;runtime.Parent=root
 root.Parent=Workspace
 Assets:SavePlaceAsync({SaveWithoutPublish=false})
 return output({saved=true,models=#cfg.rows,colliders=#collisions:GetChildren(),terrainDigest=terrainDigest,planDigest=cfg.planDigest})
