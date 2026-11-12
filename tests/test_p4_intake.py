@@ -35,3 +35,13 @@ class P4IntakeTests(unittest.TestCase):
             self.assertEqual(result[0]["scripts"],1)
             self.assertEqual(result[0]["components"],3)
             self.assertFalse(result[0]["importAuthorized"])
+
+    def test_partial_inventory_does_not_stop_batch(self):
+        def fake(target,key,asset_id):
+            return {"pack":{"inventoryTruncated":False,"totalModels":0,"scriptsInPack":0,
+                "componentInventory":{"codeExecuted":False,"truncated":asset_id=="1","total":300,
+                    "classes":{"ParticleEmitter":300},"rows":[]}}}
+        with tempfile.TemporaryDirectory() as d:
+            result=run_batch({}, "test", [{"id":"1"},{"id":"2"}], Path(d),fake)
+            self.assertEqual([r["status"] for r in result],["inventory_truncated","inventory_observed"])
+            self.assertTrue(all(not r["importAuthorized"] for r in result))

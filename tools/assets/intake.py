@@ -35,13 +35,18 @@ def run_batch(target,key,rows,output,inspect_fn=inspect_mixed):
                 raise WorkspaceError("Mixed inventory evidence missing")
             result={"id":asset_id,"status":"inventory_truncated" if pack["inventoryTruncated"] or mixed["truncated"] else "inventory_observed",
                     "models":pack["totalModels"],"scripts":pack["scriptsInPack"],
-                    "components":mixed["total"],"classes":mixed["classes"],"importAuthorized":False}
+                    "components":mixed["total"],"classes":mixed["classes"],"importAuthorized":False,
+                    "loadedVersion":report.get("loadedVersion"),"staticAudit":pack.get("staticAudit"),
+                    "sampleAudit":pack.get("sampleAudit"),"codeReview":mixed.get("codeReview",[]),
+                    "codeReviewTruncated":mixed.get("codeReviewTruncated",False),
+                    "modelCandidates":[{"name":c["name"],"parts":c["parts"],"pbr":c["pbr"],"eligible":c["technicalCandidate"]} for c in pack.get("candidates",[])][:100]}
         except WorkspaceError as exc:
             status,action=classify_failure(exc)
             if "Asset is not a Model" in str(exc):
                 status,action="unsupported_asset_type","Inspect the Creator Store asset type with a dedicated read-only tool."
             result={"id":asset_id,"status":status,"diagnostic":str(exc)[:1000],"nextAction":action,"importAuthorized":False}
         results.append(result)
+        print("AUDIT_RESULT "+json.dumps(result,ensure_ascii=False),flush=True)
         write(output/"summary.json",{"schemaVersion":1,"requested":[r["id"] for r in rows],
             "results":results,"noPlaceWrites":True,"complete":len(results)==len(rows)})
         if result["status"] in ("rate_limited","cloud_access_denied","unknown_error"):
@@ -50,7 +55,7 @@ def run_batch(target,key,rows,output,inspect_fn=inspect_mixed):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--batch",type=int,required=True,choices=range(1,5))
+    p.add_argument("--batch",required=True,choices=["all","1","2","3","4"])
     p.add_argument("--output",type=Path,default=ROOT/"dist"/"p4-intake")
     a=p.parse_args()
     try:
@@ -59,10 +64,18 @@ def main():
         target=resolve(games,targets,"mapa-principal","main","staging")
         key=os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY")
         if not key: raise WorkspaceError("Missing Open Cloud key")
-        selected=rows[(a.batch-1)*3:a.batch*3]
-        results=run_batch(target,key,selected,a.output/f"batch-{a.batch}")
-        print(json.dumps(results,ensure_ascii=False))
-        return 0 if len(results)==len(selected) and all(r["status"]=="inventory_observed" for r in results) else 2
+        batches=range(1,5) if a.batch=="all" else [int(a.batch)]
+        all_results=[]
+        for batch in batches:
+            selected=rows[(batch-1)*3:batch*3]
+            results=run_batch(target,key,selected,a.output/f"batch-{batch}")
+            all_results.extend(results)
+            if any(r["status"] in ("rate_limited","cloud_access_denied","unknown_error") for r in results):
+                break
+        expected=len(rows) if a.batch=="all" else 3
+        write(a.output/"summary.json",{"schemaVersion":1,"results":all_results,"requestedCount":expected,
+            "complete":len(all_results)==expected,"noPlaceWrites":True})
+        return 0 if len(all_results)==expected and all(r["status"] in ("inventory_observed","inventory_truncated") for r in all_results) else 2
     except (WorkspaceError,OSError,ValueError,KeyError) as exc:
         print(f"ERROR: {exc}")
         return 1

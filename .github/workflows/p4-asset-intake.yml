@@ -2,7 +2,7 @@ name: P4 asset intake (read only)
 on:
   push:
     branches: [main]
-    paths: ['games/maps/mapa-principal/game/assets/intake-p4.json']
+    paths: ['games/maps/mapa-principal/game/assets/intake-p4.json', '.github/workflows/p4-asset-intake.yml']
   workflow_dispatch:
     inputs:
       batch:
@@ -30,14 +30,7 @@ jobs:
         env:
           BATCH: ${{ inputs.batch || 'all' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-        run: |
-          if [[ "$BATCH" == all ]]; then
-            for batch in 1 2 3 4; do
-              python tools/assets/intake.py --batch "$batch"
-            done
-          else
-            python tools/assets/intake.py --batch "$BATCH"
-          fi
+        run: python tools/assets/intake.py --batch "$BATCH"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

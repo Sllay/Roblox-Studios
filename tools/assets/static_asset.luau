@@ -240,12 +240,27 @@ local function inspectPack(root: Model)
     if cfg.components == true then
         -- Detached mixed-content inventory. Never read Source, execute, parent or
         -- require third-party code. Only bounded class counts and visual properties.
-        local counts, components = {}, {}
+        local counts, components, codeRows = {}, {}, {}
         local totalComponents = 0
         for _, obj in all do
             counts[obj.ClassName]=(counts[obj.ClassName] or 0)+1
             local kind = nil
-            if obj:IsA("LuaSourceContainer") then kind="code"
+            if obj:IsA("LuaSourceContainer") then
+                kind="code"
+                if #codeRows<128 then
+                    local ok, source=pcall(function() return obj.Source end)
+                    local row={name=obj.Name:sub(1,120),class=obj.ClassName,sourceReadable=ok,signals={},importAuthorized=false}
+                    if ok and type(source)=="string" then
+                        local encoding=game:GetService("EncodingService")
+                        row.sourceBytes=#source
+                        row.sha256=buffer.tostring(encoding:Base64Encode(encoding:ComputeBufferHash(buffer.fromstring(source),Enum.HashAlgorithm.Sha256)))
+                        local lower=string.lower(source)
+                        for _,entry in {{"require","require%s*%("},{"numericRequire","require%s*%(%s*%d"},{"loadstring","loadstring"},{"http","httpservice"},{"getfenv","getfenv"},{"setfenv","setfenv"},{"remote","remoteevent"},{"assetLoad","loadasset"},{"teleport","teleportservice"},{"datastore","datastoreservice"}} do
+                            if string.find(lower,entry[2]) then table.insert(row.signals,entry[1]) end
+                        end
+                    end
+                    table.insert(codeRows,row)
+                end
             elseif obj:IsA("ParticleEmitter") or obj:IsA("Beam") or obj:IsA("Trail") then kind="vfx"
             elseif obj:IsA("ImageLabel") or obj:IsA("ImageButton") then kind="ui"
             elseif obj:IsA("Decal") then kind="texture"
@@ -253,7 +268,7 @@ local function inspectPack(root: Model)
             end
             if kind then
                 totalComponents+=1
-                if #components<128 then
+                if #components<256 then
                     local path=packPath(root,obj)
                     local row={class=obj.ClassName,name=obj.Name:sub(1,120),kind=kind,
                         selector=if #path<=32 then path else nil, importAuthorized=false}
@@ -275,8 +290,24 @@ local function inspectPack(root: Model)
                 end
             end
         end
-        result.componentInventory={classes=counts,total=totalComponents,
+        result.componentInventory={classes=counts,total=totalComponents,codeReview=codeRows,codeReviewTruncated=scripts>#codeRows,
             truncated=totalComponents>#components,rows=components,codeExecuted=false}
+    end
+    if cfg.components == true then
+        local a=audit(root)
+        result.staticAudit={allowed=a.allowed,issues=a.issues,inspectionComplete=a.inspectionComplete,parts=a.parts}
+        for _,candidate in candidates do
+            if candidate.technicalCandidate then
+                local selectedModel=selectPackModel(root,candidate.selector)
+                local clone=selectedModel:Clone()
+                if clone and clone.Parent==nil and #clone:GetDescendants()==#selectedModel:GetDescendants() then
+                    local sub=audit(clone)
+                    result.sampleAudit={name=candidate.name,selector=candidate.selector,allowed=sub.allowed,issues=sub.issues,inspectionComplete=sub.inspectionComplete,parts=sub.parts}
+                end
+                if clone then clone:Destroy() end
+                break
+            end
+        end
     end
     -- Automatic sample is a technical extraction proof, NOT visual selection or approval.
     local selected=nil
