@@ -173,7 +173,22 @@ if cfg.mode=="preview" then
         else if old then assert(old.ClassName==last.class,"Recovery class");old:Destroy() end;copies[1].Parent=parent end
     end
     local restored=inventory()
-    return syncResult({schemaVersion=1,preview=true,noPlaceWrites=true,planDigest=cfg.planDigest,after=after,backups=backups,resources=count,colliders=#cfg.colliders,beforeFingerprint=beforeFingerprint,afterFingerprint=afterFingerprint,restored=restored})
+    local function equal(a,b)
+        if typeof(a)~=typeof(b) then return false end
+        if typeof(a)=="number" then return math.abs(a-b)<.005 end
+        if typeof(a)~="table" then return a==b end
+        for k,v in a do if not equal(v,b[k]) then return false end end
+        for k in b do if a[k]==nil then return false end end
+        return true
+    end
+    local restoredMap={}
+    for _,r in restored.objects do restoredMap[canonicalValue({r.service,r.path})]=r end
+    assert(restored.total==before.total,"Inverse count mismatch")
+    for _,r in before.objects do
+        assert(equal(r,restoredMap[canonicalValue({r.service,r.path})]),"Inverse record mismatch "..r.service.."/"..r.name)
+    end
+    assert(equal(restored.terrain,before.terrain) and equal(restored.lighting,before.lighting) and equal(restored.workspaceSettings,before.workspaceSettings),"Inverse environment mismatch")
+    return syncResult({schemaVersion=1,preview=true,noPlaceWrites=true,planDigest=cfg.planDigest,after=after,backups=backups,resources=count,colliders=#cfg.colliders,beforeFingerprint=beforeFingerprint,afterFingerprint=afterFingerprint,inverseVerified=true,inverseRecordCount=restored.total})
 end
 assert(cfg.confirmStaging==true and #backups==cfg.backupCount and afterFingerprint==cfg.afterFingerprint,"Reviewed apply fingerprint mismatch")
 Assets:SavePlaceAsync({SaveWithoutPublish=false})

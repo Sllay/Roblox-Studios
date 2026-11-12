@@ -81,8 +81,7 @@ def main():
         require(r["preview"] and r["noPlaceWrites"] and r["planDigest"]==opts["planDigest"],"Preview contract")
         expected=normalize({**r["after"],"loadedVersion":14});check_backups(r["backups"])
         changes,clones=scope(base,expected,opts);require(clones==0,"Unexpected preview clone")
-        restored=normalize({**r["restored"],"loadedVersion":14})
-        require(restored["records"].keys()==base["records"].keys() and all(equal(v,restored["records"][k]) for k,v in base["records"].items()),"Isolated inverse did not restore baseline")
+        require(r["inverseVerified"] is True and r["inverseRecordCount"]==base["total"],"Isolated inverse did not restore baseline")
         manifest.update(expectedDigest=expected["stateDigest"],backupDigest=sha(r["backups"]),backupCount=len(r["backups"]),expectedTotal=expected["total"],beforeFingerprint=r["beforeFingerprint"],afterFingerprint=r["afterFingerprint"],isolatedInverseVerified=True)
         atomic_json(a.output/"manifest.json",manifest);write(a.output/"expected.json",expected);write(a.output/"preimages.json",r["backups"])
         print("S05_PREVIEW "+json.dumps({**manifest,"changes":changes}),flush=True);return
