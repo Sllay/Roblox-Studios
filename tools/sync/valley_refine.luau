@@ -248,6 +248,28 @@ local hashes={river=digest(persisted,nx,ny,nz)}
 local maxError=0
 for i=1,nx do for y=1,ny do for j=1,nz do maxError=math.max(maxError,math.abs(persisted.SolidOccupancy[i][y][j]-d.SolidOccupancy[i][y][j]),math.abs(persisted.LiquidOccupancy[i][y][j]-d.LiquidOccupancy[i][y][j])) end end end
 assert(maxError<=0.02,"River readback error")
+-- Read-back proof: contiguous channel with real vertical overlap between
+-- neighboring wet columns. The old test counted any wet sliver.
+local actual={}
+for i=1,nx do actual[i]={};for j=1,nz do actual[i][j]=column(persisted,i,j,b[2],ny) end end
+local aq={{ix,iz}};local visited={[ix*nz+iz]=true};local qi=1
+while qi<=#aq do
+ local v=aq[qi];qi+=1;local a=actual[v[1]][v[2]]
+ for _,o in {{1,0},{-1,0},{0,1},{0,-1}} do
+  local i,j=v[1]+o[1],v[2]+o[2];local c=actual[i] and actual[i][j]
+  if c and a.w and c.w and math.min(a.w,c.w)-math.max(a.h,c.h)>=1.8 and not visited[i*nz+j] then
+   visited[i*nz+j]=true;table.insert(aq,{i,j})
+  end
+ end
+end
+assert(visited[sx*nz+sz],"Persisted river disconnected")
+local previous=nil
+for z=28,300,4 do
+ local i,j=idx(curve(z),z);local c=actual[i][j]
+ assert(c.w and c.w-c.h>=2.95 and visited[i*nz+j],"Persisted dry river center")
+ if previous then assert(c.w>=previous-0.1 and c.w-previous<1,"Water surface reversed or stepped") end
+ previous=c.w
+end
 for _,tile in outer do
  local bb=tile.bounds;local a={SolidMaterial={},SolidOccupancy={},LiquidOccupancy={}}
  for i=1,64 do
@@ -276,4 +298,4 @@ SPS.RSQualityPanel.Source=cfg.client
 local grid=Instance.new("LocalScript");grid.Name="RSBoundaryGrid";grid.Source=cfg.grid;grid.Parent=SPS
 game:GetService("Lighting"):FindFirstChildOfClass("Atmosphere").Haze=2.2
 game:GetService("AssetService"):SavePlaceAsync({SaveWithoutPublish=false})
-return output({saved=true,hashes=hashes,moves=moves,changedColumns=changed,connectedDeep=#q,horizonTiles=#outer,boundaries=5,maxError=maxError})
+return output({saved=true,hashes=hashes,moves=moves,changedColumns=changed,connectedDeep=#q,horizonTiles=#outer,boundaries=5,maxError=maxError,persistedConnectedDeep=#aq})

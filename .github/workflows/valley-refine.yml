@@ -12,7 +12,7 @@ on:
         type: boolean
         default: false
   push:
-    paths: ['games/maps/mapa-principal/docs/valley-preview-once.trigger']
+    paths: ['games/maps/mapa-principal/docs/valley-apply-once.trigger']
 permissions:
   contents: read
   actions: read
@@ -36,10 +36,10 @@ jobs:
       - run: bash tools/install-luau-lsp.sh
       - run: python tools/quality_gate_v2.py
       - uses: actions/download-artifact@v4
-        if: ${{ inputs.operation == 'apply' || inputs.operation == 'verify' }}
+        if: ${{ github.event_name == 'push' || inputs.operation == 'apply' || inputs.operation == 'verify' }}
         with:
           name: valley-refine-evidence
-          run-id: ${{ inputs.evidence_run }}
+          run-id: ${{ inputs.evidence_run || '43158101058' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: dist/prior-valley
       - name: Preview or apply
@@ -48,6 +48,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then OP=apply; fi
           if [[ "$OP" == apply ]]; then args+=(--baseline dist/prior-valley/preview.json --confirm-staging); fi
           if [[ "$OP" == verify ]]; then args+=(--receipt dist/prior-valley/receipt.json); fi
           python tools/valley_refine.py "$OP" "${args[@]}"

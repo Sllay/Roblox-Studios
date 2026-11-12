@@ -27,7 +27,7 @@ def main():
         require(p.confirm_staging and p.baseline and read(p.baseline)==r,"Reviewed preview mismatch")
         # no large map in remote configuration
         result=task(target,key,source,mode="apply",preview={k:v for k,v in r.items() if k!="map"},**opts)
-        write(out/"receipt.json",result);require(result["saved"],"Save unconfirmed")
+        write(out/"receipt.json",result);require(result["saved"] and result["persistedConnectedDeep"]>100,"Save/river continuity unconfirmed")
     else:
         require(p.receipt is not None,"Receipt required");result=read(p.receipt)
     v=task(target,key,source,mode="verify",expected=result,**opts);write(out/"verification.json",v)
