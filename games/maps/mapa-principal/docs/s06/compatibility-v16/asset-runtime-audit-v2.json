@@ -1,0 +1,785 @@
+{
+  "assetCounts": {
+    "18817890736": 14,
+    "79689531752352": 154,
+    "80215326989711": 108,
+    "85389927254160": 6,
+    "9204066145": 108
+  },
+  "clientRenderVerified": false,
+  "dependencies": [
+    {
+      "assets": {
+        "85389927254160": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://112710935392609",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 6
+    },
+    {
+      "assets": {
+        "85389927254160": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "NormalMapContent": true
+      },
+      "uri": "rbxassetid://112876096870697",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 6
+    },
+    {
+      "assets": {
+        "85389927254160": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "MetalnessMapContent": true
+      },
+      "uri": "rbxassetid://117806444692708",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 6
+    },
+    {
+      "assets": {
+        "85389927254160": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "RoughnessMapContent": true
+      },
+      "uri": "rbxassetid://121754642795961",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 6
+    },
+    {
+      "assets": {
+        "85389927254160": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://122492215886612",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 6
+    },
+    {
+      "assets": {
+        "80215326989711": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://122505516420043",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 108
+    },
+    {
+      "assets": {
+        "9204066145": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://123968188",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 108
+    },
+    {
+      "assets": {
+        "9204066145": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "texture": true
+      },
+      "uri": "rbxassetid://123968836",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 108
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "RoughnessMapContent": true
+      },
+      "uri": "rbxassetid://13244568809",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 154
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://13255359293",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 57
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://13255387220",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 42
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://13255387277",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 55
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://17588266147",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 6
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://17588266196",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 6
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://17588266283",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 6
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "NormalMapContent": true
+      },
+      "uri": "rbxassetid://17588266297",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 18
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://17599217757",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 18
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "MetalnessMapContent": true
+      },
+      "uri": "rbxassetid://17718985190",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 8
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "RoughnessMapContent": true
+      },
+      "uri": "rbxassetid://17718985196",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 8
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://17718985219",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 8
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "RoughnessMapContent": true
+      },
+      "uri": "rbxassetid://17718985236",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 8
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "MetalnessMapContent": true
+      },
+      "uri": "rbxassetid://17718985246",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 8
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "NormalMapContent": true
+      },
+      "uri": "rbxassetid://17718985251",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 8
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://17718985276",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://17718985299",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "NormalMapContent": true
+      },
+      "uri": "rbxassetid://17718985305",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 8
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://17718985387",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://17718985397",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://17718997641",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "18817890736": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://17719069285",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18716595484",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 53
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18716595527",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 53
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "ColorMapContent": true
+      },
+      "uri": "rbxassetid://18718123628",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 154
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "NormalMapContent": true
+      },
+      "uri": "rbxassetid://18718124198",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 154
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "preload": "Success",
+      "roles": {
+        "RoughnessMapContent": true
+      },
+      "uri": "rbxassetid://18718124854",
+      "uriFetch": "Success",
+      "uriPreload": "Success",
+      "uses": 154
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18720235867",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18720235894",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18720273005",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 38
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18720273012",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 38
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18720345647",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18720345648",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 4
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18720998648",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 47
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18720998685",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 47
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18721003328",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 8
+    },
+    {
+      "assets": {
+        "79689531752352": true
+      },
+      "fetch": "Success",
+      "instancePreload": "Success",
+      "preload": "Success",
+      "roles": {
+        "mesh": true
+      },
+      "uri": "rbxassetid://18721169682",
+      "uriFetch": "Failure",
+      "uriPreload": "Failure",
+      "uses": 8
+    }
+  ],
+  "dependencyCounts": {
+    "success": 45,
+    "total": 45,
+    "unreadableProperties": 0
+  },
+  "intake": [
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "requires_component_review",
+      "id": "15261348321",
+      "installedModels": 0,
+      "name": "Particle effects",
+      "state": "catalog_only_not_installed"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "embedded_code_blocked",
+      "id": "9204066145",
+      "installedModels": 108,
+      "name": "Punishment stick",
+      "state": "inert_component_only"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "static_policy_initial_pass",
+      "id": "80215326989711",
+      "installedModels": 108,
+      "name": "Rock",
+      "state": "installed_visual_subset"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "embedded_code_blocked",
+      "id": "103581254866679",
+      "installedModels": 0,
+      "name": "Dirt Bag Garden Kit Farm Plot Pro Tools",
+      "state": "catalog_only_not_installed"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "requires_component_review",
+      "id": "7564537285",
+      "installedModels": 0,
+      "name": "VFX Pack",
+      "state": "catalog_only_not_installed"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "requires_component_review",
+      "id": "99176447965360",
+      "installedModels": 0,
+      "name": "Simulator Icon Pack",
+      "state": "catalog_only_not_installed"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "embedded_code_blocked",
+      "id": "130425813530814",
+      "installedModels": 0,
+      "name": "Food Meshpack",
+      "state": "catalog_only_not_installed"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "requires_component_review",
+      "id": "106208631832795",
+      "installedModels": 0,
+      "name": "Lowpoly Fruits Vegetables",
+      "state": "catalog_only_not_installed"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_truncated",
+      "historicalSecurity": "requires_component_review",
+      "id": "85389927254160",
+      "installedModels": 6,
+      "name": "Low Poly Stylized Rock Pack",
+      "state": "installed_visual_subset"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "embedded_code_blocked",
+      "id": "18817890736",
+      "installedModels": 14,
+      "name": "Innos Stylized Asset Pack",
+      "state": "installed_visual_subset"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "requires_component_review",
+      "id": "9002291527",
+      "installedModels": 0,
+      "name": "MossLeaf Asset Pack",
+      "state": "catalog_only_not_installed"
+    },
+    {
+      "clientRenderVerified": false,
+      "historicalInventory": "inventory_observed",
+      "historicalSecurity": "embedded_code_blocked",
+      "id": "11946229834",
+      "installedModels": 0,
+      "name": "Wind Effects",
+      "state": "first_party_wind_reimplementation_no_pack_code"
+    }
+  ],
+  "issues": [],
+  "loadedVersion": 16,
+  "models": 390,
+  "noPlaceWrites": true,
+  "placeId": "93428341652658",
+  "universeId": "10769712441"
+}
