@@ -1,4 +1,4 @@
-name: S06.5 sharded scene sync parity and default forensics
+name: S06.5 sharded scene sync parity and default forensics v2
 on:
   push:
     branches: [main]

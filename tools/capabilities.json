@@ -457,7 +457,7 @@
       "id": "runtime.branch_wind_prototype",
       "entry": "tools/branch_wind_probe.py",
       "mode": "read",
-      "status": "prototype",
+      "status": "implemented",
       "purpose": "Original skinned canopy authoring and native bone transform probe; actual asset upload denied and client render unverified",
       "requires": [
         "scene.sync"
@@ -466,6 +466,20 @@
         "original GLB",
         "native bone proof",
         "asset permission receipt"
+      ]
+    },
+    {
+      "id": "scene.sync_sharded",
+      "entry": "tools/sharded_scene_sync.py",
+      "mode": "read",
+      "status": "implemented",
+      "purpose": "Version-pinned service pages with exact identity completeness and canonical parity; no write authorization",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "shard parity proof",
+        "default clone forensics"
       ]
     }
   ]
