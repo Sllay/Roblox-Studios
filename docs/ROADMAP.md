@@ -85,3 +85,5 @@
 - [ ] P4.3 recovery: run 43182382445 saved 24 models/8 colliders to v11 but post-save scope gate detected 164 unexpected records (162 identical default PlayerModule subtree copies, one AtomicBinding copy and its parent child-count increment). Recovery proves exact copies against v10, verifies already-saved layout with no repeated save, records baseline, then scripts. Duplicate default accumulation is an open engine/save issue; no arbitrary scope bypass.
 
 - [x] P4.3 staging v12: 24 models / 8 colliders saved v11, independently verified, then seven scripts applied and verified v12. Sync ebc235a; run 43182858125. Exact default-module clone delta remains documented and must be addressed before repeated saves become routine. P4.4 exact asset preflight follows in same run; detail layout engine merged PR #2 (CI passed).
+
+- [x] P4.4 exact preflight 43183544747: 4/4 sources passed PBR/dependencies after hierarchical surface identity fix; eight geometry thumbnails reviewed, 50 MossLeaf meshes inventoried. 20-model detail plan approved for staging preview; surface-mount vines and static stick extraction remain pending.

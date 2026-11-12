@@ -1,0 +1,2282 @@
+{
+  "schemaVersion": 1,
+  "runId": 43183544747,
+  "artifactId": 13927527706,
+  "loadedVersion": 12,
+  "noPlaceWrites": true,
+  "results": [
+    {
+      "assetId": "18817890736",
+      "name": "Pine_01.1",
+      "role": "tree",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 8,
+          "name": "Pine_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Variation_01"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Pine_01.1"
+        }
+      ],
+      "count": 4,
+      "targetWidth": [
+        14,
+        20
+      ],
+      "foliageName": "Leaves",
+      "status": "exact_v2_pass",
+      "sourceDigest": "CXo8IRYWGtzqK0y9kvyEy+2N3tgto6nbUYOiTLZvHhU=",
+      "loadedVersion": 12,
+      "bounds": [
+        44.760250091552734,
+        72.07685852050781,
+        44.443119049072266
+      ],
+      "meshRows": [
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Trunk"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Default",
+          "transparency": 0,
+          "size": [
+            7.962950229644775,
+            72.0368881225586,
+            7.962956428527832
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -0.000640869140625,
+            -0.020420074462890625,
+            -0.63958740234375,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://17718985276",
+          "texture": ""
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 2,
+              "name": "Leaves"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            44.760250091552734,
+            58.554351806640625,
+            44.443119049072266
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            0,
+            6.761260986328125,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://17718985299",
+          "texture": ""
+        }
+      ],
+      "surfaces": 2,
+      "dependencies": [
+        "rbxassetid://17718985190",
+        "rbxassetid://17718985196",
+        "rbxassetid://17718985219",
+        "rbxassetid://17718985236",
+        "rbxassetid://17718985246",
+        "rbxassetid://17718985251",
+        "rbxassetid://17718985276",
+        "rbxassetid://17718985299",
+        "rbxassetid://17718985305",
+        "rbxassetid://17718997641"
+      ],
+      "thumbnailIds": [
+        "17718985276",
+        "17718985299"
+      ],
+      "importAuthorized": false
+    },
+    {
+      "assetId": "18817890736",
+      "name": "Pine_03.1",
+      "role": "tree",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 8,
+          "name": "Pine_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 3,
+          "name": "Variation_03"
+        },
+        {
+          "class": "Model",
+          "index": 4,
+          "name": "Pine_03.1"
+        }
+      ],
+      "count": 4,
+      "targetWidth": [
+        14,
+        20
+      ],
+      "foliageName": "Leaves",
+      "status": "exact_v2_pass",
+      "sourceDigest": "2dRc+d0ROkh1Gqw62jxPg9/T6iA/wkGlJO6Z79Z4u8I=",
+      "loadedVersion": 12,
+      "bounds": [
+        44.760250091552734,
+        72.07685852050781,
+        44.443119049072266
+      ],
+      "meshRows": [
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Trunk"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Default",
+          "transparency": 0,
+          "size": [
+            7.962950229644775,
+            72.0368881225586,
+            7.962950229644775
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -0.000640869140625,
+            -0.020420074462890625,
+            -0.63958740234375,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://17718985387",
+          "texture": ""
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 2,
+              "name": "Leaves"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            44.760250091552734,
+            58.554351806640625,
+            44.443119049072266
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            0,
+            6.761260986328125,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://17718985397",
+          "texture": ""
+        }
+      ],
+      "surfaces": 2,
+      "dependencies": [
+        "rbxassetid://17718985190",
+        "rbxassetid://17718985196",
+        "rbxassetid://17718985219",
+        "rbxassetid://17718985236",
+        "rbxassetid://17718985246",
+        "rbxassetid://17718985251",
+        "rbxassetid://17718985305",
+        "rbxassetid://17718985387",
+        "rbxassetid://17718985397",
+        "rbxassetid://17719069285"
+      ],
+      "thumbnailIds": [
+        "17718985387",
+        "17718985397"
+      ],
+      "importAuthorized": false
+    },
+    {
+      "assetId": "18817890736",
+      "name": "Blue_Flowers",
+      "role": "flower",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 3,
+          "name": "Flowers"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Blue_Flowers"
+        }
+      ],
+      "count": 6,
+      "targetWidth": [
+        3,
+        5
+      ],
+      "status": "exact_v2_pass",
+      "sourceDigest": "EAxJKKEzONOuGi7bqGut0rN8Pxo1/jIW5QGUWezfI94=",
+      "loadedVersion": 12,
+      "bounds": [
+        12.35737419128418,
+        5.5270185470581055,
+        25.079448699951172
+      ],
+      "meshRows": [
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Blue_Flower_02"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            6.857785224914551,
+            5.527017593383789,
+            6.760263442993164
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -0.1407470703125,
+            2.384185791015625e-7,
+            -2.69940185546875,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://17588266196",
+          "texture": ""
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 2,
+              "name": "Blue_Flower_01"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            5.332619667053223,
+            4.204315185546875,
+            4.26922082901001
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -0.34857177734375,
+            -0.6613516807556152,
+            -10.4049072265625,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://17588266147",
+          "texture": ""
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 3,
+              "name": "Blue_Flower_03"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            12.35737419128418,
+            5.5270185470581055,
+            10.251005172729492
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            0,
+            2.384185791015625e-7,
+            7.4144287109375,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://17588266283",
+          "texture": ""
+        }
+      ],
+      "surfaces": 3,
+      "dependencies": [
+        "rbxassetid://17588266147",
+        "rbxassetid://17588266196",
+        "rbxassetid://17588266283",
+        "rbxassetid://17588266297",
+        "rbxassetid://17599217757"
+      ],
+      "thumbnailIds": [
+        "17588266196",
+        "17588266147",
+        "17588266283"
+      ],
+      "importAuthorized": false
+    },
+    {
+      "assetId": "85389927254160",
+      "name": "Mossy_Rock1_M_Mossy_Rock_0_Node",
+      "role": "rock",
+      "selector": [
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Low Poly Stylized Rock Pack"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Sketchfab_model"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "e9e516dd21d04df28714d133134029a3.fbx"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "RootNode"
+        },
+        {
+          "class": "Model",
+          "index": 2,
+          "name": "Mossy_Rock1"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Mossy_Rock1_M_Mossy_Rock_0_Node"
+        }
+      ],
+      "count": 6,
+      "targetWidth": [
+        3,
+        5
+      ],
+      "status": "exact_v2_pass",
+      "sourceDigest": "NpS+23kk0Xik9smEoK7hiGYahkRTDl67FNeuM0Ei5Ms=",
+      "loadedVersion": 12,
+      "bounds": [
+        3.038818359375,
+        5.180068016052246,
+        2.6662025451660156
+      ],
+      "meshRows": [
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Mossy_Rock1_M_Mossy_Rock_0"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Default",
+          "transparency": 0,
+          "size": [
+            3.0388147830963135,
+            5.180068016052246,
+            2.6672472953796387
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            52.43461608886719,
+            2.5830421447753906,
+            -23.304271697998047,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Plastic",
+          "mesh": "rbxassetid://112710935392609",
+          "texture": ""
+        }
+      ],
+      "surfaces": 1,
+      "dependencies": [
+        "rbxassetid://112710935392609",
+        "rbxassetid://112876096870697",
+        "rbxassetid://117806444692708",
+        "rbxassetid://121754642795961",
+        "rbxassetid://122492215886612"
+      ],
+      "thumbnailIds": [
+        "112710935392609"
+      ],
+      "importAuthorized": false
+    }
+  ],
+  "geometryReview": {
+    "scope": "official grayscale component thumbnails; not a textured assembled render",
+    "thumbnailSha256": {
+      "112710935392609": "6fb7a1a4150592c725863057bd615e3eb571fdda9e7528cd5cd0b74d41c80e43",
+      "17588266147": "e45b7acdfe66fa13476b89f135ab0f297b8ffa3fea9126674b290461f7a82fdf",
+      "17588266196": "7304997afff6658c115db681a3bac53e42f2eb765364b6d194c9efb27cca9b8d",
+      "17588266283": "2a46990f5ad93fb8ef4309dcaa3289912b7733cae472a9d5458f22511a85cced",
+      "17718985276": "3bd97ae77ad49acba946ecb16dea1da701262e66b5697b99adfb6e939071614d",
+      "17718985299": "df9ca3978de6b0c6e5a5b7d98268fbf8e6b58ab19155e44d78793cd50c2927e4",
+      "17718985387": "5e59e2c21caba01a19cc6b3d7b98b729276f427c52c2d24e66a2ab5e2d5d5414",
+      "17718985397": "73097688337389882fc1f3e3d8efb664a589d16d43966e89162b3e62c769fbce"
+    },
+    "descriptions": {
+      "Pine_01.1": "Tall tapered narrow trunk and layered conical canopy formed from angular foliage planes. Component thumbnails grayscale; final PBR color unobserved.",
+      "Pine_03.1": "Tall tapered trunk and layered conical canopy, similar silhouette to Pine_01.1 but distinct mesh IDs and material dependencies. Component thumbnails grayscale; final PBR color unobserved.",
+      "Blue_Flowers": "Three clusters of thin upright stems and angular leaf/flower planes. Component thumbnails are grayscale geometry only; blue is asset name, not confirmed final render.",
+      "Mossy_Rock1_M_Mossy_Rock_0_Node": "Tall irregular faceted boulder, broad top and tapering base. Moss color not visible in grayscale mesh thumbnail; PBR dependencies verified."
+    }
+  },
+  "mossGeometry": {
+    "meshRows": [
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          6.732445240020752,
+          2.1655263900756836,
+          7.239999771118164
+        ],
+        "meshId": "rbxassetid://760766662",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "MeshPart",
+            "index": 1,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          1.2294468879699707,
+          3.6807875633239746,
+          2.4536421298980713
+        ],
+        "meshId": "rbxassetid://2961716609",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "MeshPart",
+            "index": 2,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          4.471044063568115,
+          13.470009803771973,
+          9.448163986206055
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "MeshPart",
+            "index": 3,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          3.7088141441345215,
+          3.7088141441345215,
+          2.9672048091888428
+        ],
+        "meshId": "rbxassetid://516875678",
+        "material": "Plastic",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "MeshPart",
+            "index": 4,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          4.186537265777588,
+          10.763701438903809,
+          2.012023448944092
+        ],
+        "meshId": "rbxassetid://2961719077",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "MeshPart",
+            "index": 5,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Mud",
+        "importAuthorized": false,
+        "size": [
+          3.3112215995788574,
+          0.06800584495067596,
+          6.917720794677734
+        ],
+        "meshId": "rbxassetid://2668491300",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "MeshPart",
+            "index": 6,
+            "name": "Mud"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          5.251154899597168,
+          14.53724193572998,
+          8.308953285217285
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "MeshPart",
+            "index": 7,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          1.2294468879699707,
+          3.6807875633239746,
+          2.4536421298980713
+        ],
+        "meshId": "rbxassetid://2961716609",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "MeshPart",
+            "index": 8,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          5.661609649658203,
+          5.206775188446045,
+          5.809069633483887
+        ],
+        "meshId": "rbxassetid://7082368261",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 9,
+            "name": "Model"
+          },
+          {
+            "class": "MeshPart",
+            "index": 1,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          4.072771072387695,
+          3.7455787658691406,
+          4.178549766540527
+        ],
+        "meshId": "rbxassetid://7082368261",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 9,
+            "name": "Model"
+          },
+          {
+            "class": "MeshPart",
+            "index": 2,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          4.072771072387695,
+          3.7455787658691406,
+          4.178549766540527
+        ],
+        "meshId": "rbxassetid://7082368261",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 9,
+            "name": "Model"
+          },
+          {
+            "class": "MeshPart",
+            "index": 3,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          4.072771072387695,
+          3.7455787658691406,
+          4.178549766540527
+        ],
+        "meshId": "rbxassetid://7082368261",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 9,
+            "name": "Model"
+          },
+          {
+            "class": "MeshPart",
+            "index": 4,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          0.6510953903198242,
+          0.5693144202232361,
+          0.5600000023841858
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 1,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          1.0953052043914795,
+          2.174121379852295,
+          1.7654495239257812
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 2,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          0.5531001091003418,
+          2.115950107574463,
+          1.7654495239257812
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 3,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          1.1977386474609375,
+          2.115950107574463,
+          1.7654495239257812
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 4,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          1.0070347785949707,
+          2.4050629138946533,
+          2.3249621391296387
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 5,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          0.5531001091003418,
+          1.1866041421890259,
+          0.7988839745521545
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 6,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          0.7931822538375854,
+          0.8799999952316284,
+          0.7988839745521545
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 7,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          1.0633494853973389,
+          0.8799999952316284,
+          0.7988839745521545
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 8,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          0.5531001091003418,
+          1.337585210800171,
+          1.3360927104949951
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 9,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          0.5531001091003418,
+          1.501103401184082,
+          1.3558448553085327
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 10,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          1.9120793342590332,
+          0.6150302290916443,
+          2.056457757949829
+        ],
+        "meshId": "rbxassetid://760766662",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 11,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          3.7088141441345215,
+          3.7088141441345215,
+          2.9672048091888428
+        ],
+        "meshId": "rbxassetid://516875678",
+        "material": "Plastic",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 12,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          2.6554510593414307,
+          2.6554510593414307,
+          2.1244707107543945
+        ],
+        "meshId": "rbxassetid://516875678",
+        "material": "Plastic",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 13,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "MeshPart",
+        "importAuthorized": false,
+        "size": [
+          1.0656020641326904,
+          1.7241767644882202,
+          1.498297929763794
+        ],
+        "meshId": "rbxassetid://2961720999",
+        "material": "Grass",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "MeshPart",
+            "index": 14,
+            "name": "MeshPart"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Mud",
+        "importAuthorized": false,
+        "size": [
+          1.323755145072937,
+          0.05000000074505806,
+          1.5013508796691895
+        ],
+        "meshId": "rbxassetid://2668491300",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Mud"
+          },
+          {
+            "class": "MeshPart",
+            "index": 1,
+            "name": "Mud"
+          }
+        ]
+      },
+      {
+        "textureCount": 0,
+        "name": "Mud",
+        "importAuthorized": false,
+        "size": [
+          1.323755145072937,
+          0.05000000074505806,
+          2.0724246501922607
+        ],
+        "meshId": "rbxassetid://2668491300",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Mud"
+          },
+          {
+            "class": "MeshPart",
+            "index": 2,
+            "name": "Mud"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Mud",
+        "importAuthorized": false,
+        "size": [
+          2.4345126152038574,
+          0.05000000074505806,
+          5.086122512817383
+        ],
+        "meshId": "rbxassetid://2668491300",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Mud"
+          },
+          {
+            "class": "MeshPart",
+            "index": 3,
+            "name": "Mud"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Mud",
+        "importAuthorized": false,
+        "size": [
+          0.765618085861206,
+          0.13392016291618347,
+          0.868614673614502
+        ],
+        "meshId": "rbxassetid://2668491300",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Mud"
+          },
+          {
+            "class": "MeshPart",
+            "index": 4,
+            "name": "Mud"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Mud",
+        "importAuthorized": false,
+        "size": [
+          0.765618085861206,
+          0.13392016291618347,
+          0.868614673614502
+        ],
+        "meshId": "rbxassetid://2668491300",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Mud"
+          },
+          {
+            "class": "MeshPart",
+            "index": 5,
+            "name": "Mud"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Mud",
+        "importAuthorized": false,
+        "size": [
+          1.323755145072937,
+          0.05000000074505806,
+          1.5013508796691895
+        ],
+        "meshId": "rbxassetid://2668491300",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Vegetation"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Mud"
+          },
+          {
+            "class": "MeshPart",
+            "index": 6,
+            "name": "Mud"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9797220230102539,
+          0.7340909838676453,
+          2.0611701011657715
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 1,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.8799999952316284,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 2,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          1.0020135641098022,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 3,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9366032481193542,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 4,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9795114994049072,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 5,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.8231568932533264,
+          0.7340909838676453,
+          1.9199999570846558
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 6,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9797220230102539,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 7,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9797220230102539,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 8,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.8897669315338135,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 9,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          1.0020135641098022,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 10,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.8231568932533264,
+          0.7340909838676453,
+          2.0322535037994385
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 11,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9059720039367676,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 12,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.5649834871292114,
+          0.7340909838676453,
+          1.96134614944458
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 13,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9797220230102539,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "MeshPart",
+            "index": 14,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.8231568932533264,
+          0.7340909838676453,
+          1.9199999570846558
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Debris"
+          },
+          {
+            "class": "MeshPart",
+            "index": 1,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.8231568932533264,
+          0.7340909838676453,
+          1.9199999570846558
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Debris"
+          },
+          {
+            "class": "MeshPart",
+            "index": 2,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 12,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9797220230102539,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Debris"
+          },
+          {
+            "class": "MeshPart",
+            "index": 3,
+            "name": "Brick"
+          }
+        ]
+      },
+      {
+        "textureCount": 6,
+        "name": "Brick",
+        "importAuthorized": false,
+        "size": [
+          0.9797220230102539,
+          0.7340909838676453,
+          2.011197566986084
+        ],
+        "meshId": "rbxassetid://514528311",
+        "material": "Concrete",
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 10,
+            "name": "Wall Ruin w/ Moss"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Bricks"
+          },
+          {
+            "class": "Folder",
+            "index": 15,
+            "name": "Debris"
+          },
+          {
+            "class": "MeshPart",
+            "index": 4,
+            "name": "Brick"
+          }
+        ]
+      }
+    ],
+    "universeId": "10769712441",
+    "placeId": "93428341652658",
+    "assetId": "9002291527",
+    "codeExecuted": false,
+    "loadedVersion": 12
+  }
+}

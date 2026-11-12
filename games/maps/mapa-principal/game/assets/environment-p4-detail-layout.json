@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "environment": "staging",
+  "rootName": "RSEnvironmentP4Detail",
+  "purpose": "first detail batch after verified v12",
+  "seed": 98327,
+  "maxNewModels": 20,
+  "assets": [
+    {
+      "assetId": "18817890736",
+      "name": "Pine_01.1",
+      "role": "tree",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 8,
+          "name": "Pine_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Variation_01"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Pine_01.1"
+        }
+      ],
+      "count": 4,
+      "targetWidth": [
+        14,
+        20
+      ],
+      "foliageName": "Leaves",
+      "auditStatus": "exact_v2_pass",
+      "sourceDigest": "CXo8IRYWGtzqK0y9kvyEy+2N3tgto6nbUYOiTLZvHhU=",
+      "auditRun": 43183544747,
+      "visualStatus": "geometry_reviewed",
+      "visualDescription": "Tall tapered narrow trunk and layered conical canopy formed from angular foliage planes. Component thumbnails grayscale; final PBR color unobserved.",
+      "thumbnailIds": [
+        "17718985276",
+        "17718985299"
+      ],
+      "importAuthorized": true,
+      "rightsStatus": "reviewed_platform_use",
+      "profile": {
+        "scale": [
+          0.32,
+          0.44
+        ],
+        "burial": 3,
+        "support": 3,
+        "collider": {
+          "radius": 3,
+          "height": 20
+        },
+        "calibrationStatus": "provisional"
+      }
+    },
+    {
+      "assetId": "18817890736",
+      "name": "Pine_03.1",
+      "role": "tree",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 8,
+          "name": "Pine_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 3,
+          "name": "Variation_03"
+        },
+        {
+          "class": "Model",
+          "index": 4,
+          "name": "Pine_03.1"
+        }
+      ],
+      "count": 4,
+      "targetWidth": [
+        14,
+        20
+      ],
+      "foliageName": "Leaves",
+      "auditStatus": "exact_v2_pass",
+      "sourceDigest": "2dRc+d0ROkh1Gqw62jxPg9/T6iA/wkGlJO6Z79Z4u8I=",
+      "auditRun": 43183544747,
+      "visualStatus": "geometry_reviewed",
+      "visualDescription": "Tall tapered trunk and layered conical canopy, similar silhouette to Pine_01.1 but distinct mesh IDs and material dependencies. Component thumbnails grayscale; final PBR color unobserved.",
+      "thumbnailIds": [
+        "17718985387",
+        "17718985397"
+      ],
+      "importAuthorized": true,
+      "rightsStatus": "reviewed_platform_use",
+      "profile": {
+        "scale": [
+          0.32,
+          0.44
+        ],
+        "burial": 3,
+        "support": 3,
+        "collider": {
+          "radius": 3,
+          "height": 20
+        },
+        "calibrationStatus": "provisional"
+      }
+    },
+    {
+      "assetId": "18817890736",
+      "name": "Blue_Flowers",
+      "role": "flower",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 3,
+          "name": "Flowers"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Blue_Flowers"
+        }
+      ],
+      "count": 6,
+      "targetWidth": [
+        3,
+        5
+      ],
+      "auditStatus": "exact_v2_pass",
+      "sourceDigest": "EAxJKKEzONOuGi7bqGut0rN8Pxo1/jIW5QGUWezfI94=",
+      "auditRun": 43183544747,
+      "visualStatus": "geometry_reviewed",
+      "visualDescription": "Three clusters of thin upright stems and angular leaf/flower planes. Component thumbnails are grayscale geometry only; blue is asset name, not confirmed final render.",
+      "thumbnailIds": [
+        "17588266196",
+        "17588266147",
+        "17588266283"
+      ],
+      "importAuthorized": true,
+      "rightsStatus": "reviewed_platform_use",
+      "profile": {
+        "scale": [
+          0.13,
+          0.2
+        ],
+        "burial": 0.7,
+        "support": 3,
+        "collider": null,
+        "calibrationStatus": "provisional"
+      }
+    },
+    {
+      "assetId": "85389927254160",
+      "name": "Mossy_Rock1_M_Mossy_Rock_0_Node",
+      "role": "rock",
+      "selector": [
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Low Poly Stylized Rock Pack"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Sketchfab_model"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "e9e516dd21d04df28714d133134029a3.fbx"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "RootNode"
+        },
+        {
+          "class": "Model",
+          "index": 2,
+          "name": "Mossy_Rock1"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Mossy_Rock1_M_Mossy_Rock_0_Node"
+        }
+      ],
+      "count": 6,
+      "targetWidth": [
+        3,
+        5
+      ],
+      "auditStatus": "exact_v2_pass",
+      "sourceDigest": "NpS+23kk0Xik9smEoK7hiGYahkRTDl67FNeuM0Ei5Ms=",
+      "auditRun": 43183544747,
+      "visualStatus": "geometry_reviewed",
+      "visualDescription": "Tall irregular faceted boulder, broad top and tapering base. Moss color not visible in grayscale mesh thumbnail; PBR dependencies verified.",
+      "thumbnailIds": [
+        "112710935392609"
+      ],
+      "importAuthorized": true,
+      "rightsStatus": "reviewed_platform_use",
+      "profile": {
+        "scale": [
+          1,
+          1.55
+        ],
+        "burial": 0.45,
+        "support": 0.8,
+        "collider": null,
+        "calibrationStatus": "provisional"
+      }
+    }
+  ],
+  "placement": {
+    "status": "reviewed_geometry_preview_pending",
+    "preserveExisting": true,
+    "terrainWrites": false,
+    "regionIds": [
+      "chunk--1--1",
+      "chunk--1-0",
+      "chunk--1-1",
+      "chunk-0--1",
+      "chunk-0-0",
+      "chunk-0-1",
+      "chunk-1--1",
+      "chunk-1-0",
+      "chunk-1-1"
+    ]
+  },
+  "importAuthorized": true,
+  "approval": {
+    "scope": "staging only",
+    "userAuthorization": "User explicitly authorized sequential P4.3 and P4.4 staging integration",
+    "rightsReview": "User reported acquiring the Creator Store packs. Platform use only, exact dependency fetch verified; no redistribution or independent copyright clearance.",
+    "terms": "https://en.help.roblox.com/hc/en-us/articles/21308223046932-Creator-Store-Terms"
+  }
+}
