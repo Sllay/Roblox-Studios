@@ -1,0 +1,28 @@
+"""Read-only native geometry checkpoint, two resources per type per tile."""
+import os,json
+from scene_sync import ROOT,read,write,require,task,state_path
+from deploy import load_all,resolve
+GAME=ROOT/"games/maps/mapa-principal"
+def main():
+    g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
+    base=read(state_path(target));plan=read(ROOT/"dist/s07/plan.json")
+    require(plan["complete"] and plan["stateDigest"]==base["stateDigest"] and base["loadedVersion"]==18,"Plan baseline")
+    old=read(GAME/"docs/s06/resources-v16/plan.json")["resources"]
+    specs={s["id"]:s for s in plan["specs"]}
+    src=(ROOT/"tools/sync/s07_geometry_probe.luau").read_text()
+    reports=[]
+    for tile in sorted({r["tile"] for r in plan["rows"]}):
+        rows=[]
+        for name,s in specs.items():
+            source=sorted((r for r in old if r["category"]==s["legacyCategory"]),key=lambda r:r["id"])[0]
+            factors=s["dimensionFactorsFromV18"]
+            bounds=[d*f*(2 if name=="Branch" else 1) for d,f in zip(source["bounds"],factors)]
+            candidates=[r for r in plan["rows"] if r["tile"]==tile and r["type"]==name]
+            for r in candidates[:2]:rows.append({**r,"sourceId":source["id"],"factors":factors,"bounds":bounds})
+        result=task(target,os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],"do\n"+src+"\nend",read_version=18,compile_source=True,rows=rows)
+        require(result["loadedVersion"]==18 and result["noPlaceWrites"] and result["all49Restored"],"Native probe contract")
+        reports.extend(result["rows"])
+    summary={"tested":len(reports),"accepted":sum(r["accepted"] for r in reports),"rows":reports,"noPlaceWrites":True}
+    write(ROOT/"dist/s07/geometry.json",summary);print(json.dumps(summary),flush=True)
+    require(len(reports)==36 and summary["accepted"]==36,"Native geometry needs refinement")
+if __name__=="__main__":main()
