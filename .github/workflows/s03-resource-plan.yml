@@ -1,0 +1,38 @@
+name: S03 resource geometry and bush preview
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/s03-resource-plan.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/resource_layout.py --stick games/maps/mapa-principal/game/assets/audits/s03-stick-extraction-v14.json --output dist/s03
+      - name: Replay deterministically
+        run: |
+          python tools/resource_layout.py --stick games/maps/mapa-principal/game/assets/audits/s03-stick-extraction-v14.json --output dist/s03-replay
+          cmp dist/s03/resource-plan.json dist/s03-replay/resource-plan.json
+      - name: Get official component thumbnails
+        run: |
+          PYTHONPATH=tools/assets:tools python - <<'PY'
+          from pathlib import Path
+          from discover import thumbnails,download_thumbnail
+          p=Path("dist/s03/thumbs");p.mkdir(parents=True,exist_ok=True)
+          for aid,url in thumbnails(["123968188","123968836","122505516420043","18721169682","18721003328"]).items():
+              img=download_thumbnail(url)
+              if img is not None:img.save(p/(aid+".png"))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s03-resource-plan
+          path: dist/s03/

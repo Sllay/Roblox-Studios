@@ -1,0 +1,117 @@
+{
+  "runId": 43264550492,
+  "sourceCommit": "d7b978f8e5aa341c54878df4be9dea2ec0cf9c9c",
+  "universeId": "10769712441",
+  "source": {
+    "meshes": [
+      {
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "vertexColor": [
+          1,
+          1,
+          1
+        ],
+        "meshType": "FileMesh",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "meshId": "http://www.roblox.com/asset/?id=123968188",
+        "textureId": "http://www.roblox.com/asset/?id=123968836",
+        "selector": [
+          {
+            "class": "Tool",
+            "name": "Punishment stick",
+            "index": 1
+          },
+          {
+            "class": "Part",
+            "name": "Part",
+            "index": 5
+          },
+          {
+            "class": "SpecialMesh",
+            "name": "Mesh",
+            "index": 1
+          }
+        ]
+      }
+    ],
+    "color": [
+      0.29411765933036804,
+      0.5921568870544434,
+      0.29411765933036804
+    ],
+    "class": "Part",
+    "transparency": 0,
+    "name": "Part",
+    "material": "Plastic",
+    "cframe": [
+      -356.6015930175781,
+      19.97531509399414,
+      -252.6056365966797,
+      -0.9955965280532837,
+      -0.06979889422655106,
+      0.06258244067430496,
+      0.06467751413583755,
+      -0.02816792018711567,
+      0.9975094795227051,
+      -0.06786245107650757,
+      0.9971631169319153,
+      0.03255819156765938
+    ],
+    "size": [
+      1,
+      3.6000001430511475,
+      1
+    ],
+    "selector": [
+      {
+        "class": "Tool",
+        "name": "Punishment stick",
+        "index": 1
+      },
+      {
+        "class": "Part",
+        "name": "Part",
+        "index": 5
+      }
+    ]
+  },
+  "geometryStatus": "converted_file_mesh_native_bounds",
+  "schemaVersion": 1,
+  "assetId": "9204066145",
+  "meshSize": [
+    0.6624240279197693,
+    5.70536994934082,
+    0.3487184941768646
+  ],
+  "status": "extracted",
+  "sourceScripts": 5,
+  "size": [
+    0.6624240279197693,
+    5.70536994934082,
+    0.3487184941768646
+  ],
+  "outputClasses": [
+    "MeshPart"
+  ],
+  "importAuthorized": false,
+  "roundtripVerified": true,
+  "meshId": "rbxassetid://123968188",
+  "textureId": "rbxassetid://123968836",
+  "noPlaceWrites": true,
+  "placeId": "93428341652658",
+  "codeExecuted": false,
+  "dependencies": {
+    "rbxassetid://123968188": "Success",
+    "rbxassetid://123968836": "Success"
+  },
+  "digest": "5NFHPQgF41hsQmm4yfKth/sEcH80jt9Nix6njVQS8rE=",
+  "loadedVersion": 14
+}
