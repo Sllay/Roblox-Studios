@@ -50,3 +50,8 @@
 - [x] Generic Scene Patch CLI/workflow, add/edit/move/adopt/archive/restore/create/update script; tests and live read-only preview 43144089622 passed.
 - [x] Post-write Scene Sync v7 committed 43143950368; durable migration receipt, two native Terrain regions and query index.
 - [ ] Mobile v7: central random spawn, seamless expanded ground, old gray platform gone, recovery if falling, no regression of forest/lake. Generic patch apply variants and inverse remain untested remotely.
+
+- [x] P3/P4 world migration: 3x3 playable + 16 horizon chunks, connected native river/lake, 138 plants, prop reanchor, 53 spawn candidates, clouds, v8 saved and verified 43147204931.
+- [x] P4 initial typed Roblox gameplay policy, executable Luau logic tests (11), negative type gate and runtime diagnostics panel. CI and world verification passed.
+- [x] Place Provision: official inventory verified 43147338256, ID enrollment and owned-template clone path implemented; no new Place/Universe created.
+- [ ] P4 live mobile: actual spawn distribution, death/corpse physics, river traversal/shore appearance, clouds and FPS; broader typed script coverage and automated engine gameplay still pending.

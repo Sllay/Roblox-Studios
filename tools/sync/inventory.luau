@@ -57,6 +57,22 @@ local function record(root,obj)
         if obj:IsA("Part") then p.shape=obj.Shape.Name end
         if obj:IsA("SpawnLocation") then p.enabled=obj.Enabled;p.neutral=obj.Neutral;p.duration=obj.Duration;p.allowTeamChangeOnTouch=obj.AllowTeamChangeOnTouch end
         if obj:IsA("MeshPart") then p.meshId=obj.MeshId;p.textureId=obj.TextureID;p.renderFidelity=obj.RenderFidelity.Name;p.collisionFidelity=obj.CollisionFidelity.Name end
+    elseif obj:IsA("Terrain") then
+        r.coverage="terrain_settings";p.waterColor=rgb(obj.WaterColor);p.waterTransparency=obj.WaterTransparency;p.waterReflectance=obj.WaterReflectance;p.waterWaveSize=obj.WaterWaveSize;p.waterWaveSpeed=obj.WaterWaveSpeed;p.decoration=obj.Decoration
+        local ok,v=pcall(function() return obj.GrassLength end);if ok then p.grassLength=v end
+    elseif obj:IsA("Clouds") then
+        r.coverage="clouds";p.enabled=obj.Enabled;p.cover=obj.Cover;p.density=obj.Density;p.color=rgb(obj.Color)
+    elseif obj:IsA("Sky") then
+        r.coverage="sky";p.celestialBodiesShown=obj.CelestialBodiesShown;p.starCount=obj.StarCount;p.sunAngularSize=obj.SunAngularSize;p.moonAngularSize=obj.MoonAngularSize
+        for _,k in {"SkyboxBk","SkyboxDn","SkyboxFt","SkyboxLf","SkyboxRt","SkyboxUp","SunTextureId","MoonTextureId"} do p[k]=obj[k] end
+    elseif obj:IsA("Atmosphere") then
+        r.coverage="atmosphere";p.density=obj.Density;p.offset=obj.Offset;p.haze=obj.Haze;p.glare=obj.Glare;p.color=rgb(obj.Color);p.decay=rgb(obj.Decay)
+    elseif obj:IsA("PostEffect") then
+        r.coverage="post_effect";p.enabled=obj.Enabled
+        if obj:IsA("BloomEffect") then p.intensity=obj.Intensity;p.size=obj.Size;p.threshold=obj.Threshold
+        elseif obj:IsA("SunRaysEffect") then p.intensity=obj.Intensity;p.spread=obj.Spread
+        elseif obj:IsA("DepthOfFieldEffect") then p.farIntensity=obj.FarIntensity;p.nearIntensity=obj.NearIntensity;p.focusDistance=obj.FocusDistance;p.inFocusRadius=obj.InFocusRadius
+        elseif obj:IsA("ColorCorrectionEffect") then p.brightness=obj.Brightness;p.contrast=obj.Contrast;p.saturation=obj.Saturation;p.tintColor=rgb(obj.TintColor) end
     elseif obj:IsA("Model") then
         r.coverage="model";p.pivot={obj:GetPivot():GetComponents()};p.scale=obj:GetScale()
     elseif obj:IsA("LuaSourceContainer") then
@@ -94,7 +110,12 @@ local function terrainState()
 end
 local function lightingState()
     local l=game:GetService("Lighting")
-    return {brightness=l.Brightness,clockTime=l.ClockTime,exposure=l.ExposureCompensation,ambient=rgb(l.Ambient),outdoorAmbient=rgb(l.OutdoorAmbient),diffuse=l.EnvironmentDiffuseScale,specular=l.EnvironmentSpecularScale,style=l.LightingStyle.Name,globalShadows=l.GlobalShadows}
+    return {brightness=l.Brightness,clockTime=l.ClockTime,exposure=l.ExposureCompensation,ambient=rgb(l.Ambient),outdoorAmbient=rgb(l.OutdoorAmbient),diffuse=l.EnvironmentDiffuseScale,specular=l.EnvironmentSpecularScale,style=l.LightingStyle.Name,globalShadows=l.GlobalShadows,fogStart=l.FogStart,fogEnd=l.FogEnd,fogColor=rgb(l.FogColor)}
+end
+local function workspaceSettings()
+    local p={gravity=workspace.Gravity,fallenPartsDestroyHeight=workspace.FallenPartsDestroyHeight,globalWind=vec(workspace.GlobalWind)}
+    for _,k in {"StreamingEnabled","StreamingMinRadius","StreamingTargetRadius"} do local ok,v=pcall(function() return workspace[k] end);if ok then p[k]=v end end
+    return p
 end
 local function inventory()
     local rows={}
@@ -106,7 +127,7 @@ local function inventory()
         assert(total<=cfg.maxObjects,"Inventory limit exceeded; no partial baseline")
         for _,obj in all do table.insert(rows,record(root,obj)) end
     end
-    return {schemaVersion=1,universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),objects=rows,terrain=terrainState(),lighting=lightingState(),total=total,services=cfg.services}
+    return {schemaVersion=1,universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),objects=rows,terrain=terrainState(),lighting=lightingState(),workspaceSettings=workspaceSettings(),total=total,services=cfg.services}
 end
 -- __RS_SYNC_DISPATCH__
 return Http:JSONEncode(inventory())

@@ -18,10 +18,13 @@ def write(path,data):
 def state_path(t):
     return ROOT/"games/maps"/t["game"]/"docs/sync"/t["place"]/(t["environment"]+".json")
 def regions(t):
-    path=ROOT/"games/maps"/t["game"]/"docs/sync"/t["place"]/"regions.json"
+    folder=ROOT/"games/maps"/t["game"]/"docs/sync"/t["place"]
+    path=folder/("regions."+t["environment"]+".json")
+    if not path.exists():path=folder/"regions.json"
     if not path.exists():return []
     rows=read(path)
     require(isinstance(rows,list) and len(rows)<=32,"Region limit")
+    require(len({r["id"] for r in rows})==len(rows),"Duplicate region IDs")
     for r in rows:
         b=r["bounds"];require(len(b)==6 and all(type(x) is int and x%4==0 for x in b),"Region alignment")
         dx,dy,dz=[b[i+3]-b[i] for i in range(3)]
@@ -39,6 +42,7 @@ def normalize(report):
     items={**rows}
     for r in report["terrain"]:items["terrain:"+r["id"]]=r
     items["environment:lighting"]=report["lighting"]
+    if "workspaceSettings" in report:items["environment:workspace"]=report["workspaceSettings"]
     state={k:report[k] for k in ("schemaVersion","universeId","placeId","loadedVersion","services","total")}
     state["records"]=items
     state["stateDigest"]=sha(items)

@@ -27,8 +27,6 @@ on:
       confirm_create:
         type: boolean
         default: false
-  push:
-    paths: ['games/maps/mapa-principal/docs/provision-preview-once.trigger']
 permissions:
   contents: write
 concurrency:

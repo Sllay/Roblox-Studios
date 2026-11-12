@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "baselineVersion": 7,
+  "verifiedVersion": 8,
+  "previewRun": "43147108885",
+  "applyRun": "43147204931",
+  "tileDigests": {
+    "chunk--1--1": "RRrW31fM227JhArqP8dHTFf2O1onEpKK9KPwel882DQ=",
+    "chunk--1--2": "eDh/OYlTMufPWRSJX2LRmt2oj0Ss7/9veuJfrv3CusU=",
+    "chunk--1-0": "AKMjEmxKObqGYj6Kb6ZWN6nGXk9WRDpuPfcRbK68ebk=",
+    "chunk--1-1": "WVNdwKAa0W5ehRFcx2ejY+0zol/oZEOPWldVThoLhCY=",
+    "chunk--1-2": "gc+8Gc4k2B0xldYzaKeiYAwNuQ8ipqxx2euism0a0+E=",
+    "chunk--2--1": "F1JEwbg1cG8mkoQlgUzQ08q9cKsVexbGo4zs9wGt9U8=",
+    "chunk--2--2": "71mNvPb57wcv+oSmU8QwEB43iyz+zuG0PCBvyN6scnw=",
+    "chunk--2-0": "2dqLHfeSXqeU+UY9LWV8pW54cQhWkCukQAW3NaC4LMA=",
+    "chunk--2-1": "4cZGhXSt3L6+pUURWsx0dXdAfXIwNp+9UZW+Cz+7mPk=",
+    "chunk--2-2": "qZb3p4oSffvLe2vL9cE/leyndgyHyUAQ/pXrFVaHjyU=",
+    "chunk-0--1": "cvhfLNLggnUr7ibkK3jSaa1sMuDdOlXP428AZbzbHCA=",
+    "chunk-0--2": "F0pTnH/TxhpRIcGOfVKzfqDV++rl3Jduj+JvYuIa3CM=",
+    "chunk-0-0": "2BvVQaVRC9PNRSJq+YHMpxEvBBd6/O5jiwIn0ojXTf0=",
+    "chunk-0-1": "ItnR8KETpFIr/bMZYyw9le/TqtTUPgnppfdizWbmtGk=",
+    "chunk-0-2": "9jeuuEb+jOxidFp1zT62dMzFZ3khADNh5doTl5rtGN4=",
+    "chunk-1--1": "dGNXdWYs12qni3K4LB5k3la2z3wfYx0vOHvM5John8w=",
+    "chunk-1--2": "E9gerUcqt/4VoDKhmXUQ7dgbqTfATke1IrxnBZ5Dxq0=",
+    "chunk-1-0": "d5qxj3yL1VCx6Z6U5mAAldao62fm7uy+lbwGQFqYoZY=",
+    "chunk-1-1": "k4NDh7zL8A3KOG/Lp6XX0g7M/E28AYIuPlkyJeGBEds=",
+    "chunk-1-2": "I9nj+amYtfzHqVtLDr7l+mt5olYtbLu557ibh779mUQ=",
+    "chunk-2--1": "pMSKlwgyvYuX8seXhQV/3bFvYJkgRjzkgJXXADEcvVo=",
+    "chunk-2--2": "r+plXQjxBpkh5DOc/356ebfCEwko0/M3bma5uzuRp28=",
+    "chunk-2-0": "ctXejPxKIS/xhEsmU3Vx1Kxbv+2cTGEdqIQ0ODedNxI=",
+    "chunk-2-1": "GziPw2DZh27V7BfWDBCS9/IkEcD9bp08likKWCQleaM=",
+    "chunk-2-2": "Nvje0EK5yRYmojLRTt82S0V/BP0cGy7y99/OfwP+mEU="
+  },
+  "plants": 138,
+  "newPlants": 105,
+  "horizonPlants": 24,
+  "newColliders": 57,
+  "spawnCandidates": 53,
+  "paintedVoxels": 1759,
+  "paintGeometryChanges": 0,
+  "paintLiquidChanges": 0,
+  "maxReadbackError": 0.003921568627450869,
+  "isolatedTree": {
+    "position": [
+      40,
+      28.89850425720215,
+      -18
+    ],
+    "burial": 3,
+    "ground": 23.89989317761734
+  },
+  "notes": "Historical structural verification. Full preview and model shape evidence in Actions artifact. No gameplay proof or full rollback."
+}
