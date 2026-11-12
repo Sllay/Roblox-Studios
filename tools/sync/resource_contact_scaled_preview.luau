@@ -116,7 +116,19 @@ for i,r in modifiedTerrain do
     if r.digest~=before[i].digest then changedTiles+=1 end
 end
 local originals,clones,out={},{},{}
-for _,r in cfg.rows do
+-- Place stones first; then choose a deterministic dry, low-relief, non-overlapping support for sticks.
+local ordered=table.clone(cfg.rows)
+table.sort(ordered,function(a,b) if a.category~=b.category then return a.category=="stone" end return a.id<b.id end)
+local candidateParams=OverlapParams.new();candidateParams.FilterType=Enum.RaycastFilterType.Include;candidateParams.FilterDescendantsInstances={F}
+local function fits(m)
+    local cf,size=m:GetBoundingBox()
+    for _,part in W:GetPartBoundsInBox(cf,size,candidateParams) do
+        local other=part:FindFirstAncestorOfClass("Model")
+        if other and other~=m and other.Parent==F then return false end
+    end
+    return true
+end
+for _,r in ordered do
     local old=F:FindFirstChild(r.id);local s=measure(old);local pivot=old:GetPivot()
     local surfaceDelta=s.center.y-source[r.id].center.y
     -- Material interpolation can shift the physical mesh slightly even with identical occupancy.
@@ -128,20 +140,46 @@ for _,r in cfg.rows do
     local oldScale=old:GetScale()
     local targetScale=oldScale*(r.category=="stick" and 2 or 1)
     m:ScaleTo(targetScale)
-    m:PivotTo(pivot)
-    local scaled=measure(m)
-    local dy=scaled.high+.01-scaled.bottom
     table.insert(originals,old);old.Parent=nil
-    m:PivotTo(pivot+Vector3.new(0,dy,0))
+    local scaled,dy,chosen,chosenYaw,chosenOffset
+    local bestGap=math.huge
+    local offsets={Vector3.zero}
+    local yaws={0}
+    if r.category=="stick" then
+        for _,deg in {15,-15,30,-30,45,-45,60,-60,75,-75,90} do table.insert(yaws,deg) end
+        for _,dist in {.5,1,1.5,2} do
+            for _,angle in {0,45,90,135,180,225,270,315} do
+                local rad=math.rad(angle);table.insert(offsets,Vector3.new(math.cos(rad)*dist,0,math.sin(rad)*dist))
+            end
+        end
+    end
+    for _,offset in offsets do
+        for _,yaw in yaws do
+            local candidate=CFrame.new(pivot.Position+offset)*CFrame.Angles(0,math.rad(yaw),0)*pivot.Rotation
+            m:PivotTo(candidate)
+            local support=measure(m)
+            local gap=support.high-support.low+.01
+            bestGap=math.min(bestGap,gap)
+            if gap>=.22 or support.grass>0 then continue end
+            local lift=support.high+.01-support.bottom
+            m:PivotTo(candidate+Vector3.new(0,lift,0))
+            if not fits(m) then continue end
+            scaled,dy,chosen,chosenYaw,chosenOffset=support,lift,candidate,yaw,offset
+            break
+        end
+        if chosen then break end
+    end
+    assert(chosen,string.format("No valid support for %s; minimum sampled gap %.4f",r.id,bestGap))
+    m:PivotTo(chosen+Vector3.new(0,dy,0))
     m:SetAttribute("RSVoxelGroundY",r.groundY);m:SetAttribute("RSExpectedGroundY",scaled.center.y)
     m:SetAttribute("RSBuriedDepth",0);m:SetAttribute("RSContactMethod","native_terrain_ray")
     m.Parent=F;table.insert(clones,m)
     local placed=measure(m);local p=m:GetPivot().Position
     assert(placed.bottom-placed.high>=.005 and placed.bottom-placed.high<=.025,"Support contact")
-    assert(placed.bottom-placed.low<.22,"Excessive floating")
-    assert(math.abs(p.X-pivot.X)<.001 and math.abs(p.Z-pivot.Z)<.001 and math.abs(m:GetScale()-targetScale)<.00001,"Unexpected position or scale change")
+    assert(placed.bottom-placed.low<.22 and placed.grass==0,"Excessive floating or grass support")
+    assert((Vector3.new(p.X,0,p.Z)-Vector3.new(pivot.X,0,pivot.Z)).Magnitude<=(r.category=="stick" and 2.001 or .001) and math.abs(m:GetScale()-targetScale)<.00001,"Unexpected position or scale change")
     local part=m:FindFirstChildWhichIsA("MeshPart",true);assert(part and part.Anchored and part.CanCollide and part.CanQuery and part.CollisionGroup=="RSNaturalResource","Resource policy")
-    table.insert(out,{id=r.id,category=r.category,from={pivot.X,pivot.Y,pivot.Z},to={p.X,p.Y,p.Z},deltaY=dy,oldScale=oldScale,targetScale=targetScale,actualScale=m:GetScale(),scaleRatio=m:GetScale()/oldScale,paintSurfaceDelta=surfaceDelta,groundY=placed.center.y,highY=placed.high,lowY=placed.low,baseGap=placed.bottom-placed.high,maxGap=placed.bottom-placed.low,topGap=placed.top-placed.high,material=placed.center.material,grassSamples=placed.grass,burial=0})
+    table.insert(out,{id=r.id,category=r.category,from={pivot.X,pivot.Y,pivot.Z},to={p.X,p.Y,p.Z},deltaY=dy,offset={chosenOffset.X,chosenOffset.Z},yawAdjustment=chosenYaw,oldScale=oldScale,targetScale=targetScale,actualScale=m:GetScale(),scaleRatio=m:GetScale()/oldScale,paintSurfaceDelta=surfaceDelta,groundY=placed.center.y,highY=placed.high,lowY=placed.low,baseGap=placed.bottom-placed.high,maxGap=placed.bottom-placed.low,topGap=placed.top-placed.high,material=placed.center.material,grassSamples=placed.grass,burial=0})
 end
 -- Verify grass and conservative bounding-box overlap after all clones exist.
 local overlapPairs={}
@@ -158,6 +196,7 @@ for _,m in clones do
         end
     end
 end
+assert(#overlapPairs==0,"Resource overlap after placement")
 local count=0;local paintRows={}
 for _,r in changedCells do count+=1;table.insert(paintRows,r) end
 table.sort(paintRows,function(a,b)return a.x==b.x and a.z<b.z or a.x<b.x end)
