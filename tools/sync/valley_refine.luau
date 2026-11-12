@@ -242,7 +242,7 @@ if cfg.mode=="preview" then return output(preview) end
 assert(cfg.mode=="apply" and cfg.preview.oldHash==oldHash and cfg.preview.changedColumns==changed and cfg.preview.connectedDeep==#q,"Preview changed")
 assert(#cfg.preview.moves==#moves,"Move count changed")
 for i,r in moves do assert(r.name==cfg.preview.moves[i].name and (Vector3.new(table.unpack(r.after))-Vector3.new(table.unpack(cfg.preview.moves[i].after))).Magnitude<0.025,"Move changed") end
-T:WriteVoxelChannels(region(b),4,d)
+T:WriteVoxelChannels(region(b),4,{SolidMaterial=d.SolidMaterial,SolidOccupancy=d.SolidOccupancy,LiquidOccupancy=d.LiquidOccupancy})
 local persisted=read(b)
 local hashes={river=digest(persisted,nx,ny,nz)}
 local maxError=0

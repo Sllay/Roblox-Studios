@@ -1,1 +1,1 @@
-Apply reviewed v9 preview 43158101058 once to staging. Ragdoll topology tests, native stream readback connectivity, horizon and boundaries. No production.
+Retry exact reviewed v9 preview after native ReadVoxelChannels Size metadata rejected by writer; explicit supported channel map. Previous task failed before save. Require v9.
