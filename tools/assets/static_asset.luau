@@ -237,6 +237,47 @@ local function inspectPack(root: Model)
     end)
     local result={schemaVersion=1, totalInstances=#all,totalModels=totalModels,
         scriptsInPack=scripts, inventoryTruncated=totalModels>#candidates,candidates=candidates}
+    if cfg.components == true then
+        -- Detached mixed-content inventory. Never read Source, execute, parent or
+        -- require third-party code. Only bounded class counts and visual properties.
+        local counts, components = {}, {}
+        local totalComponents = 0
+        for _, obj in all do
+            counts[obj.ClassName]=(counts[obj.ClassName] or 0)+1
+            local kind = nil
+            if obj:IsA("LuaSourceContainer") then kind="code"
+            elseif obj:IsA("ParticleEmitter") or obj:IsA("Beam") or obj:IsA("Trail") then kind="vfx"
+            elseif obj:IsA("ImageLabel") or obj:IsA("ImageButton") then kind="ui"
+            elseif obj:IsA("Decal") then kind="texture"
+            elseif obj:IsA("Tool") then kind="tool"
+            end
+            if kind then
+                totalComponents+=1
+                if #components<128 then
+                    local path=packPath(root,obj)
+                    local row={class=obj.ClassName,name=obj.Name:sub(1,120),kind=kind,
+                        selector=if #path<=32 then path else nil, importAuthorized=false}
+                    if obj:IsA("ParticleEmitter") then
+                        row.texture=obj.Texture
+                        row.rate=obj.Rate
+                        row.lifetime={obj.Lifetime.Min,obj.Lifetime.Max}
+                        row.speed={obj.Speed.Min,obj.Speed.Max}
+                        row.enabled=obj.Enabled
+                    elseif obj:IsA("Beam") or obj:IsA("Trail") then
+                        row.texture=obj.Texture
+                        row.enabled=obj.Enabled
+                    elseif obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+                        row.image=obj.Image
+                    elseif obj:IsA("Decal") then
+                        row.texture=obj.Texture
+                    end
+                    table.insert(components,row)
+                end
+            end
+        end
+        result.componentInventory={classes=counts,total=totalComponents,
+            truncated=totalComponents>#components,rows=components,codeExecuted=false}
+    end
     -- Automatic sample is a technical extraction proof, NOT visual selection or approval.
     local selected=nil
     if cfg.selector then

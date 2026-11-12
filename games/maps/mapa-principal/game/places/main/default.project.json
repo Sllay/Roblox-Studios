@@ -10,7 +10,12 @@
       },
       "Game": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage"
+        "Config": {
+          "$path": "src/ReplicatedStorage/Config.luau"
+        }
+      },
+      "RSWorldClock": {
+        "$path": "src/ReplicatedStorage/RSWorldClock.luau"
       }
     },
     "ServerScriptService": {

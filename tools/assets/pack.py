@@ -20,8 +20,10 @@ def validate_selector(value):
             raise WorkspaceError("Invalid pack selector segment")
     return value
 
-def inspect(target,key,asset_id,selector=None,sample=False):
+def inspect(target,key,asset_id,selector=None,sample=False,components=False):
     options={"sample":bool(sample)}
+    if components:
+        options["components"]=True
     if selector is not None:
         options["selector"]=validate_selector(selector)
     report=call(target,key,"pack_inventory",check_id(asset_id),**options)
