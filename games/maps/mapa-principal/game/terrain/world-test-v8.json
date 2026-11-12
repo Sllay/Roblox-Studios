@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "expectedVersion": 7,
+  "baselineDigest": "bd0d2b06ba6dab8420b7f30dd86042cff7ae8ffd2f39ec0aefcceca5b545f497",
+  "seed": 93217,
+  "chunkSize": 256,
+  "playableRadiusChunks": 1,
+  "horizonRadiusChunks": 2,
+  "yMin": -32,
+  "yMax": 112,
+  "spawnRadius": 108,
+  "pilotDigest": "+9jG2LoEvoHDF4Ux6xX9R5w77c96xo21r22RIJsp5Bk=",
+  "centerDigest": "GG2GC5t6nlcz+1ZqmKSWlKxq8k0yVTNZgaBzVtwlYak=",
+  "river": {
+    "points": [
+      [
+        212,
+        300
+      ],
+      [
+        204,
+        248
+      ],
+      [
+        236,
+        188
+      ],
+      [
+        224,
+        128
+      ],
+      [
+        220,
+        92
+      ],
+      [
+        224,
+        60
+      ],
+      [
+        224,
+        28
+      ]
+    ],
+    "sourceLevel": 32,
+    "lakeLevel": 20,
+    "halfWidth": 10,
+    "depth": 5,
+    "bankWidth": 14,
+    "sourceRadius": 16
+  },
+  "paths": [
+    [
+      [
+        -340,
+        -48
+      ],
+      [
+        -180,
+        -24
+      ],
+      [
+        -60,
+        -40
+      ],
+      [
+        0,
+        -36
+      ],
+      [
+        36,
+        -48
+      ],
+      [
+        96,
+        -68
+      ]
+    ],
+    [
+      [
+        352,
+        -48
+      ],
+      [
+        380,
+        -44
+      ]
+    ],
+    [
+      [
+        -180,
+        -24
+      ],
+      [
+        -164,
+        68
+      ],
+      [
+        -124,
+        156
+      ],
+      [
+        -80,
+        270
+      ]
+    ]
+  ],
+  "vegetation": {
+    "playableCount": 84,
+    "horizonCount": 24,
+    "minSpacing": 17,
+    "isolatedTreeBurial": 3
+  },
+  "clouds": {
+    "cover": 0.55,
+    "density": 0.65
+  },
+  "maxModels": 145
+}
