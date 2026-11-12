@@ -1,0 +1,15 @@
+# Scene Builder — P2.2 pilot
+
+## Workflow
+
+Use `tools/scene_builder.py` with `games/maps/mapa-principal/game/terrain/forest-pilot.json`. This pilot is deliberately bounded to the validated staging region (96,0,-128)..(352,64,128), version 5 terrain paint digest. Preview reads actual persisted native voxels, classifies dry grass/wet/other columns, selects catalog-reviewed Tree_01, Tree_08 and Bush_01 with per-species biome, loads the acquired pack once and audits each unique source with the P1 Content API and offline RBXM parser. No third-party binaries are retained.
+
+The seed, density noise, randomized scale/yaw, clearance from non-grass surface, and minimum canopy spacing produce a reproducible placement manifest. Use a reviewed preview artifact as the baseline for apply. Apply rechecks the source serialization digest, terrain digest, Place version and transforms; creates a detached folder of anchored visual models and separate invisible cylinder trunk colliders. Leaves never collide. No terrain writes. Existing Tree_01 stays outside the new region. One SavePlaceAsync after all checks, followed by independent verify of each model, transform, source visual properties and PBR sample per species, native terrain digest and Workspace diff. Never retry a save without checking persisted version.
+
+## Placement calibration and limits
+
+Edit-time Open Cloud raycast on native Terrain returned no support for all sampled positions (run 43140299002). The planner explicitly reconstructs the surface from actual solid occupancy at 4-stud grid centers, bilinear interpolation and five support samples; it is an estimate of the rendered/collision surface, not a verified engine ray hit. Slope and unevenness limits remain enforced. The trusted RuntimeGroundCheck Script performs five actual Terrain raycasts per model in the live server, logs pass/review/missing counts, and sets diagnostic attributes without moving anything. User must test the client; no automated gameplay claim. Tree_01 burial 6 studs at original scale was accepted on flat Baseplate, scaled proportionally for this pilot; Tree_08 4 studs and Bush_01 1 stud are provisional author decisions. Collision cylinder radii/heights are provisional simplified trunk proxies, not mesh-accurate collision. No collider for bushes. No claim of FPS measurement or final visual acceptance.
+
+The region catalog uses material classes and one bounded pilot, not yet a universal multi-region scene manager. The current planner targets one acquired pack; no general arbitrary asset imports or automatic production promotion. Existing terrain is protected by exact digest. Source model count budget <=40, two MeshParts and two SurfaceAppearances per model, tree collider count <=20 in the pilot. This is a pilot budget, not measured performance. For later projects extend the validated plan schema and source review rather than bypassing these checks.
+
+Workflow: `Scene Builder forest pilot (staging)`: preview, apply with baseline_run and explicit confirmation, verify with same baseline. Production untouched.

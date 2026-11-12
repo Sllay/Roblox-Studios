@@ -47,3 +47,7 @@ Placement: read docs/ASSET_PLACEMENT.md; require reviewed per-model profile and 
 ## Native terrain
 
 Use docs/TERRAIN_BUILDER.md and tools/terrain_builder.py for new native terrain regions. Separate sculpting/solid occupancy, water/liquid occupancy, and painting/material. Never excavate Air just to change material, never create unsupported water or use Terrain:Clear. Plan all geometry in a bounded common height/density field, ensure continuous solid floor and margins, preview, verify exact paint invariants, save staging and verify native voxel hash. Do not treat the Workspace structural snapshot as a terrain backup. Preserve existing terrain; existing region edits require explicit reviewed baseline. Use placement ground allowlist Terrain and reject water rather than plant on underwater beds.
+
+## Scene Builder
+
+Consult docs/SCENE_BUILDER.md and tools/scene_builder.py for the forest pilot. Use actual persisted terrain channels and an exact terrain digest, catalog-reviewed sources, deterministic seed and an explicit reviewed manifest. Do not silently assume edit-time raycasts work for native Terrain; the current pilot uses occupancy interpolation and live server raycast diagnostics. Treat scaled/new-species placement and collision profiles as provisional until mobile validation. Do not claim measured FPS or full collision validation from structural checks.

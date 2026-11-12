@@ -37,3 +37,6 @@
 - [x] Native terrain paint on existing region: branch trail, 98 voxels repainted, exact occupancy/liquid invariants and persistence in staging v5 (43139201978).
 - [x] P1 temporary lighting lab removed during P2 terrain creation; Tree_01 preserved.
 - [ ] P2 continuation: terrain-aware region catalog, multi-feature sculpt editing with baseline, procedural vegetation and collision budgets; dedicated lake traversal and performance tests.
+
+- [x] P2.2 Scene Builder pilot implementation: deterministic vegetation distribution, native voxel material masks, per-species audits, scaled burial and trunk proxies.
+- [ ] P2.2 real staging publication and live mobile validation; edit-time Terrain raycast unavailable, native occupancy interpolation plus live server support diagnostic.
