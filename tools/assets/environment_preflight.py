@@ -1,5 +1,6 @@
 """Read-only exact asset audits and existing canopy inventory for the P4 expansion."""
 from __future__ import annotations
+import argparse
 import json
 import os
 import sys
@@ -32,6 +33,9 @@ def build_patch(base):
     return {"schemaVersion":1,"expectedVersion":base["loadedVersion"],"baselineDigest":base["stateDigest"],"operations":ops}
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--scripts-only",action="store_true")
+    args=parser.parse_args()
     key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
     games,targets=load_all()
     t=resolve(games,targets,"mapa-principal","main","staging")
@@ -53,6 +57,7 @@ def main():
         rows[k]=rows.get(k,0)+1
     write(out/"existing-meshes.json",rows)
     print("ENV_EXISTING "+json.dumps(rows),flush=True)
+    if args.scripts_only:return 0
     spec=json.loads((GAME/"game/assets/environment-p4.json").read_text())
     results=[]
     for a in spec["assets"]:

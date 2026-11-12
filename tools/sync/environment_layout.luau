@@ -4,7 +4,8 @@ local W=workspace
 local T=W.Terrain
 local plan=cfg.plan
 assert(cfg.environment=="staging" and game.PlaceVersion==cfg.expectedVersion,"Stale environment plan")
-assert(not W:FindFirstChild("RSEnvironmentP4"),"Environment already installed")
+local persistedRoot=W:FindFirstChild("RSEnvironmentP4")
+assert((cfg.mode=="verify" and persistedRoot) or (cfg.mode~="verify" and not persistedRoot),"Environment identity changed")
 local tiles={}
 local channels={"SolidMaterial","SolidOccupancy","LiquidOccupancy"}
 for _,region in cfg.regions do
@@ -110,10 +111,11 @@ for _,spec in plan.assets do
     local a=audit(model)
     local _,digest=serialize(model)
     assert(digest==spec.sourceDigest,"Source digest changed: "..spec.name)
-    fetchDependencies(model,a)
+    local fetched=fetchDependencies(model,a)
+    local sourceScale=model:GetScale()
     model:PivotTo(CFrame.new())
     local bb,size=model:GetBoundingBox()
-    sources[spec.name]={model=model,digest=digest,radius=modelRadius(model),bottom=bb.Position.Y-size.Y/2,height=size.Y}
+    sources[spec.name]={model=model,digest=digest,radius=modelRadius(model),bottom=bb.Position.Y-size.Y/2,height=size.Y,sourceScale=sourceScale,audit=a,dependencyFetch=fetched}
 end
 for _,root in packRoots do root:Destroy() end
 local rows,stats={},{}
@@ -160,22 +162,72 @@ if cfg.mode=="preview" then
     for _,s in sources do s.model:Destroy() end
     return output({preview=true,rows=rows,stats=stats,existingCount=existingCount,noPlaceWrites=true})
 end
-assert(cfg.mode=="apply" and cfg.confirmStaging==true,"Explicit staging confirmation required")
-local function same(a,b)
+local function same(a,b,tolerance)
+    tolerance=tolerance or 0.0001
     if typeof(a)~=typeof(b) then return false end
-    if typeof(a)=="number" then return math.abs(a-b)<0.0001 end
+    if typeof(a)=="number" then return math.abs(a-b)<tolerance end
     if typeof(a)~="table" then return a==b end
-    for k,v in a do if not same(v,b[k]) then return false end end
+    for k,v in a do if not same(v,b[k],tolerance) then return false end end
     for k in b do if a[k]==nil then return false end end
     return true
 end
 assert(same(rows,cfg.layoutRows) and #rows==plan.maxNewModels,"Layout changed or incomplete")
+local specs={}
+for _,s in plan.assets do specs[s.name]=s end
+local function checkVisual(m,row)
+    local source=sources[row.name]
+    assert(math.abs(m:GetScale()-source.sourceScale*row.scale)<0.001,"Model scale mismatch")
+    local actual=audit(m)
+    local expected=table.clone(source.audit)
+    actual.bounds=nil;expected.bounds=nil
+    for _,r in actual.rows do
+        if r.class=="MeshPart" then
+            for i=1,3 do r.relative[i]/=row.scale;r.size[i]/=row.scale end
+        end
+    end
+    assert(same(actual,expected,0.035),"Geometry/PBR audit mismatch: "..row.id)
+    for _,obj in m:GetDescendants() do
+        if obj:IsA("BasePart") then
+            assert(obj.Anchored and not obj.CanCollide and not obj.CanTouch and not obj.CanQuery,"Visual physics changed")
+        end
+    end
+end
+if cfg.mode=="verify" then
+    local root=persistedRoot
+    assert(root:IsA("Folder") and root:GetAttribute("RSOwner")=="RSEnvironmentP4V1" and root:GetAttribute("RSPlanDigest")==cfg.planDigest,"Root provenance")
+    local models=root:FindFirstChild("Models");local colliders=root:FindFirstChild("Collisions")
+    local runtime=root:FindFirstChild("RuntimeGroundCheck")
+    assert(models and colliders and #models:GetChildren()==#rows and runtime and runtime:IsA("Script") and runtime.Source==cfg.runtimeSource,"Persisted structure")
+    local samples={};local colliderCount=0
+    for _,row in rows do
+        local m=models:FindFirstChild(row.id)
+        assert(m and m:IsA("Model") and m:GetAttribute("RSManagedId")==row.id and m:GetAttribute("RSModelDigest")==row.sourceDigest and m:GetAttribute("RSAssetId")==row.assetId,"Model provenance")
+        local cf=CFrame.new(table.unpack(row.position))*CFrame.Angles(0,math.rad(row.yaw),0)
+        assert(same({m:GetPivot():GetComponents()},{cf:GetComponents()},0.035),"Persisted pivot")
+        checkVisual(m,row)
+        local c=specs[row.name].profile.collider
+        if c then
+            colliderCount+=1
+            local part=colliders:FindFirstChild(row.id)
+            local h,r=c.height*row.scale,c.radius*row.scale
+            local expected=CFrame.new(row.position[1],row.groundY+h/2,row.position[3])*CFrame.Angles(0,0,math.pi/2)
+            assert(part and part:IsA("Part") and part.Shape==Enum.PartType.Cylinder and part.Anchored and part.CanCollide and not part.CanTouch and part.CanQuery and part.Transparency==1 and not part.CastShadow,"Collider physics")
+            assert(same(vector(part.Size),{h,2*r,2*r},0.035) and same({part.CFrame:GetComponents()},{expected:GetComponents()},0.035),"Collider transform")
+        end
+        if not samples[row.name] then
+            local blob,digest=serialize(m)
+            samples[row.name]={persistedDigest=digest,serializedBase64=buffer.tostring(Encoding:Base64Encode(blob)),audit=audit(m),dependencyFetch=sources[row.name].dependencyFetch}
+        end
+    end
+    assert(#colliders:GetChildren()==colliderCount,"Collider count")
+    for _,source in sources do source.model:Destroy() end
+    return output({verified=true,models=#rows,colliders=colliderCount,samples=samples})
+end
+assert(cfg.mode=="apply" and cfg.confirmStaging==true,"Explicit staging confirmation required")
 local root=Instance.new("Folder");root.Name="RSEnvironmentP4";root:SetAttribute("RSOwner","RSEnvironmentP4V1")
 root:SetAttribute("RSPlanDigest",cfg.planDigest)
 local models=Instance.new("Folder");models.Name="Models";models.Parent=root
 local collisions=Instance.new("Folder");collisions.Name="Collisions";collisions.Parent=root
-local specs={}
-for _,s in plan.assets do specs[s.name]=s end
 local tags=game:GetService("CollectionService")
 for _,row in rows do
     local spec=specs[row.name]
@@ -185,8 +237,9 @@ for _,row in rows do
         for _,tag in tags:GetTags(obj) do tags:RemoveTag(obj,tag) end
         if obj:IsA("BasePart") then obj.Anchored=true;obj.CanCollide=false;obj.CanTouch=false;obj.CanQuery=false end
     end
-    m:ScaleTo(row.scale)
+    m:ScaleTo(sources[row.name].sourceScale*row.scale)
     m:PivotTo(CFrame.new(table.unpack(row.position))*CFrame.Angles(0,math.rad(row.yaw),0))
+    checkVisual(m,row)
     m.Name=row.id;m:SetAttribute("RSManagedId",row.id);m:SetAttribute("RSAssetId",row.assetId)
     m:SetAttribute("RSModelDigest",row.sourceDigest);m:SetAttribute("RSSpecies",row.name)
     m:SetAttribute("RSExpectedGroundY",row.groundY);m:SetAttribute("RSBuriedDepth",row.buriedDepth)

@@ -4,6 +4,11 @@ on:
     branches: [main]
     paths: ['.github/workflows/p4-environment-preflight.yml']
   workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [scripts-only, all]
+        default: scripts-only
 permissions:
   contents: read
 concurrency:
@@ -25,7 +30,11 @@ jobs:
       - name: Exact source audit and script patch preview
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-        run: python tools/assets/environment_preflight.py
+          MODE: ${{ inputs.mode || 'scripts-only' }}
+        run: |
+          args=()
+          if [[ "$MODE" == scripts-only ]]; then args+=(--scripts-only); fi
+          python tools/assets/environment_preflight.py "${args[@]}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

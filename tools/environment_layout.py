@@ -3,12 +3,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 from scene_sync import ROOT, require, require_current, task, capture, reconcile, sha, read, write
 from deploy import load_all, resolve, WorkspaceError
 
 GAME=ROOT/"games/maps/mapa-principal"
 SPEC=GAME/"game/assets/environment-p4.json"
+sys.path.insert(0,str(ROOT/"tools/assets"))
+from pack_import import inspect_blob, validate_evidence
 def validate(plan):
     require(plan["schemaVersion"]==1 and plan["environment"]=="staging","Scope")
     require(plan["maxNewModels"]==24 and sum(a["count"] for a in plan["assets"])==24,"Model budget")
@@ -55,7 +58,7 @@ def main():
     require(a.confirm_staging and a.reviewed is not None,"Explicit reviewed staging plan required")
     reviewed=read(a.reviewed);digest=reviewed.pop("planDigest")
     require(sha(reviewed)==digest and reviewed["plan"]==plan and reviewed["expectedVersion"]==base["loadedVersion"] and reviewed["baselineDigest"]==base["stateDigest"] and reviewed["terrainExpected"]==terrain,"Stale reviewed layout")
-    require(all(a.get("rightsStatus")=="reviewed_platform_use" for a in plan["assets"]),"Rights review required before apply")
+    require(plan.get("importAuthorized") is True and all(a.get("rightsStatus")=="reviewed_platform_use" and a.get("importAuthorized") is True for a in plan["assets"]),"Explicit asset approval and rights review required before apply")
     verify_layout(plan,reviewed["rows"])
     runtime=(ROOT/"tools/scene_builder_ground.server.luau").read_text()
     result=task(t,key,dispatch(),mode="apply",layoutRows=reviewed["rows"],planDigest=digest,confirmStaging=True,runtimeSource=runtime,**opts)
@@ -70,7 +73,13 @@ def main():
     for row in reviewed["rows"]:
         r=after["records"].get("managed:"+row["id"])
         require(r is not None and r["class"]=="Model" and r["properties"]["pivot"][:3] and all(abs(a-b)<0.03 for a,b in zip(r["properties"]["pivot"][:3],row["position"])),"Persisted model mismatch")
-    print("ENV_LAYOUT_VERIFIED "+json.dumps({"version":after["loadedVersion"],"models":result["models"],"colliders":result["colliders"]}),flush=True)
+    verification=task(t,key,dispatch(),mode="verify",environment="staging",plan=plan,expectedVersion=after["loadedVersion"],terrainExpected=terrain,layoutRows=reviewed["rows"],planDigest=digest,runtimeSource=runtime)
+    require(verification.get("verified") is True and verification["loadedVersion"]==after["loadedVersion"],"Independent verification failed")
+    for sample in verification.pop("samples").values():
+        sample["offlinePbr"]=inspect_blob(sample)
+        validate_evidence(sample)
+    write(a.output/"verification.json",verification)
+    print("ENV_LAYOUT_VERIFIED "+json.dumps({"version":after["loadedVersion"],"models":result["models"],"colliders":result["colliders"],"offlinePbrVerified":True}),flush=True)
 if __name__=="__main__":
     try: main()
     except (WorkspaceError,OSError,KeyError,ValueError) as exc:

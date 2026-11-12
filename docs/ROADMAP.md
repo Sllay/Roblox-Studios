@@ -77,3 +77,5 @@
 - [ ] P4 environment expansion: first-party wind (native GlobalWind, 6 local Trails, bounded 48 canopy parts, 30Hz), pure policy tests, candidate plan Tree_03/Tree_12/Bush_03/Rock (24 proposed models), exact Safe Import v2 audits and script patch preview. No external scripts activated; no Place writes. See mapa-principal/docs/P4_ENVIRONMENT.md.
 
 - [x] P4 environment preflight 43181270756: Tree_03, Tree_12, Bush_03, Rock exact v2 pass (PBR/dependency fetch), seven script operations preview v10. CI passed. Corrected wind bush mesh names from live inventory; 24-model layout preview tool added, staging apply remains gated. No Place writes.
+
+- [x] P4 native environment layout: 24/24 planned placements, seven chunks, 138 existing plants preserved, CI and preview passed (43181653770). Exact layout recorded; guarded apply and independent verification prepared, not executed. Rights/explicit staging approval and mobile review pending.
