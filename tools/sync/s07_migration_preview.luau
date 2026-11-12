@@ -76,6 +76,9 @@ for _,c in cfg.columns do
     end
     write(region,d);paint[#paint+1]={region=region,original=original}
 end
+local originalVegetation=V
+V=originalVegetation:Clone();assert(V,"Vegetation clone")
+originalVegetation.Parent=nil;V.Parent=W
 local rotated={}
 for _,m in V.Models:GetChildren() do
     if m:IsA("Model") then
@@ -100,7 +103,7 @@ end
 local afterFingerprint=fingerprint()
 local after=terrainState()
 for i,r in after do assert(r.solidVoxels==before[i].solidVoxels and r.waterVoxels==before[i].waterVoxels,"Terrain volume") end
-for _,r in rotated do r.m:PivotTo(r.pivot);for _,c in r.colliders do c.p.CFrame=c.cf end end
+V:Destroy();originalVegetation.Parent=W
 for _,m in created do m:Destroy() end
 for _,m in old do m.Parent=F end
 for _,m in templates do m:Destroy() end
