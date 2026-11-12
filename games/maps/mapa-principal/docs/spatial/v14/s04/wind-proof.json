@@ -1,0 +1,26 @@
+{
+  "clientMotionVerified": false,
+  "counts": {
+    "Bush_01": 47,
+    "Bush_03": 8,
+    "Pine_01.1": 4,
+    "Pine_03.1": 4,
+    "Tree_01": 53,
+    "Tree_03": 4,
+    "Tree_08": 38,
+    "Tree_12": 4
+  },
+  "eligible": 162,
+  "flagRejected": 0,
+  "loadedVersion": 14,
+  "maxActive": 48,
+  "maxPivotDrift": 0,
+  "noPlaceWrites": true,
+  "peakBushDegrees": 1.3818754162623639,
+  "peakTreeDegrees": 2.7637508325247278,
+  "placeId": "93428341652658",
+  "schemaVersion": 1,
+  "universeId": "10769712441",
+  "unmapped": 194,
+  "updateInterval": 0.03333333333333333
+}

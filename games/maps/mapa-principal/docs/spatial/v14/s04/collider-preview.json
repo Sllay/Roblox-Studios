@@ -1,0 +1,103 @@
+{
+  "batches": [
+    {
+      "checked": 32,
+      "loadedVersion": 14,
+      "noPlaceWrites": true,
+      "placeId": "93428341652658",
+      "runtimePhysicsVerified": false,
+      "samples": [
+        {
+          "bytes": 3768,
+          "diameter": 2.559999942779541,
+          "height": 32.8570613861084,
+          "species": "Tree_01"
+        },
+        {
+          "bytes": 3768,
+          "diameter": 1.6059999465942383,
+          "height": 46.830589294433594,
+          "species": "Tree_08"
+        },
+        {
+          "bytes": 3769,
+          "diameter": 3.1612937450408936,
+          "height": 27.45128357415472,
+          "species": "Pine_01.1"
+        },
+        {
+          "bytes": 3769,
+          "diameter": 2.8825879096984863,
+          "height": 25.00651950182847,
+          "species": "Pine_03.1"
+        },
+        {
+          "bytes": 3769,
+          "diameter": 1.5551999807357788,
+          "height": 20.270899406582167,
+          "species": "Tree_03"
+        }
+      ],
+      "schemaVersion": 1,
+      "universeId": "10769712441"
+    },
+    {
+      "checked": 32,
+      "loadedVersion": 14,
+      "noPlaceWrites": true,
+      "placeId": "93428341652658",
+      "runtimePhysicsVerified": false,
+      "samples": [
+        {
+          "bytes": 3769,
+          "diameter": 1.687399983406067,
+          "height": 26.294390640895617,
+          "species": "Tree_12"
+        },
+        {
+          "bytes": 3769,
+          "diameter": 1.5098776817321777,
+          "height": 27.416527067700066,
+          "species": "Tree_01"
+        },
+        {
+          "bytes": 3769,
+          "diameter": 1.5552163124084473,
+          "height": 42.218240305307745,
+          "species": "Tree_08"
+        }
+      ],
+      "schemaVersion": 1,
+      "universeId": "10769712441"
+    },
+    {
+      "checked": 30,
+      "loadedVersion": 14,
+      "noPlaceWrites": true,
+      "placeId": "93428341652658",
+      "runtimePhysicsVerified": false,
+      "samples": [
+        {
+          "bytes": 3769,
+          "diameter": 2.097090721130371,
+          "height": 56.91425580574608,
+          "species": "Tree_08"
+        },
+        {
+          "bytes": 3769,
+          "diameter": 1.7764041423797607,
+          "height": 32.26045951295925,
+          "species": "Tree_01"
+        }
+      ],
+      "schemaVersion": 1,
+      "universeId": "10769712441"
+    }
+  ],
+  "checked": 94,
+  "noPlaceWrites": true,
+  "planDigest": "dd8dded03482f904562c979d2d3efcdc44e653fb659d7297ae5df5bd11bb53cf",
+  "runtimePhysicsVerified": false,
+  "schemaVersion": 1,
+  "version": 14
+}

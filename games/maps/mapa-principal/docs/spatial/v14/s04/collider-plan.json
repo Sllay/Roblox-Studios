@@ -1,0 +1,7723 @@
+{
+  "applyAuthorized": false,
+  "blocked": [],
+  "excludedHorizon": [
+    "world-001",
+    "world-002",
+    "world-004",
+    "world-005",
+    "world-008",
+    "world-042",
+    "world-064",
+    "world-066",
+    "world-098",
+    "world-102",
+    "world-103",
+    "world-104",
+    "world-105"
+  ],
+  "geometryProbe": {
+    "Pine_01.1": {
+      "mesh": "rbxassetid://17718985276",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "status": "unavailable"
+    },
+    "Pine_03.1": {
+      "mesh": "rbxassetid://17718985387",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "status": "unavailable"
+    },
+    "Tree_01": {
+      "mesh": "rbxassetid://18716595484",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "status": "unavailable"
+    },
+    "Tree_03": {
+      "mesh": "rbxassetid://18720235894",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "status": "unavailable"
+    },
+    "Tree_08": {
+      "mesh": "rbxassetid://18720273005",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "status": "unavailable"
+    },
+    "Tree_12": {
+      "mesh": "rbxassetid://18720345648",
+      "reason": "AssetService::CreateEditableMeshAsync failed because no permission to load asset",
+      "status": "unavailable"
+    }
+  },
+  "loadedVersion": 14,
+  "noPlaceWrites": true,
+  "planDigest": "dd8dded03482f904562c979d2d3efcdc44e653fb659d7297ae5df5bd11bb53cf",
+  "profiles": [
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 21.448628311157226,
+      "cap": {
+        "position": [
+          294,
+          53.145689725875854,
+          -78
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.559999942779541,
+          2.559999942779541,
+          2.559999942779541
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.559999942779541,
+      "groundY": 21.568628311157227,
+      "id": "forest-tree_01-01",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        294.0000305175781,
+        23.167518615722656,
+        -77.99999237060547
+      ],
+      "modelScale": 0.800000011920929,
+      "oldCollider": {
+        "cframe": [
+          294,
+          24.768625259399414,
+          -78,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-01",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          294,
+          24.768625259399414,
+          -78
+        ],
+        "query": true,
+        "size": [
+          6.400000095367432,
+          2.559999942779541,
+          2.559999942779541
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          294,
+          37.29715901851654,
+          -78
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          31.69706141471863,
+          2.559999942779541,
+          2.559999942779541
+        ]
+      },
+      "species": "Tree_01",
+      "top": 54.425689697265625,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 25.981961135864257,
+      "cap": {
+        "position": [
+          310,
+          55.310744285583496,
+          78
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.368000030517578,
+          2.368000030517578,
+          2.368000030517578
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.368000030517578,
+      "groundY": 26.101961135864258,
+      "id": "forest-tree_01-02",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        309.9999694824219,
+        27.580928802490234,
+        77.99998474121094
+      ],
+      "modelScale": 0.7400000095367432,
+      "oldCollider": {
+        "cframe": [
+          310,
+          29.06195831298828,
+          78,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-02",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          310,
+          29.06195831298828,
+          78
+        ],
+        "query": true,
+        "size": [
+          5.920000076293945,
+          2.368000030517578,
+          2.368000030517578
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          310,
+          40.646352710723875,
+          78
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          29.32878314971924,
+          2.368000030517578,
+          2.368000030517578
+        ]
+      },
+      "species": "Tree_01",
+      "top": 56.494744300842285,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.734902267456054,
+      "cap": {
+        "position": [
+          218,
+          57.984381437301636,
+          -42
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.8480000495910645,
+          2.8480000495910645,
+          2.8480000495910645
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.8480000495910645,
+      "groundY": 22.854902267456055,
+      "id": "forest-tree_01-03",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        217.99998474121094,
+        24.633670806884766,
+        -41.99999237060547
+      ],
+      "modelScale": 0.8899999856948853,
+      "oldCollider": {
+        "cframe": [
+          218,
+          26.414905548095703,
+          -42,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-03",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          218,
+          26.414905548095703,
+          -42
+        ],
+        "query": true,
+        "size": [
+          7.119999885559082,
+          2.8480000495910645,
+          2.8480000495910645
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          218,
+          40.35964185237884,
+          -42
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          35.249479169845586,
+          2.8480000495910645,
+          2.8480000495910645
+        ]
+      },
+      "species": "Tree_01",
+      "top": 59.40838146209717,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 21.825098876953124,
+      "cap": {
+        "position": [
+          130,
+          48.39088487625122,
+          -2
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.1440000534057617,
+          2.1440000534057617,
+          2.1440000534057617
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.1440000534057617,
+      "groundY": 21.945098876953125,
+      "id": "forest-tree_01-04",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        130,
+        23.284168243408203,
+        -2.0000102519989014
+      ],
+      "modelScale": 0.6700000166893005,
+      "oldCollider": {
+        "cframe": [
+          130,
+          24.625097274780273,
+          -2,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-04",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          130,
+          24.625097274780273,
+          -2
+        ],
+        "query": true,
+        "size": [
+          5.360000133514404,
+          2.1440000534057617,
+          2.1440000534057617
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          130,
+          35.10799187660217,
+          -2
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          26.565785999298097,
+          2.1440000534057617,
+          2.1440000534057617
+        ]
+      },
+      "species": "Tree_01",
+      "top": 49.4628849029541,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.342745666503905,
+      "cap": {
+        "position": [
+          190,
+          54.04536318778992,
+          86
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.559999942779541,
+          2.559999942779541,
+          2.559999942779541
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.559999942779541,
+      "groundY": 22.462745666503906,
+      "id": "forest-tree_01-05",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        190.00001525878906,
+        24.06719207763672,
+        85.99999237060547
+      ],
+      "modelScale": 0.800000011920929,
+      "oldCollider": {
+        "cframe": [
+          190,
+          25.668302536010742,
+          86,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-05",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          190,
+          25.668302536010742,
+          86
+        ],
+        "query": true,
+        "size": [
+          6.400000095367432,
+          2.559999942779541,
+          2.559999942779541
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          190,
+          38.19405442714691,
+          86
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          31.70261752128601,
+          2.559999942779541,
+          2.559999942779541
+        ]
+      },
+      "species": "Tree_01",
+      "top": 55.32536315917969,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 24.460392837524413,
+      "cap": {
+        "position": [
+          302,
+          60.10458421707153,
+          -14
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.880000114440918,
+          2.880000114440918,
+          2.880000114440918
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.880000114440918,
+      "groundY": 24.580392837524414,
+      "id": "forest-tree_01-06",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        302,
+        26.379146575927734,
+        -14.000012397766113
+      ],
+      "modelScale": 0.8999999761581421,
+      "oldCollider": {
+        "cframe": [
+          302,
+          28.180391311645508,
+          -14,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-06",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          302,
+          28.180391311645508,
+          -14
+        ],
+        "query": true,
+        "size": [
+          7.199999809265137,
+          2.880000114440918,
+          2.880000114440918
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          302,
+          42.28248852729797,
+          -14
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          35.644191379547124,
+          2.880000114440918,
+          2.880000114440918
+        ]
+      },
+      "species": "Tree_01",
+      "top": 61.54458427429199,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 21.856470947265624,
+      "cap": {
+        "position": [
+          150,
+          50.00111162662506,
+          -86
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.2720000743865967,
+          2.2720000743865967,
+          2.2720000743865967
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.2720000743865967,
+      "groundY": 21.976470947265625,
+      "id": "forest-tree_01-07",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        150.00001525878906,
+        23.395484924316406,
+        -86.00001525878906
+      ],
+      "modelScale": 0.7099999785423279,
+      "oldCollider": {
+        "cframe": [
+          150,
+          24.816469192504883,
+          -86,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-07",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          150,
+          24.816469192504883,
+          -86
+        ],
+        "query": true,
+        "size": [
+          5.679999828338623,
+          2.2720000743865967,
+          2.2720000743865967
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          150,
+          35.92879128694534,
+          -86
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          28.144640679359437,
+          2.2720000743865967,
+          2.2720000743865967
+        ]
+      },
+      "species": "Tree_01",
+      "top": 51.13711166381836,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 26.013333206176757,
+      "cap": {
+        "position": [
+          162,
+          57.315683245658875,
+          70
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.5280001163482666,
+          2.5280001163482666,
+          2.5280001163482666
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.5280001163482666,
+      "groundY": 26.133333206176758,
+      "id": "forest-tree_01-08",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        162.00001525878906,
+        27.712238311767578,
+        70
+      ],
+      "modelScale": 0.7900000214576721,
+      "oldCollider": {
+        "cframe": [
+          162,
+          29.293333053588867,
+          70,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-08",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          162,
+          29.293333053588867,
+          70
+        ],
+        "query": true,
+        "size": [
+          6.320000171661377,
+          2.5280001163482666,
+          2.5280001163482666
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          162,
+          41.664508225917814,
+          70
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          31.302350039482118,
+          2.5280001163482666,
+          2.5280001163482666
+        ]
+      },
+      "species": "Tree_01",
+      "top": 58.57968330383301,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.268235092163085,
+      "cap": {
+        "position": [
+          134,
+          56.93886339664459,
+          54
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.7200000286102295,
+          2.7200000286102295,
+          2.7200000286102295
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.7200000286102295,
+      "groundY": 23.388235092163086,
+      "id": "forest-tree_01-09",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        133.99998474121094,
+        25.087055206298828,
+        53.99999237060547
+      ],
+      "modelScale": 0.8500000238418579,
+      "oldCollider": {
+        "cframe": [
+          134,
+          26.78823471069336,
+          54,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-09",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          134,
+          26.78823471069336,
+          54
+        ],
+        "query": true,
+        "size": [
+          6.800000190734863,
+          2.7200000286102295,
+          2.7200000286102295
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          134,
+          40.10354924440384,
+          54
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          33.67062830448151,
+          2.7200000286102295,
+          2.7200000286102295
+        ]
+      },
+      "species": "Tree_01",
+      "top": 58.29886341094971,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 20.554509048461913,
+      "cap": {
+        "position": [
+          134,
+          47.12030076980591,
+          26
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.1440000534057617,
+          2.1440000534057617,
+          2.1440000534057617
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.1440000534057617,
+      "groundY": 20.674509048461914,
+      "id": "forest-tree_01-10",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        133.99998474121094,
+        22.013580322265625,
+        25.9999942779541
+      ],
+      "modelScale": 0.6700000166893005,
+      "oldCollider": {
+        "cframe": [
+          134,
+          23.354509353637695,
+          26,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-10",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          134,
+          23.354509353637695,
+          26
+        ],
+        "query": true,
+        "size": [
+          5.360000133514404,
+          2.1440000534057617,
+          2.1440000534057617
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          134,
+          33.83740490913391,
+          26
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          26.565791721343995,
+          2.1440000534057617,
+          2.1440000534057617
+        ]
+      },
+      "species": "Tree_01",
+      "top": 48.19230079650879,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.205490951538085,
+      "cap": {
+        "position": [
+          254,
+          51.35012972354889,
+          -94
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.2720000743865967,
+          2.2720000743865967,
+          2.2720000743865967
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.2720000743865967,
+      "groundY": 23.325490951538086,
+      "id": "forest-tree_01-11",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        254.00001525878906,
+        24.744503021240234,
+        -93.99999237060547
+      ],
+      "modelScale": 0.7099999785423279,
+      "oldCollider": {
+        "cframe": [
+          254,
+          26.165491104125977,
+          -94,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-11",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          254,
+          26.165491104125977,
+          -94
+        ],
+        "query": true,
+        "size": [
+          5.679999828338623,
+          2.2720000743865967,
+          2.2720000743865967
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          254,
+          37.277810337543485,
+          -94
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          28.144638772010804,
+          2.2720000743865967,
+          2.2720000743865967
+        ]
+      },
+      "species": "Tree_01",
+      "top": 52.48612976074219,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 25.385882263183593,
+      "cap": {
+        "position": [
+          290,
+          59.05651247501373,
+          22
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.7200000286102295,
+          2.7200000286102295,
+          2.7200000286102295
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.7200000286102295,
+      "groundY": 25.505882263183594,
+      "id": "forest-tree_01-12",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        290,
+        27.20470428466797,
+        22.00000762939453
+      ],
+      "modelScale": 0.8500000238418579,
+      "oldCollider": {
+        "cframe": [
+          290,
+          28.9058837890625,
+          22,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_01-12",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          290,
+          28.9058837890625,
+          22
+        ],
+        "query": true,
+        "size": [
+          6.800000190734863,
+          2.7200000286102295,
+          2.7200000286102295
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          290,
+          42.22119736909866,
+          22
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          33.670630211830144,
+          2.7200000286102295,
+          2.7200000286102295
+        ]
+      },
+      "species": "Tree_01",
+      "top": 60.41651248931885,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 24.69568717956543,
+      "cap": {
+        "position": [
+          294,
+          70.8432765007019,
+          90
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.6059999465942383,
+          1.6059999465942383,
+          1.6059999465942383
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.6059999465942383,
+      "groundY": 24.81568717956543,
+      "id": "forest-tree_08-01",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        294,
+        27.755046844482422,
+        90
+      ],
+      "modelScale": 0.7300000190734863,
+      "oldCollider": {
+        "cframe": [
+          294,
+          27.75132179260254,
+          90,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_08-01",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          294,
+          27.75132179260254,
+          90
+        ],
+        "query": true,
+        "size": [
+          5.840000152587891,
+          1.6059999465942383,
+          1.6059999465942383
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          294,
+          47.769481840133665,
+          90
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          46.14758932113648,
+          1.6059999465942383,
+          1.6059999465942383
+        ]
+      },
+      "species": "Tree_08",
+      "top": 71.64627647399902,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.88,
+      "cap": {
+        "position": [
+          198,
+          67.4907539486885,
+          -50
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5180000066757202,
+          1.5180000066757202,
+          1.5180000066757202
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5180000066757202,
+      "groundY": 24.0,
+      "id": "forest-tree_08-02",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        197.99998474121094,
+        26.763525009155273,
+        -49.99999237060547
+      ],
+      "modelScale": 0.6899999976158142,
+      "oldCollider": {
+        "cframe": [
+          198,
+          26.76000213623047,
+          -50,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_08-02",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          198,
+          26.76000213623047,
+          -50
+        ],
+        "query": true,
+        "size": [
+          5.519999980926514,
+          1.5180000066757202,
+          1.5180000066757202
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          198,
+          45.68537697434425,
+          -50
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          43.61075394868851,
+          1.5180000066757202,
+          1.5180000066757202
+        ]
+      },
+      "species": "Tree_08",
+      "top": 68.24975395202637,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.747023207586054,
+      "cap": {
+        "position": [
+          264.1229248046875,
+          67.36929017305374,
+          79.21792602539062
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5180000066757202,
+          1.5180000066757202,
+          1.5180000066757202
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5180000066757202,
+      "groundY": 23.867023207586055,
+      "id": "forest-tree_08-03",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        264.1229248046875,
+        26.642065048217773,
+        79.21793365478516
+      ],
+      "modelScale": 0.6899999976158142,
+      "oldCollider": {
+        "cframe": [
+          264.1229248046875,
+          26.638545989990234,
+          79.21792602539062,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_08-03",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          264.1229248046875,
+          26.638545989990234,
+          79.21792602539062
+        ],
+        "query": true,
+        "size": [
+          5.519999980926514,
+          1.5180000066757202,
+          1.5180000066757202
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          264.1229248046875,
+          45.5581566903199,
+          79.21792602539062
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          43.62226696546769,
+          1.5180000066757202,
+          1.5180000066757202
+        ]
+      },
+      "species": "Tree_08",
+      "top": 68.1282901763916,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.07607925415039,
+      "cap": {
+        "position": [
+          290,
+          69.46862679719925,
+          -42
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.649999976158142,
+          1.649999976158142,
+          1.649999976158142
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.649999976158142,
+      "groundY": 22.19607925415039,
+      "id": "forest-tree_08-04",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        289.9999694824219,
+        25.199901580810547,
+        -42.00001525878906
+      ],
+      "modelScale": 0.75,
+      "oldCollider": {
+        "cframe": [
+          290,
+          25.19607925415039,
+          -42,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_08-04",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          290,
+          25.19607925415039,
+          -42
+        ],
+        "query": true,
+        "size": [
+          6,
+          1.649999976158142,
+          1.649999976158142
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          290,
+          45.77235302567482,
+          -42
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          47.39254754304886,
+          1.649999976158142,
+          1.649999976158142
+        ]
+      },
+      "species": "Tree_08",
+      "top": 70.29362678527832,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.10745132446289,
+      "cap": {
+        "position": [
+          150,
+          64.45760107040405,
+          42
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.4739999771118164,
+          1.4739999771118164,
+          1.4739999771118164
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.4739999771118164,
+      "groundY": 22.22745132446289,
+      "id": "forest-tree_08-05",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        150.00001525878906,
+        24.91086769104004,
+        41.999996185302734
+      ],
+      "modelScale": 0.6700000166893005,
+      "oldCollider": {
+        "cframe": [
+          150,
+          24.907453536987305,
+          42,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_08-05",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          150,
+          24.907453536987305,
+          42
+        ],
+        "query": true,
+        "size": [
+          5.360000133514404,
+          1.4739999771118164,
+          1.4739999771118164
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          150,
+          43.28252619743347,
+          42
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          42.35014974594117,
+          1.4739999771118164,
+          1.4739999771118164
+        ]
+      },
+      "species": "Tree_08",
+      "top": 65.19460105895996,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.703530197143554,
+      "cap": {
+        "position": [
+          142,
+          63.79307383298874,
+          -30
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.4299999475479126,
+          1.4299999475479126,
+          1.4299999475479126
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.4299999475479126,
+      "groundY": 22.823530197143555,
+      "id": "forest-tree_08-06",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        142.00001525878906,
+        25.42684555053711,
+        -30.0000057220459
+      ],
+      "modelScale": 0.6499999761581421,
+      "oldCollider": {
+        "cframe": [
+          142,
+          25.42352867126465,
+          -30,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_08-06",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          142,
+          25.42352867126465,
+          -30
+        ],
+        "query": true,
+        "size": [
+          5.199999809265137,
+          1.4299999475479126,
+          1.4299999475479126
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          142,
+          43.248302015066145,
+          -30
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          41.08954363584519,
+          1.4299999475479126,
+          1.4299999475479126
+        ]
+      },
+      "species": "Tree_08",
+      "top": 64.5080738067627,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 27.346667175292968,
+      "cap": {
+        "position": [
+          150,
+          64.02410173416138,
+          90
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.2760000228881836,
+          1.2760000228881836,
+          1.2760000228881836
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.2760000228881836,
+      "groundY": 27.46666717529297,
+      "id": "forest-tree_08-07",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        149.99998474121094,
+        29.789623260498047,
+        89.99999237060547
+      ],
+      "modelScale": 0.5799999833106995,
+      "oldCollider": {
+        "cframe": [
+          150,
+          29.786666870117188,
+          90,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_08-07",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          150,
+          29.786666870117188,
+          90
+        ],
+        "query": true,
+        "size": [
+          4.639999866485596,
+          1.2760000228881836,
+          1.2760000228881836
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          150,
+          45.68538445472717,
+          90
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          36.67743455886841,
+          1.2760000228881836,
+          1.2760000228881836
+        ]
+      },
+      "species": "Tree_08",
+      "top": 64.66210174560547,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.00156867980957,
+      "cap": {
+        "position": [
+          318,
+          66.61230927705765,
+          -70
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5180000066757202,
+          1.5180000066757202,
+          1.5180000066757202
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5180000066757202,
+      "groundY": 23.12156867980957,
+      "id": "forest-tree_08-08",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        317.9999694824219,
+        25.88508415222168,
+        -69.99999237060547
+      ],
+      "modelScale": 0.6899999976158142,
+      "oldCollider": {
+        "cframe": [
+          318,
+          25.881561279296875,
+          -70,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "forest-tree_08-08",
+        "owner": "RSSceneBuilderV1",
+        "position": [
+          318,
+          25.881561279296875,
+          -70
+        ],
+        "query": true,
+        "size": [
+          5.519999980926514,
+          1.5180000066757202,
+          1.5180000066757202
+        ],
+        "touch": false
+      },
+      "owner": "RSSceneBuilderV1",
+      "root": "RSSceneBuilder",
+      "shaft": {
+        "position": [
+          318,
+          44.80693897843361,
+          -70
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          43.61074059724808,
+          1.5180000066757202,
+          1.5180000066757202
+        ]
+      },
+      "species": "Tree_08",
+      "top": 67.37130928039551,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "18817890736",
+      "bottom": 11.061641459414618,
+      "cap": {
+        "position": [
+          -296.2127990722656,
+          37.05227816104889,
+          -203.76148986816406
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          3.1612937450408936,
+          3.1612937450408936,
+          3.1612937450408936
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 3.1612937450408936,
+      "groundY": 11.181641459414617,
+      "id": "p4-detail-pine-01-1-01",
+      "mesh": "rbxassetid://17718985276",
+      "modelPosition": [
+        -296,
+        24.325668334960938,
+        -203.89999389648438
+      ],
+      "modelScale": 0.3970000147819519,
+      "oldCollider": {
+        "cframe": [
+          -296,
+          15.179411888122559,
+          -203.89999389648438,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-detail-pine-01-1-01",
+        "owner": "RSEnvironmentP4DetailV1",
+        "position": [
+          -296,
+          15.179411888122559,
+          -203.89999389648438
+        ],
+        "query": true,
+        "size": [
+          7.940000057220459,
+          2.381999969482422,
+          2.381999969482422
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4DetailV1",
+      "root": "RSEnvironmentP4Detail",
+      "shaft": {
+        "position": [
+          -296.2127990722656,
+          24.056959810231753,
+          -203.76148986816406
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          25.990636701634273,
+          3.1612937450408936,
+          3.1612937450408936
+        ]
+      },
+      "species": "Pine_01.1",
+      "top": 38.632925033569336,
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    {
+      "action": "replace",
+      "asset": "18817890736",
+      "bottom": 24.247817223409445,
+      "cap": {
+        "position": [
+          -106.75460815429688,
+          51.32409632205963,
+          -279.1727294921875
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          3.296663999557495,
+          3.296663999557495,
+          3.296663999557495
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 3.296663999557495,
+      "groundY": 24.367817223409446,
+      "id": "p4-detail-pine-01-1-02",
+      "mesh": "rbxassetid://17718985276",
+      "modelPosition": [
+        -106.5,
+        38.05251693725586,
+        -279.1000061035156
+      ],
+      "modelScale": 0.414000004529953,
+      "oldCollider": {
+        "cframe": [
+          -106.5,
+          28.51460838317871,
+          -279.1000061035156,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-detail-pine-01-1-02",
+        "owner": "RSEnvironmentP4DetailV1",
+        "position": [
+          -106.5,
+          28.51460838317871,
+          -279.1000061035156
+        ],
+        "query": true,
+        "size": [
+          8.279999732971191,
+          2.4839999675750732,
+          2.4839999675750732
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4DetailV1",
+      "root": "RSEnvironmentP4Detail",
+      "shaft": {
+        "position": [
+          -106.75460815429688,
+          37.78595677273454,
+          -279.1727294921875
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          27.076279098650186,
+          3.296663999557495,
+          3.296663999557495
+        ]
+      },
+      "species": "Pine_01.1",
+      "top": 52.97242832183838,
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    {
+      "action": "replace",
+      "asset": "18817890736",
+      "bottom": 28.745384794694058,
+      "cap": {
+        "position": [
+          -160.60789489746094,
+          53.004034638404846,
+          193.4392852783203
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.954256772994995,
+          2.954256772994995,
+          2.954256772994995
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.954256772994995,
+      "groundY": 28.86538479469406,
+      "id": "p4-detail-pine-01-1-03",
+      "mesh": "rbxassetid://17718985276",
+      "modelPosition": [
+        -160.8000030517578,
+        41.110904693603516,
+        193.3000030517578
+      ],
+      "modelScale": 0.3709999918937683,
+      "oldCollider": {
+        "cframe": [
+          -160.8000030517578,
+          32.56364822387695,
+          193.3000030517578,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-detail-pine-01-1-03",
+        "owner": "RSEnvironmentP4DetailV1",
+        "position": [
+          -160.8000030517578,
+          32.56364822387695,
+          193.3000030517578
+        ],
+        "query": true,
+        "size": [
+          7.420000076293945,
+          2.2260000705718994,
+          2.2260000705718994
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4DetailV1",
+      "root": "RSEnvironmentP4Detail",
+      "shaft": {
+        "position": [
+          -160.60789489746094,
+          40.874709716549454,
+          193.4392852783203
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          24.25864984371079,
+          2.954256772994995,
+          2.954256772994995
+        ]
+      },
+      "species": "Pine_01.1",
+      "top": 54.481163024902344,
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    {
+      "action": "replace",
+      "asset": "18817890736",
+      "bottom": 23.457014125156253,
+      "cap": {
+        "position": [
+          360.0267028808594,
+          45.4727349281311,
+          -269.1979675292969
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.675553321838379,
+          2.675553321838379,
+          2.675553321838379
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.675553321838379,
+      "groundY": 23.577014125156253,
+      "id": "p4-detail-pine-01-1-04",
+      "mesh": "rbxassetid://17718985276",
+      "modelPosition": [
+        360.1000061035156,
+        34.70159912109375,
+        -269.3999938964844
+      ],
+      "modelScale": 0.335999995470047,
+      "oldCollider": {
+        "cframe": [
+          360.1000061035156,
+          26.96068572998047,
+          -269.3999938964844,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-detail-pine-01-1-04",
+        "owner": "RSEnvironmentP4DetailV1",
+        "position": [
+          360.1000061035156,
+          26.96068572998047,
+          -269.3999938964844
+        ],
+        "query": true,
+        "size": [
+          6.71999979019165,
+          2.0160000324249268,
+          2.0160000324249268
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4DetailV1",
+      "root": "RSEnvironmentP4Detail",
+      "shaft": {
+        "position": [
+          360.0267028808594,
+          34.464874526643676,
+          -269.1979675292969
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          22.01572080297485,
+          2.675553321838379,
+          2.675553321838379
+        ]
+      },
+      "species": "Pine_01.1",
+      "top": 46.81051158905029,
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    {
+      "action": "replace",
+      "asset": "18817890736",
+      "bottom": 24.514992415285786,
+      "cap": {
+        "position": [
+          -240.17987060546875,
+          48.200217962265015,
+          313.22821044921875
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.8825879096984863,
+          2.8825879096984863,
+          2.8825879096984863
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.8825879096984863,
+      "groundY": 24.634992415285787,
+      "id": "p4-detail-pine-03-1-01",
+      "mesh": "rbxassetid://17718985387",
+      "modelPosition": [
+        -240.39999389648438,
+        36.59560012817383,
+        313.29998779296875
+      ],
+      "modelScale": 0.3619999885559082,
+      "oldCollider": {
+        "cframe": [
+          -240.39999389648438,
+          28.255685806274414,
+          313.29998779296875,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-detail-pine-03-1-01",
+        "owner": "RSEnvironmentP4DetailV1",
+        "position": [
+          -240.39999389648438,
+          28.255685806274414,
+          313.29998779296875
+        ],
+        "query": true,
+        "size": [
+          7.239999771118164,
+          2.171999931335449,
+          2.171999931335449
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4DetailV1",
+      "root": "RSEnvironmentP4Detail",
+      "shaft": {
+        "position": [
+          -240.17987060546875,
+          36.3576051887754,
+          313.22821044921875
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          23.68522554697923,
+          2.8825879096984863,
+          2.8825879096984863
+        ]
+      },
+      "species": "Pine_03.1",
+      "top": 49.64151191711426,
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    {
+      "action": "replace",
+      "asset": "18817890736",
+      "bottom": 20.920748712727093,
+      "cap": {
+        "position": [
+          351.98773193359375,
+          48.57181644439697,
+          211.50518798828125
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          3.368328094482422,
+          3.368328094482422,
+          3.368328094482422
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 3.368328094482422,
+      "groundY": 21.040748712727094,
+      "id": "p4-detail-pine-03-1-02",
+      "mesh": "rbxassetid://17718985387",
+      "modelPosition": [
+        351.79998779296875,
+        35.01172637939453,
+        211.6999969482422
+      ],
+      "modelScale": 0.4230000078678131,
+      "oldCollider": {
+        "cframe": [
+          351.79998779296875,
+          25.266469955444336,
+          211.6999969482422,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-detail-pine-03-1-02",
+        "owner": "RSEnvironmentP4DetailV1",
+        "position": [
+          351.79998779296875,
+          25.266469955444336,
+          211.6999969482422
+        ],
+        "query": true,
+        "size": [
+          8.460000038146973,
+          2.5380001068115234,
+          2.5380001068115234
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4DetailV1",
+      "root": "RSEnvironmentP4Detail",
+      "shaft": {
+        "position": [
+          351.98773193359375,
+          34.74628257856203,
+          211.50518798828125
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          27.65106773166988,
+          3.368328094482422,
+          3.368328094482422
+        ]
+      },
+      "species": "Pine_03.1",
+      "top": 50.255980491638184,
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    {
+      "action": "replace",
+      "asset": "18817890736",
+      "bottom": 22.07554797335877,
+      "cap": {
+        "position": [
+          -310.8247985839844,
+          45.63316285610199,
+          -73.682373046875
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.8666622638702393,
+          2.8666622638702393,
+          2.8666622638702393
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.8666622638702393,
+      "groundY": 22.19554797335877,
+      "id": "p4-detail-pine-03-1-03",
+      "mesh": "rbxassetid://17718985387",
+      "modelPosition": [
+        -310.8999938964844,
+        34.09265899658203,
+        -73.9000015258789
+      ],
+      "modelScale": 0.36000001430511475,
+      "oldCollider": {
+        "cframe": [
+          -310.8999938964844,
+          25.798824310302734,
+          -73.9000015258789,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-detail-pine-03-1-03",
+        "owner": "RSEnvironmentP4DetailV1",
+        "position": [
+          -310.8999938964844,
+          25.798824310302734,
+          -73.9000015258789
+        ],
+        "query": true,
+        "size": [
+          7.199999809265137,
+          2.1600000858306885,
+          2.1600000858306885
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4DetailV1",
+      "root": "RSEnvironmentP4Detail",
+      "shaft": {
+        "position": [
+          -310.8247985839844,
+          33.85435541473038,
+          -73.682373046875
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          23.55761488274322,
+          2.8666622638702393,
+          2.8666622638702393
+        ]
+      },
+      "species": "Pine_03.1",
+      "top": 47.06649398803711,
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    {
+      "action": "replace",
+      "asset": "18817890736",
+      "bottom": 23.61128886114143,
+      "cap": {
+        "position": [
+          -200.11692810058594,
+          48.06528294086456,
+          94.26139068603516
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.9781434535980225,
+          2.9781434535980225,
+          2.9781434535980225
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.9781434535980225,
+      "groundY": 23.73128886114143,
+      "id": "p4-detail-pine-03-1-04",
+      "mesh": "rbxassetid://17718985387",
+      "modelPosition": [
+        -200.10000610351562,
+        36.07598114013672,
+        94.5
+      ],
+      "modelScale": 0.37400001287460327,
+      "oldCollider": {
+        "cframe": [
+          -200.10000610351562,
+          27.45960807800293,
+          94.5,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-detail-pine-03-1-04",
+        "owner": "RSEnvironmentP4DetailV1",
+        "position": [
+          -200.10000610351562,
+          27.45960807800293,
+          94.5
+        ],
+        "query": true,
+        "size": [
+          7.480000019073486,
+          2.24399995803833,
+          2.24399995803833
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4DetailV1",
+      "root": "RSEnvironmentP4Detail",
+      "shaft": {
+        "position": [
+          -200.11692810058594,
+          35.838285901003,
+          94.26139068603516
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          24.453994079723135,
+          2.9781434535980225,
+          2.9781434535980225
+        ]
+      },
+      "species": "Pine_03.1",
+      "top": 49.554354667663574,
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 35.34508777984972,
+      "cap": {
+        "position": [
+          -55.099998474121094,
+          54.958387196063995,
+          347.1000061035156
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5551999807357788,
+          1.5551999807357788,
+          1.5551999807357788
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5551999807357788,
+      "groundY": 35.46508777984972,
+      "id": "p4-tree-03-01",
+      "mesh": "rbxassetid://18720235894",
+      "modelPosition": [
+        -55.099998474121094,
+        37.71136474609375,
+        347.1000061035156
+      ],
+      "modelScale": 0.4860000014305115,
+      "oldCollider": {
+        "cframe": [
+          -55.099998474121094,
+          37.409088134765625,
+          347.1000061035156,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-tree-03-01",
+        "owner": "RSEnvironmentP4V1",
+        "position": [
+          -55.099998474121094,
+          37.409088134765625,
+          347.1000061035156
+        ],
+        "query": true,
+        "size": [
+          3.888000011444092,
+          1.5551999807357788,
+          1.5551999807357788
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4V1",
+      "root": "RSEnvironmentP4",
+      "shaft": {
+        "position": [
+          -55.099998474121094,
+          45.15173748795686,
+          347.1000061035156
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          19.613299416214275,
+          1.5551999807357788,
+          1.5551999807357788
+        ]
+      },
+      "species": "Tree_03",
+      "top": 55.735987186431885,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.286226510065607,
+      "cap": {
+        "position": [
+          -271.1000061035156,
+          42.73909014463425,
+          356.5
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5424000024795532,
+          1.5424000024795532,
+          1.5424000024795532
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5424000024795532,
+      "groundY": 23.406226510065608,
+      "id": "p4-tree-03-02",
+      "mesh": "rbxassetid://18720235894",
+      "modelPosition": [
+        -271.1000061035156,
+        25.634021759033203,
+        356.5
+      ],
+      "modelScale": 0.4819999933242798,
+      "oldCollider": {
+        "cframe": [
+          -271.1000061035156,
+          25.334224700927734,
+          356.5,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-tree-03-02",
+        "owner": "RSEnvironmentP4V1",
+        "position": [
+          -271.1000061035156,
+          25.334224700927734,
+          356.5
+        ],
+        "query": true,
+        "size": [
+          3.8559999465942383,
+          1.5424000024795532,
+          1.5424000024795532
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4V1",
+      "root": "RSEnvironmentP4",
+      "shaft": {
+        "position": [
+          -271.1000061035156,
+          33.012658327349925,
+          356.5
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          19.45286363456864,
+          1.5424000024795532,
+          1.5424000024795532
+        ]
+      },
+      "species": "Tree_03",
+      "top": 43.51029014587402,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 13.64852925534331,
+      "cap": {
+        "position": [
+          271.5,
+          33.78325933218002,
+          -197.8000030517578
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5967999696731567,
+          1.5967999696731567,
+          1.5967999696731567
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5967999696731567,
+      "groundY": 13.76852925534331,
+      "id": "p4-tree-03-03",
+      "mesh": "rbxassetid://18720235894",
+      "modelPosition": [
+        271.5,
+        16.07489776611328,
+        -197.8000030517578
+      ],
+      "modelScale": 0.49900001287460327,
+      "oldCollider": {
+        "cframe": [
+          271.5,
+          15.76452922821045,
+          -197.8000030517578,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-tree-03-03",
+        "owner": "RSEnvironmentP4V1",
+        "position": [
+          271.5,
+          15.76452922821045,
+          -197.8000030517578
+        ],
+        "query": true,
+        "size": [
+          3.992000102996826,
+          1.5967999696731567,
+          1.5967999696731567
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4V1",
+      "root": "RSEnvironmentP4",
+      "shaft": {
+        "position": [
+          271.5,
+          23.715894293761664,
+          -197.8000030517578
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          20.13473007683671,
+          1.5967999696731567,
+          1.5967999696731567
+        ]
+      },
+      "species": "Tree_03",
+      "top": 34.5816593170166,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 17.432549149382684,
+      "cap": {
+        "position": [
+          -234.8000030517578,
+          39.53264957666397,
+          0.5
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.753600001335144,
+          1.753600001335144,
+          1.753600001335144
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.753600001335144,
+      "groundY": 17.552549149382685,
+      "id": "p4-tree-03-04",
+      "mesh": "rbxassetid://18720235894",
+      "modelPosition": [
+        -234.8000030517578,
+        20.085391998291016,
+        0.49999988079071045
+      ],
+      "modelScale": 0.5479999780654907,
+      "oldCollider": {
+        "cframe": [
+          -234.8000030517578,
+          19.744548797607422,
+          0.5,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-tree-03-04",
+        "owner": "RSEnvironmentP4V1",
+        "position": [
+          -234.8000030517578,
+          19.744548797607422,
+          0.5
+        ],
+        "query": true,
+        "size": [
+          4.383999824523926,
+          1.753600001335144,
+          1.753600001335144
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4V1",
+      "root": "RSEnvironmentP4",
+      "shaft": {
+        "position": [
+          -234.8000030517578,
+          28.482599363023326,
+          0.5
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          22.100100427281287,
+          1.753600001335144,
+          1.753600001335144
+        ]
+      },
+      "species": "Tree_03",
+      "top": 40.40944957733154,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 28.911608619053112,
+      "cap": {
+        "position": [
+          -227.89999389648438,
+          54.4822992682457,
+          230.8000030517578
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.687399983406067,
+          1.687399983406067,
+          1.687399983406067
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.687399983406067,
+      "groundY": 29.031608619053113,
+      "id": "p4-tree-12-01",
+      "mesh": "rbxassetid://18720345648",
+      "modelPosition": [
+        -227.89999389648438,
+        31.501075744628906,
+        230.8000030517578
+      ],
+      "modelScale": 0.6489999890327454,
+      "oldCollider": {
+        "cframe": [
+          -227.89999389648438,
+          31.627607345581055,
+          230.8000030517578,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-tree-12-01",
+        "owner": "RSEnvironmentP4V1",
+        "position": [
+          -227.89999389648438,
+          31.627607345581055,
+          230.8000030517578
+        ],
+        "query": true,
+        "size": [
+          5.191999912261963,
+          1.687399983406067,
+          1.687399983406067
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4V1",
+      "root": "RSEnvironmentP4",
+      "shaft": {
+        "position": [
+          -227.89999389648438,
+          41.696953943649405,
+          230.8000030517578
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          25.570690649192585,
+          1.687399983406067,
+          1.687399983406067
+        ]
+      },
+      "species": "Tree_12",
+      "top": 55.32599925994873,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 25.70745140300085,
+      "cap": {
+        "position": [
+          30.399999618530273,
+          49.16052287817001,
+          -359.5
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5470000505447388,
+          1.5470000505447388,
+          1.5470000505447388
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5470000505447388,
+      "groundY": 25.82745140300085,
+      "id": "p4-tree-12-02",
+      "mesh": "rbxassetid://18720345648",
+      "modelPosition": [
+        30.399999618530273,
+        28.091445922851562,
+        -359.5
+      ],
+      "modelScale": 0.5950000286102295,
+      "oldCollider": {
+        "cframe": [
+          30.399999618530273,
+          28.20745086669922,
+          -359.5,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-tree-12-02",
+        "owner": "RSEnvironmentP4V1",
+        "position": [
+          30.399999618530273,
+          28.20745086669922,
+          -359.5
+        ],
+        "query": true,
+        "size": [
+          4.760000228881836,
+          1.5470000505447388,
+          1.5470000505447388
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4V1",
+      "root": "RSEnvironmentP4",
+      "shaft": {
+        "position": [
+          30.399999618530273,
+          37.43398714058543,
+          -359.5
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          23.453071475169164,
+          1.5470000505447388,
+          1.5470000505447388
+        ]
+      },
+      "species": "Tree_12",
+      "top": 49.93402290344238,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 14.683137040886214,
+      "cap": {
+        "position": [
+          270.29998779296875,
+          37.94012898206711,
+          -167.60000610351562
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.534000039100647,
+          1.534000039100647,
+          1.534000039100647
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.534000039100647,
+      "groundY": 14.803137040886213,
+      "id": "p4-tree-12-03",
+      "mesh": "rbxassetid://18720345648",
+      "modelPosition": [
+        270.29998779296875,
+        17.048107147216797,
+        -167.60000610351562
+      ],
+      "modelScale": 0.5899999737739563,
+      "oldCollider": {
+        "cframe": [
+          270.29998779296875,
+          17.163137435913086,
+          -167.60000610351562,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-tree-12-03",
+        "owner": "RSEnvironmentP4V1",
+        "position": [
+          270.29998779296875,
+          17.163137435913086,
+          -167.60000610351562
+        ],
+        "query": true,
+        "size": [
+          4.71999979019165,
+          1.534000039100647,
+          1.534000039100647
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4V1",
+      "root": "RSEnvironmentP4",
+      "shaft": {
+        "position": [
+          270.29998779296875,
+          26.31163301147666,
+          -167.60000610351562
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          23.256991941180893,
+          1.534000039100647,
+          1.534000039100647
+        ]
+      },
+      "species": "Tree_12",
+      "top": 38.70712900161743,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 19.51029266768717,
+      "cap": {
+        "position": [
+          -230.5,
+          45.55156862735748,
+          -362.8999938964844
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.7186000347137451,
+          1.7186000347137451,
+          1.7186000347137451
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.7186000347137451,
+      "groundY": 19.630292667687172,
+      "id": "p4-tree-12-04",
+      "mesh": "rbxassetid://18720345648",
+      "modelPosition": [
+        -230.5,
+        22.145421981811523,
+        -362.8999938964844
+      ],
+      "modelScale": 0.6610000133514404,
+      "oldCollider": {
+        "cframe": [
+          -230.5,
+          22.274293899536133,
+          -362.8999938964844,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "p4-tree-12-04",
+        "owner": "RSEnvironmentP4V1",
+        "position": [
+          -230.5,
+          22.274293899536133,
+          -362.8999938964844
+        ],
+        "query": true,
+        "size": [
+          5.288000106811523,
+          1.7186000347137451,
+          1.7186000347137451
+        ],
+        "touch": false
+      },
+      "owner": "RSEnvironmentP4V1",
+      "root": "RSEnvironmentP4",
+      "shaft": {
+        "position": [
+          -230.5,
+          32.530930647522325,
+          -362.8999938964844
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          26.041275959670312,
+          1.7186000347137451,
+          1.7186000347137451
+        ]
+      },
+      "species": "Tree_12",
+      "top": 46.410868644714355,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 20.70294341417249,
+      "cap": {
+        "position": [
+          -177.43434143066406,
+          47.48453164100647,
+          -175.68739318847656
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5098776817321777,
+          1.5098776817321777,
+          1.5098776817321777
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5098776817321777,
+      "groundY": 20.822943414172492,
+      "id": "world-010",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -177.43434143066406,
+        23.658214569091797,
+        -175.6873779296875
+      ],
+      "modelScale": 0.6291157007217407,
+      "oldCollider": {
+        "cframe": [
+          -177.43434143066406,
+          23.344528198242188,
+          -175.68739318847656,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-010",
+        "owner": "RSWorldV1",
+        "position": [
+          -177.43434143066406,
+          23.344528198242188,
+          -175.68739318847656
+        ],
+        "query": true,
+        "size": [
+          5.032925605773926,
+          1.5098776817321777,
+          1.5098776817321777
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -177.43434143066406,
+          34.09373752758948,
+          -175.68739318847656
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          26.78158822683398,
+          1.5098776817321777,
+          1.5098776817321777
+        ]
+      },
+      "species": "Tree_01",
+      "top": 48.23947048187256,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 19.88314088213122,
+      "cap": {
+        "position": [
+          -234.43199157714844,
+          61.44377303123474,
+          -281.90087890625
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5552163124084473,
+          1.5552163124084473,
+          1.5552163124084473
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5552163124084473,
+      "groundY": 20.00314088213122,
+      "id": "world-013",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -234.43199157714844,
+        23.25999641418457,
+        -281.90087890625
+      ],
+      "modelScale": 0.648006796836853,
+      "oldCollider": {
+        "cframe": [
+          -234.43199157714844,
+          22.60868263244629,
+          -281.90087890625,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-013",
+        "owner": "RSWorldV1",
+        "position": [
+          -234.43199157714844,
+          22.60868263244629,
+          -281.90087890625
+        ],
+        "query": true,
+        "size": [
+          5.184054374694824,
+          1.5552163124084473,
+          1.5552163124084473
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -234.43199157714844,
+          40.66345695668298,
+          -281.90087890625
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          41.560632149103526,
+          1.5552163124084473,
+          1.5552163124084473
+        ]
+      },
+      "species": "Tree_08",
+      "top": 62.221381187438965,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 19.39049535136662,
+      "cap": {
+        "position": [
+          -150.8373260498047,
+          63.88652688264847,
+          -203.8739013671875
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.6657317876815796,
+          1.6657317876815796,
+          1.6657317876815796
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.6657317876815796,
+      "groundY": 19.51049535136662,
+      "id": "world-014",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -150.8373260498047,
+        22.98936653137207,
+        -203.8739013671875
+      ],
+      "modelScale": 0.694054901599884,
+      "oldCollider": {
+        "cframe": [
+          -150.8373260498047,
+          22.291772842407227,
+          -203.8739013671875,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-014",
+        "owner": "RSWorldV1",
+        "position": [
+          -150.8373260498047,
+          22.291772842407227,
+          -203.8739013671875
+        ],
+        "query": true,
+        "size": [
+          5.552439212799072,
+          1.6657317876815796,
+          1.6657317876815796
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -150.8373260498047,
+          41.63851111700754,
+          -203.8739013671875
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          44.496031531281844,
+          1.6657317876815796,
+          1.6657317876815796
+        ]
+      },
+      "species": "Tree_08",
+      "top": 64.71939277648926,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 20.53197055640378,
+      "cap": {
+        "position": [
+          -363.0582580566406,
+          47.64315241575241,
+          -323.69586181640625
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.528436303138733,
+          1.528436303138733,
+          1.528436303138733
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.528436303138733,
+      "groundY": 20.651970556403782,
+      "id": "world-015",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -363.0582580566406,
+        23.523975372314453,
+        -323.6958923339844
+      ],
+      "modelScale": 0.6368484497070312,
+      "oldCollider": {
+        "cframe": [
+          -363.0582580566406,
+          23.20643424987793,
+          -323.69586181640625,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-015",
+        "owner": "RSWorldV1",
+        "position": [
+          -363.0582580566406,
+          23.20643424987793,
+          -323.69586181640625
+        ],
+        "query": true,
+        "size": [
+          5.09478759765625,
+          1.528436303138733,
+          1.528436303138733
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -363.0582580566406,
+          34.087561486078094,
+          -323.69586181640625
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          27.11118185934863,
+          1.528436303138733,
+          1.528436303138733
+        ]
+      },
+      "species": "Tree_01",
+      "top": 48.40737056732178,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 24.018377106393263,
+      "cap": {
+        "position": [
+          -308.25189208984375,
+          78.33801507949829,
+          -353.8243103027344
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.0344343185424805,
+          2.0344343185424805,
+          2.0344343185424805
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.0344343185424805,
+      "groundY": 24.138377106393264,
+      "id": "world-016",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -308.25189208984375,
+        28.388444900512695,
+        -353.8243103027344
+      ],
+      "modelScale": 0.8476809859275818,
+      "oldCollider": {
+        "cframe": [
+          -308.25189208984375,
+          27.536441802978516,
+          -353.8243103027344,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-016",
+        "owner": "RSWorldV1",
+        "position": [
+          -308.25189208984375,
+          27.536441802978516,
+          -353.8243103027344
+        ],
+        "query": true,
+        "size": [
+          6.781447887420654,
+          2.0344343185424805,
+          2.0344343185424805
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -308.25189208984375,
+          51.17819609294578,
+          -353.8243103027344
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          54.31963797310503,
+          2.0344343185424805,
+          2.0344343185424805
+        ]
+      },
+      "species": "Tree_08",
+      "top": 79.35523223876953,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 19.69520195076915,
+      "cap": {
+        "position": [
+          -216.08192443847656,
+          67.2374022603035,
+          -230.72169494628906
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.7800592184066772,
+          1.7800592184066772,
+          1.7800592184066772
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.7800592184066772,
+      "groundY": 19.81520195076915,
+      "id": "world-018",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -216.0819549560547,
+        23.533262252807617,
+        -230.72169494628906
+      ],
+      "modelScale": 0.7416913509368896,
+      "oldCollider": {
+        "cframe": [
+          -216.08192443847656,
+          22.78778839111328,
+          -230.72169494628906,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-018",
+        "owner": "RSWorldV1",
+        "position": [
+          -216.08192443847656,
+          22.78778839111328,
+          -230.72169494628906
+        ],
+        "query": true,
+        "size": [
+          5.933530807495117,
+          1.7800592184066772,
+          1.7800592184066772
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -216.08192443847656,
+          43.46630210553633,
+          -230.72169494628906
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          47.54220030953435,
+          1.7800592184066772,
+          1.7800592184066772
+        ]
+      },
+      "species": "Tree_08",
+      "top": 68.12743186950684,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.895332434940546,
+      "cap": {
+        "position": [
+          -224.3030242919922,
+          67.40878331661224,
+          -153.19192504882812
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.6663925647735596,
+          1.6663925647735596,
+          1.6663925647735596
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.6663925647735596,
+      "groundY": 23.015332434940547,
+      "id": "world-019",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -224.3030242919922,
+        26.49539566040039,
+        -153.19192504882812
+      ],
+      "modelScale": 0.6943302154541016,
+      "oldCollider": {
+        "cframe": [
+          -224.3030242919922,
+          25.79752540588379,
+          -153.19192504882812,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-019",
+        "owner": "RSWorldV1",
+        "position": [
+          -224.3030242919922,
+          25.79752540588379,
+          -153.19192504882812
+        ],
+        "query": true,
+        "size": [
+          5.5546417236328125,
+          1.6663925647735596,
+          1.6663925647735596
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -224.3030242919922,
+          45.15205787577639,
+          -153.19192504882812
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          44.5134508816717,
+          1.6663925647735596,
+          1.6663925647735596
+        ]
+      },
+      "species": "Tree_08",
+      "top": 68.24197959899902,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 18.72665821536949,
+      "cap": {
+        "position": [
+          -13.568727493286133,
+          45.94931483268738,
+          -309.3548278808594
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5345616340637207,
+          1.5345616340637207,
+          1.5345616340637207
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5345616340637207,
+      "groundY": 18.84665821536949,
+      "id": "world-020",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -13.568729400634766,
+        21.733476638793945,
+        -309.3548278808594
+      ],
+      "modelScale": 0.6394006609916687,
+      "oldCollider": {
+        "cframe": [
+          -13.568727493286133,
+          21.414661407470703,
+          -309.3548278808594,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-020",
+        "owner": "RSWorldV1",
+        "position": [
+          -13.568727493286133,
+          21.414661407470703,
+          -309.3548278808594
+        ],
+        "query": true,
+        "size": [
+          5.11520528793335,
+          1.5345616340637207,
+          1.5345616340637207
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -13.568727493286133,
+          32.33798652402844,
+          -309.3548278808594
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          27.222656617317888,
+          1.5345616340637207,
+          1.5345616340637207
+        ]
+      },
+      "species": "Tree_01",
+      "top": 46.71659564971924,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 17.99372303585953,
+      "cap": {
+        "position": [
+          -35.39760208129883,
+          45.82675403356552,
+          -257.25921630859375
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5693827867507935,
+          1.5693827867507935,
+          1.5693827867507935
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5693827867507935,
+      "groundY": 18.113723035859532,
+      "id": "world-021",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -35.3975944519043,
+        21.06142807006836,
+        -257.2591857910156
+      ],
+      "modelScale": 0.6539095044136047,
+      "oldCollider": {
+        "cframe": [
+          -35.39760208129883,
+          20.735380172729492,
+          -257.25921630859375,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-021",
+        "owner": "RSWorldV1",
+        "position": [
+          -35.39760208129883,
+          20.735380172729492,
+          -257.25921630859375
+        ],
+        "query": true,
+        "size": [
+          5.231276035308838,
+          1.5693827867507935,
+          1.5693827867507935
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -35.39760208129883,
+          31.910238534712526,
+          -257.25921630859375
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          27.83303099770599,
+          1.5693827867507935,
+          1.5693827867507935
+        ]
+      },
+      "species": "Tree_01",
+      "top": 46.61144542694092,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 20.955492810768707,
+      "cap": {
+        "position": [
+          -7.2526984214782715,
+          48.42395031452179,
+          -154.55686950683594
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5486180782318115,
+          1.5486180782318115,
+          1.5486180782318115
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5486180782318115,
+      "groundY": 21.075492810768708,
+      "id": "world-023",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -7.252717971801758,
+        23.98629379272461,
+        -154.55686950683594
+      ],
+      "modelScale": 0.6452575325965881,
+      "oldCollider": {
+        "cframe": [
+          -7.2526984214782715,
+          23.66455841064453,
+          -154.55686950683594,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-023",
+        "owner": "RSWorldV1",
+        "position": [
+          -7.2526984214782715,
+          23.66455841064453,
+          -154.55686950683594
+        ],
+        "query": true,
+        "size": [
+          5.162060260772705,
+          1.5486180782318115,
+          1.5486180782318115
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -7.2526984214782715,
+          34.689721562645246,
+          -154.55686950683594
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          27.468457503753083,
+          1.5486180782318115,
+          1.5486180782318115
+        ]
+      },
+      "species": "Tree_01",
+      "top": 49.198259353637695,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 20.998873010211753,
+      "cap": {
+        "position": [
+          -78.17481231689453,
+          58.640387177467346,
+          -141.59671020507812
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.124586820602417,
+          2.124586820602417,
+          2.124586820602417
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.124586820602417,
+      "groundY": 21.118873010211754,
+      "id": "world-024",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -78.1748046875,
+        25.1137752532959,
+        -141.59671020507812
+      ],
+      "modelScale": 0.8852444887161255,
+      "oldCollider": {
+        "cframe": [
+          -78.17481231689453,
+          24.672378540039062,
+          -141.59671020507812,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-024",
+        "owner": "RSWorldV1",
+        "position": [
+          -78.17481231689453,
+          24.672378540039062,
+          -141.59671020507812
+        ],
+        "query": true,
+        "size": [
+          7.081955909729004,
+          2.124586820602417,
+          2.124586820602417
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -78.17481231689453,
+          39.81963009383955,
+          -141.59671020507812
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          37.64151416725559,
+          2.124586820602417,
+          2.124586820602417
+        ]
+      },
+      "species": "Tree_01",
+      "top": 59.702680587768555,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 19.15770621261775,
+      "cap": {
+        "position": [
+          33.64213943481445,
+          50.19052350521088,
+          -168.4373016357422
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.7504017353057861,
+          1.7504017353057861,
+          1.7504017353057861
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.7504017353057861,
+      "groundY": 19.27770621261775,
+      "id": "world-025",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        33.642147064208984,
+        22.56866455078125,
+        -168.43728637695312
+      ],
+      "modelScale": 0.7293340563774109,
+      "oldCollider": {
+        "cframe": [
+          33.64213943481445,
+          22.20501136779785,
+          -168.4373016357422,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-025",
+        "owner": "RSWorldV1",
+        "position": [
+          33.64213943481445,
+          22.20501136779785,
+          -168.4373016357422
+        ],
+        "query": true,
+        "size": [
+          5.834672451019287,
+          1.7504017353057861,
+          1.7504017353057861
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          33.64213943481445,
+          34.674114858914315,
+          -168.4373016357422
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          31.032817292593126,
+          1.7504017353057861,
+          1.7504017353057861
+        ]
+      },
+      "species": "Tree_01",
+      "top": 51.06572437286377,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 20.891380703586464,
+      "cap": {
+        "position": [
+          84.75163269042969,
+          50.21606796979904,
+          -325.6561279296875
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.6537233591079712,
+          1.6537233591079712,
+          1.6537233591079712
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.6537233591079712,
+      "groundY": 21.011380703586465,
+      "id": "world-028",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        84.75164794921875,
+        24.119821548461914,
+        -325.65618896484375
+      ],
+      "modelScale": 0.6890514492988586,
+      "oldCollider": {
+        "cframe": [
+          84.75163269042969,
+          23.7762508392334,
+          -325.6561279296875,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-028",
+        "owner": "RSWorldV1",
+        "position": [
+          84.75163269042969,
+          23.7762508392334,
+          -325.6561279296875
+        ],
+        "query": true,
+        "size": [
+          5.512411594390869,
+          1.6537233591079712,
+          1.6537233591079712
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          84.75163269042969,
+          35.55372433669275,
+          -325.6561279296875
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          29.324687266212578,
+          1.6537233591079712,
+          1.6537233591079712
+        ]
+      },
+      "species": "Tree_01",
+      "top": 51.04292964935303,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 16.236330388285634,
+      "cap": {
+        "position": [
+          43.604732513427734,
+          54.708109736442566,
+          -280.1080322265625
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.171257257461548,
+          2.171257257461548,
+          2.171257257461548
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.171257257461548,
+      "groundY": 16.356330388285635,
+      "id": "world-029",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        43.60472869873047,
+        20.445024490356445,
+        -280.1080322265625
+      ],
+      "modelScale": 0.9046905040740967,
+      "oldCollider": {
+        "cframe": [
+          43.604732513427734,
+          19.993934631347656,
+          -280.1080322265625,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-029",
+        "owner": "RSWorldV1",
+        "position": [
+          43.604732513427734,
+          19.993934631347656,
+          -280.1080322265625
+        ],
+        "query": true,
+        "size": [
+          7.237524032592773,
+          2.171257257461548,
+          2.171257257461548
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          43.604732513427734,
+          35.4722200623641,
+          -280.1080322265625
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          38.47177934815693,
+          2.171257257461548,
+          2.171257257461548
+        ]
+      },
+      "species": "Tree_01",
+      "top": 55.79373836517334,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 21.002344065073867,
+      "cap": {
+        "position": [
+          194.75367736816406,
+          68.201833486557,
+          -328.0681457519531
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.7672314643859863,
+          1.7672314643859863,
+          1.7672314643859863
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.7672314643859863,
+      "groundY": 21.122344065073868,
+      "id": "world-030",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        194.753662109375,
+        24.812641143798828,
+        -328.0681457519531
+      ],
+      "modelScale": 0.7363464832305908,
+      "oldCollider": {
+        "cframe": [
+          194.75367736816406,
+          24.072538375854492,
+          -328.0681457519531,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-030",
+        "owner": "RSWorldV1",
+        "position": [
+          194.75367736816406,
+          24.072538375854492,
+          -328.0681457519531
+        ],
+        "query": true,
+        "size": [
+          5.890771865844727,
+          1.7672314643859863,
+          1.7672314643859863
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          194.75367736816406,
+          44.60208877581543,
+          -328.0681457519531
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          47.199489421483136,
+          1.7672314643859863,
+          1.7672314643859863
+        ]
+      },
+      "species": "Tree_08",
+      "top": 69.08544921875,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 18.516212002127933,
+      "cap": {
+        "position": [
+          305.3193054199219,
+          50.13649570941925,
+          -367.95361328125
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.7839562892913818,
+          1.7839562892913818,
+          1.7839562892913818
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.7839562892913818,
+      "groundY": 18.636212002127934,
+      "id": "world-032",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        305.3193359375,
+        21.985137939453125,
+        -367.95361328125
+      ],
+      "modelScale": 0.7433151006698608,
+      "oldCollider": {
+        "cframe": [
+          305.3193054199219,
+          21.6145076751709,
+          -367.95361328125,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-032",
+        "owner": "RSWorldV1",
+        "position": [
+          305.3193054199219,
+          21.6145076751709,
+          -367.95361328125
+        ],
+        "query": true,
+        "size": [
+          5.946520805358887,
+          1.7839562892913818,
+          1.7839562892913818
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          305.3193054199219,
+          34.32635385577359,
+          -367.95361328125
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          31.620283707291318,
+          1.7839562892913818,
+          1.7839562892913818
+        ]
+      },
+      "species": "Tree_01",
+      "top": 51.02847385406494,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 13.143576540547846,
+      "cap": {
+        "position": [
+          192.40969848632812,
+          40.85452491044998,
+          -266.9420166015625
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5623735189437866,
+          1.5623735189437866,
+          1.5623735189437866
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5623735189437866,
+      "groundY": 13.263576540547845,
+      "id": "world-033",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        192.40969848632812,
+        16.199806213378906,
+        -266.9420471191406
+      ],
+      "modelScale": 0.6509889960289001,
+      "oldCollider": {
+        "cframe": [
+          192.40969848632812,
+          15.875216484069824,
+          -266.9420166015625,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-033",
+        "owner": "RSWorldV1",
+        "position": [
+          192.40969848632812,
+          15.875216484069824,
+          -266.9420166015625
+        ],
+        "query": true,
+        "size": [
+          5.207911968231201,
+          1.5623735189437866,
+          1.5623735189437866
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          192.40969848632812,
+          26.99905072549891,
+          -266.9420166015625
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          27.710948369902134,
+          1.5623735189437866,
+          1.5623735189437866
+        ]
+      },
+      "species": "Tree_01",
+      "top": 41.635711669921875,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 14.651051009768434,
+      "cap": {
+        "position": [
+          326.1351013183594,
+          75.12609136104584,
+          -200.2923583984375
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.2655746936798096,
+          2.2655746936798096,
+          2.2655746936798096
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.2655746936798096,
+      "groundY": 14.771051009768433,
+      "id": "world-034",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        326.1351013183594,
+        19.50153923034668,
+        -200.29234313964844
+      ],
+      "modelScale": 0.9439894556999207,
+      "oldCollider": {
+        "cframe": [
+          326.1351013183594,
+          18.552732467651367,
+          -200.2923583984375,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-034",
+        "owner": "RSWorldV1",
+        "position": [
+          326.1351013183594,
+          18.552732467651367,
+          -200.2923583984375
+        ],
+        "query": true,
+        "size": [
+          7.551915645599365,
+          2.2655746936798096,
+          2.2655746936798096
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          326.1351013183594,
+          44.88857118540713,
+          -200.2923583984375
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          60.4750403512774,
+          2.2655746936798096,
+          2.2655746936798096
+        ]
+      },
+      "species": "Tree_08",
+      "top": 76.25887870788574,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 21.499494526164487,
+      "cap": {
+        "position": [
+          253.665283203125,
+          61.09126818180084,
+          -318.94073486328125
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.235638380050659,
+          2.235638380050659,
+          2.235638380050659
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.235638380050659,
+      "groundY": 21.619494526164488,
+      "id": "world-038",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        253.665283203125,
+        25.812227249145508,
+        -318.94073486328125
+      ],
+      "modelScale": 0.9315159916877747,
+      "oldCollider": {
+        "cframe": [
+          253.665283203125,
+          25.347759246826172,
+          -318.94073486328125,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-038",
+        "owner": "RSWorldV1",
+        "position": [
+          253.665283203125,
+          25.347759246826172,
+          -318.94073486328125
+        ],
+        "query": true,
+        "size": [
+          7.452127933502197,
+          2.235638380050659,
+          2.235638380050659
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          253.665283203125,
+          41.29538135398266,
+          -318.94073486328125
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          39.59177365563636,
+          2.235638380050659,
+          2.235638380050659
+        ]
+      },
+      "species": "Tree_01",
+      "top": 62.20908737182617,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.199835468221398,
+      "cap": {
+        "position": [
+          -339.4888000488281,
+          61.773682951927185,
+          -115.46766662597656
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.177626848220825,
+          2.177626848220825,
+          2.177626848220825
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.177626848220825,
+      "groundY": 23.3198354682214,
+      "id": "world-044",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -339.4888000488281,
+        27.410083770751953,
+        -115.46765899658203
+      ],
+      "modelScale": 0.9073445200920105,
+      "oldCollider": {
+        "cframe": [
+          -339.4888000488281,
+          26.957672119140625,
+          -115.46766662597656,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-044",
+        "owner": "RSWorldV1",
+        "position": [
+          -339.4888000488281,
+          26.957672119140625,
+          -115.46766662597656
+        ],
+        "query": true,
+        "size": [
+          7.258756160736084,
+          2.177626848220825,
+          2.177626848220825
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -339.4888000488281,
+          42.4867592100743,
+          -115.46766662597656
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          38.57384748370579,
+          2.177626848220825,
+          2.177626848220825
+        ]
+      },
+      "species": "Tree_01",
+      "top": 62.8624963760376,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 17.173242569293055,
+      "cap": {
+        "position": [
+          -318.6666259765625,
+          50.1554793715477,
+          -1.4603544473648071
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.860906720161438,
+          1.860906720161438,
+          1.860906720161438
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.860906720161438,
+      "groundY": 17.293242569293056,
+      "id": "world-045",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -318.6666259765625,
+        20.789817810058594,
+        -1.4603776931762695
+      ],
+      "modelScale": 0.7753778100013733,
+      "oldCollider": {
+        "cframe": [
+          -318.6666259765625,
+          20.4032039642334,
+          -1.4603544473648071,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-045",
+        "owner": "RSWorldV1",
+        "position": [
+          -318.6666259765625,
+          20.4032039642334,
+          -1.4603544473648071
+        ],
+        "query": true,
+        "size": [
+          6.203022480010986,
+          1.860906720161438,
+          1.860906720161438
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -318.6666259765625,
+          33.664360970420375,
+          -1.4603544473648071
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          32.98223680225465,
+          1.860906720161438,
+          1.860906720161438
+        ]
+      },
+      "species": "Tree_01",
+      "top": 51.08593273162842,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 24.644789267484523,
+      "cap": {
+        "position": [
+          -371.7884216308594,
+          76.83660167455673,
+          82.64788818359375
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.9543753862380981,
+          1.9543753862380981,
+          1.9543753862380981
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.9543753862380981,
+      "groundY": 24.764789267484524,
+      "id": "world-046",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -371.7884216308594,
+        28.85264015197754,
+        82.64788818359375
+      ],
+      "modelScale": 0.8143230676651001,
+      "oldCollider": {
+        "cframe": [
+          -371.7884216308594,
+          28.034160614013672,
+          82.64788818359375,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-046",
+        "owner": "RSWorldV1",
+        "position": [
+          -371.7884216308594,
+          28.034160614013672,
+          82.64788818359375
+        ],
+        "query": true,
+        "size": [
+          6.514584541320801,
+          1.9543753862380981,
+          1.9543753862380981
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -371.7884216308594,
+          50.74069547102063,
+          82.64788818359375
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          52.191812407072206,
+          1.9543753862380981,
+          1.9543753862380981
+        ]
+      },
+      "species": "Tree_08",
+      "top": 77.81378936767578,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 19.656491112530386,
+      "cap": {
+        "position": [
+          -324.9678955078125,
+          46.44660806655884,
+          -23.60347557067871
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5091791152954102,
+          1.5091791152954102,
+          1.5091791152954102
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5091791152954102,
+      "groundY": 19.776491112530387,
+      "id": "world-047",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -324.9678955078125,
+        22.63131332397461,
+        -23.603485107421875
+      ],
+      "modelScale": 0.6288246512413025,
+      "oldCollider": {
+        "cframe": [
+          -324.9678955078125,
+          22.31777572631836,
+          -23.60347557067871,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-047",
+        "owner": "RSWorldV1",
+        "position": [
+          -324.9678955078125,
+          22.31777572631836,
+          -23.60347557067871
+        ],
+        "query": true,
+        "size": [
+          5.03059720993042,
+          1.5091791152954102,
+          1.5091791152954102
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -324.9678955078125,
+          33.051549589544614,
+          -23.60347557067871
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          26.790116954028452,
+          1.5091791152954102,
+          1.5091791152954102
+        ]
+      },
+      "species": "Tree_01",
+      "top": 47.20119762420654,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 17.15480169624949,
+      "cap": {
+        "position": [
+          -175.39781188964844,
+          43.541191816329956,
+          -79.83460235595703
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.48753023147583,
+          1.48753023147583,
+          1.48753023147583
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.48753023147583,
+      "groundY": 17.27480169624949,
+      "id": "world-052",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -175.39779663085938,
+        20.067522048950195,
+        -79.83460235595703
+      ],
+      "modelScale": 0.6198042631149292,
+      "oldCollider": {
+        "cframe": [
+          -175.39781188964844,
+          19.758480072021484,
+          -79.83460235595703,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-052",
+        "owner": "RSWorldV1",
+        "position": [
+          -175.39781188964844,
+          19.758480072021484,
+          -79.83460235595703
+        ],
+        "query": true,
+        "size": [
+          4.958434104919434,
+          1.48753023147583,
+          1.48753023147583
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -175.39781188964844,
+          30.347996756289724,
+          -79.83460235595703
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          26.386390120080467,
+          1.48753023147583,
+          1.48753023147583
+        ]
+      },
+      "species": "Tree_01",
+      "top": 44.28495693206787,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 16.901737889769844,
+      "cap": {
+        "position": [
+          -52.24555969238281,
+          73.14298617839813,
+          -6.262857437133789
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.1065828800201416,
+          2.1065828800201416,
+          2.1065828800201416
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.1065828800201416,
+      "groundY": 17.021737889769845,
+      "id": "world-053",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -52.24555206298828,
+        21.42201805114746,
+        -6.262845516204834
+      ],
+      "modelScale": 0.8777428865432739,
+      "oldCollider": {
+        "cframe": [
+          -52.24555969238281,
+          20.539798736572266,
+          -6.262857437133789,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-053",
+        "owner": "RSWorldV1",
+        "position": [
+          -52.24555969238281,
+          20.539798736572266,
+          -6.262857437133789
+        ],
+        "query": true,
+        "size": [
+          7.021943092346191,
+          2.1065828800201416,
+          2.1065828800201416
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -52.24555969238281,
+          45.02236203408398,
+          -6.262857437133789
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          56.241248288628285,
+          2.1065828800201416,
+          2.1065828800201416
+        ]
+      },
+      "species": "Tree_08",
+      "top": 74.1962776184082,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.670677032932975,
+      "cap": {
+        "position": [
+          -12.929362297058105,
+          57.592068672180176,
+          -107.963623046875
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.914175033569336,
+          1.914175033569336,
+          1.914175033569336
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.914175033569336,
+      "groundY": 23.790677032932976,
+      "id": "world-055",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -12.929368019104004,
+        27.385814666748047,
+        -107.96361541748047
+      ],
+      "modelScale": 0.797572910785675,
+      "oldCollider": {
+        "cframe": [
+          -12.929362297058105,
+          26.988136291503906,
+          -107.963623046875,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-055",
+        "owner": "RSWorldV1",
+        "position": [
+          -12.929362297058105,
+          26.988136291503906,
+          -107.963623046875
+        ],
+        "query": true,
+        "size": [
+          6.3805832862854,
+          1.914175033569336,
+          1.914175033569336
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -12.929362297058105,
+          40.63137285255658,
+          -107.963623046875
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          33.921391639247204,
+          1.914175033569336,
+          1.914175033569336
+        ]
+      },
+      "species": "Tree_01",
+      "top": 58.549156188964844,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 18.97112415472145,
+      "cap": {
+        "position": [
+          -67.9248046875,
+          57.58254486322403,
+          -19.81662940979004
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.4446457624435425,
+          1.4446457624435425,
+          1.4446457624435425
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.4446457624435425,
+      "groundY": 19.091124154721452,
+      "id": "world-056",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -67.92481231689453,
+        22.11349868774414,
+        -19.816635131835938
+      ],
+      "modelScale": 0.6019357442855835,
+      "oldCollider": {
+        "cframe": [
+          -67.9248046875,
+          21.50848960876465,
+          -19.81662940979004,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-056",
+        "owner": "RSWorldV1",
+        "position": [
+          -67.9248046875,
+          21.50848960876465,
+          -19.81662940979004
+        ],
+        "query": true,
+        "size": [
+          4.815485954284668,
+          1.4446457624435425,
+          1.4446457624435425
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -67.9248046875,
+          38.27683450897274,
+          -19.81662940979004
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          38.61142070850258,
+          1.4446457624435425,
+          1.4446457624435425
+        ]
+      },
+      "species": "Tree_08",
+      "top": 58.3048677444458,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 17.534456707956895,
+      "cap": {
+        "position": [
+          -100.4726333618164,
+          45.63880628347397,
+          -106.47628784179688
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5844002962112427,
+          1.5844002962112427,
+          1.5844002962112427
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5844002962112427,
+      "groundY": 17.654456707956896,
+      "id": "world-057",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -100.47265625,
+        20.63650131225586,
+        -106.47630310058594
+      ],
+      "modelScale": 0.6601667404174805,
+      "oldCollider": {
+        "cframe": [
+          -100.4726333618164,
+          20.30733299255371,
+          -106.47628784179688,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-057",
+        "owner": "RSWorldV1",
+        "position": [
+          -100.4726333618164,
+          20.30733299255371,
+          -106.47628784179688
+        ],
+        "query": true,
+        "size": [
+          5.281333923339844,
+          1.5844002962112427,
+          1.5844002962112427
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -100.4726333618164,
+          31.58663149571543,
+          -106.47628784179688
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          28.104349575517073,
+          1.5844002962112427,
+          1.5844002962112427
+        ]
+      },
+      "species": "Tree_01",
+      "top": 46.43100643157959,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 13.244293388589854,
+      "cap": {
+        "position": [
+          10.705912590026855,
+          69.23000383377075,
+          99.20187377929688
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.097090721130371,
+          2.097090721130371,
+          2.097090721130371
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.097090721130371,
+      "groundY": 13.364293388589854,
+      "id": "world-058",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        10.705914497375488,
+        17.74208641052246,
+        99.20187377929688
+      ],
+      "modelScale": 0.8737878203392029,
+      "oldCollider": {
+        "cframe": [
+          10.705912590026855,
+          16.863845825195312,
+          99.20187377929688,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-058",
+        "owner": "RSWorldV1",
+        "position": [
+          10.705912590026855,
+          16.863845825195312,
+          99.20187377929688
+        ],
+        "query": true,
+        "size": [
+          6.990302562713623,
+          2.097090721130371,
+          2.097090721130371
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          10.705912590026855,
+          41.2371486111803,
+          99.20187377929688
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          55.9857104451809,
+          2.097090721130371,
+          2.097090721130371
+        ]
+      },
+      "species": "Tree_08",
+      "top": 70.27854919433594,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 8.902694020976298,
+      "cap": {
+        "position": [
+          366.3353271484375,
+          40.39495146274567,
+          109.13249206542969
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.7764041423797607,
+          1.7764041423797607,
+          1.7764041423797607
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.7764041423797607,
+      "groundY": 9.022694020976298,
+      "id": "world-060",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        366.3353271484375,
+        12.362765312194824,
+        109.13249969482422
+      ],
+      "modelScale": 0.7401683926582336,
+      "oldCollider": {
+        "cframe": [
+          366.3353271484375,
+          11.993703842163086,
+          109.13249206542969,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-060",
+        "owner": "RSWorldV1",
+        "position": [
+          366.3353271484375,
+          11.993703842163086,
+          109.13249206542969
+        ],
+        "query": true,
+        "size": [
+          5.921347141265869,
+          1.7764041423797607,
+          1.7764041423797607
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          366.3353271484375,
+          24.648822741860982,
+          109.13249206542969
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          31.492257441769368,
+          1.7764041423797607,
+          1.7764041423797607
+        ]
+      },
+      "species": "Tree_01",
+      "top": 41.28315353393555,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 9.7692520805791,
+      "cap": {
+        "position": [
+          370.43389892578125,
+          50.95752787590027,
+          30.849000930786133
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.541059970855713,
+          1.541059970855713,
+          1.541059970855713
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.541059970855713,
+      "groundY": 9.8892520805791,
+      "id": "world-061",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        370.43389892578125,
+        13.12131404876709,
+        30.84902572631836
+      ],
+      "modelScale": 0.6421083211898804,
+      "oldCollider": {
+        "cframe": [
+          370.43389892578125,
+          12.475930213928223,
+          30.849000930786133,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-061",
+        "owner": "RSWorldV1",
+        "position": [
+          370.43389892578125,
+          12.475930213928223,
+          30.849000930786133
+        ],
+        "query": true,
+        "size": [
+          5.136866569519043,
+          1.541059970855713,
+          1.541059970855713
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          370.43389892578125,
+          30.363389978239685,
+          30.849000930786133
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          41.18827579532117,
+          1.541059970855713,
+          1.541059970855713
+        ]
+      },
+      "species": "Tree_08",
+      "top": 51.728057861328125,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 5.2498217625383505,
+      "cap": {
+        "position": [
+          361.0545959472656,
+          46.14538300037384,
+          -99.438720703125
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5303895473480225,
+          1.5303895473480225,
+          1.5303895473480225
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5303895473480225,
+      "groundY": 5.369821762538351,
+      "id": "world-062",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        361.0545654296875,
+        8.571154594421387,
+        -99.43871307373047
+      ],
+      "modelScale": 0.6376622915267944,
+      "oldCollider": {
+        "cframe": [
+          361.0545959472656,
+          7.930236339569092,
+          -99.438720703125,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-062",
+        "owner": "RSWorldV1",
+        "position": [
+          361.0545959472656,
+          7.930236339569092,
+          -99.438720703125
+        ],
+        "query": true,
+        "size": [
+          5.1012983322143555,
+          1.5303895473480225,
+          1.5303895473480225
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          361.0545959472656,
+          25.697602381456093,
+          -99.438720703125
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          40.89556123783549,
+          1.5303895473480225,
+          1.5303895473480225
+        ]
+      },
+      "species": "Tree_08",
+      "top": 46.91057777404785,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 5.7974523680341585,
+      "cap": {
+        "position": [
+          363.2123718261719,
+          53.27787005901337,
+          -67.64065551757812
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.7775766849517822,
+          1.7775766849517822,
+          1.7775766849517822
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.7775766849517822,
+      "groundY": 5.917452368034159,
+      "id": "world-063",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        363.2123718261719,
+        9.634683609008789,
+        -67.64066314697266
+      ],
+      "modelScale": 0.7406569123268127,
+      "oldCollider": {
+        "cframe": [
+          363.2123718261719,
+          8.890254020690918,
+          -67.64065551757812,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-063",
+        "owner": "RSWorldV1",
+        "position": [
+          363.2123718261719,
+          8.890254020690918,
+          -67.64065551757812
+        ],
+        "query": true,
+        "size": [
+          5.925255298614502,
+          1.7775766849517822,
+          1.7775766849517822
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          363.2123718261719,
+          29.537661213523762,
+          -67.64065551757812
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          47.48041769097921,
+          1.7775766849517822,
+          1.7775766849517822
+        ]
+      },
+      "species": "Tree_08",
+      "top": 54.16665840148926,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 32.32863919545942,
+      "cap": {
+        "position": [
+          -352.95086669921875,
+          59.80122536420822,
+          210.9728546142578
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5486475229263306,
+          1.5486475229263306,
+          1.5486475229263306
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5486475229263306,
+      "groundY": 32.448639195459414,
+      "id": "world-067",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -352.95086669921875,
+        35.36310577392578,
+        210.9728546142578
+      ],
+      "modelScale": 0.6452698111534119,
+      "oldCollider": {
+        "cframe": [
+          -352.95086669921875,
+          35.04136276245117,
+          210.9728546142578,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-067",
+        "owner": "RSWorldV1",
+        "position": [
+          -352.95086669921875,
+          35.04136276245117,
+          210.9728546142578
+        ],
+        "query": true,
+        "size": [
+          5.162158489227295,
+          1.5486475229263306,
+          1.5486475229263306
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -352.95086669921875,
+          46.06493227983382,
+          210.9728546142578
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          27.472586168748805,
+          1.5486475229263306,
+          1.5486475229263306
+        ]
+      },
+      "species": "Tree_01",
+      "top": 60.57554912567139,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 25.95683581272034,
+      "cap": {
+        "position": [
+          -231.18263244628906,
+          73.51282149553299,
+          274.96978759765625
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.7804864645004272,
+          1.7804864645004272,
+          1.7804864645004272
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.7804864645004272,
+      "groundY": 26.07683581272034,
+      "id": "world-068",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -231.18263244628906,
+        29.798200607299805,
+        274.9697570800781
+      ],
+      "modelScale": 0.741869330406189,
+      "oldCollider": {
+        "cframe": [
+          -231.18263244628906,
+          29.052549362182617,
+          274.96978759765625,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-068",
+        "owner": "RSWorldV1",
+        "position": [
+          -231.18263244628906,
+          29.052549362182617,
+          274.96978759765625
+        ],
+        "query": true,
+        "size": [
+          5.934954643249512,
+          1.7804864645004272,
+          1.7804864645004272
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -231.18263244628906,
+          49.73482865412666,
+          274.96978759765625
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          47.55598568281265,
+          1.7804864645004272,
+          1.7804864645004272
+        ]
+      },
+      "species": "Tree_08",
+      "top": 74.4030647277832,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.191719580992316,
+      "cap": {
+        "position": [
+          -267.07342529296875,
+          61.92683029174805,
+          180.65902709960938
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.2435741424560547,
+          2.2435741424560547,
+          2.2435741424560547
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.2435741424560547,
+      "groundY": 22.311719580992317,
+      "id": "world-070",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -267.0734558105469,
+        26.52256202697754,
+        180.65902709960938
+      ],
+      "modelScale": 0.9348225593566895,
+      "oldCollider": {
+        "cframe": [
+          -267.07342529296875,
+          26.056447982788086,
+          180.65902709960938,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-070",
+        "owner": "RSWorldV1",
+        "position": [
+          -267.07342529296875,
+          26.056447982788086,
+          180.65902709960938
+        ],
+        "query": true,
+        "size": [
+          7.478580474853516,
+          2.2435741424560547,
+          2.2435741424560547
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -267.07342529296875,
+          42.05927493637019,
+          180.65902709960938
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          39.735110710755734,
+          2.2435741424560547,
+          2.2435741424560547
+        ]
+      },
+      "species": "Tree_01",
+      "top": 63.048617362976074,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 27.918001778037972,
+      "cap": {
+        "position": [
+          -334.9832458496094,
+          56.24731242656708,
+          198.97035217285156
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5976030826568604,
+          1.5976030826568604,
+          1.5976030826568604
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5976030826568604,
+      "groundY": 28.038001778037973,
+      "id": "world-071",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -334.9832458496094,
+        31.036657333374023,
+        198.9703369140625
+      ],
+      "modelScale": 0.6656679511070251,
+      "oldCollider": {
+        "cframe": [
+          -334.9832458496094,
+          30.70474624633789,
+          198.97035217285156,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-071",
+        "owner": "RSWorldV1",
+        "position": [
+          -334.9832458496094,
+          30.70474624633789,
+          198.97035217285156
+        ],
+        "query": true,
+        "size": [
+          5.325343608856201,
+          1.5976030826568604,
+          1.5976030826568604
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -334.9832458496094,
+          42.08265710230253,
+          198.97035217285156
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          28.329310648529106,
+          1.5976030826568604,
+          1.5976030826568604
+        ]
+      },
+      "species": "Tree_01",
+      "top": 57.04611396789551,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 33.93829222002838,
+      "cap": {
+        "position": [
+          -371.29510498046875,
+          72.84530234336853,
+          198.6721649169922
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.196545124053955,
+          2.196545124053955,
+          2.196545124053955
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.196545124053955,
+      "groundY": 34.05829222002838,
+      "id": "world-073",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -371.2951354980469,
+        38.18316650390625,
+        198.6721649169922
+      ],
+      "modelScale": 0.9152271747589111,
+      "oldCollider": {
+        "cframe": [
+          -371.29510498046875,
+          37.72682189941406,
+          198.6721649169922,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-073",
+        "owner": "RSWorldV1",
+        "position": [
+          -371.29510498046875,
+          37.72682189941406,
+          198.6721649169922
+        ],
+        "query": true,
+        "size": [
+          7.321817398071289,
+          2.196545124053955,
+          2.196545124053955
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -371.29510498046875,
+          53.39179728169846,
+          198.6721649169922
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          38.90701012334015,
+          2.196545124053955,
+          2.196545124053955
+        ]
+      },
+      "species": "Tree_01",
+      "top": 73.94357490539551,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.018073930959748,
+      "cap": {
+        "position": [
+          -228.59596252441406,
+          61.554887652397156,
+          180.451904296875
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.1756441593170166,
+          2.1756441593170166,
+          2.1756441593170166
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.1756441593170166,
+      "groundY": 23.13807393095975,
+      "id": "world-075",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -228.59597778320312,
+        27.222572326660156,
+        180.451904296875
+      ],
+      "modelScale": 0.9065184593200684,
+      "oldCollider": {
+        "cframe": [
+          -228.59596252441406,
+          26.770566940307617,
+          180.451904296875,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-075",
+        "owner": "RSWorldV1",
+        "position": [
+          -228.59596252441406,
+          26.770566940307617,
+          180.451904296875
+        ],
+        "query": true,
+        "size": [
+          7.252147674560547,
+          2.1756441593170166,
+          2.1756441593170166
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -228.59596252441406,
+          42.28648079167846,
+          180.451904296875
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          38.53681372143741,
+          2.1756441593170166,
+          2.1756441593170166
+        ]
+      },
+      "species": "Tree_01",
+      "top": 62.642709732055664,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 20.91808266043552,
+      "cap": {
+        "position": [
+          -209.26608276367188,
+          50.43473565578461,
+          344.152587890625
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.6645824909210205,
+          1.6645824909210205,
+          1.6645824909210205
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.6645824909210205,
+      "groundY": 21.03808266043552,
+      "id": "world-076",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -209.2660675048828,
+        24.167129516601562,
+        344.152587890625
+      ],
+      "modelScale": 0.6935760378837585,
+      "oldCollider": {
+        "cframe": [
+          -209.26608276367188,
+          23.821298599243164,
+          344.152587890625,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-076",
+        "owner": "RSWorldV1",
+        "position": [
+          -209.26608276367188,
+          23.821298599243164,
+          344.152587890625
+        ],
+        "query": true,
+        "size": [
+          5.548608303070068,
+          1.6645824909210205,
+          1.6645824909210205
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -209.26608276367188,
+          35.67640915811006,
+          344.152587890625
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          29.516652995349087,
+          1.6645824909210205,
+          1.6645824909210205
+        ]
+      },
+      "species": "Tree_01",
+      "top": 51.26702690124512,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 29.953336412552574,
+      "cap": {
+        "position": [
+          -55.54491424560547,
+          66.5947196483612,
+          182.7723846435547
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.068027973175049,
+          2.068027973175049,
+          2.068027973175049
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.068027973175049,
+      "groundY": 30.073336412552575,
+      "id": "world-078",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        -55.54492950439453,
+        33.96062088012695,
+        182.7723846435547
+      ],
+      "modelScale": 0.8616783618927002,
+      "oldCollider": {
+        "cframe": [
+          -55.54491424560547,
+          33.53097152709961,
+          182.7723846435547,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-078",
+        "owner": "RSWorldV1",
+        "position": [
+          -55.54491424560547,
+          33.53097152709961,
+          182.7723846435547
+        ],
+        "query": true,
+        "size": [
+          6.893426895141602,
+          2.068027973175049,
+          2.068027973175049
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -55.54491424560547,
+          48.27402803045689,
+          182.7723846435547
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          36.64138323580863,
+          2.068027973175049,
+          2.068027973175049
+        ]
+      },
+      "species": "Tree_01",
+      "top": 67.62873363494873,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 27.345762520136514,
+      "cap": {
+        "position": [
+          -7.169066905975342,
+          67.14079427719116,
+          238.0010223388672
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.489048957824707,
+          1.489048957824707,
+          1.489048957824707
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.489048957824707,
+      "groundY": 27.465762520136515,
+      "id": "world-079",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -7.169055938720703,
+        30.581560134887695,
+        238.0010223388672
+      ],
+      "modelScale": 0.6204370260238647,
+      "oldCollider": {
+        "cframe": [
+          -7.169066905975342,
+          29.957956314086914,
+          238.0010223388672,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-079",
+        "owner": "RSWorldV1",
+        "position": [
+          -7.169066905975342,
+          29.957956314086914,
+          238.0010223388672
+        ],
+        "query": true,
+        "size": [
+          4.963496208190918,
+          1.489048957824707,
+          1.489048957824707
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -7.169066905975342,
+          47.24327839866383,
+          238.0010223388672
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          39.795031757054645,
+          1.489048957824707,
+          1.489048957824707
+        ]
+      },
+      "species": "Tree_08",
+      "top": 67.88531875610352,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 26.389223070805723,
+      "cap": {
+        "position": [
+          107.86763763427734,
+          55.87473827600479,
+          298.3577575683594
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.6629055738449097,
+          1.6629055738449097,
+          1.6629055738449097
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.6629055738449097,
+      "groundY": 26.509223070805724,
+      "id": "world-080",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        107.86763763427734,
+        29.633594512939453,
+        298.3577575683594
+      ],
+      "modelScale": 0.6928773522377014,
+      "oldCollider": {
+        "cframe": [
+          107.86763763427734,
+          29.28811264038086,
+          298.3577575683594,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-080",
+        "owner": "RSWorldV1",
+        "position": [
+          107.86763763427734,
+          29.28811264038086,
+          298.3577575683594
+        ],
+        "query": true,
+        "size": [
+          5.543018817901611,
+          1.6629055738449097,
+          1.6629055738449097
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          107.86763763427734,
+          41.13198067340526,
+          298.3577575683594
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          29.485515205199068,
+          1.6629055738449097,
+          1.6629055738449097
+        ]
+      },
+      "species": "Tree_01",
+      "top": 56.706191062927246,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 31.532901795857246,
+      "cap": {
+        "position": [
+          101.19730377197266,
+          75.70377415418625,
+          357.18670654296875
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.6534982919692993,
+          1.6534982919692993,
+          1.6534982919692993
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.6534982919692993,
+      "groundY": 31.652901795857247,
+      "id": "world-081",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        101.19731140136719,
+        35.106964111328125,
+        357.18670654296875
+      ],
+      "modelScale": 0.6889576315879822,
+      "oldCollider": {
+        "cframe": [
+          101.19730377197266,
+          34.414493560791016,
+          357.18670654296875,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-081",
+        "owner": "RSWorldV1",
+        "position": [
+          101.19730377197266,
+          34.414493560791016,
+          357.18670654296875
+        ],
+        "query": true,
+        "size": [
+          5.511661052703857,
+          1.6534982919692993,
+          1.6534982919692993
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          101.19730377197266,
+          53.618337975021745,
+          357.18670654296875
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          44.17087235832901,
+          1.6534982919692993,
+          1.6534982919692993
+        ]
+      },
+      "species": "Tree_08",
+      "top": 76.5305233001709,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 19.68286318992148,
+      "cap": {
+        "position": [
+          94.05732727050781,
+          60.67472982406616,
+          211.52333068847656
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.5338125228881836,
+          1.5338125228881836,
+          1.5338125228881836
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.5338125228881836,
+      "groundY": 19.80286318992148,
+      "id": "world-082",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        94.05731964111328,
+        23.016456604003906,
+        211.52333068847656
+      ],
+      "modelScale": 0.6390885710716248,
+      "oldCollider": {
+        "cframe": [
+          94.05732727050781,
+          22.374107360839844,
+          211.52333068847656,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-082",
+        "owner": "RSWorldV1",
+        "position": [
+          94.05732727050781,
+          22.374107360839844,
+          211.52333068847656
+        ],
+        "query": true,
+        "size": [
+          5.112708568572998,
+          1.5338125228881836,
+          1.5338125228881836
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          94.05732727050781,
+          40.17879650699382,
+          211.52333068847656
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          40.991866634144685,
+          1.5338125228881836,
+          1.5338125228881836
+        ]
+      },
+      "species": "Tree_08",
+      "top": 61.441636085510254,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.741850196888475,
+      "cap": {
+        "position": [
+          52.22372817993164,
+          58.86163544654846,
+          272.1642150878906
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.038766384124756,
+          2.038766384124756,
+          2.038766384124756
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.038766384124756,
+      "groundY": 22.861850196888476,
+      "id": "world-083",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        52.22373962402344,
+        26.68929672241211,
+        272.1642150878906
+      ],
+      "modelScale": 0.8494859933853149,
+      "oldCollider": {
+        "cframe": [
+          52.22372817993164,
+          26.265729904174805,
+          272.1642150878906,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-083",
+        "owner": "RSWorldV1",
+        "position": [
+          52.22372817993164,
+          26.265729904174805,
+          272.1642150878906
+        ],
+        "query": true,
+        "size": [
+          6.7958879470825195,
+          2.038766384124756,
+          2.038766384124756
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          52.22372817993164,
+          40.80174282171846,
+          272.1642150878906
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          36.119785249659984,
+          2.038766384124756,
+          2.038766384124756
+        ]
+      },
+      "species": "Tree_01",
+      "top": 59.88101863861084,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.604177356614716,
+      "cap": {
+        "position": [
+          13.264707565307617,
+          77.77062714099884,
+          202.20883178710938
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.0288712978363037,
+          2.0288712978363037,
+          2.0288712978363037
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.0288712978363037,
+      "groundY": 23.724177356614717,
+      "id": "world-084",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        13.264730453491211,
+        27.957639694213867,
+        202.2088165283203
+      ],
+      "modelScale": 0.8453630208969116,
+      "oldCollider": {
+        "cframe": [
+          13.264707565307617,
+          27.10796356201172,
+          202.20883178710938,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-084",
+        "owner": "RSWorldV1",
+        "position": [
+          13.264707565307617,
+          27.10796356201172,
+          202.20883178710938
+        ],
+        "query": true,
+        "size": [
+          6.762904167175293,
+          2.0288712978363037,
+          2.0288712978363037
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          13.264707565307617,
+          50.68740224880678,
+          202.20883178710938
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          54.16644978438413,
+          2.0288712978363037,
+          2.0288712978363037
+        ]
+      },
+      "species": "Tree_08",
+      "top": 78.78506278991699,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 33.44127741901736,
+      "cap": {
+        "position": [
+          -87.510009765625,
+          88.91857194900513,
+          319.4364318847656
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.0777502059936523,
+          2.0777502059936523,
+          2.0777502059936523
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.0777502059936523,
+      "groundY": 33.56127741901736,
+      "id": "world-085",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        -87.51000213623047,
+        37.90550994873047,
+        319.4364318847656
+      ],
+      "modelScale": 0.8657292127609253,
+      "oldCollider": {
+        "cframe": [
+          -87.510009765625,
+          37.03536605834961,
+          319.4364318847656,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-085",
+        "owner": "RSWorldV1",
+        "position": [
+          -87.510009765625,
+          37.03536605834961,
+          319.4364318847656
+        ],
+        "query": true,
+        "size": [
+          6.925833702087402,
+          2.0777502059936523,
+          2.0777502059936523
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          -87.510009765625,
+          61.17992468401124,
+          319.4364318847656
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          55.477294529987766,
+          2.0777502059936523,
+          2.0777502059936523
+        ]
+      },
+      "species": "Tree_08",
+      "top": 89.95744705200195,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 26.463454361098233,
+      "cap": {
+        "position": [
+          25.26025390625,
+          65.51234447956085,
+          283.681640625
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.204711675643921,
+          2.204711675643921,
+          2.204711675643921
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.204711675643921,
+      "groundY": 26.583454361098234,
+      "id": "world-086",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        25.2602596282959,
+        30.721336364746094,
+        283.6816711425781
+      ],
+      "modelScale": 0.9186298251152039,
+      "oldCollider": {
+        "cframe": [
+          25.26025390625,
+          30.263296127319336,
+          283.681640625,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-086",
+        "owner": "RSWorldV1",
+        "position": [
+          25.26025390625,
+          30.263296127319336,
+          283.681640625
+        ],
+        "query": true,
+        "size": [
+          7.349038600921631,
+          2.204711675643921,
+          2.204711675643921
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          25.26025390625,
+          45.98789942032954,
+          283.681640625
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          39.04889011846262,
+          2.204711675643921,
+          2.204711675643921
+        ]
+      },
+      "species": "Tree_01",
+      "top": 66.61470031738281,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 24.311966283548987,
+      "cap": {
+        "position": [
+          367.9303894042969,
+          77.04005461931229,
+          255.60179138183594
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.9745973348617554,
+          1.9745973348617554,
+          1.9745973348617554
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.9745973348617554,
+      "groundY": 24.431966283548988,
+      "id": "world-087",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        367.930419921875,
+        28.559602737426758,
+        255.60182189941406
+      ],
+      "modelScale": 0.8227488994598389,
+      "oldCollider": {
+        "cframe": [
+          367.9303894042969,
+          27.73265266418457,
+          255.60179138183594,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-087",
+        "owner": "RSWorldV1",
+        "position": [
+          367.9303894042969,
+          27.73265266418457,
+          255.60179138183594
+        ],
+        "query": true,
+        "size": [
+          6.581991195678711,
+          1.9745973348617554,
+          1.9745973348617554
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          367.9303894042969,
+          50.67601045143064,
+          255.60179138183594
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          52.7280883357633,
+          1.9745973348617554,
+          1.9745973348617554
+        ]
+      },
+      "species": "Tree_08",
+      "top": 78.02735328674316,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 19.714196678704756,
+      "cap": {
+        "position": [
+          306.80902099609375,
+          58.601595640182495,
+          166.81285095214844
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.1955628395080566,
+          2.1955628395080566,
+          2.1955628395080566
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.1955628395080566,
+      "groundY": 19.834196678704757,
+      "id": "world-088",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        306.8089904785156,
+        23.9549617767334,
+        166.81285095214844
+      ],
+      "modelScale": 0.9148178696632385,
+      "oldCollider": {
+        "cframe": [
+          306.80902099609375,
+          23.49881935119629,
+          166.81285095214844,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-088",
+        "owner": "RSWorldV1",
+        "position": [
+          306.80902099609375,
+          23.49881935119629,
+          166.81285095214844
+        ],
+        "query": true,
+        "size": [
+          7.318542957305908,
+          2.1955628395080566,
+          2.1955628395080566
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          306.80902099609375,
+          39.157896159443624,
+          166.81285095214844
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          38.88739896147774,
+          2.1955628395080566,
+          2.1955628395080566
+        ]
+      },
+      "species": "Tree_01",
+      "top": 59.69937705993652,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 23.443628931177976,
+      "cap": {
+        "position": [
+          342.9230651855469,
+          52.63368332386017,
+          267.8345642089844
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.646087408065796,
+          1.646087408065796,
+          1.646087408065796
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.646087408065796,
+      "groundY": 23.563628931177977,
+      "id": "world-089",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        342.9230651855469,
+        26.657936096191406,
+        267.8345947265625
+      ],
+      "modelScale": 0.6858697533607483,
+      "oldCollider": {
+        "cframe": [
+          342.9230651855469,
+          26.315950393676758,
+          267.8345642089844,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-089",
+        "owner": "RSWorldV1",
+        "position": [
+          342.9230651855469,
+          26.315950393676758,
+          267.8345642089844
+        ],
+        "query": true,
+        "size": [
+          5.486958026885986,
+          1.646087408065796,
+          1.646087408065796
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          342.9230651855469,
+          38.038656127519076,
+          267.8345642089844
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          29.190054392682192,
+          1.646087408065796,
+          1.646087408065796
+        ]
+      },
+      "species": "Tree_01",
+      "top": 53.456727027893066,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 37.46162022778154,
+      "cap": {
+        "position": [
+          246.6815643310547,
+          63.17934602499008,
+          265.64068603515625
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.4497071504592896,
+          1.4497071504592896,
+          1.4497071504592896
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.4497071504592896,
+      "groundY": 37.581620227781535,
+      "id": "world-090",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        246.68157958984375,
+        40.30253601074219,
+        265.64068603515625
+      ],
+      "modelScale": 0.6040446162223816,
+      "oldCollider": {
+        "cframe": [
+          246.6815643310547,
+          40.00135040283203,
+          265.64068603515625,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-090",
+        "owner": "RSWorldV1",
+        "position": [
+          246.6815643310547,
+          40.00135040283203,
+          265.64068603515625
+        ],
+        "query": true,
+        "size": [
+          4.832356929779053,
+          1.4497071504592896,
+          1.4497071504592896
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          246.6815643310547,
+          50.32048312638581,
+          265.64068603515625
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          25.717725797208544,
+          1.4497071504592896,
+          1.4497071504592896
+        ]
+      },
+      "species": "Tree_01",
+      "top": 63.90419960021973,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 28.763868786253955,
+      "cap": {
+        "position": [
+          197.53115844726562,
+          66.11189198493958,
+          345.8032531738281
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.1081557273864746,
+          2.1081557273864746,
+          2.1081557273864746
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.1081557273864746,
+      "groundY": 28.883868786253956,
+      "id": "world-092",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        197.5311737060547,
+        32.844566345214844,
+        345.8032531738281
+      ],
+      "modelScale": 0.8783982396125793,
+      "oldCollider": {
+        "cframe": [
+          197.53115844726562,
+          32.40658187866211,
+          345.8032531738281,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-092",
+        "owner": "RSWorldV1",
+        "position": [
+          197.53115844726562,
+          32.40658187866211,
+          345.8032531738281
+        ],
+        "query": true,
+        "size": [
+          7.027185916900635,
+          2.1081557273864746,
+          2.1081557273864746
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          197.53115844726562,
+          47.43788038559677,
+          345.8032531738281
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          37.348023198685624,
+          2.1081557273864746,
+          2.1081557273864746
+        ]
+      },
+      "species": "Tree_01",
+      "top": 67.16596984863281,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 27.600350356444938,
+      "cap": {
+        "position": [
+          159.25860595703125,
+          60.95230573415756,
+          346.4578552246094
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          1.8818875551223755,
+          1.8818875551223755,
+          1.8818875551223755
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 1.8818875551223755,
+      "groundY": 27.72035035644494,
+      "id": "world-093",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        159.25860595703125,
+        31.255558013916016,
+        346.4578552246094
+      ],
+      "modelScale": 0.7841198444366455,
+      "oldCollider": {
+        "cframe": [
+          159.25860595703125,
+          30.864585876464844,
+          346.4578552246094,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-093",
+        "owner": "RSWorldV1",
+        "position": [
+          159.25860595703125,
+          30.864585876464844,
+          346.4578552246094
+        ],
+        "query": true,
+        "size": [
+          6.272958755493164,
+          1.8818875551223755,
+          1.8818875551223755
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          159.25860595703125,
+          44.276328045301256,
+          346.4578552246094
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          33.35195537771263,
+          1.8818875551223755,
+          1.8818875551223755
+        ]
+      },
+      "species": "Tree_01",
+      "top": 61.89324951171875,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 22.45944995964336,
+      "cap": {
+        "position": [
+          277.07794189453125,
+          80.01238369941711,
+          336.30755615234375
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.1560912132263184,
+          2.1560912132263184,
+          2.1560912132263184
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.1560912132263184,
+      "groundY": 22.579449959643362,
+      "id": "world-095",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        277.0779724121094,
+        27.07588768005371,
+        336.30755615234375
+      ],
+      "modelScale": 0.8983713388442993,
+      "oldCollider": {
+        "cframe": [
+          277.07794189453125,
+          26.172929763793945,
+          336.30755615234375,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-095",
+        "owner": "RSWorldV1",
+        "position": [
+          277.07794189453125,
+          26.172929763793945,
+          336.30755615234375
+        ],
+        "query": true,
+        "size": [
+          7.1869707107543945,
+          2.1560912132263184,
+          2.1560912132263184
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          277.07794189453125,
+          51.23591682953024,
+          336.30755615234375
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          57.55293373977375,
+          2.1560912132263184,
+          2.1560912132263184
+        ]
+      },
+      "species": "Tree_08",
+      "top": 81.09042930603027,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "replace",
+      "asset": "79689531752352",
+      "bottom": 26.30039918490472,
+      "cap": {
+        "position": [
+          288.2148132324219,
+          81.42902636528015,
+          276.2640075683594
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.064943790435791,
+          2.064943790435791,
+          2.064943790435791
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.064943790435791,
+      "groundY": 26.42039918490472,
+      "id": "world-096",
+      "mesh": "rbxassetid://18720273005",
+      "modelPosition": [
+        288.21484375,
+        30.730384826660156,
+        276.2640380859375
+      ],
+      "modelScale": 0.860393226146698,
+      "oldCollider": {
+        "cframe": [
+          288.2148132324219,
+          29.865598678588867,
+          276.2640075683594,
+          -4.371138828673793e-08,
+          -1,
+          0,
+          1,
+          -4.371138828673793e-08,
+          0,
+          0,
+          0,
+          1
+        ],
+        "group": "Default",
+        "name": "world-096",
+        "owner": "RSWorldV1",
+        "position": [
+          288.2148132324219,
+          29.865598678588867,
+          276.2640075683594
+        ],
+        "query": true,
+        "size": [
+          6.883145809173584,
+          2.064943790435791,
+          2.064943790435791
+        ],
+        "touch": false
+      },
+      "owner": "RSWorldV1",
+      "root": "RSWorldVegetation",
+      "shaft": {
+        "position": [
+          288.2148132324219,
+          53.864712775092435,
+          276.2640075683594
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          55.12862718037543,
+          2.064943790435791,
+          2.064943790435791
+        ]
+      },
+      "species": "Tree_08",
+      "top": 82.46149826049805,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    {
+      "action": "add",
+      "asset": "79689531752352",
+      "bottom": 23.770195846557616,
+      "cap": {
+        "position": [
+          40,
+          66.77121810913086,
+          -18
+        ],
+        "rotation": "identity",
+        "shape": "Ball",
+        "size": [
+          2.4,
+          2.4,
+          2.4
+        ]
+      },
+      "collisionGroup": "Default",
+      "diameter": 2.4,
+      "groundY": 23.890195846557617,
+      "id": "yasu-tree-01",
+      "mesh": "rbxassetid://18716595484",
+      "modelPosition": [
+        40,
+        28.89850425720215,
+        -18
+      ],
+      "modelScale": 1,
+      "oldCollider": null,
+      "owner": "RobloxStudiosStaticV1",
+      "root": "RSManagedAssets",
+      "shaft": {
+        "position": [
+          40,
+          45.27070697784424,
+          -18
+        ],
+        "rotation": "Z90",
+        "shape": "Cylinder",
+        "size": [
+          43.001022262573244,
+          2.4,
+          2.4
+        ]
+      },
+      "species": "Tree_01",
+      "top": 67.97121810913086,
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    }
+  ],
+  "runtimeSlideVerified": false,
+  "schemaVersion": 1,
+  "speciesProfiles": {
+    "Pine_01.1": {
+      "count": 4,
+      "diameterRange": [
+        2.675553321838379,
+        3.296663999557495
+      ],
+      "heightRange": [
+        23.23349746389404,
+        28.604611098428933
+      ],
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    "Pine_03.1": {
+      "count": 4,
+      "diameterRange": [
+        2.8666622638702393,
+        3.368328094482422
+      ],
+      "heightRange": [
+        24.87094601467834,
+        29.21523177891109
+      ],
+      "widthCalibrationRequired": false,
+      "widthEvidence": "audited_branchless_trunk_bounds"
+    },
+    "Tree_01": {
+      "count": 47,
+      "diameterRange": [
+        1.4497071504592896,
+        2.880000114440918
+      ],
+      "heightRange": [
+        26.32257937243819,
+        44.08102226257324
+      ],
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    "Tree_03": {
+      "count": 4,
+      "diameterRange": [
+        1.5424000024795532,
+        1.753600001335144
+      ],
+      "heightRange": [
+        20.104063635808416,
+        22.856900427948858
+      ],
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    "Tree_08": {
+      "count": 31,
+      "diameterRange": [
+        1.2760000228881836,
+        2.2655746936798096
+      ],
+      "heightRange": [
+        37.1954345703125,
+        61.48782769811731
+      ],
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    },
+    "Tree_12": {
+      "count": 4,
+      "diameterRange": [
+        1.534000039100647,
+        1.7186000347137451
+      ],
+      "heightRange": [
+        23.90399196073122,
+        26.780575977027183
+      ],
+      "widthCalibrationRequired": true,
+      "widthEvidence": "legacy_width_provisional"
+    }
+  },
+  "stateDigest": "fc6d1050b100b87ead072c99e4fd60a3a85781c840e7e11e39cbff81c76e4c08"
+}

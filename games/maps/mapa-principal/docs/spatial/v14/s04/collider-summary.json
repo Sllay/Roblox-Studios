@@ -1,0 +1,16 @@
+{
+  "blocked": [],
+  "horizonExcluded": 13,
+  "maxHeight": 61.48782769811731,
+  "minHeight": 20.104063635808416,
+  "new": 1,
+  "noPlaceWrites": true,
+  "planDigest": "dd8dded03482f904562c979d2d3efcdc44e653fb659d7297ae5df5bd11bb53cf",
+  "profiles": 94,
+  "replacements": 93,
+  "version": 14,
+  "widthEvidence": {
+    "audited_branchless_trunk_bounds": 8,
+    "legacy_width_provisional": 86
+  }
+}
