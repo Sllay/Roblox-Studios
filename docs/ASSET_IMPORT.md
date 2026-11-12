@@ -55,3 +55,7 @@ O workflow final é exclusivamente manual. O teste unitário simulado exercita a
 ### Validação do preflight
 
 Asset 12549617200 foi classificado corretamente como `asset_access_denied` na versão 2 do Place de produção ([execução 43130702988](https://github.com/Sllay/Roblox-Studios/actions/runs/43130702988)). O workflow é somente manual; sucesso significa diagnóstico concluído, não liberação do asset. Staging ainda não tem IDs configurados. Nenhuma escrita no Roblox foi realizada nesta etapa.
+
+## Destino de homologação informado
+
+Staging do mapa-principal: Universe 10769712441, Place 93428341652658. Candidato escolhido pelo usuário: [Yasu's Stylized Tree Pack](https://create.roblox.com/store/asset/79689531752352/Yasus-Stylized-Tree-Pack), Asset ID 79689531752352. Identidade, autorização, política e importação ainda dependem de verificação remota. Produção permanece separada.
