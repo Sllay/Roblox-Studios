@@ -58,7 +58,8 @@ local rotated={}
 for _,m in V.Models:GetChildren() do
     if m:IsA("Model") then
         local pivot=m:GetPivot()
-        local yaw=cfg.yaws[m.Name];assert(yaw,"Vegetation yaw")
+        local seed=73007;for i=1,#m.Name do seed=(seed*131+string.byte(m.Name,i))%2147483647 end
+        local yaw=Random.new(seed):NextNumber(0,360)
         local target=CFrame.new(pivot.Position)*CFrame.Angles(0,math.rad(yaw),0)*pivot.Rotation
         local delta=target*pivot:Inverse()
         local saved={m=m,pivot=pivot,colliders={}}
