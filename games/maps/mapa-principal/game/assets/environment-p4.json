@@ -50,8 +50,8 @@
         },
         "calibrationStatus": "provisional"
       },
-      "rightsStatus": "user_acquired_reported_platform_use_review_pending",
-      "importAuthorized": false
+      "rightsStatus": "reviewed_platform_use",
+      "importAuthorized": true
     },
     {
       "assetId": "79689531752352",
@@ -98,8 +98,8 @@
         },
         "calibrationStatus": "provisional"
       },
-      "rightsStatus": "user_acquired_reported_platform_use_review_pending",
-      "importAuthorized": false
+      "rightsStatus": "reviewed_platform_use",
+      "importAuthorized": true
     },
     {
       "assetId": "79689531752352",
@@ -143,8 +143,8 @@
         "collider": null,
         "calibrationStatus": "provisional"
       },
-      "rightsStatus": "user_acquired_reported_platform_use_review_pending",
-      "importAuthorized": false
+      "rightsStatus": "reviewed_platform_use",
+      "importAuthorized": true
     },
     {
       "assetId": "80215326989711",
@@ -172,12 +172,12 @@
         "collider": null,
         "calibrationStatus": "provisional"
       },
-      "rightsStatus": "user_acquired_reported_platform_use_review_pending",
-      "importAuthorized": false
+      "rightsStatus": "reviewed_platform_use",
+      "importAuthorized": true
     }
   ],
   "placement": {
-    "status": "preview_pending",
+    "status": "reviewed_preview_v10",
     "preserveExisting": true,
     "terrainWrites": false,
     "regionIds": [
@@ -192,5 +192,11 @@
       "chunk-1-1"
     ]
   },
-  "importAuthorized": false
+  "importAuthorized": true,
+  "approval": {
+    "scope": "staging only",
+    "userAuthorization": "User explicitly requested P4.3 staging integration followed by P4.4",
+    "rightsReview": "Creator Store assets acquired per user report; Yasu already used in v10; exact dependencies fetched in staging. Platform use only, no redistribution or claim of independent copyright clearance.",
+    "terms": "https://en.help.roblox.com/hc/en-us/articles/21308223046932-Creator-Store-Terms"
+  }
 }

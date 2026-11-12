@@ -9,7 +9,7 @@ class EnvironmentLayoutTests(unittest.TestCase):
     def test_plan(self):
         p=validate(read(SPEC))
         self.assertEqual(sum(a["count"] for a in p["assets"]),24)
-        self.assertTrue(all(not a["importAuthorized"] for a in p["assets"]))
+        self.assertTrue(p["importAuthorized"] and all(a["importAuthorized"] and a["rightsStatus"]=="reviewed_platform_use" for a in p["assets"]))
     def test_incomplete_layout(self):
         with self.assertRaises(WorkspaceError):
             verify_layout(read(SPEC),[])

@@ -79,3 +79,5 @@
 - [x] P4 environment preflight 43181270756: Tree_03, Tree_12, Bush_03, Rock exact v2 pass (PBR/dependency fetch), seven script operations preview v10. CI passed. Corrected wind bush mesh names from live inventory; 24-model layout preview tool added, staging apply remains gated. No Place writes.
 
 - [x] P4 native environment layout: 24/24 planned placements, seven chunks, 138 existing plants preserved, CI and preview passed (43181653770). Exact layout recorded; guarded apply and independent verification prepared, not executed. Rights/explicit staging approval and mobile review pending.
+
+- [ ] P4.3 user explicitly authorized staging integration. One-shot workflow runs validated 24-model layout then independently verifies/syncs before the seven-script patch; no production. P4.4 follows only after P4.3. P4.5 is mobile polish/iteration, not final quality.
