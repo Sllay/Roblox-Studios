@@ -11,7 +11,8 @@
 - [x] Get Model habilitou o carregamento de asset público 79689531752352 no staging.
 - [x] Safe Import 2.0: Tree_01 extraída, auditada e publicada no staging, versão 2; geometria, PBR, dependências e persistência confirmadas.
 - [x] Inventário de submodelos, inspeção offline PBR via RBXM e importação real verificada.
-- [ ] Scene Builder e sincronização declarativa completa; recuperação de versões e rollback.
+- [x] P3 Scene Sync e edição incremental para escopo piloto; inventário persistente, preflight, mudanças externas e recuperação específica do centro.
+- [ ] Generalizar sincronização de propriedades e Terrain fora das regiões, edição acoplada de floresta e recuperação universal; rollback real ainda não exercitado.
 - [ ] Análise Luau com tipos Roblox, testes de gameplay e performance.
 - [ ] MCP Lite e orquestrador de agentes.
 
@@ -46,4 +47,6 @@
 
 - [x] P3 Scene Sync dedicated workflow and persisted inventory: staging v6, 1,182 instances, stable second read, three-way comparison and mandatory stale-write guard.
 - [x] P3 center migration saved v7, independent terrain/spawn/archive verification; whole-service diff identified default StarterPlayer additions; exact read-only reconciliation passed 43143804231.
-- [x] Generic Scene Patch CLI and workflow: scoped add/edit/move/adopt/archive/restore/create script, tests; real generic patch test pending.
+- [x] Generic Scene Patch CLI/workflow, add/edit/move/adopt/archive/restore/create/update script; tests and live read-only preview 43144089622 passed.
+- [x] Post-write Scene Sync v7 committed 43143950368; durable migration receipt, two native Terrain regions and query index.
+- [ ] Mobile v7: central random spawn, seamless expanded ground, old gray platform gone, recovery if falling, no regression of forest/lake. Generic patch apply variants and inverse remain untested remotely.

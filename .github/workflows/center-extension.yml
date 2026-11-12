@@ -28,6 +28,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -36,7 +38,7 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: python tools/script_quality.py
       - uses: actions/download-artifact@v4
-        if: ${{ inputs.operation == 'verify' || inputs.operation == 'rollback' }}
+        if: ${{ (inputs.operation == 'verify' || inputs.operation == 'rollback') && inputs.evidence_run != '' }}
         with:
           name: center-extension-evidence
           run-id: ${{ inputs.evidence_run }}
@@ -46,12 +48,15 @@ jobs:
         env:
           OP: ${{ inputs.operation || 'preview' }}
           REVIEWED: ${{ inputs.reviewed_after }}
+          EVIDENCE_RUN: ${{ inputs.evidence_run }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
           if [[ "$OP" == apply || "$OP" == rollback ]]; then args+=(--confirm-staging); fi
-          if [[ "$OP" == verify || "$OP" == rollback ]]; then args+=(--evidence dist/prior-center/rollback-evidence.json); fi
-          if [[ "$OP" == verify && "$REVIEWED" == true ]]; then args+=(--reviewed-after dist/prior-center/after.json); fi
+          if [[ "$OP" == verify || "$OP" == rollback ]]; then
+            if [[ -n "$EVIDENCE_RUN" ]]; then args+=(--evidence dist/prior-center/rollback-evidence.json); else args+=(--receipt games/maps/mapa-principal/docs/sync/main/center-migration-receipt.json); fi
+          fi
+          if [[ "$OP" == verify && "$REVIEWED" == true && -n "$EVIDENCE_RUN" ]]; then args+=(--reviewed-after dist/prior-center/after.json); fi
           python tools/center_extension.py "$OP" "${args[@]}"
       - uses: actions/upload-artifact@v4
         if: always()

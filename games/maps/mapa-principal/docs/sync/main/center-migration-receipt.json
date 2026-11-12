@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "baselineCommit": "665b6700bcb07523cfb82c19f86b4112af08daa3",
+  "baselineDigest": "df1ebd82837c8bba68affb9b5e195c35db6ba996febb5f3d4fff7b2590927a59",
+  "postStateDigest": "bd0d2b06ba6dab8420b7f30dd86042cff7ae8ffd2f39ec0aefcceca5b545f497",
+  "postVersion": 7,
+  "previewRun": "43143403007",
+  "saveRun": "43143508396",
+  "verificationRun": "43143804231",
+  "syncRun": "43143950368",
+  "result": {
+    "archived": 2,
+    "loadedVersion": 6,
+    "pilotDigest": "+9jG2LoEvoHDF4Ux6xX9R5w77c96xo21r22RIJsp5Bk=",
+    "placeId": "93428341652658",
+    "readbackError": 0.003921345694392342,
+    "saved": true,
+    "seamError": 0,
+    "solidVoxels": 53868,
+    "spawnCount": 9,
+    "terrainDigest": "GG2GC5t6nlcz+1ZqmKSWlKxq8k0yVTNZgaBzVtwlYak=",
+    "universeId": "10769712441"
+  },
+  "note": "Historical receipt, inverse only on exact v7. Restore defaults and clear only extension; engine-default StarterPlayer delta is not removed."
+}
