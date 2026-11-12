@@ -1,0 +1,40 @@
+name: S06.7 read-only resource contact and visibility audit v17
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/s06-resource-contact-audit.yml']
+permissions:
+  contents: write
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - name: Native v17 read-only inspection
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/resource_contact_audit.py --output dist/s067
+      - name: Persist evidence
+        run: |
+          mkdir -p games/maps/mapa-principal/docs/s06/resource-contact-v17
+          cp dist/s067/*.json games/maps/mapa-principal/docs/s06/resource-contact-v17/
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/s06/resource-contact-v17
+          git commit -m "evidence(s06.7): inspect actual v17 resource geometry and terrain contact"
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s067-resource-contact
+          path: dist/s067/
+          if-no-files-found: warn
