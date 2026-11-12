@@ -1,0 +1,785 @@
+{
+  "schemaVersion": 1,
+  "game": "mapa-principal",
+  "environment": "staging",
+  "runId": 43179962130,
+  "sourceCommit": "b0c3b1819e48de92e27e09ad6dbdf7a5e9b7e8ba",
+  "loadedVersion": 10,
+  "scope": "exact source hash matching, official Luau syntax compilation and bounded lexical API/require observations; not semantic security approval",
+  "noPlaceWrites": true,
+  "codeExecuted": false,
+  "results": [
+    {
+      "id": "9204066145",
+      "loadedVersion": 10,
+      "scripts": [
+        {
+          "name": "Client",
+          "class": "LocalScript",
+          "selector": [
+            {
+              "class": "Tool",
+              "index": 1,
+              "name": "Punishment stick"
+            },
+            {
+              "class": "LocalScript",
+              "index": 1,
+              "name": "Client"
+            }
+          ],
+          "sha256": "uhJTgNeNjOrAJRQBbHC1mz4WyC0X89VMMgsrg4Lqavg=",
+          "syntaxPassed": true,
+          "services": [
+            "Players",
+            "RunService"
+          ],
+          "requires": [],
+          "riskTokens": {
+            "FireServer": 2
+          },
+          "visualTokens": {
+            "Heartbeat": 1
+          },
+          "importAuthorized": false
+        },
+        {
+          "name": "Server",
+          "class": "Script",
+          "selector": [
+            {
+              "class": "Tool",
+              "index": 1,
+              "name": "Punishment stick"
+            },
+            {
+              "class": "Script",
+              "index": 2,
+              "name": "Server"
+            }
+          ],
+          "sha256": "DlT7jHuUK/rTwU4+xVq3OnFWIDxfygPPYbE1N1PLGh4=",
+          "syntaxPassed": true,
+          "services": [
+            "Players"
+          ],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 1,
+            "OnServerEvent": 1
+          },
+          "visualTokens": {
+            "CFrame": 7
+          },
+          "importAuthorized": false
+        },
+        {
+          "name": "WeldBackup",
+          "class": "LocalScript",
+          "selector": [
+            {
+              "class": "Tool",
+              "index": 1,
+              "name": "Punishment stick"
+            },
+            {
+              "class": "Part",
+              "index": 4,
+              "name": "Handle"
+            },
+            {
+              "class": "LocalScript",
+              "index": 3,
+              "name": "WeldBackup"
+            }
+          ],
+          "sha256": "e560UET/UuWn3MGKdMiGAMeTMRDw8FbkEaH72mN/N2E=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {},
+          "visualTokens": {},
+          "importAuthorized": false
+        },
+        {
+          "name": "Weld",
+          "class": "Script",
+          "selector": [
+            {
+              "class": "Tool",
+              "index": 1,
+              "name": "Punishment stick"
+            },
+            {
+              "class": "Part",
+              "index": 4,
+              "name": "Handle"
+            },
+            {
+              "class": "Script",
+              "index": 5,
+              "name": "Weld"
+            }
+          ],
+          "sha256": "e560UET/UuWn3MGKdMiGAMeTMRDw8FbkEaH72mN/N2E=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {},
+          "visualTokens": {},
+          "importAuthorized": false
+        },
+        {
+          "name": "Script",
+          "class": "Script",
+          "selector": [
+            {
+              "class": "Tool",
+              "index": 1,
+              "name": "Punishment stick"
+            },
+            {
+              "class": "Part",
+              "index": 6,
+              "name": "HItbox"
+            },
+            {
+              "class": "Script",
+              "index": 2,
+              "name": "Script"
+            }
+          ],
+          "sha256": "iTbSVz4byYjRJ6ORLgsKojxTHRfsp5MtTfrnjYzNm/4=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 1
+          },
+          "visualTokens": {
+            "CFrame": 1
+          },
+          "importAuthorized": false
+        }
+      ],
+      "sourceHashesMatch": true,
+      "codeExecuted": false,
+      "importAuthorized": false
+    },
+    {
+      "id": "103581254866679",
+      "loadedVersion": 10,
+      "scripts": [
+        {
+          "name": "LightConfig",
+          "class": "Script",
+          "selector": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "SoilBag"
+            },
+            {
+              "class": "Script",
+              "index": 3,
+              "name": "LightConfig"
+            }
+          ],
+          "sha256": "aZwmPpa5Puzrradhz0XxVDAfSna19Uur/ivnjehndnc=",
+          "syntaxPassed": true,
+          "services": [
+            "Lighting"
+          ],
+          "requires": [
+            {
+              "kind": "expression_requires_review"
+            },
+            {
+              "kind": "expression_requires_review"
+            }
+          ],
+          "riskTokens": {},
+          "visualTokens": {},
+          "importAuthorized": false
+        },
+        {
+          "name": "Type",
+          "class": "ModuleScript",
+          "selector": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "SoilBag"
+            },
+            {
+              "class": "Script",
+              "index": 3,
+              "name": "LightConfig"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 1,
+              "name": "Type"
+            }
+          ],
+          "sha256": "kEhskJ2N1b+xxFo2mIwkBcFdT/VQuHwyuqYHyi/FaxU=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {},
+          "visualTokens": {},
+          "importAuthorized": false
+        },
+        {
+          "name": "EasyConfiguration",
+          "class": "ModuleScript",
+          "selector": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "SoilBag"
+            },
+            {
+              "class": "Script",
+              "index": 3,
+              "name": "LightConfig"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "EasyConfiguration"
+            }
+          ],
+          "sha256": "BMR3ZFK3fr8R8z0wXDbP7+CIjmh2DTUHWcpgL0synBU=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 1
+          },
+          "visualTokens": {},
+          "importAuthorized": false
+        }
+      ],
+      "sourceHashesMatch": true,
+      "codeExecuted": false,
+      "importAuthorized": false
+    },
+    {
+      "id": "130425813530814",
+      "loadedVersion": 10,
+      "scripts": [
+        {
+          "name": "Runtime",
+          "class": "Script",
+          "selector": [
+            {
+              "class": "Model",
+              "index": 1,
+              "name": "Model"
+            },
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "TopL"
+            },
+            {
+              "class": "Weld",
+              "index": 1,
+              "name": "Weld"
+            },
+            {
+              "class": "Script",
+              "index": 1,
+              "name": "Runtime"
+            }
+          ],
+          "sha256": "PgnXdpndH8B8FWEgwXlYYB9c4OXG0av0e6up4od3x7k=",
+          "syntaxPassed": true,
+          "services": [
+            "CollectionService",
+            "GuiService",
+            "Players",
+            "RunService"
+          ],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 1,
+            "OnServerInvoke": 1
+          },
+          "visualTokens": {
+            "GetInstanceAddedSignal": 1
+          },
+          "importAuthorized": false
+        },
+        {
+          "name": "ScreenBuilder",
+          "class": "LocalScript",
+          "selector": [
+            {
+              "class": "Model",
+              "index": 1,
+              "name": "Model"
+            },
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "TopL"
+            },
+            {
+              "class": "Weld",
+              "index": 1,
+              "name": "Weld"
+            },
+            {
+              "class": "Script",
+              "index": 1,
+              "name": "Runtime"
+            },
+            {
+              "class": "Folder",
+              "index": 1,
+              "name": "RuntimeInput"
+            },
+            {
+              "class": "InputContext",
+              "index": 1,
+              "name": "RuntimeInputContext"
+            },
+            {
+              "class": "InputAction",
+              "index": 3,
+              "name": "MovementElevateAction"
+            },
+            {
+              "class": "ScreenGui",
+              "index": 3,
+              "name": "InputBinding"
+            },
+            {
+              "class": "LocalScript",
+              "index": 4,
+              "name": "ScreenBuilder"
+            }
+          ],
+          "sha256": "irEAhrnObQ7grk/qs5Oar/qQDRiPDgvH2Mfmcjyc1eQ=",
+          "syntaxPassed": true,
+          "services": [
+            "ContextActionService",
+            "GuiService",
+            "Lighting",
+            "Players",
+            "RunService",
+            "TweenService",
+            "UserInputService"
+          ],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 4
+          },
+          "visualTokens": {},
+          "importAuthorized": false
+        },
+        {
+          "name": "Runtime",
+          "class": "Script",
+          "selector": [
+            {
+              "class": "Model",
+              "index": 1,
+              "name": "Model"
+            },
+            {
+              "class": "MeshPart",
+              "index": 35,
+              "name": "TopL"
+            },
+            {
+              "class": "Weld",
+              "index": 1,
+              "name": "Weld"
+            },
+            {
+              "class": "Script",
+              "index": 1,
+              "name": "Runtime"
+            }
+          ],
+          "sha256": "YntVvkN5XcPjJkHF3hO7NILAdNkv4+Jk6FYaqJWZMXk=",
+          "syntaxPassed": true,
+          "services": [
+            "CollectionService",
+            "GuiService",
+            "Players",
+            "RunService"
+          ],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 1,
+            "OnServerInvoke": 1
+          },
+          "visualTokens": {
+            "GetInstanceAddedSignal": 1
+          },
+          "importAuthorized": false
+        },
+        {
+          "name": "ScreenBuilder",
+          "class": "LocalScript",
+          "selector": [
+            {
+              "class": "Model",
+              "index": 1,
+              "name": "Model"
+            },
+            {
+              "class": "MeshPart",
+              "index": 35,
+              "name": "TopL"
+            },
+            {
+              "class": "Weld",
+              "index": 1,
+              "name": "Weld"
+            },
+            {
+              "class": "Script",
+              "index": 1,
+              "name": "Runtime"
+            },
+            {
+              "class": "Folder",
+              "index": 1,
+              "name": "RuntimeInput"
+            },
+            {
+              "class": "InputContext",
+              "index": 1,
+              "name": "RuntimeInputContext"
+            },
+            {
+              "class": "InputAction",
+              "index": 3,
+              "name": "MovementElevateAction"
+            },
+            {
+              "class": "ScreenGui",
+              "index": 3,
+              "name": "InputBinding"
+            },
+            {
+              "class": "LocalScript",
+              "index": 4,
+              "name": "ScreenBuilder"
+            }
+          ],
+          "sha256": "9inwCIWrrUH5DLGG/W0xg+BPBox1YDiIaDrQHJlFCDc=",
+          "syntaxPassed": true,
+          "services": [
+            "ContextActionService",
+            "GuiService",
+            "Lighting",
+            "Players",
+            "RunService",
+            "TweenService",
+            "UserInputService"
+          ],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 4
+          },
+          "visualTokens": {},
+          "importAuthorized": false
+        }
+      ],
+      "sourceHashesMatch": true,
+      "codeExecuted": false,
+      "importAuthorized": false
+    },
+    {
+      "id": "18817890736",
+      "loadedVersion": 10,
+      "scripts": [
+        {
+          "name": "README",
+          "class": "Script",
+          "selector": [
+            {
+              "class": "Folder",
+              "index": 1,
+              "name": "Inno's_Stylized_Asset_Pack"
+            },
+            {
+              "class": "Script",
+              "index": 1,
+              "name": "README"
+            }
+          ],
+          "sha256": "2rRhI83WGhzWYcm4HSLe3LpcbBLwdepOOZinncmMjjQ=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {},
+          "visualTokens": {},
+          "importAuthorized": false
+        }
+      ],
+      "sourceHashesMatch": true,
+      "codeExecuted": false,
+      "importAuthorized": false
+    },
+    {
+      "id": "11946229834",
+      "loadedVersion": 10,
+      "scripts": [
+        {
+          "name": "WindController",
+          "class": "LocalScript",
+          "selector": [
+            {
+              "class": "LocalScript",
+              "index": 1,
+              "name": "WindController"
+            }
+          ],
+          "sha256": "1auEjPuiI1Knm+HWdAlJmBr7OM0I5QSRbp0F3NskveU=",
+          "syntaxPassed": true,
+          "services": [
+            "RunService"
+          ],
+          "requires": [
+            {
+              "kind": "script_relative",
+              "path": "script.WindLines"
+            },
+            {
+              "kind": "script_relative",
+              "path": "script.WindShake"
+            }
+          ],
+          "riskTokens": {},
+          "visualTokens": {
+            "CurrentCamera": 1
+          },
+          "importAuthorized": false
+        },
+        {
+          "name": "WindLines",
+          "class": "ModuleScript",
+          "selector": [
+            {
+              "class": "LocalScript",
+              "index": 1,
+              "name": "WindController"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 1,
+              "name": "WindLines"
+            }
+          ],
+          "sha256": "iBueRX5TEQTLy4gXH49Ar1Th2a/BBacs++4VrsE4Y5o=",
+          "syntaxPassed": true,
+          "services": [
+            "RunService"
+          ],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 9
+          },
+          "visualTokens": {
+            "CFrame": 5,
+            "CurrentCamera": 1,
+            "Heartbeat": 1,
+            "Trail": 13
+          },
+          "importAuthorized": false
+        },
+        {
+          "name": "WindShake",
+          "class": "ModuleScript",
+          "selector": [
+            {
+              "class": "LocalScript",
+              "index": 1,
+              "name": "WindController"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "WindShake"
+            }
+          ],
+          "sha256": "vU54lwbkW7k0ysg4JEGAC8YliuErwhLuIerJtu84Cu8=",
+          "syntaxPassed": true,
+          "services": [
+            "CollectionService",
+            "RunService"
+          ],
+          "requires": [
+            {
+              "kind": "script_relative",
+              "path": "script.Settings"
+            },
+            {
+              "kind": "script_relative",
+              "path": "script.Octree"
+            }
+          ],
+          "riskTokens": {
+            "Destroy": 2
+          },
+          "visualTokens": {
+            "BulkMoveTo": 1,
+            "CFrame": 6,
+            "CurrentCamera": 1,
+            "GetInstanceAddedSignal": 1,
+            "GetInstanceRemovedSignal": 1,
+            "GetTagged": 1,
+            "Heartbeat": 1,
+            "noise": 4
+          },
+          "importAuthorized": false
+        },
+        {
+          "name": "Settings",
+          "class": "ModuleScript",
+          "selector": [
+            {
+              "class": "LocalScript",
+              "index": 1,
+              "name": "WindController"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "WindShake"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 1,
+              "name": "Settings"
+            }
+          ],
+          "sha256": "PG69FFOmV5ksy/imyF9x4OoBPKkNHSx+m8Gv/Kr9s6s=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 1
+          },
+          "visualTokens": {},
+          "importAuthorized": false
+        },
+        {
+          "name": "Octree",
+          "class": "ModuleScript",
+          "selector": [
+            {
+              "class": "LocalScript",
+              "index": 1,
+              "name": "WindController"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "WindShake"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "Octree"
+            }
+          ],
+          "sha256": "OU49n7rnXx3n3vCx+8xjKhK6JAzlsElG/dPZvFe8Suw=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [
+            {
+              "kind": "script_relative",
+              "path": "script.OctreeNode"
+            },
+            {
+              "kind": "script_relative",
+              "path": "script.OctreeRegionUtils"
+            }
+          ],
+          "riskTokens": {},
+          "visualTokens": {},
+          "importAuthorized": false
+        },
+        {
+          "name": "OctreeNode",
+          "class": "ModuleScript",
+          "selector": [
+            {
+              "class": "LocalScript",
+              "index": 1,
+              "name": "WindController"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "WindShake"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "Octree"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 1,
+              "name": "OctreeNode"
+            }
+          ],
+          "sha256": "wmyDjaXPSN27hfHewbyK9Slh9jyj+KGoqix+7Hq37WA=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {
+            "Destroy": 1
+          },
+          "visualTokens": {},
+          "importAuthorized": false
+        },
+        {
+          "name": "OctreeRegionUtils",
+          "class": "ModuleScript",
+          "selector": [
+            {
+              "class": "LocalScript",
+              "index": 1,
+              "name": "WindController"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "WindShake"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "Octree"
+            },
+            {
+              "class": "ModuleScript",
+              "index": 2,
+              "name": "OctreeRegionUtils"
+            }
+          ],
+          "sha256": "tAWS8zcwyveYhLlSVB2kgI6JpvXFiSpgQ9alL5QjkO4=",
+          "syntaxPassed": true,
+          "services": [],
+          "requires": [],
+          "riskTokens": {},
+          "visualTokens": {},
+          "importAuthorized": false
+        }
+      ],
+      "sourceHashesMatch": true,
+      "codeExecuted": false,
+      "importAuthorized": false
+    }
+  ]
+}

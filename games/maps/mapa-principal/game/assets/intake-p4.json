@@ -42,6 +42,14 @@
         "scripts": 5,
         "components": 6,
         "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      },
+      "codeAudit": {
+        "runId": 43179962130,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-code-audit-43179962130.json",
+        "sourceHashesMatch": true,
+        "syntaxPassed": true,
+        "scriptCount": 5,
+        "importAuthorized": false
       }
     },
     {
@@ -82,6 +90,14 @@
         "scripts": 3,
         "components": 3,
         "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      },
+      "codeAudit": {
+        "runId": 43179962130,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-code-audit-43179962130.json",
+        "sourceHashesMatch": true,
+        "syntaxPassed": true,
+        "scriptCount": 3,
+        "importAuthorized": false
       }
     },
     {
@@ -142,6 +158,14 @@
         "scripts": 4,
         "components": 92,
         "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+      },
+      "codeAudit": {
+        "runId": 43179962130,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-code-audit-43179962130.json",
+        "sourceHashesMatch": true,
+        "syntaxPassed": true,
+        "scriptCount": 4,
+        "importAuthorized": false
       }
     },
     {
@@ -202,6 +226,14 @@
         "scripts": 1,
         "components": 30,
         "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179707585.json"
+      },
+      "codeAudit": {
+        "runId": 43179962130,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-code-audit-43179962130.json",
+        "sourceHashesMatch": true,
+        "syntaxPassed": true,
+        "scriptCount": 1,
+        "importAuthorized": false
       }
     },
     {
@@ -242,6 +274,14 @@
         "scripts": 7,
         "components": 7,
         "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179707585.json"
+      },
+      "codeAudit": {
+        "runId": 43179962130,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-code-audit-43179962130.json",
+        "sourceHashesMatch": true,
+        "syntaxPassed": true,
+        "scriptCount": 7,
+        "importAuthorized": false
       }
     }
   ]
