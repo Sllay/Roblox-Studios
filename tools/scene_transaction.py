@@ -47,7 +47,7 @@ def main():
     with (a.output/"receipt.json").open("x",encoding="utf-8") as out:
         json.dump(receipt,out);out.flush();os.fsync(out.fileno())
     try:
-        run("tools/scene_patch.py","apply","--plan",a.plan,"--confirm-staging","--output",a.output/"patch")
+        run("tools/scene_patch.py","apply","--plan",a.plan,"--confirm-staging","--expected-plan-digest",manifest["planDigest"],"--expected-prepared-digest",manifest["preparedDigest"],"--output",a.output/"patch")
         after=read(a.output/"patch/after.json")
         old={k:v for k,v in base["records"].items() if k.startswith("terrain:")}
         require(old=={k:v for k,v in after["records"].items() if k.startswith("terrain:")},"Unexpected terrain delta")

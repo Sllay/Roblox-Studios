@@ -92,10 +92,14 @@ def main():
     a=argparse.ArgumentParser(description=__doc__)
     a.add_argument("operation",choices=["preview","apply"]);a.add_argument("--plan",type=Path,required=True)
     a.add_argument("--game",default="mapa-principal");a.add_argument("--place",default="main")
+    a.add_argument("--expected-plan-digest");a.add_argument("--expected-prepared-digest")
     a.add_argument("--confirm-staging",action="store_true");a.add_argument("--output",type=Path,default=ROOT/"dist/scene-patch")
     p=a.parse_args();games,targets=load_all();t=resolve(games,targets,p.game,p.place,"staging")
     plan=read(p.plan);key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"];base=require_current(t,key,plan["expectedVersion"])
-    ops=prepare(t,base,plan);dispatch="do\n"+(ROOT/"tools/sync/patch.luau").read_text()+"\nend"
+    ops=prepare(t,base,plan)
+    require(p.expected_plan_digest is None or sha(plan)==p.expected_plan_digest,"Reviewed plan digest changed")
+    require(p.expected_prepared_digest is None or sha(ops)==p.expected_prepared_digest,"Reviewed prepared operation digest changed")
+    dispatch="do\n"+(ROOT/"tools/sync/patch.luau").read_text()+"\nend"
     opts=dict(environment="staging",expectedVersion=base["loadedVersion"],operations=ops)
     preview=task(t,key,dispatch,mode="preview",compile_source=True,**opts);write(p.output/"preview.json",preview)
     require(preview.get("preview") is True and preview.get("operations")==len(ops) and preview["loadedVersion"]==base["loadedVersion"],"Preview contract mismatch")
