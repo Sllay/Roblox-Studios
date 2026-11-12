@@ -30,6 +30,15 @@ jobs:
         run: bash tools/install-luau.sh
       - name: Compile-check all Luau sources
         run: python tools/script_quality.py
+      - name: Compile composed Scene Patch
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          from scene_sync import ROOT,compose_task,compile_task
+          from deploy import load_all,resolve
+          g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
+          compile_task(compose_task(target))
+          compile_task(compose_task(target,"do\n"+(ROOT/"tools/sync/patch.luau").read_text()+"\nend",mode="preview",environment="staging",expectedVersion=1,operations=[]))
+          PY
       - name: Install pinned Roblox Luau LSP
         run: bash tools/install-luau-lsp.sh
       - name: Quality Gate 2.0 typed gameplay logic

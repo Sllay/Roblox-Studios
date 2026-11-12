@@ -1,6 +1,6 @@
 """Scene Sync: observe published Place state and reconcile without overwriting it."""
 from __future__ import annotations
-import argparse, hashlib, json, os, re, sys
+import argparse, hashlib, json, os, re, sys, shutil, subprocess, tempfile
 from pathlib import Path
 from cloud_tasks import run_task
 from deploy import load_all,resolve,WorkspaceError
@@ -53,15 +53,29 @@ def compose_dispatch(source,dispatch):
     require(not dispatch or marker not in dispatch,"Nested dispatch marker")
     return source.replace(marker,dispatch)
 
-def task(t,key,dispatch="",**extra):
+def compose_task(t,dispatch="",**extra):
     cfg=dict(universeId=t["universeId"],placeId=t["placeId"],services=SERVICES,regions=regions(t),maxObjects=5000,**extra)
     payload=canonical(cfg)
     src=compose_dispatch(SOURCE.read_text(),dispatch)
     for n in range(1,16):
         eq="="*n
-        if "]"+eq+"]" not in payload:return run_task(t["universeId"],t["placeId"],key,src.replace("__RS_CONFIG__","["+eq+"["+payload+"]"+eq+"]"))
+        if "]"+eq+"]" not in payload:
+            require(src.count("__RS_CONFIG__")==1,"Config marker missing or ambiguous")
+            return src.replace("__RS_CONFIG__","["+eq+"["+payload+"]"+eq+"]")
     raise WorkspaceError("Config encoding")
-def capture(t,key):return normalize(task(t,key))
+def compile_task(source):
+    compiler=shutil.which(os.environ.get("LUAU_COMPILER","luau-compile"))
+    require(compiler,"Official Luau compiler required for composed task")
+    with tempfile.TemporaryDirectory() as d:
+        path=Path(d)/"composed.luau";path.write_text(source,encoding="utf-8")
+        result=subprocess.run([compiler,"--null",str(path)],capture_output=True,timeout=20)
+        require(result.returncode==0,"Composed Luau compilation failed")
+def task(t,key,dispatch="",*,read_version=None,compile_source=False,journal=None,**extra):
+    source=compose_task(t,dispatch,**extra)
+    if compile_source:compile_task(source)
+    return run_task(t["universeId"],t["placeId"],key,source,read_version=read_version,journal=journal)
+def capture(t,key,*,read_version=None):
+    return normalize(task(t,key,read_version=read_version))
 def reconcile(base,remote,desired=None):
     """Three-way diff. Desired contains explicit record intents, not absence=deletion."""
     old=base["records"] if base else {}
@@ -92,6 +106,7 @@ def main():
     a.add_argument("--game",default="mapa-principal");a.add_argument("--place",default="main")
     a.add_argument("--environment",choices=["staging","production"],default="staging")
     a.add_argument("--output",type=Path,default=ROOT/"dist/scene-sync")
+    a.add_argument("--expected-version",type=int);a.add_argument("--expected-digest")
     a.add_argument("--record",action="store_true",help="Update observed Git baseline; does not write Roblox")
     a.add_argument("--desired",type=Path,help="Explicit desired records map for three-way comparison")
     p=a.parse_args();games,targets=load_all();t=resolve(games,targets,p.game,p.place,p.environment)
@@ -99,6 +114,8 @@ def main():
     base=read(path) if path.exists() else None
     remote=capture(t,key)
     if base:require((base["universeId"],base["placeId"])==(remote["universeId"],remote["placeId"]),"Baseline target mismatch")
+    require(p.expected_version is None or remote["loadedVersion"]==p.expected_version,"Observed version differs from verified version")
+    require(p.expected_digest is None or remote["stateDigest"]==p.expected_digest,"Observed digest differs from verified digest")
     delta=reconcile(base,remote,read(p.desired) if p.desired else None)
     write(p.output/"inventory.json",remote);write(p.output/"changes.json",delta)
     classes={}

@@ -22,18 +22,25 @@ def main():
     base=read(SYNC/"staging.json");plan=read(path);validate_plan(plan,base)
     a.output.mkdir(parents=True,exist_ok=True)
     receipt={"schemaVersion":1,"environment":"staging","plan":str(path.relative_to(ROOT)),"planSha256":hashlib.sha256(path.read_bytes()).hexdigest(),"beforeVersion":base["loadedVersion"],"beforeDigest":base["stateDigest"],"status":"started"}
-    write(a.output/"receipt.json",receipt)
+    from cloud_tasks import atomic_json
+    try:
+        with (a.output/"receipt.json").open("x",encoding="utf-8") as out:
+            json.dump(receipt,out);out.flush()
+    except FileExistsError as exc:
+        raise RuntimeError("Existing transaction receipt; reconcile before another attempt") from exc
     try:
         run("tools/scene_patch.py","apply","--plan",path,"--confirm-staging","--output",a.output/"patch")
         after=read(a.output/"patch/after.json")
-        run("tools/scene_sync.py","--record")
+        old={k:v for k,v in base["records"].items() if k.startswith("terrain:")}
+        require(old=={k:v for k,v in after["records"].items() if k.startswith("terrain:")},"Terrain changed during script transaction")
+        run("tools/scene_sync.py","--record","--expected-version",str(after["loadedVersion"]),"--expected-digest",after["stateDigest"])
         observed=read(SYNC/"staging.json")
         require(after["loadedVersion"]==observed["loadedVersion"] and after["stateDigest"]==observed["stateDigest"],"Unexpected change after verification")
         old={k:v for k,v in base["records"].items() if k.startswith("terrain:")}
         new={k:v for k,v in observed["records"].items() if k.startswith("terrain:")}
         require(old==new,"Terrain changed during script transaction")
         receipt.update(status="verified",afterVersion=observed["loadedVersion"],afterDigest=observed["stateDigest"],terrainUnchanged=len(old))
-        write(a.output/"receipt.json",receipt)
+        atomic_json(a.output/"receipt.json",receipt)
         print("SCRIPT_STAGE_VERIFIED",json.dumps(receipt),flush=True)
     except Exception:
         receipt["status"]="requires_reconciliation"

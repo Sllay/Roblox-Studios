@@ -97,3 +97,5 @@ Ao finalizar cada passo, atualizar esta seção ou acrescentar receipt em docs d
 - Próxima ação concreta e dependências; se falha, caminho de recuperação e proibição de repetir save ambíguo.
 
 Checkpoint S00: roteiro registrado com baseline v14; nenhuma alteração de jogo. Próxima ação: S01, auditoria de duplicação/contrato de transação, depois S02. Links de evidência: [wind v14](https://github.com/Sllay/Roblox-Studios/actions/runs/43257825675), [API probe](https://github.com/Sllay/Roblox-Studios/actions/runs/43258355023), [atlas](https://github.com/Sllay/Roblox-Studios/actions/runs/43258670029).
+
+Checkpoint S01-A: implemented composed Scene Patch compilation, exact preview/save result contract, write task journal with exclusive creation and GET-only resume, guarded baseline recording, and pinned default-module forensic comparison. Awaiting CI/live read-only evidence; no Place write or cleanup. S01 remains in progress; generic multi-operation transaction and isolated restore not yet implemented.

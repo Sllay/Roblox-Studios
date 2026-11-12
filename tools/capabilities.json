@@ -284,6 +284,19 @@
         "placement map",
         "altitude evidence"
       ]
+    },
+    {
+      "id": "scene.default_forensics",
+      "entry": "tools/default_module_forensics.py",
+      "mode": "read",
+      "status": "implemented",
+      "purpose": "Compare pinned versions for exact default-module clone growth",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "forensic report"
+      ]
     }
   ]
 }

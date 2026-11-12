@@ -91,12 +91,14 @@ def main():
     plan=read(p.plan);key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"];base=require_current(t,key,plan["expectedVersion"])
     ops=prepare(t,base,plan);dispatch="do\n"+(ROOT/"tools/sync/patch.luau").read_text()+"\nend"
     opts=dict(environment="staging",expectedVersion=base["loadedVersion"],operations=ops)
-    preview=task(t,key,dispatch,mode="preview",**opts);write(p.output/"preview.json",preview)
+    preview=task(t,key,dispatch,mode="preview",compile_source=True,**opts);write(p.output/"preview.json",preview)
+    require(preview.get("preview") is True and preview.get("operations")==len(ops) and preview["loadedVersion"]==base["loadedVersion"],"Preview contract mismatch")
     if p.operation=="preview":print("PATCH_PREVIEW",json.dumps(preview));return
     require(p.confirm_staging,"Explicit confirmation required")
     from script_quality import main as quality
     require(quality([])==0,"Luau gate")
-    result=task(t,key,dispatch,mode="apply",**opts);write(p.output/"save.json",result)
+    result=task(t,key,dispatch,mode="apply",compile_source=True,journal=p.output/"cloud-task.json",**opts);write(p.output/"save.json",result)
+    require(result["loadedVersion"]==base["loadedVersion"] and isinstance(result.get("results"),list) and len(result["results"])==len(ops),"Save result contract mismatch")
     require(result.get("saved") is True,"Save unconfirmed")
     after=capture(t,key);write(p.output/"after.json",after);delta=reconcile(base,after);write(p.output/"changes.json",delta)
     require(after["loadedVersion"]>base["loadedVersion"],"Persistence unconfirmed")
