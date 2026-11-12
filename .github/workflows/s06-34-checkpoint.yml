@@ -1,0 +1,91 @@
+name: S06.3 and S06.4 durable checkpoints and original rig import
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s06-34-checkpoint.trigger']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: python -m unittest discover -s tests -v
+      - uses: actions/download-artifact@v4
+        with:
+          name: s06-3-preview
+          run-id: 43281759955
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s06-3
+      - uses: actions/download-artifact@v4
+        with:
+          name: s06-4-capability
+          run-id: 43281815664
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s06-4
+      - uses: actions/download-artifact@v4
+        with:
+          name: s06-4-rig
+          run-id: 43282159427
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s06-4
+      - name: Preserve reviewed plans and original rig
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          from scene_sync import read,sha
+          from pathlib import Path
+          import hashlib,shutil
+          root=Path("games/maps/mapa-principal");d=root/"docs/s06";a=Path("dist/s06-3");b=Path("dist/s06-4")
+          p=read(a/"plan.json");g=read(a/"geometry.json");paint=read(a/"paint-proof.json")
+          assert p["planDigest"]==sha({k:v for k,v in p.items() if k!="planDigest"})=="3781a684d34a10fe832f1851c49a4c6b4db32d17a816920e43d6f02b4ceb0895"
+          assert g["checked"]==216 and g["planDigest"]==p["planDigest"] and paint["all49Restored"] and paint["occupancyPreserved"]
+          assert p["stateDigest"]==read(root/"docs/sync/main/staging.summary.json")["stateDigest"]
+          rig=read(b/"rig-report.json");cap=read(b/"capability.json");bones=read(b/"bone-proof.json")
+          assert rig["sha256"]==hashlib.sha256((b/"pine-canopy.glb").read_bytes()).hexdigest()=="32b04f3e0c5bd57430741b400783021ec4bc471e3a16ff0979d68c414a38bb49"
+          assert len(cap["canopies"])==8 and all(r["status"]=="denied" for r in cap["canopies"]) and bones["nativeBoneTransforms"] and bones["rootFixed"]
+          for source,dest,names in ((a,d/"resources-v16",("plan.json","summary.json","paint-proof.json","geometry.json")),(b,d/"wind-v16",("capability.json","bone-proof.json","rig-report.json","pine-canopy.glb"))):
+              dest.mkdir(parents=True,exist_ok=True)
+              for name in names:shutil.copyfile(source/name,dest/name)
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/s06/resources-v16 games/maps/mapa-principal/docs/s06/wind-v16
+          git commit -m "evidence(s06.3-4): preserve resource proof and original skinned rig"
+          git push origin HEAD:main
+      - name: Reserve one original asset upload
+        run: |
+          test ! -e games/maps/mapa-principal/docs/s06/wind-v16/upload-intent.json
+          printf '%s\n' '{"sha256":"32b04f3e0c5bd57430741b400783021ec4bc471e3a16ff0979d68c414a38bb49","authorized":true,"retryAllowed":false,"scope":"original prototype asset only; no Place save"}' > games/maps/mapa-principal/docs/s06/wind-v16/upload-intent.json
+          git add games/maps/mapa-principal/docs/s06/wind-v16/upload-intent.json
+          git commit -m "chore(s06.4): reserve single original canopy asset upload"
+          git push origin HEAD:main
+      - name: Try original model upload and detached import verification
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/assets/upload_canopy.py --rig dist/s06-4/pine-canopy.glb --output dist/s06-4
+      - name: Persist upload receipt
+        if: always()
+        run: |
+          if test -f dist/s06-4/upload-receipt.json; then
+            cp dist/s06-4/upload-receipt.json games/maps/mapa-principal/docs/s06/wind-v16/upload-receipt.json
+            git add games/maps/mapa-principal/docs/s06/wind-v16/upload-receipt.json
+            git commit -m "evidence(s06.4): record original rig upload outcome"
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s06-34-checkpoint
+          path: |
+            dist/s06-3/
+            dist/s06-4/
