@@ -6,16 +6,16 @@
     "Clouds": 1,
     "Decal": 1,
     "DepthOfFieldEffect": 1,
-    "Folder": 47,
-    "InputAction": 510,
-    "InputBinding": 1190,
-    "InputContext": 68,
+    "Folder": 48,
+    "InputAction": 540,
+    "InputBinding": 1260,
+    "InputContext": 72,
     "LocalScript": 10,
     "MeshPart": 712,
     "Model": 464,
-    "ModuleScript": 925,
+    "ModuleScript": 979,
     "Part": 270,
-    "Script": 76,
+    "Script": 80,
     "Sky": 1,
     "SpawnLocation": 63,
     "StarterCharacterScripts": 1,
@@ -26,10 +26,10 @@
     "Texture": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Sharded observed state.",
-  "loadedVersion": 17,
+  "loadedVersion": 18,
   "placeId": "93428341652658",
   "schemaVersion": 1,
-  "stateDigest": "a44bcd60970d3049cace86cfb3787ddaeb19364c94779e819291d552f378bceb",
+  "stateDigest": "682da796308cc0851e5f57a3221948543c07a7306aa274b3a64e5a81ed80fccf",
   "terrain": {
     "terrain:chunk--1--1": {
       "bounds": [
@@ -40,7 +40,7 @@
         112,
         -128
       ],
-      "digest": "HkiqG1J9eMcQVdqwoUvOdt2ygw5U0bpwpp3w3z0PpSw=",
+      "digest": "G2uEin0z/upp6UyyGCm6trS+X755zFyXCuXoozHchcw=",
       "id": "chunk--1--1",
       "solidVoxels": 54847,
       "waterVoxels": 0
@@ -82,7 +82,7 @@
         112,
         128
       ],
-      "digest": "xcwEJFzvxms14MnkeFlTlY7P/TOWx2EbSn8YGm5Pc34=",
+      "digest": "ls3d8We4wMiJ8q9Sq0+cXEkleXu4yxROAwgxsCYWNTs=",
       "id": "chunk--1-0",
       "solidVoxels": 55666,
       "waterVoxels": 0
@@ -96,7 +96,7 @@
         112,
         384
       ],
-      "digest": "KqZmb65lwJIMyYVPke0tbLvY0df8MIC6Pw8jCwS6hRA=",
+      "digest": "L0Z0hulC1/zrDI5fqRdsO1632JZBqXfgA8KgAQUeRa0=",
       "id": "chunk--1-1",
       "solidVoxels": 62496,
       "waterVoxels": 0
@@ -334,7 +334,7 @@
         112,
         -128
       ],
-      "digest": "fkq/zr4bsinL502M5gWY9ydRWaaxPM1TCBFh4bcZlPI=",
+      "digest": "/I5+OD05yuWMwX3Cg2cM6ocWxz9cKUw8J7nSFE2wtMU=",
       "id": "chunk-0--1",
       "solidVoxels": 54823,
       "waterVoxels": 0
@@ -376,7 +376,7 @@
         112,
         128
       ],
-      "digest": "iIQr/w873QemmziIX3n9wBTL2l9rC6N17dROfolDQx0=",
+      "digest": "hs8RdEXljjX473trAYRUEOLrZMCAgmi+uaeBjVLnt3M=",
       "id": "chunk-0-0",
       "solidVoxels": 52767,
       "waterVoxels": 0
@@ -390,7 +390,7 @@
         112,
         384
       ],
-      "digest": "ceySEKus8ZMAGP5EhDFGPCHoLspWLI4EYw3Y68IcSkQ=",
+      "digest": "Uf5LzopCedzixjiBxBIwmGHE5HMArCdovI18/3YnP1I=",
       "id": "chunk-0-1",
       "solidVoxels": 62374,
       "waterVoxels": 0
@@ -432,7 +432,7 @@
         112,
         -128
       ],
-      "digest": "84PJ2/yNmHNz9Jq3BEVZCyBNtyEI1Hl8xsGBvLRWqe0=",
+      "digest": "FTlaIGvHK6ZLZGU9/CX3reuiGYZ5W4a0tHBuV52fkbg=",
       "id": "chunk-1--1",
       "solidVoxels": 52407,
       "waterVoxels": 0
@@ -474,7 +474,7 @@
         112,
         128
       ],
-      "digest": "8fns/nqKtiGSnFpX3DEsXkT9kxj3qB89kDWmtllKy08=",
+      "digest": "Zdhbwt+WEYiLElis4TIHaTfd9gsCvglqMWQzcry8MX8=",
       "id": "chunk-1-0",
       "solidVoxels": 54323,
       "waterVoxels": 529
@@ -488,7 +488,7 @@
         112,
         384
       ],
-      "digest": "Hie81ld2IXumeBsnYJmD9U8DDn8UCUo9yQQaOD+yw5o=",
+      "digest": "9akuno+c5ww0n46e66hpz3qxE0qobh8QPXyq6AoAQvU=",
       "id": "chunk-1-1",
       "solidVoxels": 61498,
       "waterVoxels": 580
@@ -718,7 +718,7 @@
       "waterVoxels": 0
     }
   },
-  "total": 4843,
+  "total": 5006,
   "universeId": "10769712441",
   "workspaceRoots": [
     {
