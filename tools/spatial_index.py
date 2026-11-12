@@ -8,7 +8,7 @@ from collections import defaultdict,Counter
 from scene_sync import require,sha
 
 STEP=4
-ROOTS={"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets"}
+ROOTS={"RSVegetationS06","RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets"}
 
 def decode_tile(tile,materials):
     b=tile["bounds"];nx,nz=tile["nx"],tile["nz"]
