@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "bounds": [
+    96,
+    0,
+    -128,
+    352,
+    64,
+    128
+  ],
+  "material": "Ground",
+  "sourceMaterials": [
+    "Grass"
+  ],
+  "depthCells": 2,
+  "allowUnderwater": false,
+  "mask": {
+    "kind": "path",
+    "points": [
+      [
+        120,
+        -100
+      ],
+      [
+        168,
+        -96
+      ],
+      [
+        200,
+        -100
+      ]
+    ],
+    "width": 12
+  }
+}
