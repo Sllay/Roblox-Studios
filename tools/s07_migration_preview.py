@@ -40,7 +40,9 @@ def main():
         require(n["accepted"] and n["gap"]<.22 and n["slope"]<=35 and len(n["frame"])==12,"Native proof")
         rows.append(dict(id=r["id"],kind=r["type"],tile=r["tile"],source=sources[r["type"]],size=n["newSize"],frame=n["frame"],groundY=r["groundY"],radius=r["radius"]))
     require(len({r["id"] for r in rows})==2000 and Counter(r["kind"] for r in rows)=={"Branch":1000,"Stone":1000},"Population")
-    opts=dict(rows=rows,sources=list(sources.values()),columns=original,terrainExpected={k[8:]:v["digest"] for k,v in base["records"].items() if k.startswith("terrain:")})
+    # Compact positional records retain exact numeric values and avoid repeated keys.
+    packed=[[r["id"],r["kind"],r["tile"],r["source"],r["size"],r["frame"],r["groundY"],r["radius"]] for r in rows]
+    opts=dict(rows=packed,sources=list(sources.values()),columns=original,terrainExpected={k[8:]:v["digest"] for k,v in base["records"].items() if k.startswith("terrain:")})
     r=run("s07_migration_preview.luau",18,**opts)
     require(r["preview"] and r["all49Restored"] and r["resourceInverse"] and r["counts"]=={"Branch":1000,"Stone":1000},"Preview gates")
     require(latest(target,key)==18,"Live head changed")
