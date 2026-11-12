@@ -30,14 +30,14 @@ def merge_service(name,pages,version):
     require(len(rows)==count and identity_digest(rows)==digest,"Incomplete service inventory")
     require([identity(r) for r in rows]==sorted(identity(r) for r in rows),"Page order")
     return rows
-def capture_sharded(t,key,version):
+def capture_sharded(t,key,version,*,request=task):
     src="do\n"+SOURCE.read_text()+"\nend"
     grouped={name:[] for name in SERVICES};first=1;environment=None;manifest=None;total=None
     # Each request returns up to five logical pages; 2000 records max.
     # Empty service pages cost no rows and retain completeness evidence.
     calls=0
     while True:
-        r=task(t,key,src,read_version=version,compile_source=True,firstPage=first,pageSize=PAGE,batchSize=5,serviceLimit=SERVICE_LIMIT,totalLimit=TOTAL_LIMIT)
+        r=request(t,key,src,read_version=version,compile_source=True,firstPage=first,pageSize=PAGE,batchSize=5,serviceLimit=SERVICE_LIMIT,totalLimit=TOTAL_LIMIT)
         calls+=1
         require(r["loadedVersion"]==version and r["noPlaceWrites"] and r["firstPage"]==first,"Batch scope")
         if manifest is None:
@@ -58,8 +58,8 @@ def capture_sharded(t,key,version):
     require(environment is not None,"Environment missing")
     result=normalize({"schemaVersion":1,"universeId":t["universeId"],"placeId":t["placeId"],"loadedVersion":version,"services":SERVICES,"total":len(rows),"objects":rows,**environment})
     return result,receipts,calls
-def latest(t,key):
-    r=task(t,key,"do\nreturn syncResult({noPlaceWrites=true})\nend",compile_source=True)
+def latest(t,key,*,request=task):
+    r=request(t,key,"do\nreturn syncResult({noPlaceWrites=true})\nend",compile_source=True)
     require(r["noPlaceWrites"],"Read scope");return r["loadedVersion"]
 def default_forensics(base):
     from copy import deepcopy
