@@ -225,7 +225,7 @@
       "modelKey": "9d80edf1cdfbd1d60be5158456042a1ea229e24f6baab5f08abbd61f2009469f",
       "visual": {
         "status": "visual_reviewed",
-        "description": "Árvore folhosa estilizada, copa ampla arredondada e irregular, folhas verdes em planos sobrepostos, tronco marrom escuro sulcado, ereto e levemente sinuoso, bifurcado no alto. Lembra uma caducifólia ornamental de bosque. No cliente móvel, áreas da copa ficam claras/amareladas sob luz direta e há brilho intenso contra o sol; causa em diagnóstico. A ponta afilada inferior do tronco requer enterramento.",
+        "description": "Árvore folhosa estilizada, copa ampla arredondada e irregular, folhas verdes em planos sobrepostos, tronco marrom escuro sulcado, ereto e levemente sinuoso, bifurcado no alto. Lembra uma caducifólia ornamental de bosque. No cliente móvel, áreas da copa ficam claras/amareladas sob luz direta e há brilho intenso contra o sol; causa não determinada; brilho residual aceito provisoriamente pelo usuário. A ponta afilada inferior do tronco requer enterramento.",
         "observed": {
           "canopyShape": "Copa arredondada, irregular e larga, planos de folhagem sobrepostos.",
           "trunkShape": "Tronco ereto ligeiramente curvo, bifurcações altas e galhos laterais finos.",
@@ -253,7 +253,14 @@
           "species": "low",
           "finalColor": "observed_mobile_under_current_lighting"
         },
-        "evidenceScope": "Official mesh thumbnails plus user mobile screenshots of staging version 2 (IMG_0926, IMG_0927, IMG_0928); no FPS measurement"
+        "evidenceScope": "Official mesh thumbnails plus user mobile screenshots of staging version 2 (IMG_0926, IMG_0927, IMG_0928); no FPS measurement",
+        "knownIssues": [
+          {
+            "type": "foliage_glare",
+            "status": "deferred_nonblocking",
+            "evidence": "User reported glare persisted in staging v3 visual test; root cause not established."
+          }
+        ]
       },
       "selector": [
         {
@@ -296,7 +303,7 @@
         "version": 3,
         "managedId": "yasu-tree-01",
         "run": "43137024725",
-        "clientVisualValidation": "v2 rendered; v3 burial and lighting lab pending mobile retest",
+        "clientVisualValidation": "v3 user accepted placement; residual foliage glare deferred",
         "plan": "game/assets/imports/tree-01-p1.json",
         "dependencyFetch": "source textures and MeshPart instances successful; serialized PBR references preserved",
         "previousVersion": 2,
@@ -309,10 +316,10 @@
           "groundY": 0,
           "buriedDepth": 6,
           "supportPoints": 5,
-          "status": "engine_verified_visual_calibration_pending"
+          "status": "engine_verified_user_accepted"
         },
         "lightingLab": {
-          "status": "installed_verified_source_pending_client",
+          "status": "user_tested_glare_persists_deferred_cleanup_pending",
           "baseline": {
             "brightness": 3,
             "exposure": 0,
@@ -342,8 +349,8 @@
         "groundNames": [
           "Baseplate"
         ],
-        "calibrationStatus": "provisional",
-        "note": "Mobile screenshots show exposed taper. Initial 6-stud burial; confirm on client before reuse as verified. Ground allowlist is staging-specific."
+        "calibrationStatus": "verified",
+        "note": "User accepted the 6-stud burial on staging v3 at original scale, upright, flat Baseplate. Do not generalize to other models or terrain; ground allowlist staging-specific."
       }
     },
     {
