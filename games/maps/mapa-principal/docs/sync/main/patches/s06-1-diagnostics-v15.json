@@ -1,0 +1,21 @@
+{
+  "baselineDigest": "a971ba91f62e695308612ebe49b71d0df34ddd4cd09feb3a48bf03763ec429c0",
+  "expectedVersion": 15,
+  "operations": [
+    {
+      "archiveId": "s06-quality-v15",
+      "kind": "update_script",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSQualityPanel.client.luau",
+      "targetKey": "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1},{\"class\":\"LocalScript\",\"name\":\"RSQualityPanel\",\"ordinal\":1}]]"
+    },
+    {
+      "class": "Script",
+      "id": "s06-resource-physics",
+      "kind": "create_script",
+      "name": "RSResourcePhysics",
+      "parentKey": "service:ServerScriptService",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSResourcePhysics.server.luau"
+    }
+  ],
+  "schemaVersion": 1
+}
