@@ -18,6 +18,6 @@ def main():
     summary["categories"]={}
     for cat in ("stone","stick"):
         rows=[x for x in r["rows"] if x["category"]==cat]
-        summary["categories"][cat]={"count":len(rows),"deltaY":[min(x["deltaY"] for x in rows),max(x["deltaY"] for x in rows)],"baseGap":[min(x["baseGap"] for x in rows),max(x["baseGap"] for x in rows)],"maxGap":max(x["maxGap"] for x in rows),"minTopGap":min(x["topGap"] for x in rows),"burialZero":all(x["burial"]==0 for x in rows)}
+        summary["categories"][cat]={"count":len(rows),"deltaY":[min(x["deltaY"] for x in rows),max(x["deltaY"] for x in rows)],"paintSurfaceDelta":[min(x["paintSurfaceDelta"] for x in rows),max(x["paintSurfaceDelta"] for x in rows)],"baseGap":[min(x["baseGap"] for x in rows),max(x["baseGap"] for x in rows)],"maxGap":max(x["maxGap"] for x in rows),"minTopGap":min(x["topGap"] for x in rows),"burialZero":all(x["burial"]==0 for x in rows)}
     write(a.output/"contact-fix-preview.json",r);write(a.output/"contact-fix-summary.json",summary);print("S067_FIX_PREVIEW "+json.dumps(summary),flush=True)
 if __name__=="__main__":main()

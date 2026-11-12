@@ -1,4 +1,4 @@
-name: S06.7 measured resource support correction preview
+name: S06.7 measured resource support correction preview v2
 on:
   push:
     branches: [main]
