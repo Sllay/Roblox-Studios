@@ -19,7 +19,7 @@ on:
         type: boolean
         default: true
   push:
-    paths: ['games/maps/mapa-principal/docs/spawn-hotfix-sync-once.trigger']
+    paths: ['games/maps/mapa-principal/docs/valley-v10-sync-once.trigger']
 permissions:
   contents: write
 concurrency:

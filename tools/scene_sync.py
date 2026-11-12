@@ -23,7 +23,7 @@ def regions(t):
     if not path.exists():path=folder/"regions.json"
     if not path.exists():return []
     rows=read(path)
-    require(isinstance(rows,list) and len(rows)<=32,"Region limit")
+    require(isinstance(rows,list) and len(rows)<=64,"Region limit")
     require(len({r["id"] for r in rows})==len(rows),"Duplicate region IDs")
     for r in rows:
         b=r["bounds"];require(len(b)==6 and all(type(x) is int and x%4==0 for x in b),"Region alignment")

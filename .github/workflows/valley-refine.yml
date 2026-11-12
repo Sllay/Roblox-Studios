@@ -11,8 +11,6 @@ on:
       confirm_staging:
         type: boolean
         default: false
-  push:
-    paths: ['games/maps/mapa-principal/docs/valley-apply-once.trigger']
 permissions:
   contents: read
   actions: read
@@ -21,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   valley:
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation != 'apply' || inputs.confirm_staging) }}
+    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation != 'apply' || inputs.confirm_staging) }}
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -36,7 +34,7 @@ jobs:
       - run: bash tools/install-luau-lsp.sh
       - run: python tools/quality_gate_v2.py
       - uses: actions/download-artifact@v4
-        if: ${{ github.event_name == 'push' || inputs.operation == 'apply' || inputs.operation == 'verify' }}
+        if: ${{ inputs.operation == 'apply' || inputs.operation == 'verify' }}
         with:
           name: valley-refine-evidence
           run-id: ${{ inputs.evidence_run || '43158101058' }}
@@ -48,7 +46,6 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
-          if [[ "$GITHUB_EVENT_NAME" == push ]]; then OP=apply; fi
           if [[ "$OP" == apply ]]; then args+=(--baseline dist/prior-valley/preview.json --confirm-staging); fi
           if [[ "$OP" == verify ]]; then args+=(--receipt dist/prior-valley/receipt.json); fi
           python tools/valley_refine.py "$OP" "${args[@]}"
