@@ -9,7 +9,7 @@ from deploy import load_all,resolve
 PAGE=400
 SERVICE_LIMIT=20000
 TOTAL_LIMIT=40000
-SOURCE=ROOT/"tools/sync/inventory_shard.luau"
+SOURCE=ROOT/"tools/sync/inventory_page_batch.luau"
 def identity(row):
     return "/".join(f"{len(s['name'].encode('utf-8'))}:{s['name']}:{s['class']}:{s['ordinal']}" for s in row["path"])
 def identity_digest(rows):
@@ -32,22 +32,32 @@ def merge_service(name,pages,version):
     return rows
 def capture_sharded(t,key,version):
     src="do\n"+SOURCE.read_text()+"\nend"
-    rows=[];receipts=[];environment=None
+    grouped={name:[] for name in SERVICES};first=1;environment=None;manifest=None;total=None
+    # Each request returns up to five logical pages; 2000 records max.
+    # Empty service pages cost no rows and retain completeness evidence.
+    calls=0
+    while True:
+        r=task(t,key,src,read_version=version,compile_source=True,firstPage=first,pageSize=PAGE,batchSize=5,serviceLimit=SERVICE_LIMIT,totalLimit=TOTAL_LIMIT)
+        calls+=1
+        require(r["loadedVersion"]==version and r["noPlaceWrites"] and r["firstPage"]==first,"Batch scope")
+        if manifest is None:
+            manifest=r["manifest"];total=r["totalPages"]
+            require([x["service"] for x in manifest]==SERVICES and r["total"]==sum(x["total"] for x in manifest),"Manifest completeness")
+            environment={k:r[k] for k in ("terrain","lighting","workspaceSettings")}
+        require(r["manifest"]==manifest and r["totalPages"]==total and len(r["pages"])==min(5,total-first+1),"Batch drift or missing pages")
+        for page in r["pages"]:
+            grouped[page["service"]].append({**page,"loadedVersion":version})
+        first+=len(r["pages"])
+        if first>total:break
+        require(calls<=TOTAL_LIMIT//PAGE+len(SERVICES),"Batch count")
+    rows=[];receipts=[]
     for name in SERVICES:
-        pages=[];first=1
-        while True:
-            page=task(t,key,src,read_version=version,compile_source=True,shardService=name,first=first,pageSize=PAGE,serviceLimit=SERVICE_LIMIT,includeEnvironment=(name=="Workspace" and first==1))
-            pages.append(page)
-            if name=="Workspace" and first==1:environment={k:page[k] for k in ("terrain","lighting","workspaceSettings")}
-            if page["last"]>=page["total"]:break
-            first=page["last"]+1
-            require(len(pages)<=SERVICE_LIMIT//PAGE+1,"Page limit")
-        merged=merge_service(name,pages,version);rows.extend(merged)
+        pages=grouped[name];merged=merge_service(name,pages,version);rows.extend(merged)
         require(len(rows)<=TOTAL_LIMIT,"Total read budget")
         receipts.append({"service":name,"count":len(merged),"pages":len(pages),"identityDigest":pages[0]["identityDigest"]})
     require(environment is not None,"Environment missing")
     result=normalize({"schemaVersion":1,"universeId":t["universeId"],"placeId":t["placeId"],"loadedVersion":version,"services":SERVICES,"total":len(rows),"objects":rows,**environment})
-    return result,receipts
+    return result,receipts,calls
 def latest(t,key):
     r=task(t,key,"do\nreturn syncResult({noPlaceWrites=true})\nend",compile_source=True)
     require(r["noPlaceWrites"],"Read scope");return r["loadedVersion"]
@@ -66,9 +76,9 @@ def main():
     p=argparse.ArgumentParser();p.add_argument("--output",type=Path,default=ROOT/"dist/s06-5");a=p.parse_args()
     g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging");base=read(state_path(target));key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
     version=latest(target,key);require(version==base["loadedVersion"]==16,"Stale baseline")
-    state,pages=capture_sharded(target,key,version)
+    state,pages,calls=capture_sharded(target,key,version)
     require(latest(target,key)==version,"Head changed during read")
     require(state==base,"Sharded inventory differs from exact observed baseline")
-    report={"loadedVersion":version,"stateDigest":state["stateDigest"],"total":state["total"],"pages":pages,"parityVerified":True,"noPlaceWrites":True,"defaultForensics":default_forensics(state),"writerLimitUnchanged":True}
+    report={"loadedVersion":version,"stateDigest":state["stateDigest"],"total":state["total"],"pages":pages,"batchCalls":calls,"parityVerified":True,"noPlaceWrites":True,"defaultForensics":default_forensics(state),"writerLimitUnchanged":True}
     write(a.output/"shard-proof.json",report);print("S065_SHARDS "+json.dumps(report),flush=True)
 if __name__=="__main__":main()
