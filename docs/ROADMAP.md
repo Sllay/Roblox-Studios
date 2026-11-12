@@ -20,3 +20,6 @@
 
 - [x] Inventário de packs e extração individual em memória (29 Models, Bush_01 e Tree_01 clonados e serializados).
 - [ ] Auditoria offline PBR, seleção visual de submodelos e integração de seletor ao plano de importação persistente.
+
+- [x] Memória visual de 23 plantas com descrição baseada em miniaturas reais de componentes; consulta offline, correspondência de evidências e atualização controlada.
+- [ ] Preview texturizado de submodelos e confirmação de cores PBR por planta.

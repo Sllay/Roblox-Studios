@@ -44,7 +44,36 @@ def build_catalog(report):
             "inventoryTruncated":pack["inventoryTruncated"],"models":result,
             "note":"Component tints are engine parameters, not observed final colors. Visual review requires evidence."}
 
-def render(catalog,output):
+def evidence_key(model, images):
+    ids=sorted(c["meshAssetId"] for c in model["components"] if c["meshAssetId"])
+    if not ids or not all(aid in images for aid in ids):
+        return None
+    h=hashlib.sha256()
+    for aid in ids:
+        im=images[aid].convert("RGB")
+        h.update(f"{aid}:{im.width}x{im.height}:".encode())
+        h.update(im.tobytes())
+    return h.hexdigest()
+
+def apply_reviews(catalog,registry,images):
+    if registry.get("schemaVersion")!=1 or registry.get("packAssetId")!=catalog["packAssetId"]:
+        raise ValueError("Review registry does not match pack")
+    rows={r["name"]:r for r in registry["reviews"]}
+    count=0
+    for model in catalog["models"]:
+        row=rows.get(model["name"])
+        if row is None or model["classification"]!="candidate":
+            continue
+        key=evidence_key(model,images)
+        if row["modelKey"]!=model["modelKey"] or not key or row.get("evidenceKey")!=key:
+            model["visual"]["status"]="stale_review"
+            continue
+        evidence=model["visual"]["evidence"]
+        model["visual"]={**row["visual"],"evidence":evidence,"evidenceKey":key,"sourceRun":registry["sourceRun"]}
+        count+=1
+    return count
+
+def render(catalog,output,registry=None):
     output.mkdir(parents=True,exist_ok=True)
     folder=output/"thumbs";folder.mkdir(exist_ok=True)
     ids=sorted({c["meshAssetId"] for m in catalog["models"] for c in m["components"] if c["meshAssetId"]}|{catalog["packAssetId"]})
@@ -69,6 +98,7 @@ def render(catalog,output):
                 model["visual"]["evidence"].append({"kind":"official_mesh_thumbnail","assetId":aid,"path":f"thumbs/{aid}.png","scope":"component_only"})
         if model["visual"]["evidence"]:
             model["visual"]["status"]="partial_evidence"
+    reused=apply_reviews(catalog,registry,images) if registry else 0
     # Four plants per sheet; two component thumbnails per plant, with clear labeling.
     for start in range(0,len(candidates),4):
         sheet=Image.new("RGB",(1120,830),"#eef2f5")
@@ -80,7 +110,7 @@ def render(catalog,output):
             x=18+(i%2)*552;y=80+(i//2)*370
             draw.rectangle((x,y,x+532,y+350),fill="white",outline="#bbc9d5")
             draw.text((x+12,y+10),m["name"],font=font,fill="#152638")
-            draw.text((x+12,y+29),f"Parts {m['technical']['parts']} | PBR {m['technical']['pbr']} | visual review pending",font=font,fill="#526274")
+            draw.text((x+12,y+29),f"Parts {m['technical']['parts']} | PBR {m['technical']['pbr']} | {m['visual']['status']}",font=font,fill="#526274")
             for j,c in enumerate(m["components"][:2]):
                 xx=x+12+j*260; yy=y+55; aid=c["meshAssetId"]
                 draw.rectangle((xx,yy,xx+248,yy+235),fill="#e4eaf0")
@@ -96,16 +126,21 @@ def render(catalog,output):
         images[catalog["packAssetId"]].save(output/"pack-thumbnail.png")
     write(output/"visual-catalog.json",catalog)
     print(f"VISUAL CATALOG: {len(catalog['models'])} models, {len(candidates)} candidates, {len(images)}/{len(ids)} thumbnails")
-    print("Full model render and visual description not automatically inferred.")
+    print(f"Reused {reused} matching visual reviews; final textured appearance not inferred.")
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--inventory",type=Path,required=True)
     p.add_argument("--output",type=Path,default=ROOT/"dist"/"visual-memory")
+    p.add_argument("--game",default="mapa-principal")
     a=p.parse_args()
     try:
         c=build_catalog(json.loads(a.inventory.read_text()))
-        render(c,a.output)
+        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*",a.game):
+            raise ValueError("Invalid game slug")
+        path=ROOT/"games"/"maps"/a.game/"game"/"assets"/"visual-reviews"/(c["packAssetId"]+".json")
+        registry=json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
+        render(c,a.output,registry)
         return 0
     except (ValueError,KeyError,OSError,DiscoveryError) as exc:
         print(f"ERROR: {exc}")

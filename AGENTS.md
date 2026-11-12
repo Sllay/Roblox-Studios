@@ -35,3 +35,7 @@ O último comando requer o Rojo CLI. Relate claramente quando uma verificação 
 ## Controle de alterações e assets
 
 Antes de editar um Place remoto, consulte `docs/ASSET_IMPORT.md`. Não confundir snapshot estrutural com backup completo. Nunca habilite `fullPlaceBuildAuthoritative` para uma cena parcialmente sincronizada. A importação estática exige staging, pré-seleção visual, auditoria, revisão de direitos, plano versionado e confirmação explícita. Não publicar ou ativar scripts de terceiros. Não inventar resultados de auditoria.
+
+## Memória visual de assets
+
+Antes de buscar ou avaliar novamente um asset conhecido, consulte docs/ASSET_VISUAL_MEMORY.md e tools/assets/visual_lookup.py. Reutilize fichas da biblioteca com escopo de evidência explícito. Não invente cor final PBR, espécie ou adequação a bioma. Revisão visual não aprova segurança, direitos ou importação. Se a evidência mudar, marque a ficha como desatualizada e revise apenas aquele modelo.

@@ -41,7 +41,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models_Bushes"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Bush_01"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          9.9714,
+          9.6956,
+          9.144
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "c50d1574fca8e8d53eec51e88d4baa095b71527fe5ef090442ece1451142b6a0",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Bush_02",
@@ -77,7 +112,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models_Bushes"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 2,
+          "name": "Bush_02"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          9.5103,
+          9.417,
+          9.2896
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "3460eccbe171004d7d5ecf2eeab801ea32cbcb0aa2774bbe9b06b8142b0053d8",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Bush_03",
@@ -113,7 +183,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models_Bushes"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 3,
+          "name": "Bush_03"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          8.9038,
+          6.3769,
+          8.1181
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "eed8fe3877618bf4b3155663377710928b1e75075a703ea77f2dec2e353e0556",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_01",
@@ -149,7 +254,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Tree_01"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          34.1169,
+          47.0713,
+          31.4603
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "925b316edc4cb7b2e274dafb40230080a428bf3f549acba47baae597c0d8fe0f",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_02",
@@ -185,7 +325,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 2,
+          "name": "Tree_02"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          44.4909,
+          49.5756,
+          31.8966
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "34f7c0f5f779a298bdcc4266c96180d0b63d2092291d6979eb50b346787369b0",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_03",
@@ -221,7 +396,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 3,
+          "name": "Tree_03"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          49.8765,
+          45.2097,
+          38.6656
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "e3390486cf543e1ae463cdd64a6b50ea635a1722c12bec9d1a3271f5181f0fb0",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_04",
@@ -257,7 +467,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 4,
+          "name": "Tree_04"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          42.119,
+          59.4241,
+          34.1966
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "07d281fb4b6b8b524af9d150a647cdb865f98201d024e46b093d272e3101cd95",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_05",
@@ -293,7 +538,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 5,
+          "name": "Tree_05"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          43.4557,
+          59.0617,
+          37.9442
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "8d9027da05a2303484479e2c6f293b428dbc5eb651c12365bdf83ba8f98e64d4",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_06",
@@ -330,7 +610,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 6,
+          "name": "Tree_06"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          60.4638,
+          58.8813,
+          40.9512
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "e438c23db3fd25925a62c3e7a1462bd7306a4c069db5a459abbffb06891ec0d3",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_07",
@@ -366,7 +681,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 7,
+          "name": "Tree_07"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          40.711,
+          71.5971,
+          40.0568
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "5e0d1d1d32fe1f2acab6f4f7823f0c54f0da2179c25e8099b011d973e49153ca",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_08",
@@ -403,7 +753,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 8,
+          "name": "Tree_08"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          26.7671,
+          68.1301,
+          24.9221
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "eca8bf293addbed8d3fb25cf1f507945941b680fc912a53890bab915de7c1607",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_09",
@@ -440,7 +825,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 9,
+          "name": "Tree_09"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          38.6494,
+          39.357,
+          28.8761
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "dc31db3f28ade3f1e5154c37b15ae1e51ac405bfe47bc5e94da2c84ee1dcce0c",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_10",
@@ -477,7 +897,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 10,
+          "name": "Tree_10"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          36.5966,
+          80.2303,
+          34.4358
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "74b1cb11f85fcfd43966cd04855963d0800015e58fbccbbc6748d421adc274d4",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_11",
@@ -513,7 +968,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 11,
+          "name": "Tree_11"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          51.0686,
+          84.4683,
+          45.6371
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "c1cede5ebadd261824cbda766e906c1ce5e07953aec680b0b592c3d27d86906c",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_12",
@@ -550,7 +1040,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 12,
+          "name": "Tree_12"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          27.6683,
+          44.0152,
+          22.9396
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "c9a3f191c1fad083bd35a08662536c83ec36f39734fd9ace1c7f034e327f6676",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_13",
@@ -586,7 +1111,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 13,
+          "name": "Tree_13"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          34.5245,
+          61.3931,
+          34.344
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "b7227d60908ebf44eea9ca0fe756989dc0d5c6c3f82b025420143a6383ab8501",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_14",
@@ -623,7 +1183,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 14,
+          "name": "Tree_14"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          23.9224,
+          41.3856,
+          21.977
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "c188d41425a77619e1380dd872d2959d9159a331144c51bb6c5728b06d1824d6",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_15",
@@ -659,7 +1254,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 15,
+          "name": "Tree_15"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          46.6953,
+          71.5839,
+          47.0531
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "4f23d898665cec272c856d55850940a3e22810afe64dcad05ca474587e519068",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_16",
@@ -695,7 +1325,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 16,
+          "name": "Tree_16"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          20.4974,
+          45.7298,
+          19.5603
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "e49f4c35affb363967e2473f910a21853c5114fe306189b84c1d86a6e56fe12c",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_17",
@@ -732,7 +1397,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 17,
+          "name": "Tree_17"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          49.433,
+          47.5302,
+          34.41
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "b4d19bceb48d5291ca4d645a560b2dcb23623281e06227e2b1a458bd00517e19",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_18",
@@ -768,7 +1468,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 18,
+          "name": "Tree_18"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          34.1711,
+          44.8948,
+          33.088
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "008077f094d0903fcc405a24ea929a6b88d820d9edfdf36ba06bbee8bff94030",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_19",
@@ -805,7 +1540,42 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 19,
+          "name": "Tree_19"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          67.7983,
+          84.5073,
+          60.9606
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "f0698537a67c0558248d34b9e741dc138b2fe690f0da7aa9aac2792bf5f2b535",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
     },
     {
       "name": "Tree_20",
@@ -842,7 +1612,74 @@
           "finalColor": "unverified"
         },
         "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
-      }
+      },
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 20,
+          "name": "Tree_20"
+        }
+      ],
+      "technical": {
+        "boundsApproxStuds": [
+          66.0736,
+          189.362,
+          64.3301
+        ],
+        "meshParts": 2,
+        "pbr": 2,
+        "scripts": 0
+      },
+      "evidenceKey": "96fab84af090a2107c7118571ca67b04e90d4e0f7dfeeafa6075e08d38827d85",
+      "securityStatus": "not_approved",
+      "importStatus": "not_imported"
+    }
+  ],
+  "auxiliaryModelsDetails": [
+    {
+      "name": "Organization",
+      "parentFolder": "Meshes_Roots",
+      "classification": "auxiliary_presentation"
+    },
+    {
+      "name": "Organization",
+      "parentFolder": "Materials_Bark",
+      "classification": "auxiliary_presentation"
+    },
+    {
+      "name": "Organization",
+      "parentFolder": "Meshes_Leaves",
+      "classification": "auxiliary_presentation"
+    },
+    {
+      "name": "Organization",
+      "parentFolder": "Models_Bushes",
+      "classification": "auxiliary_presentation"
+    },
+    {
+      "name": "Organization",
+      "parentFolder": "Textures_Leaves",
+      "classification": "auxiliary_presentation"
+    },
+    {
+      "name": "Organization",
+      "parentFolder": "Models_Trees",
+      "classification": "auxiliary_presentation"
     }
   ]
 }

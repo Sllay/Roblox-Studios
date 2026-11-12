@@ -14,8 +14,6 @@ on:
         type: string
         default: '79689531752352'
         required: true
-  push:
-    paths: ['games/maps/mapa-principal/docs/visual-memory-once.trigger']
 permissions:
   contents: read
 jobs:
@@ -37,7 +35,9 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python tools/assets/pack.py --game "$GAME" --place "$PLACE" --asset-id "$ASSET"
       - name: Fetch official mesh thumbnails and build visual memory
-        run: python tools/assets/visual_memory.py --inventory dist/asset-pack/pack.json
+        env:
+          GAME: ${{ inputs.game }}
+        run: python tools/assets/visual_memory.py --inventory dist/asset-pack/pack.json --game "$GAME"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
