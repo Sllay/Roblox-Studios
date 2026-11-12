@@ -4,7 +4,11 @@ local W=workspace
 local T=W.Terrain
 local plan=cfg.plan
 assert(cfg.environment=="staging" and game.PlaceVersion==cfg.expectedVersion,"Stale environment plan")
-local persistedRoot=W:FindFirstChild("RSEnvironmentP4")
+local rootName=plan.rootName or "RSEnvironmentP4"
+assert(rootName=="RSEnvironmentP4" or rootName=="RSEnvironmentP4Detail","Managed root not allowed")
+local owner=rootName.."V1"
+local idPrefix=if rootName=="RSEnvironmentP4Detail" then "p4-detail" else "p4"
+local persistedRoot=W:FindFirstChild(rootName)
 assert((cfg.mode=="verify" and persistedRoot) or (cfg.mode~="verify" and not persistedRoot),"Environment identity changed")
 local tiles={}
 local channels={"SolidMaterial","SolidOccupancy","LiquidOccupancy"}
@@ -69,9 +73,10 @@ local function modelRadius(m)
     local offset=Vector3.new(bb.Position.X-p.X,0,bb.Position.Z-p.Z).Magnitude
     return offset+math.sqrt(size.X^2+size.Z^2)/2
 end
-for _,rootName in {"RSSceneBuilder","RSWorldVegetation","RSManagedAssets"} do
-    local root=W:FindFirstChild(rootName)
-    local models=root and (if rootName=="RSManagedAssets" then root else root:FindFirstChild("Models"))
+for _,existingName in {"RSSceneBuilder","RSWorldVegetation","RSManagedAssets","RSEnvironmentP4","RSEnvironmentP4Detail"} do
+    if existingName==rootName then continue end
+    local root=W:FindFirstChild(existingName)
+    local models=root and (if existingName=="RSManagedAssets" then root else root:FindFirstChild("Models"))
     if models then for _,m in models:GetChildren() do
         if m:IsA("Model") then
             local p=m:GetPivot().Position
@@ -146,7 +151,7 @@ for _,spec in plan.assets do
         local burial=p.burial*scale
         assert(burial<source.height*scale*0.45,"Invalid contact profile")
         n+=1
-        local row={id=string.format("p4-%s-%02d",string.lower(spec.name):gsub("_","-"),n),
+        local row={id=string.format("%s-%s-%02d",idPrefix,string.lower(spec.name):gsub("[^a-z0-9]","-"),n),
             name=spec.name,assetId=spec.assetId,sourceDigest=spec.sourceDigest,position={x,h-source.bottom*scale-burial,z},
             groundY=h,yaw=yaw,scale=scale,radius=radius,buriedDepth=burial,supportRadius=support,slope=slope,tile=tile.id}
         table.insert(rows,row);table.insert(occupied,{x=x,z=z,r=radius})
@@ -194,7 +199,7 @@ local function checkVisual(m,row)
 end
 if cfg.mode=="verify" then
     local root=persistedRoot
-    assert(root:IsA("Folder") and root:GetAttribute("RSOwner")=="RSEnvironmentP4V1" and root:GetAttribute("RSPlanDigest")==cfg.planDigest,"Root provenance")
+    assert(root:IsA("Folder") and root:GetAttribute("RSOwner")==owner and root:GetAttribute("RSPlanDigest")==cfg.planDigest,"Root provenance")
     local models=root:FindFirstChild("Models");local colliders=root:FindFirstChild("Collisions")
     local runtime=root:FindFirstChild("RuntimeGroundCheck")
     assert(models and colliders and #models:GetChildren()==#rows and runtime and runtime:IsA("Script") and runtime.Source==cfg.runtimeSource,"Persisted structure")
@@ -224,7 +229,7 @@ if cfg.mode=="verify" then
     return output({verified=true,models=#rows,colliders=colliderCount,samples=samples})
 end
 assert(cfg.mode=="apply" and cfg.confirmStaging==true,"Explicit staging confirmation required")
-local root=Instance.new("Folder");root.Name="RSEnvironmentP4";root:SetAttribute("RSOwner","RSEnvironmentP4V1")
+local root=Instance.new("Folder");root.Name=rootName;root:SetAttribute("RSOwner",owner)
 root:SetAttribute("RSPlanDigest",cfg.planDigest)
 local models=Instance.new("Folder");models.Name="Models";models.Parent=root
 local collisions=Instance.new("Folder");collisions.Name="Collisions";collisions.Parent=root
@@ -251,7 +256,7 @@ for _,row in rows do
         part.Size=Vector3.new(h,2*r,2*r)
         part.CFrame=CFrame.new(row.position[1],row.groundY+h/2,row.position[3])*CFrame.Angles(0,0,math.pi/2)
         part.Transparency=1;part.Anchored=true;part.CanCollide=true;part.CanTouch=false;part.CanQuery=true;part.CastShadow=false
-        part:SetAttribute("RSOwner","RSEnvironmentP4V1");part.Parent=collisions
+        part:SetAttribute("RSOwner",owner);part.Parent=collisions
     end
 end
 for _,s in sources do s.model:Destroy() end

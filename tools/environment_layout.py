@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse
 import json
+import math
 import os
 import sys
 from pathlib import Path
@@ -11,13 +12,24 @@ from deploy import load_all, resolve, WorkspaceError
 GAME=ROOT/"games/maps/mapa-principal"
 SPEC=GAME/"game/assets/environment-p4.json"
 sys.path.insert(0,str(ROOT/"tools/assets"))
-from pack_import import inspect_blob, validate_evidence
+from pack_import import inspect_blob, validate_evidence, validate_selector
+from default_clone_delta import split_default_clones
 def validate(plan):
     require(plan["schemaVersion"]==1 and plan["environment"]=="staging","Scope")
-    require(plan["maxNewModels"]==24 and sum(a["count"] for a in plan["assets"])==24,"Model budget")
+    root=plan.get("rootName","RSEnvironmentP4")
+    require(root in ("RSEnvironmentP4","RSEnvironmentP4Detail"),"Managed environment root")
+    budget=24 if root=="RSEnvironmentP4" else 20
+    require(plan["maxNewModels"]==budget and sum(a["count"] for a in plan["assets"])==budget,"Model budget")
     require(len(plan["assets"])==4 and len({a["name"] for a in plan["assets"]})==4,"Asset selection")
     require(all(a["auditStatus"]=="exact_v2_pass" and a["sourceDigest"] and a["profile"]["calibrationStatus"]=="provisional" for a in plan["assets"]),"Source evidence")
-    require(len(plan["placement"]["regionIds"])==9,"Terrain scope")
+    require(len(plan["placement"]["regionIds"])==9 and len(set(plan["placement"]["regionIds"]))==9,"Terrain scope")
+    for a in plan["assets"]:
+        validate_selector(a["selector"])
+        p=a["profile"];scale=p["scale"]
+        require(len(scale)==2 and all(type(x) in (int,float) and math.isfinite(x) for x in scale) and 0.01<=scale[0]<=scale[1]<=2,"Scale limits")
+        require(0<=p["burial"]<=16 and 0.1<=p["support"]<=32,"Contact limits")
+        if p.get("collider"):
+            require(0.5<=p["collider"]["radius"]<=4 and 2<=p["collider"]["height"]<=24,"Collider budget")
     return plan
 def dispatch():
     p=(ROOT/"tools/assets/pack_import.luau").read_text()
@@ -39,10 +51,12 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("operation",choices=["preview","apply"])
     p.add_argument("--reviewed",type=Path)
+    p.add_argument("--spec",choices=["base","detail"],default="base")
     p.add_argument("--confirm-staging",action="store_true")
     p.add_argument("--output",type=Path,default=ROOT/"dist/p4-layout")
     a=p.parse_args()
-    plan=validate(read(SPEC));games,targets=load_all()
+    spec_path=SPEC if a.spec=="base" else GAME/"game/assets/environment-p4-detail-layout.json"
+    plan=validate(read(spec_path));games,targets=load_all()
     t=resolve(games,targets,"mapa-principal","main","staging");key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
     base=require_current(t,key)
     terrain={i:base["records"]["terrain:"+i]["digest"] for i in plan["placement"]["regionIds"]}
@@ -67,9 +81,11 @@ def main():
     after=capture(t,key);write(a.output/"after.json",after)
     require(after["loadedVersion"]>base["loadedVersion"],"Persisted version not advanced")
     delta=reconcile(base,after);write(a.output/"changes.json",delta)
-    for change in delta["external"]:
+    scoped,defaults=split_default_clones(base,after,delta["external"])
+    if defaults:write(a.output/"default-clone-delta.json",defaults)
+    for change in scoped:
         r=after["records"].get(change["key"])
-        require(change["change"]=="added" and r and r.get("service")=="Workspace" and r.get("path",[{}])[0]["name"]=="RSEnvironmentP4","Unexpected scene delta")
+        require(change["change"]=="added" and r and r.get("service")=="Workspace" and r.get("path",[{}])[0]["name"]==plan.get("rootName","RSEnvironmentP4"),"Unexpected scene delta: "+change["key"])
     for row in reviewed["rows"]:
         r=after["records"].get("managed:"+row["id"])
         require(r is not None and r["class"]=="Model" and r["properties"]["pivot"][:3] and all(abs(a-b)<0.03 for a,b in zip(r["properties"]["pivot"][:3],row["position"])),"Persisted model mismatch")
