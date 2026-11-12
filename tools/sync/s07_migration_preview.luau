@@ -9,7 +9,7 @@ local function write(region,d)
 end
 assert(game.PlaceId==93428341652658 and #F:GetChildren()==216 and #cfg.rows==2000,"Target/count")
 local function fingerprint()
-    local hashes={}
+    local hashes={};local records={}
     for _,name in cfg.services do
         local svc=game:GetService(name)
         for _,o in svc:GetDescendants() do
@@ -22,12 +22,13 @@ local function fingerprint()
                 local out={};for _,k in keys do table.insert(out,Http:JSONEncode(tostring(k))..":"..canon(x[k])) end
                 return "{"..table.concat(out,",").."}"
             end
-            table.insert(hashes,hash(canon(row)))
+            local k=svc.Name..":"..canon(row.path)
+            local digest=hash(canon(row));table.insert(hashes,digest);records[k]={digest=digest,row=row}
         end
     end
-    table.sort(hashes);return hash(table.concat(hashes,";"))
+    table.sort(hashes);return hash(table.concat(hashes,";")),records
 end
-local beforeFingerprint=fingerprint()
+local beforeFingerprint,beforeRecords=fingerprint()
 local before=terrainState()
 for _,r in before do assert(cfg.terrainExpected[r.id]==r.digest,"Terrain baseline") end
 local templates={}
@@ -106,5 +107,17 @@ for _,m in templates do m:Destroy() end
 for _,r in paint do write(r.region,r.original) end
 local restored=terrainState()
 for i,r in restored do assert(r.digest==before[i].digest,"Terrain inverse") end
-assert(#F:GetChildren()==216 and fingerprint()==beforeFingerprint,"Exact object inverse")
+local restoredFingerprint,restoredRecords=fingerprint()
+if restoredFingerprint~=beforeFingerprint then
+    local differences={}
+    for k,a in beforeRecords do
+        local b=restoredRecords[k]
+        if not b or a.digest~=b.digest then
+            local fields={};if b then for f,v in a.row do if Http:JSONEncode(v)~=Http:JSONEncode(b.row[f]) then table.insert(fields,f) end end end
+            table.insert(differences,{path=k,fields=fields,before=a.row,after=b and b.row})
+        end
+    end
+    return syncResult({preview=false,noPlaceWrites=true,inverseMismatch=true,differenceCount=#differences,differences={table.unpack(differences,1,math.min(5,#differences))}})
+end
+assert(#F:GetChildren()==216,"Resource inverse")
 return syncResult({preview=true,noPlaceWrites=true,beforeFingerprint=beforeFingerprint,afterFingerprint=afterFingerprint,counts=counts,vegetationRotated=#rotated,restoredMaterialVoxels=changed,terrain=after,all49Restored=#restored==49,resourceInverse=true,clientRenderVerified=false})
