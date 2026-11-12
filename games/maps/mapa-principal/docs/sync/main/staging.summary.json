@@ -3,63 +3,386 @@
     "Atmosphere": 1,
     "BloomEffect": 1,
     "Camera": 1,
+    "Clouds": 1,
     "Decal": 1,
     "DepthOfFieldEffect": 1,
-    "Folder": 13,
-    "InputAction": 210,
-    "InputBinding": 490,
-    "InputContext": 28,
-    "LocalScript": 1,
-    "MeshPart": 66,
-    "Model": 33,
-    "ModuleScript": 378,
-    "Part": 21,
-    "Script": 30,
+    "Folder": 18,
+    "InputAction": 240,
+    "InputBinding": 560,
+    "InputContext": 32,
+    "LocalScript": 2,
+    "MeshPart": 276,
+    "Model": 138,
+    "ModuleScript": 433,
+    "Part": 78,
+    "Script": 34,
     "Sky": 1,
-    "SpawnLocation": 10,
+    "SpawnLocation": 63,
     "StarterCharacterScripts": 1,
     "StarterPlayerScripts": 1,
     "SunRaysEffect": 1,
-    "SurfaceAppearance": 66,
+    "SurfaceAppearance": 276,
     "Terrain": 1,
     "Texture": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 7,
+  "loadedVersion": 8,
   "placeId": "93428341652658",
   "schemaVersion": 1,
-  "stateDigest": "bd0d2b06ba6dab8420b7f30dd86042cff7ae8ffd2f39ec0aefcceca5b545f497",
+  "stateDigest": "bb06f4ab717b8511672736744d80a9c140bc55d7fe29666cad9d67bdf06b4251",
   "terrain": {
-    "terrain:center-extension": {
+    "terrain:chunk--1--1": {
       "bounds": [
-        -352,
-        -16,
+        -384,
+        -32,
+        -384,
         -128,
-        96,
-        64,
-        128
+        112,
+        -128
       ],
-      "digest": "GG2GC5t6nlcz+1ZqmKSWlKxq8k0yVTNZgaBzVtwlYak=",
-      "id": "center-extension",
-      "solidVoxels": 53841,
+      "digest": "RRrW31fM227JhArqP8dHTFf2O1onEpKK9KPwel882DQ=",
+      "id": "chunk--1--1",
+      "solidVoxels": 54847,
       "waterVoxels": 0
     },
-    "terrain:pilot-valley": {
+    "terrain:chunk--1--2": {
       "bounds": [
-        96,
-        0,
+        -384,
+        -32,
+        -640,
         -128,
-        352,
-        64,
+        112,
+        -384
+      ],
+      "digest": "eDh/OYlTMufPWRSJX2LRmt2oj0Ss7/9veuJfrv3CusU=",
+      "id": "chunk--1--2",
+      "solidVoxels": 79241,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--1-0": {
+      "bounds": [
+        -384,
+        -32,
+        -128,
+        -128,
+        112,
         128
       ],
-      "digest": "+9jG2LoEvoHDF4Ux6xX9R5w77c96xo21r22RIJsp5Bk=",
-      "id": "pilot-valley",
-      "solidVoxels": 21217,
-      "waterVoxels": 324
+      "digest": "AKMjEmxKObqGYj6Kb6ZWN6nGXk9WRDpuPfcRbK68ebk=",
+      "id": "chunk--1-0",
+      "solidVoxels": 55666,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--1-1": {
+      "bounds": [
+        -384,
+        -32,
+        128,
+        -128,
+        112,
+        384
+      ],
+      "digest": "WVNdwKAa0W5ehRFcx2ejY+0zol/oZEOPWldVThoLhCY=",
+      "id": "chunk--1-1",
+      "solidVoxels": 62496,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--1-2": {
+      "bounds": [
+        -384,
+        -32,
+        384,
+        -128,
+        112,
+        640
+      ],
+      "digest": "gc+8Gc4k2B0xldYzaKeiYAwNuQ8ipqxx2euism0a0+E=",
+      "id": "chunk--1-2",
+      "solidVoxels": 87575,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--2--1": {
+      "bounds": [
+        -640,
+        -32,
+        -384,
+        -384,
+        112,
+        -128
+      ],
+      "digest": "F1JEwbg1cG8mkoQlgUzQ08q9cKsVexbGo4zs9wGt9U8=",
+      "id": "chunk--2--1",
+      "solidVoxels": 85436,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--2--2": {
+      "bounds": [
+        -640,
+        -32,
+        -640,
+        -384,
+        112,
+        -384
+      ],
+      "digest": "71mNvPb57wcv+oSmU8QwEB43iyz+zuG0PCBvyN6scnw=",
+      "id": "chunk--2--2",
+      "solidVoxels": 91803,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--2-0": {
+      "bounds": [
+        -640,
+        -32,
+        -128,
+        -384,
+        112,
+        128
+      ],
+      "digest": "2dqLHfeSXqeU+UY9LWV8pW54cQhWkCukQAW3NaC4LMA=",
+      "id": "chunk--2-0",
+      "solidVoxels": 80900,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--2-1": {
+      "bounds": [
+        -640,
+        -32,
+        128,
+        -384,
+        112,
+        384
+      ],
+      "digest": "4cZGhXSt3L6+pUURWsx0dXdAfXIwNp+9UZW+Cz+7mPk=",
+      "id": "chunk--2-1",
+      "solidVoxels": 88569,
+      "waterVoxels": 0
+    },
+    "terrain:chunk--2-2": {
+      "bounds": [
+        -640,
+        -32,
+        384,
+        -384,
+        112,
+        640
+      ],
+      "digest": "qZb3p4oSffvLe2vL9cE/leyndgyHyUAQ/pXrFVaHjyU=",
+      "id": "chunk--2-2",
+      "solidVoxels": 94146,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-0--1": {
+      "bounds": [
+        -128,
+        -32,
+        -384,
+        128,
+        112,
+        -128
+      ],
+      "digest": "cvhfLNLggnUr7ibkK3jSaa1sMuDdOlXP428AZbzbHCA=",
+      "id": "chunk-0--1",
+      "solidVoxels": 54823,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-0--2": {
+      "bounds": [
+        -128,
+        -32,
+        -640,
+        128,
+        112,
+        -384
+      ],
+      "digest": "F0pTnH/TxhpRIcGOfVKzfqDV++rl3Jduj+JvYuIa3CM=",
+      "id": "chunk-0--2",
+      "solidVoxels": 87254,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-0-0": {
+      "bounds": [
+        -128,
+        -32,
+        -128,
+        128,
+        112,
+        128
+      ],
+      "digest": "2BvVQaVRC9PNRSJq+YHMpxEvBBd6/O5jiwIn0ojXTf0=",
+      "id": "chunk-0-0",
+      "solidVoxels": 52767,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-0-1": {
+      "bounds": [
+        -128,
+        -32,
+        128,
+        128,
+        112,
+        384
+      ],
+      "digest": "ItnR8KETpFIr/bMZYyw9le/TqtTUPgnppfdizWbmtGk=",
+      "id": "chunk-0-1",
+      "solidVoxels": 62374,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-0-2": {
+      "bounds": [
+        -128,
+        -32,
+        384,
+        128,
+        112,
+        640
+      ],
+      "digest": "9jeuuEb+jOxidFp1zT62dMzFZ3khADNh5doTl5rtGN4=",
+      "id": "chunk-0-2",
+      "solidVoxels": 88146,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-1--1": {
+      "bounds": [
+        128,
+        -32,
+        -384,
+        384,
+        112,
+        -128
+      ],
+      "digest": "dGNXdWYs12qni3K4LB5k3la2z3wfYx0vOHvM5John8w=",
+      "id": "chunk-1--1",
+      "solidVoxels": 52407,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-1--2": {
+      "bounds": [
+        128,
+        -32,
+        -640,
+        384,
+        112,
+        -384
+      ],
+      "digest": "E9gerUcqt/4VoDKhmXUQ7dgbqTfATke1IrxnBZ5Dxq0=",
+      "id": "chunk-1--2",
+      "solidVoxels": 78138,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-1-0": {
+      "bounds": [
+        128,
+        -32,
+        -128,
+        384,
+        112,
+        128
+      ],
+      "digest": "d5qxj3yL1VCx6Z6U5mAAldao62fm7uy+lbwGQFqYoZY=",
+      "id": "chunk-1-0",
+      "solidVoxels": 54179,
+      "waterVoxels": 462
+    },
+    "terrain:chunk-1-1": {
+      "bounds": [
+        128,
+        -32,
+        128,
+        384,
+        112,
+        384
+      ],
+      "digest": "k4NDh7zL8A3KOG/Lp6XX0g7M/E28AYIuPlkyJeGBEds=",
+      "id": "chunk-1-1",
+      "solidVoxels": 59525,
+      "waterVoxels": 423
+    },
+    "terrain:chunk-1-2": {
+      "bounds": [
+        128,
+        -32,
+        384,
+        384,
+        112,
+        640
+      ],
+      "digest": "I9nj+amYtfzHqVtLDr7l+mt5olYtbLu557ibh779mUQ=",
+      "id": "chunk-1-2",
+      "solidVoxels": 85542,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-2--1": {
+      "bounds": [
+        384,
+        -32,
+        -384,
+        640,
+        112,
+        -128
+      ],
+      "digest": "pMSKlwgyvYuX8seXhQV/3bFvYJkgRjzkgJXXADEcvVo=",
+      "id": "chunk-2--1",
+      "solidVoxels": 82931,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-2--2": {
+      "bounds": [
+        384,
+        -32,
+        -640,
+        640,
+        112,
+        -384
+      ],
+      "digest": "r+plXQjxBpkh5DOc/356ebfCEwko0/M3bma5uzuRp28=",
+      "id": "chunk-2--2",
+      "solidVoxels": 85769,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-2-0": {
+      "bounds": [
+        384,
+        -32,
+        -128,
+        640,
+        112,
+        128
+      ],
+      "digest": "ctXejPxKIS/xhEsmU3Vx1Kxbv+2cTGEdqIQ0ODedNxI=",
+      "id": "chunk-2-0",
+      "solidVoxels": 83476,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-2-1": {
+      "bounds": [
+        384,
+        -32,
+        128,
+        640,
+        112,
+        384
+      ],
+      "digest": "GziPw2DZh27V7BfWDBCS9/IkEcD9bp08likKWCQleaM=",
+      "id": "chunk-2-1",
+      "solidVoxels": 93737,
+      "waterVoxels": 0
+    },
+    "terrain:chunk-2-2": {
+      "bounds": [
+        384,
+        -32,
+        384,
+        640,
+        112,
+        640
+      ],
+      "digest": "Nvje0EK5yRYmojLRTt82S0V/BP0cGy7y99/OfwP+mEU=",
+      "id": "chunk-2-2",
+      "solidVoxels": 92425,
+      "waterVoxels": 0
     }
   },
-  "total": 1357,
+  "total": 2162,
   "universeId": "10769712441",
   "workspaceRoots": [
     {
@@ -85,6 +408,12 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSSceneBuilder\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "RSSceneBuilder"
+    },
+    {
+      "class": "Folder",
+      "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSWorldVegetation\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "RSWorldVegetation"
     },
     {
       "class": "Folder",
