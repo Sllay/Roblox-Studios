@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "props": [
+    {
+      "id": "Branch",
+      "template": "ResourceProp",
+      "legacyCategory": "stick",
+      "assetId": "9204066145",
+      "count": 1000,
+      "dimensionFactorsFromV18": [
+        1.5,
+        2.5,
+        2.5
+      ]
+    },
+    {
+      "id": "Stone",
+      "template": "ResourceProp",
+      "legacyCategory": "stone",
+      "assetId": "80215326989711",
+      "count": 1000,
+      "dimensionFactorsFromV18": [
+        1.25,
+        1.25,
+        1.25
+      ]
+    }
+  ]
+}
