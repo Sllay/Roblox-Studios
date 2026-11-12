@@ -9,8 +9,9 @@ def main():
     g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
     require(target["placeId"]=="93428341652658","Wrong target")
     key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"];out=ROOT/"dist/valley-refine";out.mkdir(parents=True,exist_ok=True)
-    source="do\n"+(ROOT/"tools/sync/valley_refine.luau").read_text().replace("-- __RS_SUPPORT__",(ROOT/"tools/sync/prop_support.luau").read_text())+"\nend"
-    opts=dict(environment="staging",runtime=(SRC/"ServerScriptService/RSCentralSpawnSafety.server.luau").read_text(),client=(SRC/"StarterPlayer/StarterPlayerScripts/RSQualityPanel.client.luau").read_text(),grid=(SRC/"StarterPlayer/StarterPlayerScripts/RSBoundaryGrid.client.luau").read_text())
+    ragdoll=(SRC/"ServerScriptService/RSRagdoll.luau").read_text()
+    source="do\n"+(ROOT/"tools/sync/valley_refine.luau").read_text().replace("-- __RS_SUPPORT__",(ROOT/"tools/sync/prop_support.luau").read_text()).replace("-- __RS_RAGDOLL__",ragdoll)+"\nend"
+    opts=dict(environment="staging",ragdoll=ragdoll,runtime=(SRC/"ServerScriptService/RSCentralSpawnSafety.server.luau").read_text(),client=(SRC/"StarterPlayer/StarterPlayerScripts/RSQualityPanel.client.luau").read_text(),grid=(SRC/"StarterPlayer/StarterPlayerScripts/RSBoundaryGrid.client.luau").read_text())
     if p.mode in ("preview","apply"):
         base=require_current(target,key,9)
         r=task(target,key,source,mode="preview",**opts);write(out/"preview.json",r)

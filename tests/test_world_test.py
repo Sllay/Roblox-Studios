@@ -11,7 +11,12 @@ class WorldTests(unittest.TestCase):
     def test_death_guard(self):
         s=(ROOT/"games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSCentralSpawnSafety.server.luau").read_text()
         self.assertIn("not alive(character)",s)
-        self.assertIn("hum.BreakJointsOnDeath=true",s)
+        self.assertIn("Ragdoll.prepare(hum)",s)
+        self.assertNotIn("BreakJointsOnDeath=true",s)
+        module=(ROOT/"games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSRagdoll.luau").read_text()
+        self.assertIn("humanoid.BreakJointsOnDeath=false",module)
+        self.assertIn("AnimationConstraint",module)
+        self.assertIn("BallSocketConstraint",module)
         self.assertIn("Players.CharacterAutoLoads=true",s)
         self.assertNotIn("Players.CharacterAutoLoads=false",s)
         self.assertNotIn("LoadCharacterAsync",s)

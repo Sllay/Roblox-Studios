@@ -54,7 +54,7 @@ local function verify()
  end
  local f=W:FindFirstChild("RSWorldBoundary");assert(f and #f:GetChildren()==5,"Boundary count")
  for _,part in f:GetChildren() do assert(part:IsA("Part") and part.Anchored and part.CanCollide and part.Transparency==1 and not part.CastShadow,"Boundary properties") end
- assert(SSS.RSCentralSpawnSafety.Source==cfg.runtime and SPS.RSQualityPanel.Source==cfg.client and SPS.RSBoundaryGrid.Source==cfg.grid,"Source mismatch")
+ assert(SSS.RSCentralSpawnSafety.Source==cfg.runtime and SPS.RSQualityPanel.Source==cfg.client and SPS.RSBoundaryGrid.Source==cfg.grid and SSS.RSRagdoll.Source==cfg.ragdoll,"Source mismatch")
  for _,r in cfg.expected.moves do
   local m=W[r.root].Models:FindFirstChild(r.name)
   assert(m and (m:GetPivot().Position-Vector3.new(table.unpack(r.after))).Magnitude<0.03,"Prop move mismatch")
@@ -64,7 +64,28 @@ local function verify()
 end
 if cfg.mode=="verify" then return verify() end
 assert(game.PlaceVersion==9 and cfg.environment=="staging","Wrong version")
-assert(not W:FindFirstChild("RSWorldBoundary") and not SPS:FindFirstChild("RSBoundaryGrid"),"Already installed")
+assert(not W:FindFirstChild("RSWorldBoundary") and not SPS:FindFirstChild("RSBoundaryGrid") and not SSS:FindFirstChild("RSRagdoll"),"Already installed")
+-- Engine-side structural test on detached legacy and AJU rigs; no gameplay claim.
+local Ragdoll=(function()
+-- __RS_RAGDOLL__
+end)()
+local function testRig(advanced)
+ local m=Instance.new("Model");local hum=Instance.new("Humanoid");hum.Parent=m
+ local a=Instance.new("Part");a.Name="Torso";a.Parent=m
+ local b=Instance.new("Part");b.Name="Head";b.Position=Vector3.new(0,2,0);b.Parent=m
+ local joint
+ if advanced then
+  local a0=Instance.new("Attachment");a0.Parent=a;local a1=Instance.new("Attachment");a1.Parent=b
+  local c=Instance.new("BallSocketConstraint");c.Attachment0=a0;c.Attachment1=a1;c.Parent=a
+  joint=Instance.new("AnimationConstraint");joint.Attachment0=a0;joint.Attachment1=a1;joint.Parent=a
+ else joint=Instance.new("Motor6D");joint.Name="Neck";joint.Part0=a;joint.Part1=b;joint.Parent=a end
+ Ragdoll.prepare(hum);local result=Ragdoll.activate(m,hum,"Default")
+ assert(result.sockets==1 and result.colliders==2 and not joint.Enabled and not hum.BreakJointsOnDeath,"Ragdoll test failed")
+ assert(result.rig==(if advanced then "AJU" else "Motor6D"),"Rig detection failed")
+ assert(Ragdoll.activate(m,hum,"Default")==nil,"Ragdoll idempotency")
+ m:Destroy();return true
+end
+assert(testRig(false) and testRig(true),"Ragdoll topology tests")
 local d=read(b)
 local oldHash=digest(d,nx,ny,nz)
 local field={}
@@ -216,7 +237,7 @@ local function horizon(x,z)
 end
 local map={}
 for i=1,nx do local col={};for j=1,nz do local c=field[i][j];table.insert(col,{math.round(c.h*100)/100,c.w or 0,c.mat.Name}) end;table.insert(map,col) end
-local preview={map=map,oldHash=oldHash,changedColumns=changed,wetColumns=wet,riverColumns=riverWet,connectedDeep=#q,moves=moves,horizonTiles=#outer,boundaries=5}
+local preview={map=map,oldHash=oldHash,changedColumns=changed,wetColumns=wet,riverColumns=riverWet,connectedDeep=#q,moves=moves,horizonTiles=#outer,boundaries=5,ragdollTopologyTests=2}
 if cfg.mode=="preview" then return output(preview) end
 assert(cfg.mode=="apply" and cfg.preview.oldHash==oldHash and cfg.preview.changedColumns==changed and cfg.preview.connectedDeep==#q,"Preview changed")
 assert(#cfg.preview.moves==#moves,"Move count changed")
@@ -249,6 +270,7 @@ wall("North",Vector3.new(0,26,-388),Vector3.new(784,308,8))
 wall("South",Vector3.new(0,26,388),Vector3.new(784,308,8))
 wall("Ceiling",Vector3.new(0,184,0),Vector3.new(784,8,784))
 f.Parent=W
+local rag=Instance.new("ModuleScript");rag.Name="RSRagdoll";rag.Source=cfg.ragdoll;rag.Parent=SSS
 SSS.RSCentralSpawnSafety.Source=cfg.runtime
 SPS.RSQualityPanel.Source=cfg.client
 local grid=Instance.new("LocalScript");grid.Name="RSBoundaryGrid";grid.Source=cfg.grid;grid.Parent=SPS

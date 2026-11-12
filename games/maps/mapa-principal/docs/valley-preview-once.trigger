@@ -1,1 +1,1 @@
-Read-only v10 river/horizon/boundary preview; no SavePlaceAsync.
+Preview v10 revision: two engine topology tests for legacy/AJU ragdoll, no save.

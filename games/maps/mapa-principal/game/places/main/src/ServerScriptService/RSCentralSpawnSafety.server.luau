@@ -137,55 +137,64 @@ local function recover(player,character)
     if hrp then hrp.AssemblyLinearVelocity=Vector3.zero;hrp.AssemblyAngularVelocity=Vector3.zero end
     player:SetAttribute("RSRecoveryStatus","recovered_"..method)
 end
-local function corpseColliders(player,character)
-    local count=0
-    -- Native joint breaking remains enabled. Independent welded proxies are
-    -- not Humanoid body parts, so the Humanoid cannot reset their CanCollide.
-    for _,name in {"UpperTorso","LowerTorso","Torso","Head","LeftUpperLeg","RightUpperLeg","LeftLowerLeg","RightLowerLeg","Left Leg","Right Leg","LeftUpperArm","RightUpperArm","Left Arm","Right Arm"} do
-        local limb=character:FindFirstChild(name)
-        if limb and limb:IsA("BasePart") and not limb.Anchored then
-            local proxy=Instance.new("Part")
-            proxy.Name="RSDeadCollider";proxy.Size=limb.Size*0.82;proxy.CFrame=limb.CFrame
-            proxy.Transparency=1;proxy.CanCollide=true;proxy.CanTouch=false;proxy.CastShadow=false
-            proxy.Massless=true;proxy.CollisionGroup=deadGroup;proxy.Parent=character
-            local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=proxy;weld.Parent=proxy
-            -- Keep the same client that simulated the living avatar. Record
-            -- whether ownership can be retained; do not force server ownership
-            -- while server Terrain queries are under investigation.
-            pcall(function() if limb:CanSetNetworkOwnership() then limb:SetNetworkOwner(player) end end)
-            count+=1
+local Ragdoll=require(script.Parent:WaitForChild("RSRagdoll"))
+local function activateDeath(player,character,hum)
+    local result=Ragdoll.activate(character,hum,deadGroup)
+    if not result then return end
+    player:SetAttribute("RSDeathRig",result.rig)
+    player:SetAttribute("RSDeathJoints",result.sockets)
+    player:SetAttribute("RSDeathColliders",result.colliders)
+    player:SetAttribute("RSDeathStatus",if result.sockets>0 then "ragdoll_active" else "ragdoll_no_joints")
+    -- Corpse only: retain client simulation while investigating a server-only
+    -- Terrain collision discrepancy. No damage/reward decisions use this.
+    local owned=0
+    for _,limb in character:GetChildren() do
+        if limb:IsA("BasePart") and not limb.Anchored then
+            local ok=pcall(function()
+                if limb:CanSetNetworkOwnership() then limb:SetNetworkOwner(player) end
+            end)
+            if ok then owned+=1 end
         end
     end
-    player:SetAttribute("RSDeathColliders",count)
+    player:SetAttribute("RSDeathOwnedParts",owned)
 end
 local watched=setmetatable({},{__mode="k"})
 local function onCharacter(player,character)
     if watched[character] then return end
     watched[character]=true
     local hum=character:WaitForChild("Humanoid",10)
+    if not hum or not hum:IsA("Humanoid") then return end
+    Ragdoll.prepare(hum)
     local hrp=character:WaitForChild("HumanoidRootPart",10)
-    if not hum or not hrp then return end
-    hum.BreakJointsOnDeath=true
+    if not hrp then return end
     player:SetAttribute("RSDeathStatus","alive")
     player:SetAttribute("RSSpawnStatus","native_loaded")
     hum.Died:Connect(function()
         player:SetAttribute("RSDeathStatus","dead")
         player:SetAttribute("RSDeaths",(player:GetAttribute("RSDeaths") or 0)+1)
+        local ok,err=pcall(activateDeath,player,character,hum)
+        if not ok then warn("RS ragdoll failed",err);player:SetAttribute("RSDeathStatus","ragdoll_error") end
         selectNext(player)
         task.defer(function()
             RunService.Heartbeat:Wait()
             if player.Character~=character then return end
-            corpseColliders(player,character)
             local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
             local minY=torso and torso.Position.Y
+            local minClearance=math.huge
+            local tilt=0
             for _=1,12 do
                 task.wait(0.25)
                 if player.Character~=character or not torso or not torso.Parent then break end
                 minY=math.min(minY,torso.Position.Y)
+                local y=voxelGround(torso.Position.X,torso.Position.Z)
+                if y then minClearance=math.min(minClearance,torso.Position.Y-y) end
+                tilt=math.max(tilt,math.deg(math.acos(math.clamp(math.abs(torso.CFrame.UpVector.Y),0,1))))
             end
             if minY and player.Character==character then
                 player:SetAttribute("RSDeathMinY",math.round(minY*100)/100)
-                player:SetAttribute("RSDeathStatus",if minY < -30 then "corpse_below_ground" else "corpse_observed")
+                if minClearance<math.huge then player:SetAttribute("RSDeathClearance",math.round(minClearance*100)/100) end
+                player:SetAttribute("RSDeathTilt",math.round(tilt))
+                player:SetAttribute("RSDeathStatus",if minY < -30 or minClearance < -5 then "ragdoll_below_ground" elseif tilt>35 then "ragdoll_observed" else "ragdoll_upright")
             end
         end)
     end)
