@@ -46,7 +46,7 @@ O build gera arquivos em `dist/<jogo>/<place>.rbxlx`. O GitHub Actions pode vali
 
 - [Manual de auditoria e Safe Import](docs/ASSET_IMPORT.md): política de decoração estática, snapshots, planos versionados e importação somente em staging.
 - [Versioned scene snapshot](.github/workflows/scene-snapshot.yml): captura estrutural da versão real, sem escrever.
-- [Asset audit and safe staging import](.github/workflows/asset-pipeline.yml): audita um modelo isolado ou aplica um plano explicitamente aprovado em staging. O mapa-principal não tem staging configurado; não há importação real validada ainda.
+- [Asset audit and safe staging import](.github/workflows/asset-pipeline.yml): audita um modelo isolado ou aplica um plano explicitamente aprovado em staging. O mapa-principal tem staging separado com identidade verificada; importação real aguarda autorização do asset.
 - A substituição integral do Place fica bloqueada até que seu manifesto declare `fullPlaceBuildAuthoritative: true` após revisão da fonte integral.
 
 ## Diagnóstico automático de Luau

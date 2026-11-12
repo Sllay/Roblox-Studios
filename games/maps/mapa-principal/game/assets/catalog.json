@@ -1,4 +1,24 @@
 {
   "schemaVersion": 1,
-  "assets": []
+  "assets": [
+    {
+      "id": "79689531752352",
+      "name": "Yasu's Stylized Tree Pack",
+      "source": "Roblox Creator Store",
+      "sourceUrl": "https://create.roblox.com/store/asset/79689531752352/Yasus-Stylized-Tree-Pack",
+      "biome": null,
+      "reviewStatus": "user_selected",
+      "securityStatus": "not_inspected",
+      "importStatus": "not_imported",
+      "access": {
+        "status": "asset_access_denied",
+        "environment": "staging",
+        "universeId": "10769712441",
+        "placeId": "93428341652658",
+        "loadedVersion": 1,
+        "verificationRun": "43131202122"
+      },
+      "note": "Selected by user; creator metadata, rights and visual biome review not verified. Do not import."
+    }
+  ]
 }

@@ -59,3 +59,10 @@ Asset 12549617200 foi classificado corretamente como `asset_access_denied` na ve
 ## Destino de homologação informado
 
 Staging do mapa-principal: Universe 10769712441, Place 93428341652658. Candidato escolhido pelo usuário: [Yasu's Stylized Tree Pack](https://create.roblox.com/store/asset/79689531752352/Yasus-Stylized-Tree-Pack), Asset ID 79689531752352. Identidade, autorização, política e importação ainda dependem de verificação remota. Produção permanece separada.
+
+### Resultado de homologação do destino (2026-11-11)
+
+- Staging 10769712441/93428341652658: identidade confirmada com a chave existente, versão 1, snapshot de 6 objetos. [Execução real](https://github.com/Sllay/Roblox-Studios/actions/runs/43131202122).
+- Asset 79689531752352 (Yasu's Stylized Tree Pack): `asset_access_denied` (User is not authorized to access Asset). Não foi possível inspecionar seu conteúdo. Não confundir este ID com outras listagens homônimas.
+- Pendência: confirmar aquisição via Get Model pela conta proprietária da experiência (ou autorização explícita do proprietário do asset). Depois repetir o preflight manual. Não habilitar permissões por meios não documentados, não gravar no Place enquanto o asset estiver bloqueado.
+- A chave tem acesso à execução de leitura no staging; permissão de SavePlaceAsync ainda não testada. Nenhuma importação ou publicação feita.
