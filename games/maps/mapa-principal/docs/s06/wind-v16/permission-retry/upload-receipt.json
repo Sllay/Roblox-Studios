@@ -1,0 +1,41 @@
+{
+  "assetId": "91515745821527",
+  "creatorId": "8136365379",
+  "creatorType": "User",
+  "httpStatus": 200,
+  "nativeError": "Cloud task failed: {'code': 'SCRIPT_ERROR', 'message': 'EditableMesh is not accessible. Go to the Security Tab in Experience Settings to enable this API.'}",
+  "noPlaceWrites": true,
+  "operation": {
+    "done": true,
+    "operationId": "5eb42fc8-6afb-464f-954a-dcd0e87af49d",
+    "path": "operations/5eb42fc8-6afb-464f-954a-dcd0e87af49d",
+    "response": {
+      "assetId": "91515745821527",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "description": "Original project-authored skinned canopy prototype, no external geometry. Not a published Place change.",
+      "displayName": "RS S06 Original Pine Canopy Prototype",
+      "isPublished": true,
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "path": "assets/91515745821527",
+      "revisionCreateTime": "2026-11-12T19:03:17.390Z",
+      "revisionId": "1",
+      "state": "Active"
+    }
+  },
+  "originalSha256": "32b04f3e0c5bd57430741b400783021ec4bc471e3a16ff0979d68c414a38bb49",
+  "response": {
+    "done": false,
+    "operationId": "5eb42fc8-6afb-464f-954a-dcd0e87af49d",
+    "path": "operations/5eb42fc8-6afb-464f-954a-dcd0e87af49d"
+  },
+  "retryAllowed": false,
+  "schemaVersion": 1,
+  "status": "created_native_load_pending"
+}
