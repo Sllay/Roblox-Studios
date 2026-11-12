@@ -30,4 +30,5 @@
 - [ ] Preview texturizado de submodelos e confirmação de cores PBR por planta.
 
 - [x] P2.1 native terrain plan, multi-noise, solid/liquid channels, material-only paint, bounded lake; preview compiled on Roblox staging v3 (43138809195).
-- [ ] Validate native voxel write, paint invariant, persisted lake and mobile traversal; then expand general terrain painting, placement and batch scene builder.
+- [x] Native terrain pilot persisted in staging v4; material-only painting exact zero occupancy/liquid changes, independent voxel verification passed (43138959424).
+- [ ] Mobile terrain traversal and shore appearance, native terrain placement calibration, batch scene builder.

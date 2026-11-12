@@ -15,6 +15,8 @@ on:
       confirm_staging:
         type: boolean
         default: false
+  push:
+    paths: ['games/maps/mapa-principal/docs/terrain-paint-once.trigger']
 permissions:
   contents: read
   actions: read
@@ -23,7 +25,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   paint:
-    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation == 'preview' || inputs.confirm_staging) }}
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'preview' || inputs.confirm_staging) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -42,14 +44,18 @@ jobs:
           path: dist/prior-paint
       - name: Preview or apply material-only edit
         env:
-          OP: ${{ inputs.operation }}
-          PLAN: ${{ inputs.plan }}
+          OP: ${{ inputs.operation || 'preview' }}
+          PLAN: ${{ inputs.plan || 'paint-example.json' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           [[ "$PLAN" =~ ^[a-z0-9-]+\.json$ ]] || exit 1
           args=()
           if [[ "$OP" == apply ]]; then args+=(--baseline dist/prior-paint/preview.json --confirm-staging); fi
           python tools/terrain_paint.py "$OP" --plan "games/maps/mapa-principal/game/terrain/$PLAN" "${args[@]}"
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then
+            python -c 'import json; r=json.load(open("dist/terrain-paint/preview.json")); assert r["loadedVersion"]==4 and r["changedVoxels"]>0'
+            python tools/terrain_paint.py apply --plan "games/maps/mapa-principal/game/terrain/$PLAN" --baseline dist/terrain-paint/preview.json --confirm-staging
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
