@@ -102,3 +102,5 @@
 - [ ] Roblox API capability research and pinned read probe: official Studio MCP, native geometry/physics, binary input, asset versioning, serialization, testing and runtime stats. Live probe pending; see docs/ROBLOX_API_RESEARCH.md.
 
 - [x] Pinned v14 API probe 43258355023: terrain voxels, pathfinding (8 waypoints), serialization roundtrip observed; headless physical queries returned no hits and EditableMesh permission denied. Evidence persisted. Terrain atlas (materials, altitude, placement) implemented, read-only live validation pending.
+
+- [x] Terrain Atlas live verified v14 (43258670029): material, altitude and placement diagrams from 9216 samples across nine hash-verified playable chunks. Summary recorded; no Place writes.

@@ -272,7 +272,7 @@
       "id": "terrain.map_atlas",
       "entry": "tools/terrain_atlas.py",
       "mode": "read",
-      "status": "implemented",
+      "status": "live_verified",
       "purpose": "Versioned terrain map overlays and real placement overview from native voxel samples",
       "requires": [
         "scene.sync",

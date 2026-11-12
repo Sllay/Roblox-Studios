@@ -1,0 +1,20 @@
+{
+  "runId": 43258670029,
+  "artifactId": 13964080055,
+  "sourceCommit": "0cb1f972bb8d0f5e14ef8379fb386cec2bd88d33",
+  "loadedVersion": 14,
+  "stateDigest": "fc6d1050b100b87ead072c99e4fd60a3a85781c840e7e11e39cbff81c76e4c08",
+  "grassAltitudeMin": 4.1,
+  "grassAltitudeP80": 26.5,
+  "grassAltitudeMax": 42.9,
+  "playableModelCountsByRoot": {
+    "RSSceneBuilder": 32,
+    "RSEnvironmentP4": 24,
+    "RSEnvironmentP4Detail": 20,
+    "RSWorldVegetation": 81,
+    "RSManagedAssets": 1
+  },
+  "sampleCount": 9216,
+  "noPlaceWrites": true,
+  "note": "8-stud decimated voxel estimates, not mesh contact or actual client render"
+}
