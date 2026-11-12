@@ -1,0 +1,24 @@
+name: Terrain physics probe (read-only)
+on:
+  workflow_dispatch:
+  push:
+    paths: ['games/maps/mapa-principal/docs/physics-probe-once.trigger']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: python tools/terrain_physics_probe.py
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: terrain-physics-probe
+          path: dist/physics-probe/
