@@ -1,0 +1,59 @@
+name: S06.2 native geometry and durable regeneration checkpoint
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s06-2-checkpoint.trigger']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: python -m unittest discover -s tests -v
+      - uses: actions/download-artifact@v4
+        with:
+          name: s06-2-regeneration
+          run-id: 43280128795
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s06-2
+      - name: Verify detached model and collider geometry
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/vegetation_regeneration_preview.py --plan dist/s06-2/plan.json --output dist/s06-2
+      - name: Persist exact verified plan and maps
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          from scene_sync import read,sha
+          from pathlib import Path
+          import shutil
+          root=Path("games/maps/mapa-principal");src=Path("dist/s06-2");out=root/"docs/s06/regeneration-v16";out.mkdir(parents=True,exist_ok=True)
+          p=read(src/"plan.json");g=read(src/"geometry.json");b=read(root/"docs/sync/main/staging.summary.json")
+          assert p["planDigest"]==sha({k:v for k,v in p.items() if k!="planDigest"})=="ed0c552053b8116dfb628efbf2fb45bbab7286e21ec481901714d822a455dc55"
+          assert p["stateDigest"]==b["stateDigest"] and b["loadedVersion"]==16
+          assert g["planDigest"]==p["planDigest"] and g["checked"]==212 and g["treeProfiles"]==132 and g["noPlaceWrites"]
+          assert p["noPlaceWrites"] and not p["applyAuthorized"] and not p["budget"]["allowed"]
+          for name in ("inventory.json","plan.json","summary.json","before.png","after.png","geometry.json"):
+              shutil.copyfile(src/name,out/name)
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/s06/regeneration-v16
+          git commit -m "evidence(s06.2): preserve verified unified vegetation plan and native geometry"
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s06-2-native-proof
+          path: dist/s06-2/
+          if-no-files-found: warn
