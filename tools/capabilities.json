@@ -237,6 +237,23 @@
       "produces": [
         "tool schemas"
       ]
+    },
+    {
+      "id": "scene.script_transaction",
+      "entry": "tools/verified_script_stage.py",
+      "mode": "staging_write",
+      "status": "implemented",
+      "purpose": "Reviewed script-only transaction with verification and durable receipt",
+      "requires": [
+        "scene.sync",
+        "quality.gate",
+        "scene.patch"
+      ],
+      "produces": [
+        "receipt",
+        "scene baseline",
+        "archive"
+      ]
     }
   ]
 }

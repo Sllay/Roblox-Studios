@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "expectedVersion": 13,
+  "baselineDigest": "a7f9b87a4233d04abb416bf9516edaf64cee241b481d9119ee9169683f16068e",
+  "operations": [
+    {
+      "kind": "update_script",
+      "targetKey": "managed:p4-localscript-rswind",
+      "archiveId": "p45-rswind-v13",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSWind.client.luau"
+    },
+    {
+      "kind": "update_script",
+      "targetKey": "managed:p4-modulescript-rswindpolicy",
+      "archiveId": "p45-rswindpolicy-v13",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/ReplicatedStorage/RSWindPolicy.luau"
+    }
+  ]
+}

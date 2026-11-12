@@ -95,3 +95,5 @@
 - [ ] Agent-ready toolchain evolution: capability registry, offline discovery and shared Scene Sync result envelope implemented; transaction/recovery, terrain surface index, real client visual gate and MCP typed interface planned. See docs/TOOLCHAIN_EVOLUTION.md.
 
 - [ ] Terrain Surface Fields: reusable pure Luau height/dry footprint/slope/relief/altitude percentile integrated into environment layout, executable tests; remote layout regression and persistent spatial cache pending.
+
+- [x] P4.5 read-only preflight 43257411211: 182 models, 162 foliage candidates, 93 coupled trunk colliders, exact wind script preview. Terrain surface module CI passed 43257553076. Script-only verified transaction wrapper implemented; wind staging apply initiated.
