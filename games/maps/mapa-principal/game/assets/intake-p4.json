@@ -152,12 +152,16 @@
       "kindHint": "static",
       "intendedUse": "food and cultivation props",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
+      "securityStatus": "requires_component_review",
       "importStatus": "not_imported",
       "auditEvidence": {
-        "runId": 43179500783,
-        "inventoryStatus": "rate_limited",
-        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json"
+        "runId": 43179707585,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 0,
+        "scripts": 0,
+        "components": 0,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179707585.json"
       }
     },
     {
@@ -168,8 +172,17 @@
       "kindHint": "static",
       "intendedUse": "rock formations",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "requires_component_review",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179707585,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_truncated",
+        "models": 372,
+        "scripts": 0,
+        "components": 0,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179707585.json"
+      }
     },
     {
       "id": "18817890736",
@@ -179,8 +192,17 @@
       "kindHint": "mixed",
       "intendedUse": "environment props; buildings and vegetation subject to inventory",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "embedded_code_blocked",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179707585,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 60,
+        "scripts": 1,
+        "components": 30,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179707585.json"
+      }
     },
     {
       "id": "9002291527",
@@ -190,8 +212,17 @@
       "kindHint": "mixed",
       "intendedUse": "vegetation and wall/steep-slope vines subject to inventory",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "requires_component_review",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179707585,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 2,
+        "scripts": 0,
+        "components": 228,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179707585.json"
+      }
     },
     {
       "id": "11946229834",
@@ -201,8 +232,17 @@
       "kindHint": "vfx_script",
       "intendedUse": "wind visuals; inspect code and dependencies before any use",
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
-      "importStatus": "not_imported"
+      "securityStatus": "embedded_code_blocked",
+      "importStatus": "not_imported",
+      "auditEvidence": {
+        "runId": 43179707585,
+        "loadedVersion": 10,
+        "inventoryStatus": "inventory_observed",
+        "models": 0,
+        "scripts": 7,
+        "components": 7,
+        "report": "games/maps/mapa-principal/game/assets/audits/p4-intake-43179707585.json"
+      }
     }
   ]
 }

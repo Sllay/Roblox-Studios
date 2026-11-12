@@ -1,0 +1,1322 @@
+{
+  "schemaVersion": 1,
+  "game": "mapa-principal",
+  "environment": "staging",
+  "runId": 43179707585,
+  "loadedVersion": 10,
+  "sourceCommit": "38a616274ad32e7bc2a44e223bd676a2b76728ab",
+  "scope": "detached inventory, static root and one candidate policy; script hashes and heuristic signals only",
+  "noPlaceWrites": true,
+  "codeExecuted": false,
+  "complete": true,
+  "results": [
+    {
+      "id": "106208631832795",
+      "status": "inventory_observed",
+      "models": 0,
+      "scripts": 0,
+      "components": 0,
+      "classes": {
+        "Folder": 1,
+        "MeshPart": 100,
+        "Camera": 1
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [
+          "Disallowed class: Camera",
+          "Dependency budget exceeded"
+        ],
+        "allowed": false,
+        "parts": 100
+      },
+      "sampleAudit": null,
+      "codeReview": [],
+      "codeReviewTruncated": false,
+      "modelCandidates": []
+    },
+    {
+      "id": "85389927254160",
+      "status": "inventory_truncated",
+      "models": 372,
+      "scripts": 0,
+      "components": 0,
+      "classes": {
+        "SurfaceAppearance": 184,
+        "MeshPart": 184,
+        "Camera": 1,
+        "Model": 372
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": false,
+        "issues": [
+          "Instance budget exceeded",
+          "SurfaceAppearance texture dependencies not fully inspectable in Open Cloud"
+        ],
+        "allowed": false,
+        "parts": 86
+      },
+      "sampleAudit": {
+        "name": "Plain_Rock1_M_Plain_Rock_0_Node",
+        "parts": 1,
+        "inspectionComplete": false,
+        "issues": [
+          "SurfaceAppearance texture dependencies not fully inspectable in Open Cloud"
+        ],
+        "allowed": false,
+        "selector": [
+          {
+            "class": "Model",
+            "index": 1,
+            "name": "Low Poly Stylized Rock Pack"
+          },
+          {
+            "class": "Model",
+            "index": 1,
+            "name": "Sketchfab_model"
+          },
+          {
+            "class": "Model",
+            "index": 1,
+            "name": "e9e516dd21d04df28714d133134029a3.fbx"
+          },
+          {
+            "class": "Model",
+            "index": 1,
+            "name": "RootNode"
+          },
+          {
+            "class": "Model",
+            "index": 1,
+            "name": "Plain_Rock1"
+          },
+          {
+            "class": "Model",
+            "index": 1,
+            "name": "Plain_Rock1_M_Plain_Rock_0_Node"
+          }
+        ]
+      },
+      "codeReview": [],
+      "codeReviewTruncated": false,
+      "modelCandidates": [
+        {
+          "name": "Plain_Rock1_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock10_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock11_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock12_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock13_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock14_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock15_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock16_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock17_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock18_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock19_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock2_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock20_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock21_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock22_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock23_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock24_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock25_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock26_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock27_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock28_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock29_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock3_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock30_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock31_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock32_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock4_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock5_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock6_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock7_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock8_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Plain_Rock9_M_Plain_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock1_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock10_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock11_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock12_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock13_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock14_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock15_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock16_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock17_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock18_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock19_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock2_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock20_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock21_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock22_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock23_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock24_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock25_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock26_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock27_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock28_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock29_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock3_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock30_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock31_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock32_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock4_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock5_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock6_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock7_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock8_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Mossy_Rock9_M_Mossy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock1_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock10_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock11_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock12_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock13_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "SnowyRock14_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock15_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock16_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock17_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock18_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock19_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock2_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock20_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock21_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock22_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock23_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock24_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock25_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock26_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock27_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock28_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock29_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock3_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock30_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock31_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock32_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock4_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock5_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock6_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock7_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock8_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Snowy_Rock9_M_Snowy_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Desert_Rock1_M_Desert_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Desert_Rock10_M_Desert_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Desert_Rock11_M_Desert_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Desert_Rock12_M_Desert_Rock_0_Node",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        }
+      ]
+    },
+    {
+      "id": "18817890736",
+      "status": "inventory_observed",
+      "models": 60,
+      "scripts": 1,
+      "components": 30,
+      "classes": {
+        "Decal": 24,
+        "Script": 1,
+        "ParticleEmitter": 2,
+        "Part": 8,
+        "MeshPart": 156,
+        "SurfaceGui": 1,
+        "Folder": 37,
+        "PointLight": 14,
+        "TextLabel": 1,
+        "Model": 60,
+        "Camera": 1,
+        "Attachment": 16,
+        "SurfaceAppearance": 142,
+        "Texture": 3
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": false,
+        "issues": [
+          "Instance budget exceeded",
+          "Disallowed class: Script",
+          "Embedded code: Script",
+          "Disallowed class: Attachment",
+          "Disallowed class: PointLight",
+          "Disallowed class: ParticleEmitter",
+          "SurfaceAppearance texture dependencies not fully inspectable in Open Cloud",
+          "Part budget exceeded",
+          "Dependency budget exceeded",
+          "Model dimensions exceed 512 studs"
+        ],
+        "allowed": false,
+        "parts": 126
+      },
+      "sampleAudit": {
+        "name": "Barrel",
+        "parts": 1,
+        "inspectionComplete": false,
+        "issues": [
+          "SurfaceAppearance texture dependencies not fully inspectable in Open Cloud"
+        ],
+        "allowed": false,
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Inno's_Stylized_Asset_Pack"
+          },
+          {
+            "class": "Folder",
+            "index": 2,
+            "name": "Assets"
+          },
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "Regular_Assets"
+          },
+          {
+            "class": "Folder",
+            "index": 10,
+            "name": "Wood_Iron_Assets"
+          },
+          {
+            "class": "Model",
+            "index": 1,
+            "name": "Barrel"
+          }
+        ]
+      },
+      "codeReview": [
+        {
+          "sourceBytes": 273,
+          "name": "README",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "Script",
+          "sha256": "2rRhI83WGhzWYcm4HSLe3LpcbBLwdepOOZinncmMjjQ=",
+          "sourceReadable": true
+        }
+      ],
+      "codeReviewTruncated": false,
+      "modelCandidates": [
+        {
+          "name": "Barrel",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Crate",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bridge_Wood",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Anvil",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bush1_02",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bush1_01",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bush2_01",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bush2_02",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Rock_Preset_03",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bridge_Wood",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bush2_02",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bush2_01",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bush1_02",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bush1_01",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Anvil",
+          "parts": 1,
+          "pbr": 1,
+          "eligible": true
+        },
+        {
+          "name": "Bottom",
+          "parts": 2,
+          "pbr": 0,
+          "eligible": true
+        },
+        {
+          "name": "Pine_01.1",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_01.2",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_01.3",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_01.4",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_02.1",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_02.2",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_02.3",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_02.4",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_03.3",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_03.4",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_03.2",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_03.1",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_04.2",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_04.3",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_04.4",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_04.1",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_06.2",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_06.1",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_06.3",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_06.4",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_05.1",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_05.2",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_05.3",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_05.4",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Rock_Preset_05",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Rock_Preset_04",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Rock_Preset_02",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Rock_Preset_01",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Rock_Preset_06",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_06.2",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_06.3",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_06.4",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Pine_06.1",
+          "parts": 2,
+          "pbr": 2,
+          "eligible": true
+        },
+        {
+          "name": "Blue_Flowers",
+          "parts": 3,
+          "pbr": 3,
+          "eligible": true
+        },
+        {
+          "name": "Pink_Flowers",
+          "parts": 3,
+          "pbr": 3,
+          "eligible": true
+        },
+        {
+          "name": "White_Flowers",
+          "parts": 3,
+          "pbr": 3,
+          "eligible": true
+        },
+        {
+          "name": "Yellow_Flowers",
+          "parts": 3,
+          "pbr": 3,
+          "eligible": true
+        },
+        {
+          "name": "Text",
+          "parts": 2,
+          "pbr": 0,
+          "eligible": false
+        },
+        {
+          "name": "Lantern_Pole",
+          "parts": 2,
+          "pbr": 1,
+          "eligible": false
+        },
+        {
+          "name": "Lantern",
+          "parts": 2,
+          "pbr": 1,
+          "eligible": false
+        },
+        {
+          "name": "Lantern",
+          "parts": 2,
+          "pbr": 1,
+          "eligible": false
+        },
+        {
+          "name": "Castle",
+          "parts": 10,
+          "pbr": 8,
+          "eligible": false
+        },
+        {
+          "name": "Medieval_House",
+          "parts": 7,
+          "pbr": 2,
+          "eligible": false
+        },
+        {
+          "name": "Medieval_House",
+          "parts": 8,
+          "pbr": 3,
+          "eligible": false
+        }
+      ]
+    },
+    {
+      "id": "9002291527",
+      "status": "inventory_observed",
+      "models": 2,
+      "scripts": 0,
+      "components": 228,
+      "classes": {
+        "Folder": 5,
+        "Camera": 1,
+        "Weld": 1,
+        "Model": 2,
+        "MeshPart": 50,
+        "Texture": 228
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [
+          "Disallowed class: Weld",
+          "Disallowed class: Camera"
+        ],
+        "allowed": false,
+        "parts": 50
+      },
+      "sampleAudit": {
+        "name": "Model",
+        "parts": 4,
+        "inspectionComplete": true,
+        "issues": [],
+        "allowed": true,
+        "selector": [
+          {
+            "class": "Folder",
+            "index": 1,
+            "name": "AssetPack"
+          },
+          {
+            "class": "Model",
+            "index": 9,
+            "name": "Model"
+          }
+        ]
+      },
+      "codeReview": [],
+      "codeReviewTruncated": false,
+      "modelCandidates": [
+        {
+          "name": "Model",
+          "parts": 4,
+          "pbr": 0,
+          "eligible": true
+        },
+        {
+          "name": "Wall Ruin w/ Moss",
+          "parts": 38,
+          "pbr": 0,
+          "eligible": false
+        }
+      ]
+    },
+    {
+      "id": "11946229834",
+      "status": "inventory_observed",
+      "models": 0,
+      "scripts": 7,
+      "components": 7,
+      "classes": {
+        "LocalScript": 1,
+        "ModuleScript": 6
+      },
+      "importAuthorized": false,
+      "loadedVersion": 10,
+      "staticAudit": {
+        "inspectionComplete": true,
+        "issues": [
+          "Disallowed class: LocalScript",
+          "Embedded code: LocalScript",
+          "Disallowed class: ModuleScript",
+          "Embedded code: ModuleScript",
+          "No visual parts"
+        ],
+        "allowed": false,
+        "parts": 0
+      },
+      "sampleAudit": null,
+      "codeReview": [
+        {
+          "sourceBytes": 4382,
+          "name": "WindController",
+          "importAuthorized": false,
+          "signals": [
+            "require"
+          ],
+          "class": "LocalScript",
+          "sha256": "1auEjPuiI1Knm+HWdAlJmBr7OM0I5QSRbp0F3NskveU=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 4235,
+          "name": "WindLines",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "ModuleScript",
+          "sha256": "iBueRX5TEQTLy4gXH49Ar1Th2a/BBacs++4VrsE4Y5o=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 7669,
+          "name": "WindShake",
+          "importAuthorized": false,
+          "signals": [
+            "require"
+          ],
+          "class": "ModuleScript",
+          "sha256": "vU54lwbkW7k0ysg4JEGAC8YliuErwhLuIerJtu84Cu8=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 1712,
+          "name": "Settings",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "ModuleScript",
+          "sha256": "PG69FFOmV5ksy/imyF9x4OoBPKkNHSx+m8Gv/Kr9s6s=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 8337,
+          "name": "Octree",
+          "importAuthorized": false,
+          "signals": [
+            "require"
+          ],
+          "class": "ModuleScript",
+          "sha256": "OU49n7rnXx3n3vCx+8xjKhK6JAzlsElG/dPZvFe8Suw=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 4471,
+          "name": "OctreeNode",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "ModuleScript",
+          "sha256": "wmyDjaXPSN27hfHewbyK9Slh9jyj+KGoqix+7Hq37WA=",
+          "sourceReadable": true
+        },
+        {
+          "sourceBytes": 2535,
+          "name": "OctreeRegionUtils",
+          "importAuthorized": false,
+          "signals": [],
+          "class": "ModuleScript",
+          "sha256": "tAWS8zcwyveYhLlSVB2kgI6JpvXFiSpgQ9alL5QjkO4=",
+          "sourceReadable": true
+        }
+      ],
+      "codeReviewTruncated": false,
+      "modelCandidates": []
+    }
+  ]
+}

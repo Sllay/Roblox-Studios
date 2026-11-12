@@ -69,3 +69,5 @@
 - [ ] P4 asset intake: first run 43172677254 loaded three assets in staging v10; Particle effects has 235 emitters and was truncated at 128, stopping the old shell loop. Punishment stick contains 5 scripts; Rock contains a MeshPart and no scripts. Revised intake keeps bounded partial results, continues other batches unless cloud/system failure, records static policy and source-risk signals without execution. No imports authorized.
 
 - [x] P4 intake audit resumed successfully through 7/12 assets in run 43179500783: static Rock pass, other packs require individual component/code/PBR review. HTTP 429 stopped at eighth asset; evidence recorded in games/maps/mapa-principal/game/assets/audits/p4-intake-43179500783.json. Resume mode skips observed assets; no Place writes or import approvals.
+
+- [x] P4: 12/12 acquired assets loaded and inventoried in staging v10 (runs 43179500783 and 43179707585). 20 scripts identified, none executed. Rock pack model detail truncated at 256/372; PBR, rights, per-component extraction and runtime approvals remain open. Evidence: game/assets/audits under mapa-principal. No Place writes.

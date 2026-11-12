@@ -238,8 +238,8 @@ local function inspectPack(root: Model)
     local result={schemaVersion=1, totalInstances=#all,totalModels=totalModels,
         scriptsInPack=scripts, inventoryTruncated=totalModels>#candidates,candidates=candidates}
     if cfg.components == true then
-        -- Detached mixed-content inventory. Never read Source, execute, parent or
-        -- require third-party code. Only bounded class counts and visual properties.
+        -- Detached mixed-content inventory. Read Source only for fingerprints and
+        -- heuristic signals; never execute, parent or require third-party code.
         local counts, components, codeRows = {}, {}, {}
         local totalComponents = 0
         for _, obj in all do
@@ -340,6 +340,23 @@ local function inspectPack(root: Model)
 end
 
 local model = loadAsset()
+if cfg.mode == "code_source_audit" then
+    -- Return sources only to trusted runner memory for compile/static analysis.
+    -- Runner must never log, upload, persist or execute these source strings.
+    local scripts = {}
+    local totalBytes = 0
+    for _,obj in model:GetDescendants() do
+        if obj:IsA("LuaSourceContainer") then
+            assert(#scripts<64,"Source audit script budget")
+            local source=obj.Source
+            totalBytes+=#source
+            assert(totalBytes<=160000,"Source audit byte budget")
+            table.insert(scripts,{name=obj.Name,class=obj.ClassName,selector=packPath(model,obj),source=source})
+        end
+    end
+    model:Destroy()
+    return output({scripts=scripts,codeExecuted=false})
+end
 if cfg.mode == "pack_inventory" then return inspectPack(model) end
 local report = audit(model)
 if cfg.mode == "audit" then
