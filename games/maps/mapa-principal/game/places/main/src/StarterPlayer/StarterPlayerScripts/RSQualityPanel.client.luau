@@ -56,7 +56,7 @@ local function terrainAt(p)
     local h=W:Raycast(p+Vector3.yAxis*12,-Vector3.yAxis*100,params)
     return h and h.Position.Y or nil
 end
-local roots={"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets","RSResourcesP45"}
+local roots={"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets","RSResourcesP45","RSVegetationS06"}
 local function scan(p)
     local counts={Stone=0,Stick=0,Tree=0,Bush=0,Rock=0};local partial=0
     local near={}
@@ -132,6 +132,7 @@ while gui.Parent do
     elseif active=="Vento" then
         add("Vento global: "..vec(W.GlobalWind));add("Elegíveis: "..attr(wind,"Eligible").." | ativos: "..attr(wind,"Active"))
         add("Árvores / arbustos: "..attr(wind,"ActiveTrees").." / "..attr(wind,"ActiveBushes"))
+        add("Rigged elegíveis / ativos: "..attr(wind,"RiggedEligible").." / "..attr(wind,"RiggedActive"))
         add("Ângulo pico: "..attr(wind,"PeakAngleDegrees").." | custo ms: "..attr(wind,"MeanUpdateMs"))
         add("Rejeitados: "..attr(wind,"FlagRejected").." | não mapeados: "..attr(wind,"Unmapped"))
         add(describe(near.Tree));selected=near.Tree and near.Tree.model

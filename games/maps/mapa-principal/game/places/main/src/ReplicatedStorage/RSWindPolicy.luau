@@ -22,6 +22,12 @@ function W.angle(time: number, phase: number, strength: number, distance: number
     local maxAngle = if bush then 1.5 else 3.0
     return math.rad(maxAngle)*math.clamp(strength/8,0,1)*gust*ripple*W.fade(distance)
 end
+-- Stronger slow macro motion; old angle remains the tested compatibility policy.
+function W.macroAngle(time:number,phase:number,strength:number,distance:number,bush:boolean):number
+    local gust=.8+.2*math.sin(time*.42+phase*.37)
+    local ripple=.6+.4*math.sin(time*.8+phase)
+    return math.rad(if bush then 2.3 else 4.5)*math.clamp(strength/8,0,1)*gust*ripple*W.fade(distance)
+end
 function W.phase(x: number,z: number): number
     return (x*0.071+z*0.113) % (2*math.pi)
 end

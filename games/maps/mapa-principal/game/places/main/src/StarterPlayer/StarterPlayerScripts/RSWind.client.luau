@@ -7,18 +7,24 @@ local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local module=ReplicatedStorage:WaitForChild("RSWindPolicy",15)
 if not module or not module:IsA("ModuleScript") then return end
 local Policy=require(module)
+local branchModule=ReplicatedStorage:WaitForChild("RSBranchWind",15)
+local Branch=if branchModule and branchModule:IsA("ModuleScript") then require(branchModule) else nil
 local player=Players.LocalPlayer
-local roots={RSSceneBuilder="RSSceneBuilderV1",RSWorldVegetation="RSWorldV1",RSEnvironmentP4="RSEnvironmentP4V1",RSEnvironmentP4Detail="RSEnvironmentP4DetailV1",RSManagedAssets="RobloxStudiosStaticV1"}
+local roots={RSSceneBuilder="RSSceneBuilderV1",RSWorldVegetation="RSWorldV1",RSEnvironmentP4="RSEnvironmentP4V1",RSEnvironmentP4Detail="RSEnvironmentP4DetailV1",RSManagedAssets="RobloxStudiosStaticV1",RSVegetationS06="RSVegetationS06V1"}
 local diagnostic=Instance.new("Folder")
 diagnostic.Name="RSWindDiagnostics";diagnostic.Parent=player
-type Entry={part:MeshPart,rest:CFrame,pivot:Vector3,phase:number,bush:boolean,active:boolean}
+type Joint={bone:Bone,height:number,phase:number}
+type Entry={part:MeshPart,rest:CFrame,pivot:Vector3,phase:number,bush:boolean,active:boolean,joints:{Joint}}
 local entries:{[MeshPart]:Entry}={}
 local function eligible(part:MeshPart): boolean
     return part.Anchored and not part.CanCollide and not part.CanTouch and not part.CanQuery
 end
+local function resetJoints(e:Entry)
+    for _,j in e.joints do if j.bone.Parent then j.bone.Transform=CFrame.identity end end
+end
 local function scan()
     local seen:{[MeshPart]:boolean}={}
-    local scanned,flagRejected,unmapped=0,0,0
+    local scanned,flagRejected,unmapped,rigged=0,0,0,0
     for name,owner in roots do
         local root=Workspace:FindFirstChild(name)
         if not root or root:GetAttribute("RSOwner")~=owner then continue end
@@ -45,13 +51,25 @@ local function scan()
                 if not eligible(obj) then flagRejected+=1;continue end
                 -- Only audited per-species canopy names + authored foliage material.
                 -- Unknown mesh layouts fail closed; never infer from height alone.
-                if not Policy.foliage(asset,species,obj.Name,obj.Material.Name,obj.MeshId) then unmapped+=1;continue end
+                local authored=model:GetAttribute("RSWindRigVersion")==1 and obj:GetAttribute("RSWindRigRole")=="Canopy"
+                if not authored and not Policy.foliage(asset,species,obj.Name,obj.Material.Name,obj.MeshId) then unmapped+=1;continue end
                 seen[obj]=true
                 if not entries[obj] then
                     local rest=obj.CFrame
+                    local joints:{Joint}={}
+                    if authored and Branch then
+                        for _,bone in obj:GetDescendants() do
+                            if bone:IsA("Bone") and (string.sub(bone.Name,1,6)=="Bough_" or bone.Name=="Crown") then
+                                local h=math.clamp((rest:PointToObjectSpace(bone.WorldPosition).Y/obj.Size.Y)+.5,0,1)
+                                table.insert(joints,{bone=bone,height=h,phase=Policy.phase(rest.Position.X,rest.Position.Z)+#joints*1.31})
+                            end
+                        end
+                        if #joints>Branch.maxBones then table.clear(joints) end
+                    end
                     entries[obj]={part=obj,rest=rest,pivot=rest.Position-Vector3.yAxis*(obj.Size.Y*0.34),
-                        phase=Policy.phase(rest.Position.X,rest.Position.Z),bush=bush,active=false}
+                        phase=Policy.phase(rest.Position.X,rest.Position.Z),bush=bush,active=false,joints=joints}
                 end
+                if #entries[obj].joints>0 then rigged+=1 end
             end
         end
     end
@@ -61,9 +79,11 @@ local function scan()
     diagnostic:SetAttribute("ScannedMeshParts",scanned)
     diagnostic:SetAttribute("FlagRejected",flagRejected)
     diagnostic:SetAttribute("Unmapped",unmapped)
+    diagnostic:SetAttribute("RiggedEligible",rigged)
     for part,e in entries do
         if not seen[part] then
             if e.active and part:IsDescendantOf(Workspace) and eligible(part) then part.CFrame=e.rest end
+            resetJoints(e)
             entries[part]=nil
         end
     end
@@ -100,12 +120,13 @@ end
 local scanElapsed=2
 local elapsed=0
 local diagnosticElapsed=0
+local branchElapsed=0
 local diagnosticPeak=0
 local diagnosticCost=0
 local diagnosticSamples=0
 local connection:RBXScriptConnection?
 connection=RunService.Heartbeat:Connect(function(dt)
-    scanElapsed+=dt;elapsed+=dt;diagnosticElapsed+=dt
+    scanElapsed+=dt;elapsed+=dt;diagnosticElapsed+=dt;branchElapsed+=dt
     if scanElapsed>=2 then scanElapsed=0;scan() end
     if elapsed<Policy.updateInterval then return end
     local started=os.clock()
@@ -134,10 +155,27 @@ connection=RunService.Heartbeat:Connect(function(dt)
     local now=Workspace:GetServerTimeNow()
     local axis=Vector3.yAxis:Cross(direction)
     local activeTrees,activeBushes=0,0
+    local branchCount=0
+    local branchUpdate=Branch~=nil and branchElapsed>=Branch.interval
+    if branchUpdate then branchElapsed=0 end
     if center then
         for i=1,math.min(#active,Policy.maxActive) do
             local e=active[i];selected[e.part]=true;e.active=true
-            local angle=Policy.angle(now,e.phase,strength,(e.rest.Position-center).Magnitude,e.bush)
+            local angle=Policy.macroAngle(now,e.phase,strength,(e.rest.Position-center).Magnitude,e.bush)
+            if Branch and #e.joints>0 then
+                if branchCount<Branch.maxActive then
+                    branchCount+=1
+                    if branchUpdate then
+                        local fade=Policy.fade((e.rest.Position-center).Magnitude)
+                        for _,j in e.joints do
+                            if j.bone.Parent then
+                                local localAxis=j.bone.WorldCFrame:VectorToObjectSpace(axis)
+                                j.bone.Transform=Branch.transform(localAxis,now,j.phase,j.height,strength,fade)
+                            end
+                        end
+                    end
+                else resetJoints(e) end
+            end
             diagnosticPeak=math.max(diagnosticPeak,math.deg(math.abs(angle)))
             if e.bush then activeBushes+=1 else activeTrees+=1 end
             local tilt=CFrame.fromAxisAngle(axis,angle)
@@ -148,6 +186,7 @@ connection=RunService.Heartbeat:Connect(function(dt)
     for part,e in entries do
         if e.active and not selected[part] then
             e.active=false
+            resetJoints(e)
             if part:IsDescendantOf(Workspace) and eligible(part) then
                 table.insert(parts,part);table.insert(frames,e.rest)
             end
@@ -158,6 +197,7 @@ connection=RunService.Heartbeat:Connect(function(dt)
     if diagnosticElapsed>=1 then
         diagnostic:SetAttribute("Active",math.min(#active,Policy.maxActive))
         diagnostic:SetAttribute("ActiveTrees",activeTrees)
+        diagnostic:SetAttribute("RiggedActive",branchCount)
         diagnostic:SetAttribute("ActiveBushes",activeBushes)
         diagnostic:SetAttribute("CandidatesInRange",#active)
         diagnostic:SetAttribute("WindStrength",strength)
@@ -182,6 +222,7 @@ script.Destroying:Connect(function()
     if connection then connection:Disconnect() end
     for part,e in entries do
         if e.active and part:IsDescendantOf(Workspace) and eligible(part) then part.CFrame=e.rest end
+        resetJoints(e)
     end
     folder:Destroy()
     diagnostic:Destroy()
