@@ -2,6 +2,7 @@
 local Players=game:GetService("Players")
 local RunService=game:GetService("RunService")
 local W=workspace
+local Policy=require(script.Parent:WaitForChild("RSGameplayPolicy"))
 local root=W:WaitForChild("RSCentralSpawns")
 local rng=Random.new()
 Players.CharacterAutoLoads=false
@@ -22,9 +23,9 @@ end
 local function valid(s)
     if not s:IsA("SpawnLocation") or not s.Enabled then return false end
     local p=s.Position
-    if p.X*p.X+p.Z*p.Z>108*108 then return false end
+    if not Policy.inRadius(p.X,p.Z,108) then return false end
     local h=ground(p.X,p.Z,p.Y+12)
-    if not h or h.Normal.Y<0.92 or math.abs(h.Position.Y-(p.Y-2))>3 then return false end
+    if not h or not Policy.supportValid(h.Position.Y,p.Y-2,h.Normal.Y,3,0.92) then return false end
     for _,o in {{3,0},{-3,0},{0,3},{0,-3}} do
         local q=ground(p.X+o[1],p.Z+o[2],p.Y+12)
         if not q or q.Normal.Y<0.88 or math.abs(q.Position.Y-h.Position.Y)>1.8 then return false end
@@ -45,7 +46,7 @@ local function choose(previous)
 end
 local function alive(character)
     local hum=character and character:FindFirstChildOfClass("Humanoid")
-    return hum and hum.Health>0 and hum:GetState()~=Enum.HumanoidStateType.Dead
+    return Policy.humanoidAlive(hum)
 end
 local function recover(player,character)
     -- Never move a dead character or its root. Native death proceeds normally.
@@ -168,7 +169,7 @@ while true do
         local c=p.Character
         if alive(c) then
             local hrp=c:FindFirstChild("HumanoidRootPart")
-            if hrp and (hrp.Position.Y < -40 or math.abs(hrp.Position.X)>384 or math.abs(hrp.Position.Z)>384) then recover(p,c) end
+            if hrp and not Policy.inWorld(hrp.Position.X,hrp.Position.Y,hrp.Position.Z,384,-40) then recover(p,c) end
         end
     end
 end

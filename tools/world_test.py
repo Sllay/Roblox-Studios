@@ -40,7 +40,7 @@ def main():
     games,targets=load_all();t=resolve(games,targets,"mapa-principal","main","staging")
     require((t["universeId"],t["placeId"])==("10769712441","93428341652658"),"Wrong target")
     key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"];out=ROOT/"dist/world-test";out.mkdir(parents=True,exist_ok=True)
-    opts=dict(plan=p,environment="staging",runtimeSource=(SRC/"ServerScriptService/RSCentralSpawnSafety.server.luau").read_text(),clientSource=(SRC/"StarterPlayer/StarterPlayerScripts/RSQualityPanel.client.luau").read_text())
+    opts=dict(plan=p,environment="staging",runtimeSource=(SRC/"ServerScriptService/RSCentralSpawnSafety.server.luau").read_text(),clientSource=(SRC/"StarterPlayer/StarterPlayerScripts/RSQualityPanel.client.luau").read_text(),policySource=(SRC/"ServerScriptService/RSGameplayPolicy.luau").read_text())
     if args.mode in ("preview","apply"):
         base=require_current(t,key,7)
         require(base["stateDigest"]==p["baselineDigest"],"World baseline changed")
@@ -54,7 +54,7 @@ def main():
         require(prior==r,"Preview changed")
         result=task(t,key,source(),mode="apply",expectedPlants=r["plants"],expectedColliders=r["colliders"],expectedSpawns=len(r["spawns"]),expectedProps=r["props"],**opts)
         write(out/"save.json",result)
-        require(result.get("saved") is True,"Save unconfirmed")
+        require(result.get("saved") is True and result["paintedVoxels"]>0 and result["paintGeometryChanges"]==result["paintLiquidChanges"]==0,"Save or paint invariants unconfirmed")
         write(out/"receipt.json",{"result":result,"previewDigest":sha(r),"baselineVersion":7})
     else:
         require(args.receipt is not None,"Receipt required");result=read(args.receipt)["result"]

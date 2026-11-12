@@ -30,6 +30,10 @@ jobs:
         run: bash tools/install-luau.sh
       - name: Compile-check all Luau sources
         run: python tools/script_quality.py
+      - name: Install pinned Roblox Luau LSP
+        run: bash tools/install-luau-lsp.sh
+      - name: Quality Gate 2.0 typed gameplay logic
+        run: python tools/quality_gate_v2.py
       - name: Negative gate test - bad syntax must fail
         run: |
           BAD_FILE="$(mktemp --suffix=.luau)"

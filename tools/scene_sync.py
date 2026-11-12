@@ -21,7 +21,7 @@ def regions(t):
     path=ROOT/"games/maps"/t["game"]/"docs/sync"/t["place"]/"regions.json"
     if not path.exists():return []
     rows=read(path)
-    require(isinstance(rows,list) and len(rows)<=16,"Region limit")
+    require(isinstance(rows,list) and len(rows)<=32,"Region limit")
     for r in rows:
         b=r["bounds"];require(len(b)==6 and all(type(x) is int and x%4==0 for x in b),"Region alignment")
         dx,dy,dz=[b[i+3]-b[i] for i in range(3)]

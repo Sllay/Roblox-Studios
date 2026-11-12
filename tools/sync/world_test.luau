@@ -30,6 +30,40 @@ for tz=-2,2 do for tx=-2,2 do
     local x,z=tx*size-size/2,tz*size-size/2
     table.insert(tiles,{id=string.format("chunk-%d-%d",tx,tz),tx=tx,tz=tz,bounds={x,ymin,z,x+size,ymax,z+size},playable=math.abs(tx)<=1 and math.abs(tz)<=1})
 end end
+local function same(a,b)
+    if typeof(a)~=typeof(b) then return false end
+    if typeof(a)=="number" then return math.abs(a-b)<0.035 end
+    if typeof(a)~="table" then return a==b end
+    for k,v in a do if not same(v,b[k]) then return false end end
+    for k in b do if a[k]==nil then return false end end
+    return true
+end
+local function shape(m)
+    local rows={}
+    local scale=m:GetScale()
+    for _,p in m:GetDescendants() do
+        if p:IsA("MeshPart") then
+            local relative={m:GetPivot():ToObjectSpace(p.CFrame):GetComponents()}
+            for i=1,3 do relative[i]/=scale end
+            local surfaces={}
+            for _,c in p:GetChildren() do
+                if c:IsA("SurfaceAppearance") then
+                    local a={name=c.Name,color=rgb(c.Color),alpha=c.AlphaMode.Name,emissive=c.EmissiveStrength,maps={}}
+                    for _,k in {"ColorMapContent","NormalMapContent","RoughnessMapContent","MetalnessMapContent","EmissiveMaskContent"} do
+                        local ok,v=pcall(function() return c[k] end)
+                        a.maps[k]=if ok then {source=v.SourceType.Name,uri=v.Uri or ""} else {unreadable=true}
+                    end
+                    table.insert(surfaces,a)
+                end
+            end
+            table.sort(surfaces,function(a,b) return a.name<b.name end)
+            table.insert(rows,{name=p.Name,mesh=p.MeshId,texture=p.TextureID,color=rgb(p.Color),material=p.Material.Name,relative=relative,size=vec(p.Size/scale),surfaces=surfaces})
+        end
+    end
+    table.sort(rows,function(a,b) return a.name<b.name end)
+    assert(#rows==2,"Unexpected mesh count")
+    return rows
+end
 local function verifyWorld()
     local observed={}
     for _,tile in tiles do
@@ -43,7 +77,8 @@ local function verifyWorld()
     local scriptObj=SSS:FindFirstChild("RSCentralSpawnSafety")
     local ui=game:GetService("StarterPlayer"):WaitForChild("StarterPlayerScripts"):FindFirstChild("RSQualityPanel")
     assert(root and root:GetAttribute("RSOwner")=="RSWorldV1" and sp and #sp:GetChildren()==cfg.expectedSpawns,"World roots missing")
-    assert(scriptObj and scriptObj.Source==cfg.runtimeSource and ui and ui.Source==cfg.clientSource,"Runtime source mismatch")
+    local policy=SSS:FindFirstChild("RSGameplayPolicy")
+    assert(scriptObj and scriptObj.Source==cfg.runtimeSource and ui and ui.Source==cfg.clientSource and policy and policy:IsA("ModuleScript") and policy.Source==cfg.policySource,"Runtime source mismatch")
     local clouds=T:FindFirstChild("RSWorldClouds")
     assert(clouds and clouds:IsA("Clouds") and clouds.Enabled,"Clouds missing")
     local models=root:FindFirstChild("Models");local colliders=root:FindFirstChild("Collisions")
@@ -55,7 +90,7 @@ local function verifyWorld()
         assert(math.abs(m:GetScale()-r.scale)<0.001 and math.abs(m:GetAttribute("RSBuriedDepth")-r.burial)<0.01,"Prop profile mismatch")
         local mesh=0
         for _,p in m:GetDescendants() do if p:IsA("MeshPart") then mesh+=1;assert(p.Anchored and not p.CanCollide and not p.CanTouch,"Visual physics changed") end end
-        assert(mesh==2,"Unexpected model geometry")
+        assert(mesh==2 and same(shape(m),r.shape),"Model geometry/PBR mismatch")
         if r.collider then
             local folder=if r.group==2 then W.RSSceneBuilder.Collisions else colliders
             local c=folder:FindFirstChild(r.name)
@@ -232,7 +267,7 @@ end
 local function addPlacement(m,group,x,z,yaw,burial,radius,collider)
     local cf,h=supportTarget(m,x,z,yaw,burial,radius,heightAt)
     local pos=vec(cf.Position)
-    local row={name=m.Name,group=group,position=pos,yaw=yaw,scale=m:GetScale(),burial=burial,radius=radius,ground=h}
+    local row={name=m.Name,group=group,position=pos,yaw=yaw,scale=m:GetScale(),burial=burial,radius=radius,ground=h,shape=shape(m)}
     if collider then row.collider=vec(collider.Position+cf.Position-m:GetPivot().Position) end
     table.insert(props,row);table.insert(occupied,{x=x,z=z})
     return row
@@ -302,7 +337,7 @@ for _,tile in tiles do
             c.CFrame=CFrame.new(x,h+4*scale,z)*CFrame.Angles(0,0,math.pi/2);c.Anchored=true;c.Transparency=1;c.CanCollide=true;c.CanTouch=false;c.CastShadow=false;c.Parent=colliders
             c:SetAttribute("RSOwner","RSWorldV1");colliderCount+=1
         end
-        local row={name=m.Name,group=3,position=vec(cf.Position),yaw=yaw,scale=scale,burial=burial,radius=2*scale,ground=h}
+        local row={name=m.Name,group=3,position=vec(cf.Position),yaw=yaw,scale=scale,burial=burial,radius=2*scale,ground=h,shape=shape(m)}
         if c then row.collider=vec(c.Position) end
         table.insert(props,row);table.insert(occupied,{x=x,z=z})
         assert(#props<=plan.maxModels,"Vegetation budget")
@@ -365,12 +400,40 @@ for i,row in props do
 end
 local hashes={}
 local maxError=0
+local paintedVoxels=0
+local paintTiles=0
 for _,tile in tiles do
     local d=compileTile(tile)
     local b=tile.bounds
     local r=Region3.new(Vector3.new(b[1],b[2],b[3]),Vector3.new(b[4],b[5],b[6]))
-    T:WriteVoxelChannels(r,4,d)
-    local a=readRegion(b)
+    -- Sculpt continuous solid/liquid geometry first. For the new road
+    -- footprint, start with Grass then apply the material-only paint.
+    local initialMat={}
+    local changed=0
+    for x=1,64 do
+        initialMat[x]={}
+        for y=1,ny do
+            initialMat[x][y]={}
+            for z=1,64 do
+                local c=cell(b[1]+(x-0.5)*4,b[3]+(z-0.5)*4)
+                local mat=d.SolidMaterial[x][y][z]
+                if c.mat==Enum.Material.Ground and (not c.old or c.old.material~=Enum.Material.Ground) and mat==Enum.Material.Ground and ymin+y*4>=c.h-8 and d.SolidOccupancy[x][y][z]>0.02 then
+                    initialMat[x][y][z]=Enum.Material.Grass;changed+=1
+                else initialMat[x][y][z]=mat end
+            end
+        end
+    end
+    T:WriteVoxelChannels(r,4,{SolidMaterial=initialMat,SolidOccupancy=d.SolidOccupancy,LiquidOccupancy=d.LiquidOccupancy})
+    local beforePaint=readRegion(b)
+    local a=beforePaint
+    if changed>0 then
+        T:WriteVoxelChannels(r,4,{SolidMaterial=d.SolidMaterial})
+        a=readRegion(b)
+        for x=1,64 do for y=1,ny do for z=1,64 do
+            assert(a.SolidOccupancy[x][y][z]==beforePaint.SolidOccupancy[x][y][z] and a.LiquidOccupancy[x][y][z]==beforePaint.LiquidOccupancy[x][y][z],"Paint changed geometry or liquid")
+        end end end
+        paintedVoxels+=changed;paintTiles+=1
+    end
     for x=1,64 do for y=1,ny do for z=1,64 do
         maxError=math.max(maxError,math.abs(a.SolidOccupancy[x][y][z]-d.SolidOccupancy[x][y][z]),math.abs(a.LiquidOccupancy[x][y][z]-d.LiquidOccupancy[x][y][z]))
         if d.SolidOccupancy[x][y][z]>0.02 then assert(a.SolidMaterial[x][y][z]==d.SolidMaterial[x][y][z],"Material mismatch") end
@@ -378,6 +441,7 @@ for _,tile in tiles do
     assert(maxError<=0.02,"Voxel quantization error")
     hashes[tile.id]=digest(a,64,ny,64)
 end
+assert(paintedVoxels>0,"No paint performed")
 -- Reanchor old props, preserving geometry, rotation and scale. Colliders follow.
 for _,row in props do
     if row.group<3 then
@@ -385,6 +449,7 @@ for _,row in props do
         local c=if row.group==2 then oldForest.Collisions:FindFirstChild(row.name) else nil
         local cf=CFrame.new(table.unpack(row.position))*CFrame.Angles(0,math.rad(row.yaw),0)
         moveSupported(m,c,cf,row.ground,row.burial,row.radius)
+        assert(same(shape(m),row.shape),"Reanchoring changed geometry")
     end
 end
 newRoot.Parent=W
@@ -403,6 +468,8 @@ root.Parent=W
 local sc=SSS:FindFirstChild("RSCentralSpawnSafety")
 assert(sc and sc:GetAttribute("RSOwner")=="RSSceneSyncV1","Old spawn script owner")
 sc.Source=cfg.runtimeSource
+assert(not SSS:FindFirstChild("RSGameplayPolicy"),"Policy collision")
+local policy=Instance.new("ModuleScript");policy.Name="RSGameplayPolicy";policy.Source=cfg.policySource;policy.Parent=SSS
 local sps=game:GetService("StarterPlayer"):WaitForChild("StarterPlayerScripts")
 assert(not sps:FindFirstChild("RSQualityPanel"),"Quality panel collision")
 local ui=Instance.new("LocalScript");ui.Name="RSQualityPanel";ui.Source=cfg.clientSource;ui.Parent=sps
@@ -415,4 +482,4 @@ if dof then dof.Enabled=false end
 T.WaterColor=Color3.fromRGB(55,126,155);T.WaterTransparency=0.3;T.WaterWaveSize=0.12;T.WaterWaveSpeed=8
 -- Natural distant mountains + bounded gameplay. No floor plate/void shortcut.
 game:GetService("AssetService"):SavePlaceAsync({SaveWithoutPublish=false})
-return output({saved=true,tiles=hashes,plants=newCount,horizonPlants=horizonCount,colliders=colliderCount,spawns=#spawns,props=props,maxError=maxError,counts=counts})
+return output({saved=true,tiles=hashes,plants=newCount,horizonPlants=horizonCount,colliders=colliderCount,spawns=#spawns,props=props,maxError=maxError,counts=counts,paintedVoxels=paintedVoxels,paintTiles=paintTiles,paintGeometryChanges=0,paintLiquidChanges=0})

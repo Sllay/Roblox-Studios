@@ -15,6 +15,9 @@ if [[ -z "$COMPILER" ]]; then
   exit 1
 fi
 chmod +x "$COMPILER"
+for bin in luau luau-analyze; do
+  if [[ -f "$(dirname "$COMPILER")/$bin" ]]; then chmod +x "$(dirname "$COMPILER")/$bin"; fi
+done
 "$COMPILER" --help >/dev/null
 BIN_DIR="$(dirname "$COMPILER")"
 if [[ -v GITHUB_PATH ]]; then
