@@ -57,12 +57,18 @@ local boughs=0
 for _,n in names do if string.sub(n,1,6)=="Bough_" then boughs+=1 end end
 local mesh=m:FindFirstChildWhichIsA("MeshPart",true)
 local loaded=false
+local editable={status="not_tested"}
 if mesh then
-    local ok=pcall(function()game:GetService("ContentProvider"):PreloadAsync({mesh.MeshId},function(_,status)loaded=status==Enum.AssetFetchStatus.Success end)end)
+    local ok=pcall(function()game:GetService("ContentProvider"):PreloadAsync({mesh},function(uri,status)if uri==mesh.MeshId then loaded=status==Enum.AssetFetchStatus.Success end end)end)
     loaded=ok and loaded
+    local editOK,em=pcall(function()return A:CreateEditableMeshAsync(mesh.MeshContent,{FixedSize=true})end)
+    if editOK and em then
+        local vertices=em:GetVertices();editable={status="editable",vertices=#vertices}
+        em:Destroy()
+    else editable={status="denied_or_unavailable",reason=tostring(em):sub(1,250)} end
 end
 m:Destroy()
-return syncResult({assetId=cfg.assetId,meshes=meshes,bones=bones,boughs=boughs,scripts=scripts,meshLoaded=loaded,size={size.X,size.Y,size.Z},noPlaceWrites=true,clientRenderVerified=false})
+return syncResult({assetId=cfg.assetId,meshes=meshes,bones=bones,boughs=boughs,scripts=scripts,meshLoaded=loaded,editable=editable,size={size.X,size.Y,size.Z},noPlaceWrites=true,clientRenderVerified=false})
 '''
             try:
                 proof=task(target,key,"do\n"+src+"\nend",read_version=16,compile_source=True,assetId=aid)

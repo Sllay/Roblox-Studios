@@ -1,0 +1,63 @@
+name: S06.4 authorized permission retry and vertex probe
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s06-4-permission-retry.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - name: Recheck actual canopy permissions and vertex API
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/canopy_capability_probe.py --output dist/s06-4-retry
+      - name: Preserve probe and reserve one authorized original upload
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          from pathlib import Path
+          import shutil
+          from scene_sync import read,write
+          d=Path("games/maps/mapa-principal/docs/s06/wind-v16");out=d/"permission-retry";out.mkdir(exist_ok=True)
+          previous=read(d/"upload-receipt.json");new=read(Path("dist/s06-4-retry/capability.json"))
+          assert previous["httpStatus"]==403 and previous["status"]=="denied" and not previous.get("assetId")
+          assert new["loadedVersion"]==16 and new["noPlaceWrites"] and len(new["canopies"])==8
+          assert not (out/"intent.json").exists() and not (out/"upload-receipt.json").exists()
+          shutil.copyfile("dist/s06-4-retry/capability.json",out/"capability.json")
+          write(out/"intent.json",{"priorRun":43282633795,"userAuthorized":True,"permissionsEdited":True,"scope":"one original GLB only; no Place save","retryAllowed":False})
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/s06/wind-v16/permission-retry
+          git commit -m "evidence(s06.4): renewed capability probe and single upload intent"
+          git push origin HEAD:main
+      - name: Submit original prototype once using updated key
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/assets/upload_canopy.py --rig games/maps/mapa-principal/docs/s06/wind-v16/pine-canopy.glb --output dist/s06-4-retry
+      - name: Preserve new receipt without overwriting original denial
+        if: always()
+        run: |
+          if test -f dist/s06-4-retry/upload-receipt.json; then
+            cp dist/s06-4-retry/upload-receipt.json games/maps/mapa-principal/docs/s06/wind-v16/permission-retry/
+            git add games/maps/mapa-principal/docs/s06/wind-v16/permission-retry
+            git commit -m "evidence(s06.4): authorized permission retry outcome"
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s06-4-permission-retry
+          path: dist/s06-4-retry/
+          if-no-files-found: warn
