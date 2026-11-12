@@ -1,0 +1,82 @@
+name: S05 reviewed coupled staging publication
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s05-publish.trigger']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: bash tools/install-luau-lsp.sh
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/script_quality.py
+      - run: python tools/quality_gate_v2.py
+      - name: Read exact review authorization
+        id: review
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import os
+          from pathlib import Path
+          from scene_sync import read
+          t=read(Path("games/maps/mapa-principal/docs/s05-publish.trigger"))
+          assert t["environment"]=="staging" and t["expectedVersion"]==14 and t["authorized"] is True
+          assert type(t["previewRun"]) is int and t["previewRun"]>0
+          with open(os.environ["GITHUB_OUTPUT"],"a") as f:f.write("run="+str(t["previewRun"])+"\n")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: s05-reviewed-preview
+          run-id: ${{ steps.review.outputs.run }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s05-review
+      - name: Persist reviewed preimages before any save
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import shutil
+          from pathlib import Path
+          from scene_sync import read,sha
+          from p45_transaction import check_backups
+          root=Path("games/maps/mapa-principal");src=Path("dist/s05-review");dest=root/"docs/spatial/v14/s05"
+          dest.mkdir(parents=True,exist_ok=True)
+          m=read(src/"manifest.json");t=read(root/"docs/s05-publish.trigger");b=read(src/"preimages.json");expected=read(src/"expected.json")
+          assert m["isolatedInverseVerified"] is True and m["planDigest"]==t["planDigest"] and m["sourceSha256"]==t["sourceSha256"]
+          assert m["backupDigest"]==sha(b) and m["expectedDigest"]==sha(expected["records"])
+          check_backups(b)
+          for name in ("manifest.json","preimages.json"):
+              shutil.copyfile(src/name,dest/name)
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/spatial/v14/s05
+          git commit -m "evidence(s05): preserve reviewed preimages before staging save"
+          git push origin HEAD:main
+      - name: Apply once and independently verify
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/p45_transaction.py apply --reviewed dist/s05-review --confirm-staging --output dist/s05-apply
+      - name: Commit verified observed state and receipt
+        run: |
+          cp dist/s05-apply/receipt.json games/maps/mapa-principal/docs/spatial/v14/s05/publication-receipt.json
+          cp dist/s05-apply/verification.json games/maps/mapa-principal/docs/spatial/v14/s05/persisted-verification.json
+          git add games/maps/mapa-principal/docs/sync/main/staging.json games/maps/mapa-principal/docs/sync/main/staging.summary.json games/maps/mapa-principal/docs/spatial/v14/s05
+          git commit -m "sync: S05 verified integrated P4.5 staging"
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s05-publication
+          path: dist/s05-apply/
+          if-no-files-found: warn
