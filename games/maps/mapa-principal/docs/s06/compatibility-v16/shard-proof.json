@@ -1,0 +1,121 @@
+{
+  "batchCalls": 4,
+  "defaultForensics": {
+    "allIdentical": true,
+    "deletionAuthorized": false,
+    "identicalGroups": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ]
+    ],
+    "note": "Observed equality in scoped record coverage only; does not prove safe deletion or source of cloning.",
+    "rootCount": 16,
+    "subtreeSizes": {
+      "1": 162,
+      "10": 162,
+      "11": 162,
+      "12": 162,
+      "13": 162,
+      "14": 162,
+      "15": 162,
+      "16": 162,
+      "2": 162,
+      "3": 162,
+      "4": 162,
+      "5": 162,
+      "6": 162,
+      "7": 162,
+      "8": 162,
+      "9": 162
+    }
+  },
+  "loadedVersion": 16,
+  "noPlaceWrites": true,
+  "pages": [
+    {
+      "count": 1572,
+      "identityDigest": "firDY6KWGC98A7tNusZ7UXhGgVvzSE/6QzBD2Ku+PXk=",
+      "pages": 4,
+      "service": "Workspace"
+    },
+    {
+      "count": 2,
+      "identityDigest": "nXw7OEyMe6ehTK5kRP4crp6TAlz31OIl3e7G8wU1DgA=",
+      "pages": 1,
+      "service": "ReplicatedStorage"
+    },
+    {
+      "count": 6,
+      "identityDigest": "g9LiMTQuCx+zSKwJVN+tZE0eGemTKcH/Zp5KqqMN23Y=",
+      "pages": 1,
+      "service": "ServerScriptService"
+    },
+    {
+      "count": 28,
+      "identityDigest": "JJ81T62bg3kgqgz9uIHEOrFCCaZ8aLkIwbmPuLnAsdI=",
+      "pages": 1,
+      "service": "ServerStorage"
+    },
+    {
+      "count": 2615,
+      "identityDigest": "VuMp40p5n96qbklDtlQJOWJcSBJDCW+li4vXIdc2rxc=",
+      "pages": 7,
+      "service": "StarterPlayer"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "StarterGui"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "StarterPack"
+    },
+    {
+      "count": 5,
+      "identityDigest": "kdWgiMYhmRKvXs3HGndX4O6NOaikNaN7zt6nWULQ8/I=",
+      "pages": 1,
+      "service": "Lighting"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "SoundService"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "Teams"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "ReplicatedFirst"
+    }
+  ],
+  "parityVerified": true,
+  "stateDigest": "54d6ed314ea37cec189e57ff499172af6fd1c117ed852e2608301ff6007bc6a5",
+  "total": 4228,
+  "writerLimitUnchanged": true
+}
