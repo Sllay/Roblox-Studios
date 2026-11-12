@@ -1,4 +1,4 @@
-name: S06.3 resource visibility and reversible material preview
+name: S06.3 resource visibility and reversible material preview v2
 on:
   push:
     branches: [main]

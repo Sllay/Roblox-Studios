@@ -18,7 +18,6 @@ for _,patch in cfg.patches do
         assert(math.abs(-32+(top-1+data.SolidOccupancy[1][top][1])*4-cell.height)<.001,"Surface height")
         -- Paint top and the immediately underlying grass voxel if present,
         -- preserving all occupancies; no carving or fill.
-        local old=table.clone(data.SolidMaterial[1])
         local changes=0
         for y=math.max(1,top-1),top do
             if data.SolidMaterial[1][y][1]==Enum.Material.Grass then data.SolidMaterial[1][y][1]=Enum.Material.Ground;changes+=1 end
@@ -43,7 +42,7 @@ assert(changed==9,"Expected 9 affected tiles")
 for _,r in originals do
     r.data.SolidMaterial[1][r.top][1]=r.oldTop
     if r.oldBelow then r.data.SolidMaterial[1][r.top-1][1]=r.oldBelow end
-    T:WriteVoxelChannels(r.region,4,r.data)
+    T:WriteVoxelChannels(r.region,4,{SolidMaterial=r.data.SolidMaterial,SolidOccupancy=r.data.SolidOccupancy,LiquidOccupancy=r.data.LiquidOccupancy})
 end
 local restored=terrainState()
 for i,t in restored do assert(t.digest==before[i].digest,"Paint inverse") end
