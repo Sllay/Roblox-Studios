@@ -1,0 +1,51 @@
+name: S07 full population contact
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/s07-population.yml', 'tools/s07_population_probe.py']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        tile: [chunk-0-0, chunk-0-1, chunk-0-2, chunk-1-0, chunk-1-1, chunk-1-2, chunk-2-0, chunk-2-1, chunk-2-2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: python -m unittest discover -s tests -p test_prop_framework.py -v
+      - run: bash tools/install-luau.sh
+      - name: Restore approved v18 plan
+        uses: actions/download-artifact@v4
+        with:
+          name: s07-prop-preview
+          run-id: 43316861614
+          github-token: ${{ github.token }}
+          path: dist/s07/
+      - name: Plan on verified v18 terrain
+        if: ${{ hashFiles('dist/s07/plan.json') == '' }}
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s07_prop_preview.py
+      - name: Native mesh and slope probe
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s07_population_probe.py ${{ matrix.tile }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s07-population-${{ matrix.tile }}
+          path: dist/s07/population-*.json
+          if-no-files-found: warn
