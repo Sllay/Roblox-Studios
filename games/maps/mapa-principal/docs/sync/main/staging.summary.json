@@ -1,0 +1,96 @@
+{
+  "classes": {
+    "Atmosphere": 1,
+    "BloomEffect": 1,
+    "Camera": 1,
+    "Decal": 1,
+    "DepthOfFieldEffect": 1,
+    "Folder": 13,
+    "InputAction": 210,
+    "InputBinding": 490,
+    "InputContext": 28,
+    "LocalScript": 1,
+    "MeshPart": 66,
+    "Model": 33,
+    "ModuleScript": 378,
+    "Part": 21,
+    "Script": 30,
+    "Sky": 1,
+    "SpawnLocation": 10,
+    "StarterCharacterScripts": 1,
+    "StarterPlayerScripts": 1,
+    "SunRaysEffect": 1,
+    "SurfaceAppearance": 66,
+    "Terrain": 1,
+    "Texture": 1
+  },
+  "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
+  "loadedVersion": 7,
+  "placeId": "93428341652658",
+  "schemaVersion": 1,
+  "stateDigest": "bd0d2b06ba6dab8420b7f30dd86042cff7ae8ffd2f39ec0aefcceca5b545f497",
+  "terrain": {
+    "terrain:center-extension": {
+      "bounds": [
+        -352,
+        -16,
+        -128,
+        96,
+        64,
+        128
+      ],
+      "digest": "GG2GC5t6nlcz+1ZqmKSWlKxq8k0yVTNZgaBzVtwlYak=",
+      "id": "center-extension",
+      "solidVoxels": 53841,
+      "waterVoxels": 0
+    },
+    "terrain:pilot-valley": {
+      "bounds": [
+        96,
+        0,
+        -128,
+        352,
+        64,
+        128
+      ],
+      "digest": "+9jG2LoEvoHDF4Ux6xX9R5w77c96xo21r22RIJsp5Bk=",
+      "id": "pilot-valley",
+      "solidVoxels": 21217,
+      "waterVoxels": 324
+    }
+  },
+  "total": 1357,
+  "universeId": "10769712441",
+  "workspaceRoots": [
+    {
+      "class": "Camera",
+      "key": "path:[\"Workspace\",[{\"class\":\"Camera\",\"name\":\"Camera\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "Camera"
+    },
+    {
+      "class": "Terrain",
+      "key": "path:[\"Workspace\",[{\"class\":\"Terrain\",\"name\":\"Terrain\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "Terrain"
+    },
+    {
+      "class": "Folder",
+      "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSManagedAssets\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "RSManagedAssets"
+    },
+    {
+      "class": "Folder",
+      "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSSceneBuilder\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "RSSceneBuilder"
+    },
+    {
+      "class": "Folder",
+      "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSCentralSpawns\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "RSCentralSpawns"
+    }
+  ]
+}
