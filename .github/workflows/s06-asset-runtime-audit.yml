@@ -1,4 +1,4 @@
-name: S06.5 installed asset compatibility audit
+name: S06.5 installed asset compatibility audit v2
 on:
   push:
     branches: [main]

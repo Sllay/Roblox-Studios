@@ -1,7 +1,7 @@
 -- Audit only installed managed visuals. No pack scripts executed.
 local CP=game:GetService("ContentProvider")
 local roots={"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets","RSResourcesP45"}
-local deps={};local counts={};local issues={};local total=0
+local deps={};local representatives={};local counts={};local issues={};local total=0
 local function add(id,asset,role)
     if id=="" then return end
     assert(string.match(id,"^rbxassetid://%d+$"),"Unexpected content URI")
@@ -23,6 +23,7 @@ for _,name in roots do
             if o:IsA("MeshPart") then
                 meshes+=1
                 add(o.MeshId,asset,"mesh")
+                representatives[o.MeshId]=o
                 add(o.TextureID,asset,"texture")
             elseif o:IsA("SurfaceAppearance") then
                 for _,prop in {"ColorMapContent","NormalMapContent","RoughnessMapContent","MetalnessMapContent","EmissiveMaskContent"} do
@@ -46,8 +47,19 @@ for _,id in uris do
         CP:PreloadAsync({id},function(_,status) callback=status.Name end)
     end)
     local statusOK,status=pcall(function()return CP:GetAssetFetchStatus(id).Name end)
-    row.preload=if ok then callback else "error"
-    row.fetch=if statusOK then status else "unavailable"
+    row.uriPreload=if ok then callback else "error"
+    row.uriFetch=if statusOK then status else "unavailable"
+    row.preload=row.uriPreload;row.fetch=row.uriFetch
+    if representatives[id] then
+        local statuses={}
+        local meshOK,meshErr=pcall(function()
+            CP:PreloadAsync({representatives[id]},function(uri,status0) statuses[uri]=status0.Name end)
+        end)
+        row.instancePreload=if meshOK then statuses[id] or "not_called" else "error"
+        row.preload=row.instancePreload
+        row.fetch=if row.instancePreload=="Success" then "Success" else row.uriFetch
+        if not meshOK then row.instanceError=tostring(meshErr):sub(1,160) end
+    end
     if not ok then row.error=tostring(err):sub(1,160) end
     table.insert(out,row)
 end
