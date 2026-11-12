@@ -1,1 +1,1 @@
-Preview v2: explicit per-species biomes and yaw-invariant audit; read-only.
+Read-only diagnostic: capture exact rejection counts and sample ground solver errors. No write.

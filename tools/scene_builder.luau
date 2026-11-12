@@ -200,6 +200,8 @@ if cfg.mode=="preview" then
     for _,spec in plan.species do
         local n=0
         local rejected={mask=0,spacing=0,slope=0,density=0}
+        local failureReasons={}
+        local failureSamples={}
         for _,cell in cells do
             if n>=spec.count then break end
             local x,z=b[1]+(cell[1]-0.5)*4,b[3]+(cell[2]-0.5)*4
@@ -221,12 +223,17 @@ if cfg.mode=="preview" then
             clone:ScaleTo(scale)
             local ok,solved=pcall(solvePlacement,clone,x,z,yaw,scaledProfile(spec,scale))
             clone:Destroy()
-            if not ok then rejected.slope+=1;continue end
+            if not ok then
+                rejected.slope+=1
+                local reason=tostring(solved)
+                failureReasons[reason]=(failureReasons[reason] or 0)+1
+                if #failureSamples<5 then table.insert(failureSamples,{x=x,z=z,reason=reason}) end
+                continue
+            end
             n+=1
             table.insert(rows,{id=string.format("forest-%s-%02d",string.lower(spec.name),n),species=spec.name,position=solved.position,groundY=solved.groundY,yaw=yaw,scale=scale,radius=radius,clearance=clearance,buriedDepth=solved.buriedDepth})
         end
-        assert(n>=spec.minCount,"Insufficient eligible placements for "..spec.name)
-        stats[spec.name]={placed=n,rejected=rejected}
+        stats[spec.name]={placed=n,rejected=rejected,failureReasons=failureReasons,failureSamples=failureSamples,minimum=spec.minCount}
     end
     separation(rows)
     for _,m in sources do m:Destroy() end

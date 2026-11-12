@@ -94,6 +94,7 @@ def main():
         r=task(t,key,p,"preview",expectedVersion=a.expected_version)
         for name,s in r["sources"].items():
             s["offlinePbr"]=inspect_blob(s);validate_evidence(s)
+        print("PLACEMENT_DIAGNOSTIC",json.dumps(r["stats"]),flush=True)
         check_rows(p,r);r["plan"]=p;r["planDigest"]=digest({"plan":p,"rows":r["rows"],"sources":r["sources"]})
         save(out/"preview.json",r);preview_image(p,r,out/"preview.png")
         print("SCENE_PREVIEW",json.dumps({"stats":r["stats"],"models":len(r["rows"]),"planDigest":r["planDigest"],"terrain":r["counts"]}),flush=True);return
