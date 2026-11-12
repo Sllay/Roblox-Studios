@@ -544,6 +544,7 @@
       "status": "live_verified",
       "purpose": "Dedicated reviewed v16-to-v17 coupled vegetation/resource/paint/script publication; native inverse and collision matrix, sharded persisted proof; historical plan not reusable",
       "requires": [
+        "scene.sync",
         "scene.sync_sharded",
         "scene.vegetation_regeneration_preview",
         "scene.resource_visibility_preview",
@@ -553,6 +554,21 @@
         "reviewed baseline and expected state",
         "publication receipt",
         "native persisted verification"
+      ]
+    },
+    {
+      "id": "scene.resource_contact_audit",
+      "entry": "tools/resource_contact_audit.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Audit actual v17 resource dimensions, visual flags, MeshPart query and voxel estimates; native preload is not client pixel visibility",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "resource contact evidence",
+        "asset fetch proof",
+        "client visibility limitations"
       ]
     }
   ]
