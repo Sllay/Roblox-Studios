@@ -319,7 +319,7 @@
           "status": "engine_verified_user_accepted"
         },
         "lightingLab": {
-          "status": "user_tested_glare_persists_deferred_cleanup_pending",
+          "status": "removed_in_staging_v4",
           "baseline": {
             "brightness": 3,
             "exposure": 0,
@@ -332,7 +332,8 @@
           },
           "control": "RSLightingLabSource",
           "script": "RSLightingLab",
-          "materialReferencesPreserved": true
+          "materialReferencesPreserved": true,
+          "cleanupRun": "43138959424"
         }
       },
       "placementProfile": {
