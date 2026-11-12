@@ -81,3 +81,5 @@
 - [x] P4 native environment layout: 24/24 planned placements, seven chunks, 138 existing plants preserved, CI and preview passed (43181653770). Exact layout recorded; guarded apply and independent verification prepared, not executed. Rights/explicit staging approval and mobile review pending.
 
 - [ ] P4.3 user explicitly authorized staging integration. One-shot workflow runs validated 24-model layout then independently verifies/syncs before the seven-script patch; no production. P4.4 follows only after P4.3. P4.5 is mobile polish/iteration, not final quality.
+
+- [ ] P4.3 recovery: run 43182382445 saved 24 models/8 colliders to v11 but post-save scope gate detected 164 unexpected records (162 identical default PlayerModule subtree copies, one AtomicBinding copy and its parent child-count increment). Recovery proves exact copies against v10, verifies already-saved layout with no repeated save, records baseline, then scripts. Duplicate default accumulation is an open engine/save issue; no arbitrary scope bypass.

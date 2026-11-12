@@ -120,7 +120,10 @@ def main():
             original=op["restoreOriginal"]
             matches=[r for r in after["records"].values() if r.get("service")==op["parent"]["service"] and r.get("path",[])[:-1]==op["parent"]["path"] and r.get("name")==original["name"] and r.get("class")==original["class"]]
             require(len(matches)==1 and matches[0]["properties"]==original["properties"] and matches[0]["attributesHash"]==original["attributesHash"],"Restored original mismatch")
-    verify_scope(base,after,ops,delta)
+    from default_clone_delta import split_default_clones
+    scoped,defaults=split_default_clones(base,after,delta["external"])
+    if defaults:write(p.output/"default-clone-delta.json",defaults)
+    verify_scope(base,after,ops,{"external":scoped})
     print("PATCH_VERIFIED",json.dumps({"version":after["loadedVersion"],"operations":len(ops),"changes":len(delta["external"])}))
 def verify_scope(base,after,ops,delta):
     scopes=[]

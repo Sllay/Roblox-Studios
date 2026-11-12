@@ -14,3 +14,6 @@ All four exact sources passed Safe Import v2, dependencies fetched and serialize
 
 ## P4.3 authorized staging sequence
 User authorized staging and sequential P4.4. Creator Store terms reviewed for platform use; user reported acquisition, Yasu already used and exact dependency fetch verified. No broad license or redistribution claim. One-shot staging workflow uses the exact v10 reviewed layout, rebinds only recorded approval metadata, validates the digest, applies and independently verifies, syncs, then rebases the seven-script patch to the verified new baseline. Explicit no production. P4.4 starts after verified P4.3; P4.5 is mobile polish, not final game quality.
+
+## v11 recovery
+Run 43182382445 saved 24 models / 8 colliders; independent inventory v11 confirmed additions. Scope check stopped on 162 additional PlayerModule records matching previous ordinal exactly, plus an AtomicBinding duplicate and one parent child-count change. No terrain or existing authored changes in artifact. Recovery compares exact clone identity to v10 and rejects any other delta, verifies saved models/materials/colliders, then syncs. Does not repeat the asset save. Default duplication accumulates on save and remains an explicit issue to investigate, not an approval of arbitrary changes.
