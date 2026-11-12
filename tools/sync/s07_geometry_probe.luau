@@ -40,7 +40,11 @@ for _,r in cfg.rows do
     local row={id=r.id,type=r.type,tile=r.tile,oldSize={oldSize.X,oldSize.Y,oldSize.Z},newSize={desiredSize.X,desiredSize.Y,desiredSize.Z},accepted=false}
     if h then
         local up=h.Normal.Unit
-        local heading=Vector3.new(math.cos(math.rad(r.yaw)),0,math.sin(math.rad(r.yaw)))
+        local offsets=r.type=="Branch" and {0,15,-15,30,-30,45,-45,60,-60,90} or {0}
+        row.attempts={}
+        for _,offset in offsets do
+        local yaw=(r.yaw+offset)%360
+        local heading=Vector3.new(math.cos(math.rad(yaw)),0,math.sin(math.rad(yaw)))
         local right=(heading-up*heading:Dot(up)).Unit
         local frame=CFrame.fromMatrix(h.Position,right,up,right:Cross(up))
         -- Center the actual mesh bounds, retaining its audited local axis orientation.
@@ -60,6 +64,9 @@ for _,r in cfg.rows do
             row.gap=high-low+.01;row.slope=math.deg(math.acos(math.clamp(up.Y,-1,1)))
             row.accepted=row.gap<.22 and row.slope<=35
             row.normal={up.X,up.Y,up.Z}
+            table.insert(row.attempts,{yaw=yaw,gap=row.gap})
+            if row.accepted then row.yaw=yaw;row.yawOffset=offset;row.frame={p.CFrame:GetComponents()};break end
+        end
         end
     end
     m:Destroy();table.insert(out,row)
