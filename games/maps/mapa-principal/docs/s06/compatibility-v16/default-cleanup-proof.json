@@ -1,0 +1,14 @@
+{
+  "before": 4228,
+  "externalObjectValueReferences": 0,
+  "loadedVersion": 16,
+  "noPlaceWrites": true,
+  "placeId": "93428341652658",
+  "reduced": 1798,
+  "removedTemporarily": 2430,
+  "restored": 4228,
+  "restoredExact": true,
+  "runtimeSafeDeletionVerified": false,
+  "unaffected": 1636,
+  "universeId": "10769712441"
+}
