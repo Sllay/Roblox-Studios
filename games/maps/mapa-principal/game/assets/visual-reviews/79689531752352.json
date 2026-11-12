@@ -288,8 +288,18 @@
         "scripts": 0
       },
       "evidenceKey": "925b316edc4cb7b2e274dafb40230080a428bf3f549acba47baae597c0d8fe0f",
-      "securityStatus": "not_approved",
-      "importStatus": "not_imported"
+      "securityStatus": "static_policy_v2_passed",
+      "importStatus": "staging_verified",
+      "stagingImport": {
+        "universeId": "10769712441",
+        "placeId": "93428341652658",
+        "version": 2,
+        "managedId": "yasu-tree-01",
+        "run": "43134660278",
+        "clientVisualValidation": "pending",
+        "plan": "game/assets/imports/tree-01-p1.json",
+        "dependencyFetch": "source textures and MeshPart instances successful; serialized PBR references preserved"
+      }
     },
     {
       "name": "Tree_02",

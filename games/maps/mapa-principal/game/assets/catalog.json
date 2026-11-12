@@ -19,7 +19,7 @@
         "verificationRun": "43131666285",
         "userAcquired": true
       },
-      "note": "Get Model confirmed by user; actual detached loading now works. Pack contains multiple models and exceeds static-decoration limits. Select an individual tree subtree and audit its dependencies before any import.",
+      "note": "Whole pack not imported. Tree_01 individually audited, imported and persistence verified in staging version 2; remaining models require individual audit.",
       "auditSummary": {
         "instances": 1096,
         "inspectedInstancesLimit": 350,
@@ -39,7 +39,18 @@
           "Model bounds exceed policy"
         ],
         "note": "Counts of classes/parts are sampled, not whole-pack totals. No import authorized."
-      }
+      },
+      "submodelImports": [
+        {
+          "name": "Tree_01",
+          "managedId": "yasu-tree-01",
+          "environment": "staging",
+          "version": 2,
+          "verificationRun": "43134660278",
+          "status": "staging_verified",
+          "clientVisualValidation": "pending"
+        }
+      ]
     }
   ]
 }

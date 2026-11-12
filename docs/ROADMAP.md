@@ -9,8 +9,8 @@
 - [x] Safe Import implementado: plano, reauditoria, versão, ID, verificação e evidências; testes automatizados.
 - [x] Staging mapa-principal cadastrado e identidade remota verificada (versão 1).
 - [x] Get Model habilitou o carregamento de asset público 79689531752352 no staging.
-- [ ] Homologar importação real no staging: pacote excede política; selecionar e auditar árvore individual, incluindo texturas PBR restritas.
-- [ ] Inventário de submodelos, inspeção offline de PBR e importação real com verificação de persistência.
+- [x] Safe Import 2.0: Tree_01 extraída, auditada e publicada no staging, versão 2; geometria, PBR, dependências e persistência confirmadas.
+- [x] Inventário de submodelos, inspeção offline PBR via RBXM e importação real verificada.
 - [ ] Scene Builder e sincronização declarativa completa; recuperação de versões e rollback.
 - [ ] Análise Luau com tipos Roblox, testes de gameplay e performance.
 - [ ] MCP Lite e orquestrador de agentes.
@@ -19,7 +19,8 @@
 - [x] Staging readiness e bloqueio global de aliases de produção.
 
 - [x] Inventário de packs e extração individual em memória (29 Models, Bush_01 e Tree_01 clonados e serializados).
-- [ ] Auditoria offline PBR, seleção visual de submodelos e integração de seletor ao plano de importação persistente.
+- [x] Seletor de submodelo, auditoria PBR e plano versionado de importação integrados.
+- [ ] Conferir visual e desempenho da Tree_01 no cliente mobile; não houve teste de renderização do cliente.
 
 - [x] Memória visual de 23 plantas com descrição baseada em miniaturas reais de componentes; consulta offline, correspondência de evidências e atualização controlada.
 - [ ] Preview texturizado de submodelos e confirmação de cores PBR por planta.

@@ -77,3 +77,7 @@ Cada Place tem seu próprio projeto Rojo e pode ser compilado independentemente.
 
 - [Asset access preflight](.github/workflows/asset-access.yml) diferencia autorização de carregamento, auditoria e falhas temporárias sem salvar o Place.
 - [Staging readiness](.github/workflows/staging-readiness.yml) verifica a identidade do ambiente de teste; exige IDs reais separados da produção. Consulte `docs/ASSET_IMPORT.md`.
+
+### Safe Import 2.0
+
+A primeira árvore individual do pacote Yasu foi importada e verificada no staging (Place 93428341652658, versão 2), preservando as referências PBR. Consulte [auditoria e importação](docs/ASSET_IMPORT.md) e o [workflow Safe Pack Import v2](.github/workflows/pack-import.yml). A validação visual em cliente mobile ainda está pendente; produção não foi modificada.

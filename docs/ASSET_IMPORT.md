@@ -95,3 +95,9 @@ O workflow Safe Pack Import v2 usa tools/assets/pack_import.py e pack_import.lua
 4. Recheck source serialization digest, target version, visual and technical policy, and dependency loading. Apply anchored, noncolliding decoration, preserve original material and transform relative geometry. Save and independently verify exact geometry, PBR references, identity, version and snapshot diff. If verification fails after save, stop and investigate; never retry blindly.
 
 Audit run 43134505789: Tree_01 has 2 MeshParts, 2 SurfaceAppearances, 4 descendants, 5 source textures and 2 engine-managed texture pack references, all source texture and instance mesh fetch callbacks Success. Source SHA-256 pinned in plan. https://github.com/Sllay/Roblox-Studios/actions/runs/43134505789
+
+### P1 — homologação real concluída no staging
+
+Execução 43134660278: Place 93428341652658 (Universe 10769712441) passou da versão 1 para a 2. Modelo Workspace.RSManagedAssets.yasu-tree-01, posição de pivot (40, 7.99861145, -18), yaw 0, base na superfície do Baseplate. A verificação independente carregou a versão 2, confirmou duas MeshParts, duas SurfaceAppearances, cinco mapas originais, duas referências TexturePackContent idênticas, geometria relativa, tags de proveniência e propriedades físicas de decoração. Snapshot: seis novas instâncias (pasta, modelo e quatro descendentes), zero objetos removidos. Sem escrita em produção. A execução do cliente mobile permanece pendente; preload e persistência não equivalem a renderização real. https://github.com/Sllay/Roblox-Studios/actions/runs/43134660278
+
+O plano tree-01-p1.json é evidência histórica da versão 1: não reaplicar. Novos imports exigem auditoria/versão e IDs próprios. O workflow é manual e não dispara por push. Nenhum binário de terceiro foi commitado.
