@@ -29,6 +29,9 @@ def main():
         except WorkspaceError as exc:
             print(f"Candidate {aid} unavailable: {exc}",flush=True)
             checked.append({"assetId":aid,"error":str(exc)})
+            if "HTTP 429" in str(exc):
+                print("Rate limit reached; stopping without retry",flush=True)
+                break
     write(output/"sample-summary.json",{"checked":checked,"acceptedAssetId":None,"note":"No candidate passed strict policy; no import"})
     return 2
 if __name__=="__main__":

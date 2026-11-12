@@ -32,8 +32,6 @@ on:
         type: boolean
         description: I approve the reviewed staging-only import
         default: false
-  push:
-    paths: ['games/maps/mapa-principal/docs/asset-audit-positive-once.trigger']
 permissions:
   contents: read
 concurrency:
@@ -41,7 +39,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   audit:
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'audit') }}
+    if: ${{ github.ref == 'refs/heads/main' && inputs.operation == 'audit' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -57,12 +55,7 @@ jobs:
           TARGET_ENV: ${{ inputs.environment || 'production' }}
           ASSET: ${{ inputs.asset_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-        run: |
-          if [[ "$GITHUB_EVENT_NAME" == push ]]; then
-            python tools/assets/audit_sample.py
-          else
-            python tools/assets/pipeline.py audit --game "$GAME" --place "$PLACE" --environment "$TARGET_ENV" --asset-id "$ASSET"
-          fi
+        run: python tools/assets/pipeline.py audit --game "$GAME" --place "$PLACE" --environment "$TARGET_ENV" --asset-id "$ASSET"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

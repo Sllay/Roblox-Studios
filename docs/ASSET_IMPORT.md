@@ -37,3 +37,9 @@ O fluxo é inicialmente limitado a decoração estática; não há compra autom�
 - Full Place publish bloqueado por padrão; requer fullPlaceBuildAuthoritative=true no registro do Place, após verificação explícita de que Git representa a cena completa. Não habilitar para o mapa-principal.
 
 A verificação pós-save exige também o pivot (posição e rotação), Biome e versão consistente; se o diff indicar remoções inesperadas, o job reporta falha e mantém evidências. Não confundir isso com rollback automático.
+
+## Bloqueio real do Creator Store
+
+A busca de seis candidatos de árvore low-poly encontrou cinco respostas `User is not authorized to access Asset` e uma HTTP 429 ([teste](https://github.com/Sllay/Roblox-Studios/actions/runs/43129206356)). Nenhum asset foi importado. A autorização de leitura das miniaturas não concede acesso ao conteúdo do modelo. O `Allow Loading Third Party Assets` é uma configuração oficial da experiência, documentada como modificável pelo Studio; não tentamos contornar nem ativar essa configuração remotamente. Para homologar sem depender de Studio local, priorize um modelo próprio, do Roblox ou explicitamente compartilhado pelo proprietário; modelos públicos de terceiros podem exigir configuração adicional. Use o Creator Dashboard para verificar permissões. Não interpretar uma falha de autorização como reprovação de segurança do conteúdo.
+
+O workflow final é exclusivamente manual. O teste unitário simulado exercita a sequência de aplicação, verificação e evidências; a aplicação real ainda depende de IDs staging e um asset autorizado e aprovado. O CI aprovado inclui Python, gate Luau e build Rojo ([execução](https://github.com/Sllay/Roblox-Studios/actions/runs/43129285381)).
