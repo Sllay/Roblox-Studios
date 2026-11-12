@@ -6,16 +6,16 @@
     "Clouds": 1,
     "Decal": 1,
     "DepthOfFieldEffect": 1,
-    "Folder": 18,
-    "InputAction": 240,
-    "InputBinding": 560,
-    "InputContext": 32,
-    "LocalScript": 2,
+    "Folder": 22,
+    "InputAction": 270,
+    "InputBinding": 630,
+    "InputContext": 36,
+    "LocalScript": 3,
     "MeshPart": 276,
     "Model": 138,
-    "ModuleScript": 433,
+    "ModuleScript": 487,
     "Part": 78,
-    "Script": 34,
+    "Script": 39,
     "Sky": 1,
     "SpawnLocation": 63,
     "StarterCharacterScripts": 1,
@@ -26,10 +26,10 @@
     "Texture": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 8,
+  "loadedVersion": 9,
   "placeId": "93428341652658",
   "schemaVersion": 1,
-  "stateDigest": "bb06f4ab717b8511672736744d80a9c140bc55d7fe29666cad9d67bdf06b4251",
+  "stateDigest": "cde27b98ca109b39af27acc6f946391cc7b4467b81614c9851f1e8f765c51e70",
   "terrain": {
     "terrain:chunk--1--1": {
       "bounds": [
@@ -382,7 +382,7 @@
       "waterVoxels": 0
     }
   },
-  "total": 2162,
+  "total": 2330,
   "universeId": "10769712441",
   "workspaceRoots": [
     {
