@@ -49,6 +49,12 @@ for _,item in mesh do table.insert(ids,item.mesh) end
 local okPreload,err=pcall(function()
     cp:PreloadAsync(ids,function(id,status) preloads[id]=status.Name end)
 end)
+local instanceFetch={}
+local meshObjects={}
+for _,obj in model:GetDescendants() do if obj:IsA("MeshPart") then table.insert(meshObjects,obj) end end
+local okInstances,errInstances=pcall(function()
+    cp:PreloadAsync(meshObjects,function(id,status) instanceFetch[id]=status.Name end)
+end)
 local grounds={}
 for _,obj in workspace:GetDescendants() do
     if obj:IsA("BasePart") then
@@ -57,4 +63,4 @@ for _,obj in workspace:GetDescendants() do
 end
 model:Destroy()
 root:Destroy()
-return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),maps=maps,mesh=mesh,ground=grounds,preloads=preloads,preloadError=if okPreload then nil else tostring(err),serializedBytes=buffer.len(blob),digest=hash,serializedBase64=buffer.tostring(encoding:Base64Encode(blob))})
+return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),maps=maps,mesh=mesh,ground=grounds,preloads=preloads,preloadError=if okPreload then nil else tostring(err),instanceFetch=instanceFetch,instanceFetchError=if okInstances then nil else tostring(errInstances),serializedBytes=buffer.len(blob),digest=hash,serializedBase64=buffer.tostring(encoding:Base64Encode(blob))})

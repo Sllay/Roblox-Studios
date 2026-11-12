@@ -1,1 +1,1 @@
-Retry read-only PBR probe with corrected parser dependency and content fetch status.
+Read-only repeat: inspect mesh instance preload callbacks and confirm PBR dependency status.

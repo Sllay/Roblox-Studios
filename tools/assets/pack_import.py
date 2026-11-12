@@ -56,6 +56,7 @@ def inspect_blob(report):
 def audit_report(target,key,asset,selector):
     r=task(target,key,"audit",asset,selector)
     r["offlinePbr"]=inspect_blob(r)
+    r["selector"]=selector
     validate_evidence(r)
     return r
 
@@ -80,8 +81,10 @@ def validate_evidence(r):
                 if isinstance(v,str): return "" if v=="None" else v
                 if isinstance(v,dict) and set(v)=={"Uri"}:return v["Uri"]
                 return None
-            if uri and uri not in [val(v) for v in candidates]:
+            if not candidates or uri not in [val(v) for v in candidates]:
                 raise WorkspaceError(f"Offline map mismatch: {name}/{field}")
+        if "TexturePackContent" not in props and "TexturePack" not in props:
+            raise WorkspaceError("Serialized texture pack field missing")
         for k,v in props.items():
             if "TexturePack" in k:
                 if isinstance(v,dict): v=v.get("Uri","" if not v else None)
@@ -106,6 +109,8 @@ def validate_plan(t,p):
     if p["evidenceSha256"]!=hashlib.sha256(canonical(r).encode()).hexdigest():
         raise WorkspaceError("Evidence hash mismatch")
     if r["digest"]!=p["digest"]:raise WorkspaceError("Digest mismatch")
+    if p.get("selector")!=r.get("selector"):raise WorkspaceError("Selector differs from audit")
+    if p.get("schemaVersion")!=2 or not isinstance(p.get("biome"),str) or not p["biome"].strip():raise WorkspaceError("Invalid plan schema or biome")
     return p
 
 def equivalent(a,b):
@@ -133,6 +138,9 @@ def apply(t,key,p,output):
     write(output/"verification.json",v)
     if not v["verified"] or v["loadedVersion"]<=before["loadedVersion"] or not equivalent(p["evidence"]["audit"],v["audit"]):
         raise WorkspaceError("Persisted model differs from reviewed source")
+    # Authoring maps and engine-packed references must remain identical.
+    if sorted(p["evidence"]["offlinePbr"],key=lambda x:x["name"])!=sorted(v["offlinePbr"],key=lambda x:x["name"]):
+        raise WorkspaceError("Persisted PBR references changed")
     after=capture(t,key);write(output/"after.json",after)
     delta=compare(before,after);write(output/"diff.json",delta)
     if delta["removed"] or after["loadedVersion"]!=v["loadedVersion"]:
