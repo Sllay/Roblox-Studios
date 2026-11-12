@@ -1,7 +1,7 @@
 """S07 integrated disposable preview; no save path."""
 import os,json,time
 from collections import Counter
-from scene_sync import ROOT,read,write,require,task,state_path,sha
+from scene_sync import ROOT,read,write,require,task,state_path,sha,compose_task
 from deploy import load_all,resolve
 from sharded_scene_sync import latest
 from workspace import WorkspaceError
@@ -18,6 +18,9 @@ def main():
     columns=sorted({(c["x"],c["z"]) for p in old["patches"] for c in p["cells"]}|{(c["x"],c["z"]) for c in fix["extraPaint"]})
     def run(file,version,**cfg):
         src=(ROOT/"tools/sync"/file).read_text()
+        size=len(compose_task(target,"do\n"+src+"\nend",**cfg).encode("utf-8"))
+        print(f"{file}: {size} bytes",flush=True)
+        require(size<=1048576,"Cloud script size exceeds limit")
         for delay in (15,30,60,120,None):
             try:
                 r=task(target,key,"do\n"+src+"\nend",read_version=version,compile_source=True,**cfg)
