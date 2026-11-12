@@ -1,0 +1,54 @@
+{
+  "all49Restored": true,
+  "categories": {
+    "stick": {
+      "baseGap": [
+        0.009992845356464386,
+        0.01000678539276123
+      ],
+      "burialZero": true,
+      "count": 108,
+      "deltaY": [
+        1.9303290492296235,
+        2.140616076290609
+      ],
+      "maxGap": 0.2012416049838066,
+      "minTopGap": 0.14364130795001984,
+      "paintSurfaceDelta": [
+        -0.02672576904296875,
+        0.0540618896484375
+      ]
+    },
+    "stone": {
+      "baseGap": [
+        0.009991556406021118,
+        0.010005652904510498
+      ],
+      "burialZero": true,
+      "count": 108,
+      "deltaY": [
+        1.9857474362850205,
+        2.1594526863098142
+      ],
+      "maxGap": 0.19184279441833496,
+      "minTopGap": 0.6970268487930298,
+      "paintSurfaceDelta": [
+        -0.025707244873046875,
+        0.029937744140625
+      ]
+    }
+  },
+  "changedTiles": 9,
+  "clientRenderVerified": false,
+  "crossGrassCenters": 0,
+  "crossGrassSamples": 0,
+  "extraPaintColumns": 288,
+  "finalGrassCenters": 0,
+  "finalGrassSamples": 0,
+  "loadedVersion": 17,
+  "noPlaceWrites": true,
+  "paintMode": "cross_ring",
+  "planDigest": "47fbe1e8efe1e43596f6459f524e13132ad549fb0504eb12719eee81f1721c5d",
+  "resourceInverse": true,
+  "stateDigest": "a44bcd60970d3049cace86cfb3787ddaeb19364c94779e819291d552f378bceb"
+}
