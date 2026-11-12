@@ -61,6 +61,22 @@ def audit_report(target,key,asset,selector):
     validate_evidence(r)
     return r
 
+def offline_surface_key(row):
+    path=row.get("path")
+    if path is None:return None
+    return canonical(path)
+
+def offline_pbr_equal(a,b):
+    # Prior v2 receipts lacked paths. They remain valid only when both sets
+    # have unique names; new receipts compare exact hierarchy and properties.
+    if all("path" in x for x in a+b):
+        return sorted(a,key=offline_surface_key)==sorted(b,key=offline_surface_key)
+    if len({x["name"] for x in a})!=len(a) or len({x["name"] for x in b})!=len(b):
+        return False
+    def legacy(rows):
+        return sorted([{"name":x["name"],"properties":x["properties"]} for x in rows],key=lambda x:x["name"])
+    return legacy(a)==legacy(b)
+
 def validate_evidence(r):
     a=r["audit"]
     if a["policyVersion"]!=2 or not 1<=a["parts"]<=100 or not 1<=a["instances"]<=350:
@@ -70,9 +86,14 @@ def validate_evidence(r):
         raise WorkspaceError("Offline surface count differs")
     # Compare public authoring maps against serialized fields; internal engine
     # texture pack is additional evidence, never modified or fetched as a script.
+    offline=r["offlinePbr"]
+    path_mode=all("path" in x for x in offline)
+    if any("path" in x for x in offline) and not path_mode:raise WorkspaceError("Mixed offline identity schema")
+    if path_mode and len({offline_surface_key(x) for x in offline})!=len(offline):raise WorkspaceError("Duplicate offline path")
+    if not path_mode and len({row["path"][-1]["name"] for row in surfaces})!=len(surfaces):raise WorkspaceError("Ambiguous legacy surface names")
     for row in surfaces:
         name=row["path"][-1]["name"]
-        matches=[x for x in r["offlinePbr"] if x["name"]==name]
+        matches=[x for x in offline if (x["path"]==row["path"] if path_mode else x["name"]==name)]
         if len(matches)!=1: raise WorkspaceError("Ambiguous offline surface identity")
         props=matches[0]["properties"]
         for field,uri in row["maps"].items():
@@ -157,7 +178,7 @@ def apply(t,key,p,output):
     if not v["verified"] or v["loadedVersion"]<=before["loadedVersion"] or not equivalent(p["evidence"]["audit"],v["audit"]):
         raise WorkspaceError("Persisted model differs from reviewed source")
     # Authoring maps and engine-packed references must remain identical.
-    if sorted(p["evidence"]["offlinePbr"],key=lambda x:x["name"])!=sorted(v["offlinePbr"],key=lambda x:x["name"]):
+    if not offline_pbr_equal(p["evidence"]["offlinePbr"],v["offlinePbr"]):
         raise WorkspaceError("Persisted PBR references changed")
     after=capture(t,key);write(output/"after.json",after)
     delta=compare(before,after);write(output/"diff.json",delta)

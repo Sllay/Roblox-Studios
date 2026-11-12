@@ -118,6 +118,15 @@ for _,spec in plan.assets do
     assert(digest==spec.sourceDigest,"Source digest changed: "..spec.name)
     local fetched=fetchDependencies(model,a)
     local sourceScale=model:GetScale()
+    if rootName=="RSEnvironmentP4Detail" then
+        -- Imported DCC pivots may be tens of studs away from the mesh.
+        -- Recenter the model pivot without moving its components, then audit
+        -- the canonical relative geometry; never alter mesh or PBR properties.
+        local bb=model:GetBoundingBox()
+        model.PrimaryPart=nil
+        model.WorldPivot=CFrame.new(bb.Position)
+        a=audit(model)
+    end
     model:PivotTo(CFrame.new())
     local bb,size=model:GetBoundingBox()
     sources[spec.name]={model=model,digest=digest,radius=modelRadius(model),bottom=bb.Position.Y-size.Y/2,height=size.Y,sourceScale=sourceScale,audit=a,dependencyFetch=fetched}

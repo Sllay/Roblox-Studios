@@ -20,3 +20,21 @@ class PackImportTests(unittest.TestCase):
     def test_geometry_precision(self):
         self.assertTrue(equivalent({"position":[1,2.0001,3]},{"position":[1.0,2,3]}))
         self.assertFalse(equivalent({"mesh":"rbxassetid://1"},{"mesh":"rbxassetid://2"}))
+
+    def test_duplicate_names_require_exact_hierarchy(self):
+        from copy import deepcopy
+        r=self.report();a=r["audit"]["rows"][0];o=r["offlinePbr"][0]
+        a["path"]=[{"name":"Trunk","class":"MeshPart","index":1},{"name":"Surface","class":"SurfaceAppearance","index":1}]
+        o["path"]=deepcopy(a["path"])
+        b=deepcopy(a);b["path"][0]={"name":"Leaves","class":"MeshPart","index":2}
+        q=deepcopy(o);q["path"]=deepcopy(b["path"])
+        r["audit"]["rows"].append(b);r["audit"]["surfaces"]=2;r["offlinePbr"].append(q)
+        validate_evidence(r)
+        q["path"]=deepcopy(o["path"])
+        with self.assertRaises(WorkspaceError):validate_evidence(r)
+    def test_legacy_comparison(self):
+        from pack_import import offline_pbr_equal
+        from copy import deepcopy
+        old=self.report()["offlinePbr"];new=deepcopy(old);new[0]["path"]=[{"name":"Surface","class":"SurfaceAppearance","index":1}]
+        self.assertTrue(offline_pbr_equal(old,new))
+        self.assertFalse(offline_pbr_equal(old+old,new+new))

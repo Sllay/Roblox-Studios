@@ -1,0 +1,33 @@
+name: P4.4 exact PBR and geometry audit (read only)
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/p4-detail-audit-once.trigger']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: python -m unittest discover -s tests -v
+      - run: cargo check --manifest-path tools/assets/rbx-audit/Cargo.toml
+      - name: Read-only exact detail audit
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/assets/p4_detail_preflight.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p4-detail-preflight
+          path: dist/p4-detail/
+          if-no-files-found: warn

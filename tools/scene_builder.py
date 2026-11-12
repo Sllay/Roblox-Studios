@@ -5,7 +5,7 @@ import argparse,hashlib,json,math,os,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"tools/assets"))
-from pack_import import inspect_blob,validate_evidence,equivalent,validate_selector
+from pack_import import inspect_blob,validate_evidence,equivalent,validate_selector,offline_pbr_equal
 from placement import validate_profile
 from cloud_tasks import run_task
 from deploy import load_all,resolve,WorkspaceError
@@ -114,7 +114,7 @@ def main():
     v=task(t,key,p,"verify",**opts)
     for name,report in v.pop("serializedSamples").items():
         actual=inspect_blob(report)
-        require(sorted(actual,key=lambda x:x["name"])==sorted(r["sources"][name]["offlinePbr"],key=lambda x:x["name"]),"Persisted PBR mismatch")
+        require(offline_pbr_equal(actual,r["sources"][name]["offlinePbr"]),"Persisted PBR mismatch")
     v["offlinePbrVerified"]=True
     save(out/"verification.json",v)
     require(v["verified"] is True and v["loadedVersion"]>r["loadedVersion"],"Persistence not confirmed")
