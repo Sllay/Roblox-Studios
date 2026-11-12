@@ -1,0 +1,81 @@
+name: Place Provision (official API)
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [inventory, enroll, clone-preview, clone]
+        default: inventory
+      game:
+        type: string
+        default: mapa-principal
+      place:
+        type: string
+        default: main
+      template:
+        type: string
+        default: main
+      name:
+        type: string
+      universe_id:
+        type: string
+      place_id:
+        type: string
+      record:
+        type: boolean
+        default: false
+      confirm_create:
+        type: boolean
+        default: false
+  push:
+    paths: ['games/maps/mapa-principal/docs/provision-preview-once.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: roblox-place-write-${{ inputs.game || 'mapa-principal' }}-${{ inputs.template || 'main' }}-staging
+  cancel-in-progress: false
+jobs:
+  provision:
+    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation != 'clone' || inputs.confirm_create) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Inspect, enroll or clone approved template
+        env:
+          OP: ${{ inputs.operation || 'inventory' }}
+          GAME: ${{ inputs.game || 'mapa-principal' }}
+          PLACE: ${{ inputs.place || 'main' }}
+          TEMPLATE: ${{ inputs.template || 'main' }}
+          NAME: ${{ inputs.name }}
+          UNIVERSE_ID: ${{ inputs.universe_id }}
+          PLACE_ID: ${{ inputs.place_id }}
+          RECORD: ${{ inputs.record }}
+          CONFIRM: ${{ inputs.confirm_create }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          args=()
+          if [[ "$RECORD" == true ]]; then args+=(--record); fi
+          if [[ "$CONFIRM" == true ]]; then args+=(--confirm-create); fi
+          python tools/place_provision.py "$OP" --game "$GAME" --place "$PLACE" --template "$TEMPLATE" --name "$NAME" --universe-id "$UNIVERSE_ID" --place-id "$PLACE_ID" "${args[@]}"
+          if [[ "$RECORD" == true ]]; then
+            python tools/workspace.py validate
+            python tools/deploy.py validate
+            git config user.name "roblox-provision[bot]"
+            git config user.email "roblox-provision@users.noreply.github.com"
+            git add -- "games/maps/$GAME"
+            if ! git diff --cached --quiet; then
+              git commit -m "provision: register $GAME/$PLACE staging"
+              git push origin HEAD:main
+            fi
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: place-provision-evidence
+          path: dist/place-provision/
+          if-no-files-found: warn
