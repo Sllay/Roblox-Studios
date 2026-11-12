@@ -1,0 +1,848 @@
+{
+  "schemaVersion": 1,
+  "packAssetId": "79689531752352",
+  "sourceRun": "43132925604",
+  "totalModels": 29,
+  "vegetationModels": 23,
+  "auxiliaryModels": 6,
+  "reviewMethod": "Visual review of actual official component thumbnails; shapes observed, species and biome suggestions inferred, PBR colors unverified.",
+  "reviews": [
+    {
+      "name": "Bush_01",
+      "modelKey": "5481276bfe45daca416a625ec470914d55d5b5546097f837a6ed3942cbd9fc80",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa esférica irregular, folhagem em planos angulares sobrepostos. Hastes finas em leque, ramificações laterais. Estilo vegetal estilizado, folhagem em planos angulares. Arbusto ornamental compacto. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa esférica irregular, folhagem em planos angulares sobrepostos.",
+          "trunkShape": "Hastes finas em leque, ramificações laterais.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Arbusto ornamental compacto",
+          "suitableBiomes": [
+            "jardim",
+            "sub-bosque",
+            "bosque-fantasia"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "compacto",
+            "arredondado"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Bush_02",
+      "modelKey": "480947d0f396e5ee790f31da458866b7525119804d27da7bc4d8fa3bbbf241e4",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa globosa, densa e de contorno regular. Hastes delgadas verticais, abertura lateral moderada. Estilo vegetal estilizado, folhagem em planos angulares. Arbusto de jardim de copa globosa. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa globosa, densa e de contorno regular.",
+          "trunkShape": "Hastes delgadas verticais, abertura lateral moderada.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Arbusto de jardim de copa globosa",
+          "suitableBiomes": [
+            "jardim",
+            "sub-bosque",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "denso",
+            "globoso"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Bush_03",
+      "modelKey": "39f2ad0bb8ca42c38bd1acb302ff4fc044279c13bac6cda602768ae5aa2c106a",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa baixa, arredondada e ligeiramente achatada. Hastes grossas e curtas, divergentes da base. Estilo vegetal estilizado, folhagem em planos angulares. Moita ornamental baixa. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa baixa, arredondada e ligeiramente achatada.",
+          "trunkShape": "Hastes grossas e curtas, divergentes da base.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Moita ornamental baixa",
+          "suitableBiomes": [
+            "jardim",
+            "sub-bosque",
+            "bosque-fantasia"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "baixo",
+            "compacto"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_01",
+      "modelKey": "9d80edf1cdfbd1d60be5158456042a1ea229e24f6baab5f08abbd61f2009469f",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa arredondada, irregular e larga, planos de folhagem sobrepostos. Tronco ereto ligeiramente curvo, bifurcações altas e galhos laterais finos. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa de copa ampla, semelhante a caducifólia genérica. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa arredondada, irregular e larga, planos de folhagem sobrepostos.",
+          "trunkShape": "Tronco ereto ligeiramente curvo, bifurcações altas e galhos laterais finos.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa de copa ampla, semelhante a caducifólia genérica",
+          "suitableBiomes": [
+            "floresta-temperada",
+            "bosque-fantasia",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "arredondada",
+            "elegante"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_02",
+      "modelKey": "92f1d6af7cded38ade22a126bad1b60af9a354324e5a536cd0813468a0aef8d4",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa assimétrica, volumes deslocados em diagonal. Tronco curvo com galhos laterais que se abrem para um lado. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa ornamental assimétrica. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa assimétrica, volumes deslocados em diagonal.",
+          "trunkShape": "Tronco curvo com galhos laterais que se abrem para um lado.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa ornamental assimétrica",
+          "suitableBiomes": [
+            "bosque-fantasia",
+            "floresta-temperada",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "assimétrica",
+            "curva"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_03",
+      "modelKey": "9154d273e0b18a57b560150cffe563476ab63991bd54734e2323d61535004d87",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa larga e achatada, dois grandes volumes. Tronco sinuoso, galhos longos divergentes e braço lateral curvado. Estilo vegetal estilizado, folhagem em planos angulares. Árvore ornamental de copa espalhada. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa larga e achatada, dois grandes volumes.",
+          "trunkShape": "Tronco sinuoso, galhos longos divergentes e braço lateral curvado.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore ornamental de copa espalhada",
+          "suitableBiomes": [
+            "bosque-fantasia",
+            "floresta-temperada",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "espalhada",
+            "retorcida"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_04",
+      "modelKey": "855a88c951119bdad89c72e9597a353d9630f89aef5d51923f635b02e496d1c7",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa irregular com volumes em alturas diferentes. Tronco ereto levemente curvo, muitos galhos finos. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa de bosque, porte médio a alto. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa irregular com volumes em alturas diferentes.",
+          "trunkShape": "Tronco ereto levemente curvo, muitos galhos finos.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa de bosque, porte médio a alto",
+          "suitableBiomes": [
+            "floresta-temperada",
+            "bosque-fantasia",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "ramificada",
+            "vertical"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_05",
+      "modelKey": "552f715c0ca4e1dc17830435d881d8639945061d33dafeb8df5d2fd03b625151",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa irregular com grupos separados e reentrâncias. Tronco relativamente ereto, bifurcado, galhos ascendentes e laterais. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa ramificada, silhueta caducifólia. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa irregular com grupos separados e reentrâncias.",
+          "trunkShape": "Tronco relativamente ereto, bifurcado, galhos ascendentes e laterais.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa ramificada, silhueta caducifólia",
+          "suitableBiomes": [
+            "floresta-temperada",
+            "bosque-fantasia",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "bifurcada",
+            "irregular"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_06",
+      "modelKey": "71cbbb263e4e5bb4e0242b22e10e5fb300c5ae1b635b378593d80efdbe7ffc5e",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa assimétrica em grupos arredondados distribuídos lateralmente. Tronco fortemente sinuoso em S, galhos curvados para os lados. Estilo vegetal estilizado, folhagem em planos angulares. Árvore ornamental retorcida, escultural, de fantasia. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa assimétrica em grupos arredondados distribuídos lateralmente.",
+          "trunkShape": "Tronco fortemente sinuoso em S, galhos curvados para os lados.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore ornamental retorcida, escultural, de fantasia",
+          "suitableBiomes": [
+            "bosque-fantasia",
+            "floresta-temperada",
+            "jardim"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "retorcida",
+            "mística",
+            "escultural"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_07",
+      "modelKey": "7b6d6fed20cec3978cebbc586d6a5f2dba33b338f737befe613a90fbd5367eca",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa alta, alongada e irregular, grupos de folhagem em diferentes níveis. Tronco fino reto, numerosos galhos laterais em alturas sucessivas. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa jovem de silhueta vertical. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa alta, alongada e irregular, grupos de folhagem em diferentes níveis.",
+          "trunkShape": "Tronco fino reto, numerosos galhos laterais em alturas sucessivas.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa jovem de silhueta vertical",
+          "suitableBiomes": [
+            "floresta-temperada",
+            "bosque-fantasia",
+            "floresta-montana"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "alta",
+            "vertical"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_08",
+      "modelKey": "73dd4136967d9ff65ed25fa88e5f72ff9827ff87479c088efd405b3f38a5b101",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa estreita, alongada, aproximadamente colunar. Tronco alto fino quase reto, galhos curtos ascendentes. Estilo vegetal estilizado, folhagem em planos angulares. Silhueta de álamo colunar. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa estreita, alongada, aproximadamente colunar.",
+          "trunkShape": "Tronco alto fino quase reto, galhos curtos ascendentes.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Silhueta de álamo colunar",
+          "suitableBiomes": [
+            "floresta-temperada",
+            "parque",
+            "alameda"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "colunar",
+            "esguia",
+            "elegante"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_09",
+      "modelKey": "06c7ccc3a263c78b3aae1d2f3b29f02f2115a55f08d827c52b7a61bd4069d92f",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa larga, baixa e achatada, superfície irregular. Tronco curto relativamente grosso, galhos ascendentes em leque. Estilo vegetal estilizado, folhagem em planos angulares. Copa guarda-chuva semelhante à forma de uma acácia ornamental. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa larga, baixa e achatada, superfície irregular.",
+          "trunkShape": "Tronco curto relativamente grosso, galhos ascendentes em leque.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Copa guarda-chuva semelhante à forma de uma acácia ornamental",
+          "suitableBiomes": [
+            "bosque-fantasia",
+            "parque",
+            "floresta-temperada"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "guarda-chuva",
+            "baixa",
+            "aberta"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_10",
+      "modelKey": "d0d5068a858261c2050eaf0daff07d754876516ced210ecb0755f093a2916311",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa alta aproximadamente cônica, estreita no topo, folhagem em camadas. Tronco longo reto, galhos laterais regulares em níveis. Estilo vegetal estilizado, folhagem em planos angulares. Conífera estilizada, lembra pinheiro ou abeto. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa alta aproximadamente cônica, estreita no topo, folhagem em camadas.",
+          "trunkShape": "Tronco longo reto, galhos laterais regulares em níveis.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Conífera estilizada, lembra pinheiro ou abeto",
+          "suitableBiomes": [
+            "floresta-coniferas",
+            "taiga-estilizada",
+            "floresta-montana"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "cônica",
+            "alta",
+            "conífera"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_11",
+      "modelKey": "700d6e5aab86e37ea1d426f873d6d5c8f4b07ad3a45df94bf10c72732d3244ad",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa assimétrica em grupos, prolongamento superior. Tronco curvo dividido em dois braços, um mais longo e alto. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa bifurcada de bosque. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa assimétrica em grupos, prolongamento superior.",
+          "trunkShape": "Tronco curvo dividido em dois braços, um mais longo e alto.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa bifurcada de bosque",
+          "suitableBiomes": [
+            "bosque-fantasia",
+            "floresta-temperada",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "assimétrica",
+            "bifurcada"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_12",
+      "modelKey": "658a919c8a178cabb24812df223b98799ae418a21de7dbbf5643ff07b0eefe1f",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa inclinada, folhagem deslocada para um lado e para cima. Tronco inclinado e curvo, ramificações em arco. Estilo vegetal estilizado, folhagem em planos angulares. Árvore ornamental de forma moldada pelo vento. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa inclinada, folhagem deslocada para um lado e para cima.",
+          "trunkShape": "Tronco inclinado e curvo, ramificações em arco.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore ornamental de forma moldada pelo vento",
+          "suitableBiomes": [
+            "bosque-fantasia",
+            "jardim",
+            "floresta-temperada"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "inclinada",
+            "elegante",
+            "curva"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_13",
+      "modelKey": "5ae3361168b020bd1eac7eff55f1a89280bb9d988b13fbcb7ecea0b7e9ccd039",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa quase esférica, larga e compacta, contorno angular. Tronco ereto fino, galhos concentrados perto do topo. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa ornamental de copa globosa. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa quase esférica, larga e compacta, contorno angular.",
+          "trunkShape": "Tronco ereto fino, galhos concentrados perto do topo.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa ornamental de copa globosa",
+          "suitableBiomes": [
+            "parque",
+            "jardim",
+            "floresta-temperada"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "globosa",
+            "compacta"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_14",
+      "modelKey": "dd80ae6576e60f2573fea6c120d140ea176d3394113eeba03b0484c6393faf45",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa pequena aproximadamente arredondada, pontas angulares. Tronco estreito quase reto, poucos galhos longos ascendentes. Estilo vegetal estilizado, folhagem em planos angulares. Muda de árvore ornamental de copa redonda. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa pequena aproximadamente arredondada, pontas angulares.",
+          "trunkShape": "Tronco estreito quase reto, poucos galhos longos ascendentes.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Muda de árvore ornamental de copa redonda",
+          "suitableBiomes": [
+            "jardim",
+            "parque",
+            "bosque-fantasia"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "pequena",
+            "arredondada",
+            "delicada"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_15",
+      "modelKey": "f8f2ef7cf90f8a0b000a15ca3e988ed581ab20568fc048ca475be4ce5ae9ee6e",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa ampla globosa, muitas camadas de planos de folhagem. Tronco alto bifurcado em V, galhos ascendentes e abertos. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa volumosa, lembra silhueta de carvalho. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa ampla globosa, muitas camadas de planos de folhagem.",
+          "trunkShape": "Tronco alto bifurcado em V, galhos ascendentes e abertos.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa volumosa, lembra silhueta de carvalho",
+          "suitableBiomes": [
+            "floresta-temperada",
+            "parque",
+            "bosque-fantasia"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "volumosa",
+            "bifurcada"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_16",
+      "modelKey": "b0f7b3f27710b7ad2507a235e0d6f0c25bd14f3aa41855642b4851373116347a",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa estreita alongada, volume maior embaixo. Tronco muito fino vertical, poucos galhos laterais curtos. Estilo vegetal estilizado, folhagem em planos angulares. Árvore jovem colunar, lembra álamo estilizado. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa estreita alongada, volume maior embaixo.",
+          "trunkShape": "Tronco muito fino vertical, poucos galhos laterais curtos.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore jovem colunar, lembra álamo estilizado",
+          "suitableBiomes": [
+            "floresta-temperada",
+            "parque",
+            "alameda"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "esguia",
+            "colunar"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_17",
+      "modelKey": "40e680dd06e06316b1679e65b4b6389877f5c7fb96ce19f4de07fddc9317b488",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa larga horizontal achatada, grupos de folhagem em faixa. Tronco inclinado muito curvo, grande braço horizontal e galhos ascendentes. Estilo vegetal estilizado, folhagem em planos angulares. Árvore escultural, forma ornamental de bonsai ampliado. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa larga horizontal achatada, grupos de folhagem em faixa.",
+          "trunkShape": "Tronco inclinado muito curvo, grande braço horizontal e galhos ascendentes.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore escultural, forma ornamental de bonsai ampliado",
+          "suitableBiomes": [
+            "bosque-fantasia",
+            "jardim",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "horizontal",
+            "retorcida",
+            "mística"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_18",
+      "modelKey": "36d27dad420cbbc676ea58daeb7952534ca89f462bc5cc288587ddfd69f4898a",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa assimétrica, três volumes irregulares em diagonal. Tronco dividido em V, um braço longo e outro lateral. Estilo vegetal estilizado, folhagem em planos angulares. Árvore folhosa ornamental de porte moderado. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa assimétrica, três volumes irregulares em diagonal.",
+          "trunkShape": "Tronco dividido em V, um braço longo e outro lateral.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore folhosa ornamental de porte moderado",
+          "suitableBiomes": [
+            "parque",
+            "floresta-temperada",
+            "bosque-fantasia"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "bifurcada",
+            "assimétrica"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_19",
+      "modelKey": "85affe109cfeddc90349b82fbb9758db834527334203ac6c3075c201f8227c60",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa muito larga, volumes arredondados separados por espaços. Tronco forte vertical, vários braços ascendentes. Estilo vegetal estilizado, folhagem em planos angulares. Árvore madura de bosque, lembra carvalho em silhueta. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa muito larga, volumes arredondados separados por espaços.",
+          "trunkShape": "Tronco forte vertical, vários braços ascendentes.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Árvore madura de bosque, lembra carvalho em silhueta",
+          "suitableBiomes": [
+            "floresta-temperada",
+            "bosque-fantasia",
+            "parque"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "grande",
+            "espalhada",
+            "imponente"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    },
+    {
+      "name": "Tree_20",
+      "modelKey": "201fee40e0ffc24fdc8b7698c33df108186493db6833b74392a65ca579600659",
+      "visual": {
+        "status": "geometry_reviewed",
+        "description": "Copa muito alta cônica e irregular, folhagem em camadas. Tronco longo reto estreito, galhos laterais em níveis sucessivos. Estilo vegetal estilizado, folhagem em planos angulares. Conífera estilizada grande, lembra pinheiro ou abeto alto. Tint configurado: copa verde-oliva, madeira marrom; as cores finais PBR não foram confirmadas.",
+        "observed": {
+          "canopyShape": "Copa muito alta cônica e irregular, folhagem em camadas.",
+          "trunkShape": "Tronco longo reto estreito, galhos laterais em níveis sucessivos.",
+          "style": "estilizado",
+          "foliageColor": null,
+          "trunkColor": null
+        },
+        "inferred": {
+          "resembles": "Conífera estilizada grande, lembra pinheiro ou abeto alto",
+          "suitableBiomes": [
+            "floresta-coniferas",
+            "taiga-estilizada",
+            "floresta-montana"
+          ],
+          "avoidBiomes": [
+            "praia-de-coqueiros"
+          ],
+          "moodTags": [
+            "gigante",
+            "cônica",
+            "conífera"
+          ]
+        },
+        "confidence": {
+          "geometry": "moderate",
+          "species": "low",
+          "finalColor": "unverified"
+        },
+        "evidenceScope": "two official component mesh thumbnails, not an assembled textured render"
+      }
+    }
+  ]
+}
