@@ -6,30 +6,30 @@
     "Clouds": 1,
     "Decal": 1,
     "DepthOfFieldEffect": 1,
-    "Folder": 24,
-    "InputAction": 300,
-    "InputBinding": 700,
-    "InputContext": 40,
+    "Folder": 28,
+    "InputAction": 330,
+    "InputBinding": 770,
+    "InputContext": 44,
     "LocalScript": 4,
-    "MeshPart": 276,
-    "Model": 138,
-    "ModuleScript": 542,
-    "Part": 83,
-    "Script": 43,
+    "MeshPart": 316,
+    "Model": 162,
+    "ModuleScript": 596,
+    "Part": 91,
+    "Script": 48,
     "Sky": 1,
     "SpawnLocation": 63,
     "StarterCharacterScripts": 1,
     "StarterPlayerScripts": 1,
     "SunRaysEffect": 1,
-    "SurfaceAppearance": 276,
+    "SurfaceAppearance": 308,
     "Terrain": 1,
     "Texture": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 10,
+  "loadedVersion": 11,
   "placeId": "93428341652658",
   "schemaVersion": 1,
-  "stateDigest": "164650009277020f7e8d76b151fa7cc9ca4c81044909983f4013c7854b017c68",
+  "stateDigest": "6a4d49bb1148f1cd2a9eeab95eec42459cc510b9f9be7a60ba7ef64b61961a4c",
   "terrain": {
     "terrain:chunk--1--1": {
       "bounds": [
@@ -718,7 +718,7 @@
       "waterVoxels": 0
     }
   },
-  "total": 2501,
+  "total": 2772,
   "universeId": "10769712441",
   "workspaceRoots": [
     {
@@ -762,6 +762,12 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSWorldBoundary\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "RSWorldBoundary"
+    },
+    {
+      "class": "Folder",
+      "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSEnvironmentP4\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "RSEnvironmentP4"
     }
   ]
 }
