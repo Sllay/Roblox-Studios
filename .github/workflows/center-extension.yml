@@ -12,7 +12,7 @@ on:
         type: boolean
         default: false
   push:
-    paths: ['games/maps/mapa-principal/docs/center-preview-once.trigger']
+    paths: ['games/maps/mapa-principal/docs/center-apply-once.trigger']
 permissions:
   contents: read
   actions: read
@@ -46,6 +46,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then OP=apply; fi
           if [[ "$OP" == apply || "$OP" == rollback ]]; then args+=(--confirm-staging); fi
           if [[ "$OP" == verify || "$OP" == rollback ]]; then args+=(--evidence dist/prior-center/rollback-evidence.json); fi
           python tools/center_extension.py "$OP" "${args[@]}"
