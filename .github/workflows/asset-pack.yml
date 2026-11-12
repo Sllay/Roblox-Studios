@@ -21,8 +21,6 @@ on:
       sample:
         type: boolean
         default: true
-  push:
-    paths: ['games/maps/mapa-principal/docs/pack-inspector-once.trigger']
 permissions:
   contents: read
 jobs:
@@ -46,9 +44,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
-          if [[ "$GITHUB_EVENT_NAME" == push ]]; then
-            args+=(--selector games/maps/mapa-principal/docs/tree-01-selector.json)
-          elif [[ -n "$SELECTOR" ]]; then
+          if [[ -n "$SELECTOR" ]]; then
             printf "%s" "$SELECTOR" > "$RUNNER_TEMP/selector.json"
             args+=(--selector "$RUNNER_TEMP/selector.json")
           elif [[ "$SAMPLE" == true ]]; then args+=(--sample); fi
