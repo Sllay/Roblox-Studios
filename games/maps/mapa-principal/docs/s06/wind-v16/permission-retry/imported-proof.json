@@ -1,0 +1,230 @@
+{
+  "assetId": "91515745821527",
+  "boneNames": [
+    {
+      "name": "Bough_2_0",
+      "parent": "Root",
+      "position": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "name": "Bough_2_1",
+      "parent": "Root",
+      "position": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "name": "Bough_2_2",
+      "parent": "Root",
+      "position": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "name": "Bough_2_3",
+      "parent": "Root",
+      "position": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "name": "Bough_2_4",
+      "parent": "Root",
+      "position": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "name": "Bough_2_5",
+      "parent": "Root",
+      "position": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "name": "Bough_3_0",
+      "parent": "Root",
+      "position": [
+        0,
+        6.800000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_3_1",
+      "parent": "Root",
+      "position": [
+        0,
+        6.800000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_3_2",
+      "parent": "Root",
+      "position": [
+        0,
+        6.800000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_3_3",
+      "parent": "Root",
+      "position": [
+        0,
+        6.800000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_3_4",
+      "parent": "Root",
+      "position": [
+        0,
+        6.800000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_3_5",
+      "parent": "Root",
+      "position": [
+        0,
+        6.800000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_4_0",
+      "parent": "Root",
+      "position": [
+        0,
+        8.300000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_4_1",
+      "parent": "Root",
+      "position": [
+        0,
+        8.300000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_4_2",
+      "parent": "Root",
+      "position": [
+        0,
+        8.300000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_4_3",
+      "parent": "Root",
+      "position": [
+        0,
+        8.300000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_4_4",
+      "parent": "Root",
+      "position": [
+        0,
+        8.300000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Bough_4_5",
+      "parent": "Root",
+      "position": [
+        0,
+        8.300000190734863,
+        0
+      ]
+    },
+    {
+      "name": "Crown",
+      "parent": "Root",
+      "position": [
+        0,
+        8.699999809265137,
+        0
+      ]
+    },
+    {
+      "name": "Root",
+      "parent": "RS_PineCanopy",
+      "position": [
+        0,
+        -5.639999866485596,
+        0
+      ]
+    }
+  ],
+  "bones": 20,
+  "boughs": 18,
+  "classes": {
+    "AnimationController": 1,
+    "Bone": 20,
+    "CFrameValue": 66,
+    "Folder": 1,
+    "MeshPart": 1,
+    "Model": 1
+  },
+  "clientRenderVerified": false,
+  "crowns": 1,
+  "dependencies": [
+    {
+      "callback": {
+        "rbxassetid://91110653005310": "Success"
+      },
+      "error": "",
+      "loaded": true,
+      "meshId": "rbxassetid://91110653005310",
+      "name": "RS_PineCanopy",
+      "size": [
+        9,
+        8.719999313354492,
+        7.794229030609131
+      ]
+    }
+  ],
+  "editableTested": false,
+  "loadedVersion": 16,
+  "meshLoaded": true,
+  "meshes": 1,
+  "noPlaceWrites": true,
+  "placeId": "93428341652658",
+  "roots": 1,
+  "scripts": 0,
+  "size": [
+    9,
+    8.719999313354492,
+    7.794229030609131
+  ],
+  "skinningVerified": false,
+  "structureVerified": true,
+  "transforms": 18,
+  "universeId": "10769712441"
+}
