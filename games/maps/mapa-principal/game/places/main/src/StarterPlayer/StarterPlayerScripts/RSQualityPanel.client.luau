@@ -31,6 +31,7 @@ label.AutomaticSize=Enum.AutomaticSize.Y;label.BackgroundTransparency=1;label.Te
 local marker=text(panel,"TextButton","Marker",UDim2.new(1,-10,0,29),UDim2.new(0,5,1,-33),"Destacar objeto próximo")
 local selected=nil
 marker.Activated:Connect(function()
+    if active=="Vento" then player:SetAttribute("RSVertexDemoRequested",not player:GetAttribute("RSVertexDemoRequested"));return end
     if highlight.Enabled then highlight.Enabled=false;highlight.Adornee=nil
     elseif selected and selected:IsDescendantOf(W) then highlight.Adornee=selected;highlight.Enabled=true end
 end)
@@ -114,6 +115,7 @@ while gui.Parent do
     if active=="Recursos" and near[resourceChoice] then
         local v=near[resourceChoice].model:GetPivot().Position-p
         marker.Text=string.format("Destacar | direção X %+.0f Z %+.0f",v.X,v.Z)
+    elseif active=="Vento" then marker.Text=if player:GetAttribute("RSVertexDemoRequested") then "Desativar demo de vértices" else "Testar copa por vértices"
     else marker.Text="Destacar objeto próximo" end
     local function add(s)table.insert(report,s) end
     add(string.format("Place v%d | FPS %d | p50 %.1f / p95 %.1f ms",game.PlaceVersion,fps,p50,p95))
@@ -132,6 +134,7 @@ while gui.Parent do
     elseif active=="Vento" then
         add("Vento global: "..vec(W.GlobalWind));add("Elegíveis: "..attr(wind,"Eligible").." | ativos: "..attr(wind,"Active"))
         add("Árvores / arbustos: "..attr(wind,"ActiveTrees").." / "..attr(wind,"ActiveBushes"))
+        add("Demo vértices: "..attr(player,"RSVertexDemoStatus").." | ms: "..attr(player,"RSVertexDemoMs"))
         add("Rigged elegíveis / ativos: "..attr(wind,"RiggedEligible").." / "..attr(wind,"RiggedActive"))
         add("Ângulo pico: "..attr(wind,"PeakAngleDegrees").." | custo ms: "..attr(wind,"MeanUpdateMs"))
         add("Rejeitados: "..attr(wind,"FlagRejected").." | não mapeados: "..attr(wind,"Unmapped"))

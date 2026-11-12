@@ -249,7 +249,7 @@ task.spawn(function()
     root:SetAttribute("RSQueryStatus",if confirmed>0 then "ray_available" elseif estimated>0 then "voxel_only" else "query_unavailable")
     print("RSQuality spawn",confirmed,estimated,missing,game:GetService("HttpService"):JSONEncode(reasons))
     local pass,estimate,review=0,0,0
-    for _,folder in {W.RSManagedAssets,W.RSSceneBuilder.Models,W.RSWorldVegetation.Models} do
+    for _,folder in {W.RSManagedAssets,W.RSSceneBuilder.Models,W.RSWorldVegetation.Models,W:WaitForChild("RSVegetationS06").Models} do
         for _,m in folder:GetChildren() do
             if not m:IsA("Model") then continue end
             local p=m:GetPivot().Position
