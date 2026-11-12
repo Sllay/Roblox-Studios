@@ -1,0 +1,30 @@
+name: S06.4 canopy deformation permission probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/s06-canopy-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: bash tools/install-luau.sh
+      - run: python tools/canopy_capability_probe.py
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s06-4-capability
+          path: dist/s06-4/
+          if-no-files-found: warn
