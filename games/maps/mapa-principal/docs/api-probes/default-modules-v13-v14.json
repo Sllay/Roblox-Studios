@@ -1,0 +1,26 @@
+{
+  "runId": 43261957668,
+  "sourceCommit": "d82ee0776bcf0c2fa5d75539be7e67679d069101",
+  "beforeVersion": 13,
+  "afterVersion": 14,
+  "before": {
+    "playerModuleRoots": 13,
+    "playerModuleRecords": 2106,
+    "atomicBindingRecords": 13,
+    "total": 3218
+  },
+  "after": {
+    "playerModuleRoots": 14,
+    "playerModuleRecords": 2268,
+    "atomicBindingRecords": 14,
+    "total": 3385
+  },
+  "exactCloneDeltaRecords": 164,
+  "otherDeltaRecords": 7,
+  "terrainUnchanged": true,
+  "causeProven": false,
+  "deletionAuthorized": false,
+  "noPlaceWrites": true,
+  "universeId": "10769712441",
+  "placeId": "93428341652658"
+}

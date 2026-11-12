@@ -34,3 +34,5 @@ Terrain atlas live verified v14 (43258670029): nine native region hashes, 9216 s
 Use [NEXT_STEPS.md](NEXT_STEPS.md) as the current prioritized game/toolchain backlog, with prerequisites and gates. Historical priorities above remain design context. No Studio host connected or production authorization. Every completed step records its own evidence.
 
 S01-A: exact composed Scene Patch compilation, task identity and exclusive write journal, GET-only resume, expected version/digest guard before baseline record. Pinned v13/v14 duplicate comparison read-only. See NEXT_STEPS.md for status; no automatic rollback or duplicate removal.
+
+S01 forensic evidence: v13→v14 164 exact default clone delta records; 14 PlayerModule roots, 2268 records inside, 3385 total. Engine cause still unproven. New transaction manifest binds prepared operations/source hashes and target baseline; preview is read-only, apply existing Scene Patch only, 500-record reserve. GET-only reconciliation does not promote baseline or authorize retry. See NEXT_STEPS.md.

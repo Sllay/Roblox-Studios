@@ -198,10 +198,10 @@
     },
     {
       "id": "scene.transaction",
-      "entry": null,
+      "entry": "tools/scene_transaction.py",
       "mode": "staging_write",
-      "status": "planned",
-      "purpose": "Compose typed operations into one verified save with recovery receipt",
+      "status": "implemented",
+      "purpose": "Hash-bound reviewed transaction for existing Scene Patch operations; not coupled environment or terrain",
       "requires": [
         "scene.sync",
         "quality.gate"
@@ -289,7 +289,7 @@
       "id": "scene.default_forensics",
       "entry": "tools/default_module_forensics.py",
       "mode": "read",
-      "status": "implemented",
+      "status": "live_verified",
       "purpose": "Compare pinned versions for exact default-module clone growth",
       "requires": [
         "scene.sync"

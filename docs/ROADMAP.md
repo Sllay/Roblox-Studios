@@ -108,3 +108,5 @@
 ## Roteiro operacional atual — 2026-11-12
 
 A sequência ativa de P4.5 → P5 está em [NEXT_STEPS.md](NEXT_STEPS.md). S00 (roteiro) concluído; S01 (segurança/transações) é o próximo checkpoint, seguido por S02 Spatial Engine, S03 Asset Lab, S04 Physics Builder/vento, S05 staging, S06 runtime/mobile, S07 visual, S08 APIs/Studio, S09 MCP e S10 handoff. O roteiro distingue planejado, implementado, verificado, publicado e aceite mobile. Baseline v14; não reaplicar planos históricos. As entradas anteriores acima são histórico, não uma fila de execução.
+
+- [ ] S01: composed task gate, exclusive journal, GET-only reconciliation, coupled-root guard and pinned default clone forensic evidence verified; hash-bound Scene Patch transaction preview pending. Default-module cleanup, isolated restore and coupled environment transaction remain open.

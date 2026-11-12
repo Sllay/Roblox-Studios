@@ -101,6 +101,8 @@ def main():
     require(preview.get("preview") is True and preview.get("operations")==len(ops) and preview["loadedVersion"]==base["loadedVersion"],"Preview contract mismatch")
     if p.operation=="preview":print("PATCH_PREVIEW",json.dumps(preview));return
     require(p.confirm_staging,"Explicit confirmation required")
+    from transaction_policy import require_budget
+    budget=require_budget(base,ops);write(p.output/"inventory-budget.json",budget)
     require(not (p.output/"cloud-task.json").exists(),"Prior write journal; reconcile before apply")
     from script_quality import main as quality
     require(quality([])==0,"Luau gate")
