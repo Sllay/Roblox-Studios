@@ -17,3 +17,6 @@
 
 - [x] Asset access preflight com diagnóstico separado de autorização, política e rate limit.
 - [x] Staging readiness e bloqueio global de aliases de produção.
+
+- [x] Inventário de packs e extração individual em memória (29 Models, Bush_01 clonado e serializado).
+- [ ] Auditoria offline PBR, seleção visual de submodelos e integração de seletor ao plano de importação persistente.

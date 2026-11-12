@@ -14,6 +14,10 @@ on:
         type: string
         default: '79689531752352'
         required: true
+      selector_json:
+        description: Optional exact candidate selector JSON array from pack.json
+        type: string
+        required: false
       sample:
         type: boolean
         default: true
@@ -37,11 +41,17 @@ jobs:
           GAME: ${{ inputs.game || 'mapa-principal' }}
           PLACE: ${{ inputs.place || 'main' }}
           ASSET: ${{ inputs.asset_id || '79689531752352' }}
-          SAMPLE: ${{ github.event_name == 'push' || inputs.sample }}
+          SAMPLE: ${{ inputs.sample }}
+          SELECTOR: ${{ inputs.selector_json }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
-          if [[ "$SAMPLE" == true ]]; then args+=(--sample); fi
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then
+            args+=(--selector games/maps/mapa-principal/docs/tree-01-selector.json)
+          elif [[ -n "$SELECTOR" ]]; then
+            printf "%s" "$SELECTOR" > "$RUNNER_TEMP/selector.json"
+            args+=(--selector "$RUNNER_TEMP/selector.json")
+          elif [[ "$SAMPLE" == true ]]; then args+=(--sample); fi
           python tools/assets/pack.py --game "$GAME" --place "$PLACE" --asset-id "$ASSET" "${args[@]}"
       - uses: actions/upload-artifact@v4
         if: always()
