@@ -20,7 +20,7 @@ def main():
     g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging");base=read(state_path(target));key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
     require(base["loadedVersion"]==16,"Pinned staging scope")
     data=a.rig.read_bytes();require(hashlib.sha256(data).hexdigest()==EXPECTED,"Reviewed original GLB hash")
-    c=task(target,key,'return syncResult({creatorId=tostring(game.CreatorId),creatorType=game.CreatorType.Name,noPlaceWrites=true})',read_version=16,compile_source=True)
+    c=task(target,key,'do\nreturn syncResult({creatorId=tostring(game.CreatorId),creatorType=game.CreatorType.Name,noPlaceWrites=true})\nend',read_version=16,compile_source=True)
     require(c["noPlaceWrites"] and c["loadedVersion"]==16 and c["creatorType"] in ("User","Group") and c["creatorId"].isdigit() and int(c["creatorId"])>0,"Creator scope")
     report={"schemaVersion":1,"originalSha256":EXPECTED,"creatorType":c["creatorType"],"creatorId":c["creatorId"],"status":"post_started","noPlaceWrites":True,"retryAllowed":False}
     dest=a.output/"upload-receipt.json";a.output.mkdir(parents=True,exist_ok=True)
