@@ -36,6 +36,9 @@ def dispatch():
     helpers=p[p.index("local allowed="):p.index("local function cloneSelected")]
     helpers='local Assets=game:GetService("AssetService")\nlocal Serial=game:GetService("SerializationService")\n'+helpers
     source=(ROOT/"tools/sync/environment_layout.luau").read_text().replace("-- __RS_ASSET_HELPERS__",helpers)
+    surface=(ROOT/"tools/terrain/surface_fields.luau").read_text()
+    require(source.count("-- __RS_SURFACE_FIELDS__")==1,"Surface injection marker")
+    source=source.replace("-- __RS_SURFACE_FIELDS__","local Surface=(function()\n"+surface+"\nend)()")
     return "do\n"+source+"\nend"
 def verify_layout(plan,rows):
     require(len(rows)==plan["maxNewModels"] and len({r["id"] for r in rows})==len(rows),"Incomplete or duplicate layout")

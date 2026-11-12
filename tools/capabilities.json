@@ -119,7 +119,8 @@
       "requires": [
         "scene.sync",
         "asset.inventory",
-        "quality.gate"
+        "quality.gate",
+        "terrain.surface"
       ],
       "produces": [
         "layout",
@@ -212,16 +213,16 @@
     },
     {
       "id": "terrain.surface",
-      "entry": null,
+      "entry": "tools/terrain/surface_fields.luau",
       "mode": "offline",
-      "status": "planned",
-      "purpose": "Reusable terrain surface fields, altitude, normals and resource suitability",
+      "status": "implemented",
+      "purpose": "Pure dry-grass height interpolation, footprint mask, slope/relief and altitude percentile",
       "requires": [
         "scene.sync"
       ],
       "produces": [
-        "surface index",
-        "placement rules"
+        "surface estimates",
+        "altitude threshold"
       ]
     },
     {

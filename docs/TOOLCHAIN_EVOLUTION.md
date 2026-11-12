@@ -16,3 +16,6 @@ User approved day/night, grass/wind and stable performance. Fix foliage visibili
 
 ## Definition of done
 Every capability has entry point, mode, dependencies, evidence output, explicit scope and tests. A planned tool is not callable. New features reuse existing APIs and are marked implemented/verified separately. No deadline guarantee; progress recorded in commits and CI.
+
+## Surface Fields first implementation
+Pure Luau tools/terrain/surface_fields.luau extracts the existing four-stud interpolation and dry-footprint policy into shared functions, with slope, relief, horizontal gradients and empirical altitude percentile. Environment layout consumes it directly; tests run in official Luau VM plus LSP. Native channel loading and digest verification remain in the caller. This is the first reusable surface policy, not a persistent spatial cache or full biome generator. Future high-altitude tree selection and small prop distribution should consume this policy. Runtime normal/contact validation remains distinct.

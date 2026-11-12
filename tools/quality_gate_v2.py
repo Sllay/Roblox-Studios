@@ -15,6 +15,9 @@ def main():
     wind=POLICY.parent.parent/"ReplicatedStorage"/"RSWindPolicy.luau"
     subprocess.run([lsp,"analyze",f"--definitions={definitions}",str(wind)],cwd=ROOT,check=True)
     subprocess.run([vm,str(ROOT/"tests/luau/wind_policy.luau")],cwd=ROOT,check=True)
+    surface=ROOT/"tools/terrain/surface_fields.luau"
+    subprocess.run([lsp,"analyze",f"--definitions={definitions}",str(surface)],cwd=ROOT,check=True)
+    subprocess.run([vm,str(ROOT/"tests/luau/surface_fields.luau")],cwd=ROOT,check=True)
     with tempfile.TemporaryDirectory() as d:
         p=Path(d)/"bad.luau";p.write_text('--!strict\nlocal bad: number = "not a number"\nprint(bad)\n')
         r=subprocess.run([lsp,"analyze",f"--definitions={definitions}",str(p)],cwd=ROOT,capture_output=True,text=True)

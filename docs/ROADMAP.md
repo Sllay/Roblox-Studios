@@ -93,3 +93,5 @@
 - [ ] P4.5 mobile feedback: wind foliage mapping and slower visible sway corrected in source; read-only v13 preflight and pure policy tests added. Full tree cylinder migration, smaller abundant stones/sticks, high-altitude dry trees and visible Bush_03 pending. See mapa-principal/docs/P45_POLISH.md.
 
 - [ ] Agent-ready toolchain evolution: capability registry, offline discovery and shared Scene Sync result envelope implemented; transaction/recovery, terrain surface index, real client visual gate and MCP typed interface planned. See docs/TOOLCHAIN_EVOLUTION.md.
+
+- [ ] Terrain Surface Fields: reusable pure Luau height/dry footprint/slope/relief/altitude percentile integrated into environment layout, executable tests; remote layout regression and persistent spatial cache pending.
