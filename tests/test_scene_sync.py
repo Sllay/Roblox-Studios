@@ -17,3 +17,17 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(key_for(r),"managed:stable")
         r["managedId"]=""
         self.assertNotEqual(key_for(r),key_for({**r,"path":[{"name":"B"}]}))
+
+    def test_stale_guard(self):
+        from unittest.mock import patch
+        from scene_sync import require_current,WorkspaceError
+        import tempfile,json
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/"state.json"
+            base={"universeId":"1","placeId":"2","loadedVersion":6,"records":{"a":1},"stateDigest":sha({"a":1})}
+            path.write_text(json.dumps(base))
+            with patch("scene_sync.state_path",return_value=path),patch("scene_sync.capture",return_value=base):
+                self.assertEqual(require_current({},"key",6),base)
+                with self.assertRaises(WorkspaceError):require_current({},"key",5)
+            with patch("scene_sync.state_path",return_value=path),patch("scene_sync.capture",return_value={**base,"loadedVersion":7}):
+                with self.assertRaises(WorkspaceError):require_current({},"key")

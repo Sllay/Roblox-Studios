@@ -63,10 +63,11 @@ class AssetPipelineTests(unittest.TestCase):
         after=dict(before,loadedVersion=6,objects=[{"managedId":"tree-one","path":"Workspace.RSManagedAssets.tree-one"}])
         with tempfile.TemporaryDirectory() as tmp:
             output=Path(tmp)
-            with patch.object(pipeline,"capture",side_effect=[before,after]), patch.object(pipeline,"call",side_effect=[
+            with patch("scene_sync.require_current",return_value=before) as guard, patch.object(pipeline,"capture",side_effect=[before,after]), patch.object(pipeline,"call",side_effect=[
                     {"saved":True,"loadedVersion":5},
                     {"verified":True,"loadedVersion":6}]) as remote:
                 pipeline.apply(self.target,"secret",p,self.catalog,output)
+                guard.assert_called_once_with(self.target,"secret",5)
                 self.assertEqual([x.args[2] for x in remote.call_args_list],["apply","verify"])
                 self.assertEqual(remote.call_args_list[0].kwargs["signature"],["record"])
                 self.assertEqual(remote.call_args_list[1].kwargs["position"],[1,2,3])

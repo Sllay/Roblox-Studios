@@ -1,1 +1,1 @@
-P3 test preview: terrain extension and native central spawns. No remote save.
+Retry preview after updating old mocked pipeline test for mandatory sync guard. Read-only.
