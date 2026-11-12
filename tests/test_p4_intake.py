@@ -23,3 +23,15 @@ class P4IntakeTests(unittest.TestCase):
             self.assertEqual(calls,["1"])
             self.assertEqual(result[0]["status"],"rate_limited")
             self.assertFalse(result[0]["importAuthorized"])
+
+    def test_mixed_inventory_never_authorizes_import(self):
+        def fake(target,key,asset_id):
+            return {"pack":{"inventoryTruncated":False,"totalModels":0,"scriptsInPack":1,
+                "componentInventory":{"codeExecuted":False,"truncated":False,"total":3,
+                    "classes":{"ParticleEmitter":2,"Script":1},"rows":[]}}}
+        with tempfile.TemporaryDirectory() as d:
+            result=run_batch({}, "test", [{"id":"1"}], Path(d),fake)
+            self.assertEqual(result[0]["status"],"inventory_observed")
+            self.assertEqual(result[0]["scripts"],1)
+            self.assertEqual(result[0]["components"],3)
+            self.assertFalse(result[0]["importAuthorized"])

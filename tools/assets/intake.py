@@ -19,7 +19,10 @@ def load_intake(path):
         raise WorkspaceError("Duplicate or empty intake")
     return rows
 
-def run_batch(target,key,rows,output,inspect_fn=inspect):
+def inspect_mixed(target,key,asset_id):
+    return inspect(target,key,asset_id,components=True)
+
+def run_batch(target,key,rows,output,inspect_fn=inspect_mixed):
     results=[]
     for row in rows:
         asset_id=row["id"]
@@ -27,10 +30,16 @@ def run_batch(target,key,rows,output,inspect_fn=inspect):
             report=inspect_fn(target,key,asset_id)
             pack=report["pack"]
             write(output/f"pack-{asset_id}.json",report)
-            result={"id":asset_id,"status":"inventory_truncated" if pack["inventoryTruncated"] else "inventory_observed",
-                    "models":pack["totalModels"],"scripts":pack["scriptsInPack"],"importAuthorized":False}
+            mixed=pack.get("componentInventory")
+            if not isinstance(mixed,dict) or mixed.get("codeExecuted") is not False:
+                raise WorkspaceError("Mixed inventory evidence missing")
+            result={"id":asset_id,"status":"inventory_truncated" if pack["inventoryTruncated"] or mixed["truncated"] else "inventory_observed",
+                    "models":pack["totalModels"],"scripts":pack["scriptsInPack"],
+                    "components":mixed["total"],"classes":mixed["classes"],"importAuthorized":False}
         except WorkspaceError as exc:
             status,action=classify_failure(exc)
+            if "Asset is not a Model" in str(exc):
+                status,action="unsupported_asset_type","Inspect the Creator Store asset type with a dedicated read-only tool."
             result={"id":asset_id,"status":status,"diagnostic":str(exc)[:1000],"nextAction":action,"importAuthorized":False}
         results.append(result)
         write(output/"summary.json",{"schemaVersion":1,"requested":[r["id"] for r in rows],
