@@ -2,6 +2,7 @@
 local Players=game:GetService("Players")
 local RunService=game:GetService("RunService")
 local Stats=game:GetService("Stats")
+local ContentProvider=game:GetService("ContentProvider")
 local W=workspace
 if game.PlaceId~=93428341652658 then return end
 local player=Players.LocalPlayer
@@ -17,7 +18,8 @@ local title=text(panel,"TextLabel","Title",UDim2.new(1,0,0,28),UDim2.new(),"RS D
 local tabs={"Mundo","Recursos","Vento","Física"}
 local active="Mundo"
 local buttons={}
-local highlight=Instance.new("Highlight");highlight.Name="RSLocalInspector";highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;highlight.FillTransparency=.8;highlight.OutlineColor=Color3.fromRGB(255,206,85);highlight.Enabled=false;highlight.Parent=gui
+local highlight=Instance.new("Highlight");highlight.Name="RSLocalInspector";highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;highlight.FillTransparency=.8;highlight.OutlineColor=Color3.fromRGB(255,206,85);highlight.Enabled=false;highlight.Parent=W
+gui.Destroying:Connect(function() highlight:Destroy() end)
 for i,name in tabs do
     local b=text(panel,"TextButton","Tab"..i,UDim2.new(.25,-2,0,30),UDim2.new((i-1)*.25,1,0,30),name)
     b.Activated:Connect(function() active=name;highlight.Enabled=false;highlight.Adornee=nil end)
@@ -44,7 +46,10 @@ RunService.RenderStepped:Connect(function(dt)
         table.sort(samples);p50=samples[math.max(1,math.ceil(#samples*.5))] or 0;p95=samples[math.max(1,math.ceil(#samples*.95))] or 0;table.clear(samples)
     end
 end)
-local function attr(o,k) return tostring(o and o:GetAttribute(k) or "-") end
+local function attr(o,k)
+    local value=o and o:GetAttribute(k)
+    return if value==nil then "-" else tostring(value)
+end
 local function vec(v) return string.format("%.1f, %.1f, %.1f",v.X,v.Y,v.Z) end
 local function terrainAt(p)
     local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Include;params.FilterDescendantsInstances={W.Terrain}
@@ -53,7 +58,7 @@ local function terrainAt(p)
 end
 local roots={"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets","RSResourcesP45"}
 local function scan(p)
-    local counts={Stone=0,Stick=0,Tree=0,Bush=0,Rock=0}
+    local counts={Stone=0,Stick=0,Tree=0,Bush=0,Rock=0};local partial=0
     local near={}
     for _,name in roots do
         local root=W:FindFirstChild(name)
@@ -68,13 +73,14 @@ local function scan(p)
                 kind=if string.find(lower,"rock",1,true) then "Rock" elseif string.find(lower,"bush",1,true) then "Bush" elseif string.find(lower,"tree",1,true) or string.find(lower,"pine",1,true) then "Tree" else nil
             end
             if not kind then continue end
+            if not m:FindFirstChildWhichIsA("MeshPart",true) then partial+=1;continue end
             local pos=m:GetPivot().Position
             local d=(Vector2.new(pos.X,pos.Z)-Vector2.new(p.X,p.Z)).Magnitude
             counts[kind]+=1
             if not near[kind] or d<near[kind].distance then near[kind]={model=m,distance=d,root=root} end
         end
     end
-    return counts,near
+    return counts,near,partial
 end
 local function describe(row)
     if not row then return "Não carregado nesta sessão" end
@@ -82,9 +88,11 @@ local function describe(row)
     local yExtent=(math.abs(cf.RightVector.Y)*s.X+math.abs(cf.UpVector.Y)*s.Y+math.abs(cf.LookVector.Y)*s.Z)/2
     local gap=if h then string.format("%.2f",cf.Position.Y-yExtent-h) else "sem ray"
     local part=m:FindFirstChildWhichIsA("MeshPart",true)
+    local fetch="N/A"
+    if part then local ok,status=pcall(function()return ContentProvider:GetAssetFetchStatus(part.MeshId)end);if ok then fetch=tostring(status) end end
     local folder=row.root:FindFirstChild("Collisions")
     local shaft=folder and folder:FindFirstChild(m.Name)
-    return string.format("%s\nEspécie: %s | dist: %.1f\nPos: %s | tamanho: %s\nSolo: %s | base-solo: %s\nMesh: %s | grupo: %s | colisão: %s\nColisor tronco: %s",m.Name,attr(m,"RSSpecies"),row.distance,vec(cf.Position),vec(s),h and string.format("%.2f",h) or "N/A",gap,part and part.MeshId or "-",part and part.CollisionGroup or "-",part and tostring(part.CanCollide) or "-",shaft and shaft:IsA("BasePart") and vec(shaft.Size) or "-")
+    return string.format("%s\nEspécie: %s | dist: %.1f\nPos: %s | tamanho: %s\nSolo: %s | base-solo: %s\nMesh: %s | grupo: %s | colisão: %s\nColisor tronco: %s | asset: %s",m.Name,attr(m,"RSSpecies"),row.distance,vec(cf.Position),vec(s),h and string.format("%.2f",h) or "N/A",gap,part and part.MeshId or "-",part and part.CollisionGroup or "-",part and tostring(part.CanCollide) or "-",shaft and shaft:IsA("BasePart") and vec(shaft.Size) or "-",fetch)
 end
 local resourceChoice="Stone"
 local cycle=text(panel,"TextButton","Cycle",UDim2.fromOffset(85,25),UDim2.new(1,-88,0,1),"Pedra")
@@ -101,8 +109,12 @@ while gui.Parent do
     local root=W:FindFirstChild("RSCentralSpawns")
     local resource=W:FindFirstChild("RSResourcesP45")
     local wind=player:FindFirstChild("RSWindDiagnostics")
-    local counts,near=scan(p)
+    local counts,near,partial=scan(p)
     local report={}
+    if active=="Recursos" and near[resourceChoice] then
+        local v=near[resourceChoice].model:GetPivot().Position-p
+        marker.Text=string.format("Destacar | direção X %+.0f Z %+.0f",v.X,v.Z)
+    else marker.Text="Destacar objeto próximo" end
     local function add(s)table.insert(report,s) end
     add(string.format("Place v%d | FPS %d | p50 %.1f / p95 %.1f ms",game.PlaceVersion,fps,p50,p95))
     if active=="Mundo" then
@@ -114,7 +126,7 @@ while gui.Parent do
         add("Props raio / voxel / revisar: "..attr(root,"RSPropsPass").." / "..attr(root,"RSPropsEstimate").." / "..attr(root,"RSPropsReview"))
         add(describe(near.Tree));selected=near.Tree and near.Tree.model
     elseif active=="Recursos" then
-        add("Carregados: "..counts.Stone.." pedras / "..counts.Stick.." gravetos")
+        add("Carregados com mesh: "..counts.Stone.." pedras / "..counts.Stick.." gravetos | modelos parciais: "..partial)
         add("Servidor: "..attr(resource,"RSPhysicsStoneCount").." / "..attr(resource,"RSPhysicsStickCount").." | matriz: "..attr(resource,"RSPhysicsMatrixOK"))
         add("Próximo selecionado: "..resourceChoice);add(describe(near[resourceChoice]));selected=near[resourceChoice] and near[resourceChoice].model
     elseif active=="Vento" then

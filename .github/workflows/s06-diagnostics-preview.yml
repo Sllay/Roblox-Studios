@@ -1,4 +1,4 @@
-name: S06.1 diagnostics and physics preview
+name: S06.1 diagnostics and physics preview v2
 on:
   push:
     branches: [main]

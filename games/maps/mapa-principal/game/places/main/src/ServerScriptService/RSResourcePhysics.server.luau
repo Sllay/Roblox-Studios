@@ -59,6 +59,7 @@ local function applyResources(world)
     return stone,stick,large
 end
 -- __RS_RESOURCE_RUNTIME__
+if game.PlaceId~=93428341652658 then return end
 local api,backend=configure(W)
 local stone,stick,large=applyResources(W)
 local function watch(character)
