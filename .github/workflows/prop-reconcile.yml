@@ -24,8 +24,6 @@ on:
       confirm_staging:
         type: boolean
         default: false
-  push:
-    paths: ['games/maps/mapa-principal/docs/prop-reconcile-once.trigger']
 permissions:
   contents: read
   actions: read

@@ -49,7 +49,8 @@
 - [x] P3 center migration saved v7, independent terrain/spawn/archive verification; whole-service diff identified default StarterPlayer additions; exact read-only reconciliation passed 43143804231.
 - [x] Generic Scene Patch CLI/workflow, add/edit/move/adopt/archive/restore/create/update script; tests and live read-only preview 43144089622 passed.
 - [x] Post-write Scene Sync v7 committed 43143950368; durable migration receipt, two native Terrain regions and query index.
-- [ ] Mobile v7: central random spawn, seamless expanded ground, old gray platform gone, recovery if falling, no regression of forest/lake. Generic patch apply variants and inverse remain untested remotely.
+- [x] Mobile v7 user confirmed spawn worked and reported artificial tree pit, low trunk, corpse falling, absent clouds, sparse spawn distribution; superseded by v8 corrective world test.
+- [ ] Generic patch apply variants and inverse remain untested remotely.
 
 - [x] P3/P4 world migration: 3x3 playable + 16 horizon chunks, connected native river/lake, 138 plants, prop reanchor, 53 spawn candidates, clouds, v8 saved and verified 43147204931.
 - [x] P4 initial typed Roblox gameplay policy, executable Luau logic tests (11), negative type gate and runtime diagnostics panel. CI and world verification passed.
@@ -57,4 +58,4 @@
 - [ ] P4 live mobile: actual spawn distribution, death/corpse physics, river traversal/shore appearance, clouds and FPS; broader typed script coverage and automated engine gameplay still pending.
 
 - [x] Scene Sync v8 registered 25 native regions, 2,162 observed instances and environment coverage (43147668959); exact world tile hashes match receipt.
-- [x] Dedicated prop support reconciliation preview/apply tool, no Terrain writes; paint transform preservation check added. Real preview pending.
+- [x] Dedicated prop support reconciliation preview/apply tool, no Terrain writes; paint transform preservation check added. Live read-only central chunk preview 43147865460 passed: 7 supported props, zero moves/reviews/unmanaged; no save.
