@@ -14,7 +14,7 @@ Monorepositório de desenvolvimento de jogos Roblox orientado por agentes de IA,
 
 ## Jogos existentes
 
-- `games/maps/mapa-principal/`: projeto inicial com Place `main` e IDs provisórios cadastrados em produção, sem publicação.
+- `games/maps/mapa-principal/`: projeto inicial com Place `main` e IDs verificados em produção; teste da plataforma publicado e validado no mobile.
 - `games/maps/sandbox-demo/`: exemplo técnico de dois Places (`lobby` e `arena`).
 - `games/maps/_template/`: modelo canônico de novos jogos.
 
@@ -48,7 +48,7 @@ Os workflows verificam a sintaxe de Scripts, LocalScripts e ModuleScripts com Lu
 
 ## Publicação e IDs
 
-Cada jogo possui `deploy.targets.json` com seus Universe/Place IDs por ambiente (`staging` e `production`). **IDs não são secretos; nunca inclua chaves aqui.** A chave Open Cloud pode ficar em **Actions → Repository secrets** com o nome `ROBLOX_OPEN_CLOUD_API_KEY`; os IDs ficam apenas nos manifests de deploy. Environment secrets são uma alternativa de maior isolamento por ambiente. O workflow manual `.github/workflows/publish.yml` compila e publica um único Place, com confirmação explícita e validação assíncrona. Configuração de IDs e secrets ainda precisa ser feita por você. Veja [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Cada jogo possui `deploy.targets.json` com seus Universe/Place IDs por ambiente (`staging` e `production`). **IDs não são secretos; nunca inclua chaves aqui.** A chave Open Cloud pode ficar em **Actions → Repository secrets** com o nome `ROBLOX_OPEN_CLOUD_API_KEY`; os IDs ficam apenas nos manifests de deploy. Environment secrets são uma alternativa de maior isolamento por ambiente. O workflow manual `.github/workflows/publish.yml` compila e publica um único Place, com confirmação explícita e validação assíncrona. O mapa-principal já possui IDs e secret funcionais; novos jogos precisam configurar seus próprios destinos. Veja [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ```sh
 python tools/deploy.py validate
