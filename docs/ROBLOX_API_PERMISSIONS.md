@@ -11,7 +11,7 @@ Creator Dashboard: https://create.roblox.com/dashboard/credentials
 - If using GitHub-hosted runners, do not accidentally restrict the key to a phone IP; prefer an appropriate restricted runner/expiry policy.
 
 ## Separate experience setting
-In staging Creator Dashboard Configure > Settings, enable Mesh / Image APIs (Studio Experience Settings > Security > Allow Mesh / Image APIs). This does not grant ownership or editing rights to third-party meshes. Keep production unchanged. The user will explicitly request the next S06.4 attempt after rotation; no automatic asset POST retry.
+In the current staging Creator Dashboard UI, open Game Details (Detalhes do jogo), enable Mesh / Image APIs (user confirmed this path) (Studio Experience Settings > Security > Allow Mesh / Image APIs). This does not grant ownership or editing rights to third-party meshes. Keep production unchanged. The user will explicitly request the next S06.4 attempt after rotation; no automatic asset POST retry.
 
 ## Evidence and limits
 403 in 43282633795 proves the old credential did not authorize the attempted upload; missing scope is a plausible cause, not a proven diagnosis of the account. GLB Model upload is documented. Custom GPU vertex shader installation is not a public Roblox MeshPart API. EditableMesh permits script-driven vertex positions on authorized geometry, with memory/update-budget considerations; Bone.Transform is an alternative. Compare on original geometry after authorization, do not claim existing meshes are editable.
@@ -24,3 +24,5 @@ Official references:
 
 ## Confirmed retry (2026-11-12)
 Editing the existing key's access permissions worked without changing the secret value. Assets POST returned HTTP 200 and original Model 91515745821527 was approved. Native read-back confirms the model and 20 bones, but vertex operations still fail because staging Mesh/Image APIs are disabled. No further key regeneration or upload is necessary. Enable the separate setting on staging only and retest the existing mesh 91110653005310. Do not use additional advertising, commerce, inventory or permission-write scopes without a separate authorized task.
+
+2026-11-12: user confirmed setting enabled under Detalhes do jogo, not the previously described Configure > Settings path. Run native owned mesh probe before any integration.
