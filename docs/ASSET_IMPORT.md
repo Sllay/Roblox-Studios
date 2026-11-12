@@ -51,3 +51,7 @@ O workflow final é exclusivamente manual. O teste unitário simulado exercita a
 - API de compartilhamento oficial: PATCH /asset-permissions-api/v1/assets/permissions, escopo asset-permissions:write. Requer autoridade real sobre o asset e o destinatário; não foi habilitada escrita de permissões automática. https://create.roblox.com/docs/cloud/reference/scopes
 - Adquirir um modelo grátis pelo Creator Store pode ajudar quando a conta é a proprietária da experiência, conforme o anúncio oficial de LoadAssetAsync. Não garante acesso para experiências de grupo ou dependências; confirmar com preflight. https://devforum.roblox.com/t/loading-third-party-model-assets-in-experience/3939065
 - Para staging, utilizar uma experiência existente separada ou criar uma pelo fluxo oficial do Roblox. Não há criação de Universe por API key documentada nas APIs públicas consultadas. Não solicitar cookie de sessão.
+
+### Validação do preflight
+
+Asset 12549617200 foi classificado corretamente como `asset_access_denied` na versão 2 do Place de produção ([execução 43130702988](https://github.com/Sllay/Roblox-Studios/actions/runs/43130702988)). O workflow é somente manual; sucesso significa diagnóstico concluído, não liberação do asset. Staging ainda não tem IDs configurados. Nenhuma escrita no Roblox foi realizada nesta etapa.

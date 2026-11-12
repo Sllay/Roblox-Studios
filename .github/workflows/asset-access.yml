@@ -19,8 +19,6 @@ on:
         description: Model asset ID to check
         type: string
         required: true
-  push:
-    paths: ['games/maps/mapa-principal/docs/asset-access-once.trigger']
 permissions:
   contents: read
 jobs:
@@ -38,8 +36,8 @@ jobs:
         env:
           GAME: ${{ inputs.game || 'mapa-principal' }}
           PLACE: ${{ inputs.place || 'main' }}
-          TARGET_ENV: ${{ inputs.environment || 'production' }}
-          ASSET: ${{ inputs.asset_id || '12549617200' }}
+          TARGET_ENV: ${{ inputs.environment }}
+          ASSET: ${{ inputs.asset_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           python tools/assets/access.py --game "$GAME" --place "$PLACE" --environment "$TARGET_ENV" --asset-id "$ASSET"
