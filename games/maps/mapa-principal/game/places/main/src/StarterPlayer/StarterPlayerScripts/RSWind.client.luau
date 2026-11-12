@@ -18,6 +18,7 @@ local function eligible(part:MeshPart): boolean
 end
 local function scan()
     local seen:{[MeshPart]:boolean}={}
+    local scanned,flagRejected,unmapped=0,0,0
     for name,owner in roots do
         local root=Workspace:FindFirstChild(name)
         if not root or root:GetAttribute("RSOwner")~=owner then continue end
@@ -39,10 +40,12 @@ local function scan()
             if typeof(species)~="string" then continue end
             local bush=string.sub(species,1,4)=="Bush"
             for _,obj in model:GetChildren() do
-                if not obj:IsA("MeshPart") or not eligible(obj) then continue end
+                if not obj:IsA("MeshPart") then continue end
+                scanned+=1
+                if not eligible(obj) then flagRejected+=1;continue end
                 -- Only audited per-species canopy names + authored foliage material.
                 -- Unknown mesh layouts fail closed; never infer from height alone.
-                if not Policy.foliage(asset,species,obj.Name,obj.Material.Name,obj.MeshId) then continue end
+                if not Policy.foliage(asset,species,obj.Name,obj.Material.Name,obj.MeshId) then unmapped+=1;continue end
                 seen[obj]=true
                 if not entries[obj] then
                     local rest=obj.CFrame
@@ -55,6 +58,9 @@ local function scan()
     local count=0
     for _ in seen do count+=1 end
     diagnostic:SetAttribute("Eligible",count)
+    diagnostic:SetAttribute("ScannedMeshParts",scanned)
+    diagnostic:SetAttribute("FlagRejected",flagRejected)
+    diagnostic:SetAttribute("Unmapped",unmapped)
     for part,e in entries do
         if not seen[part] then
             if e.active and part:IsDescendantOf(Workspace) and eligible(part) then part.CFrame=e.rest end
@@ -93,11 +99,16 @@ local function resetLine(line:Line,center:Vector3,direction:Vector3)
 end
 local scanElapsed=2
 local elapsed=0
+local diagnosticElapsed=0
+local diagnosticPeak=0
+local diagnosticCost=0
+local diagnosticSamples=0
 local connection:RBXScriptConnection?
 connection=RunService.Heartbeat:Connect(function(dt)
-    scanElapsed+=dt;elapsed+=dt
+    scanElapsed+=dt;elapsed+=dt;diagnosticElapsed+=dt
     if scanElapsed>=2 then scanElapsed=0;scan() end
     if elapsed<Policy.updateInterval then return end
+    local started=os.clock()
     local step=math.min(elapsed,0.12);elapsed=0
     local camera=Workspace.CurrentCamera
     local character=player.Character
@@ -122,10 +133,13 @@ connection=RunService.Heartbeat:Connect(function(dt)
     local frames:{CFrame}={}
     local now=Workspace:GetServerTimeNow()
     local axis=Vector3.yAxis:Cross(direction)
+    local activeTrees,activeBushes=0,0
     if center then
         for i=1,math.min(#active,Policy.maxActive) do
             local e=active[i];selected[e.part]=true;e.active=true
             local angle=Policy.angle(now,e.phase,strength,(e.rest.Position-center).Magnitude,e.bush)
+            diagnosticPeak=math.max(diagnosticPeak,math.deg(math.abs(angle)))
+            if e.bush then activeBushes+=1 else activeTrees+=1 end
             local tilt=CFrame.fromAxisAngle(axis,angle)
             table.insert(parts,e.part)
             table.insert(frames,CFrame.new(e.pivot)*tilt*CFrame.new(-e.pivot)*e.rest)
@@ -140,8 +154,19 @@ connection=RunService.Heartbeat:Connect(function(dt)
         end
     end
     if #parts>0 then Workspace:BulkMoveTo(parts,frames,Enum.BulkMoveMode.FireCFrameChanged) end
-    diagnostic:SetAttribute("Active",math.min(#active,Policy.maxActive))
-    diagnostic:SetAttribute("WindStrength",strength)
+    diagnosticCost+=(os.clock()-started)*1000;diagnosticSamples+=1
+    if diagnosticElapsed>=1 then
+        diagnostic:SetAttribute("Active",math.min(#active,Policy.maxActive))
+        diagnostic:SetAttribute("ActiveTrees",activeTrees)
+        diagnostic:SetAttribute("ActiveBushes",activeBushes)
+        diagnostic:SetAttribute("CandidatesInRange",#active)
+        diagnostic:SetAttribute("WindStrength",strength)
+        diagnostic:SetAttribute("WindX",wind.X)
+        diagnostic:SetAttribute("WindZ",wind.Z)
+        diagnostic:SetAttribute("PeakAngleDegrees",diagnosticPeak)
+        diagnostic:SetAttribute("MeanUpdateMs",diagnosticCost/math.max(1,diagnosticSamples))
+        diagnosticElapsed=0;diagnosticPeak=0;diagnosticCost=0;diagnosticSamples=0
+    end
     for _,line in lines do
         if not hrp or not hrp:IsA("BasePart") or strength<0.01 then
             line.trail.Enabled=false;line.life=0
