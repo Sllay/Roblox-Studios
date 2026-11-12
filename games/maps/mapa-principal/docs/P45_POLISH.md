@@ -23,3 +23,6 @@ Run 43270255683, sync b07058b. 108 stones, 108 sticks, 3 Bush_03 moves, 94 tree 
 
 ## Mobile v15 feedback and S06.1
 User found no small stones/sticks, pines too small/low, vegetation too sparse and apparent overlapping old/new generation, large rocks noncolliding, wind needs branch deformation; old panel unchanged. v16 published diagnostic lab and server collision policy (small resources collide with environment, not living player; large rocks solid). No geometry regeneration yet. Next S06.2 unified vegetation preview, S06.3 pines/resources, S06.4 wind deformation, S06.5 compatibility, S06.6 acceptance. See NEXT_STEPS.md. Mobile v16 verification pending.
+
+## S06.2 unified regeneration preview
+212 playable vegetation planned (120 broadleaf, 12 larger pines, 80 bushes), 138 existing IDs reused and 74 new, 24 exterior vegetation preserved. Coverage metric 48.50% ->73.80%; native 212-model/132-collider proof passed 43280368817. No geometry published. Exact plan and maps docs/s06/regeneration-v16; budget blocked (4840 projected vs4500 safe ceiling). Next S06.3 resource replan and pine geometry. Manual test only after all S06 steps per user.

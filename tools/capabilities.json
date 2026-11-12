@@ -418,6 +418,24 @@
         "physics matrix evidence",
         "script plan"
       ]
+    },
+    {
+      "id": "scene.vegetation_regeneration_preview",
+      "entry": "tools/vegetation_regeneration.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Unified coverage-aware forest planning against pinned terrain and model inventory; detached native geometry proof, no writes",
+      "requires": [
+        "scene.sync",
+        "terrain.spatial_index",
+        "scene.physics_preview"
+      ],
+      "produces": [
+        "unified vegetation plan",
+        "before and after maps",
+        "native geometry evidence",
+        "budget report"
+      ]
     }
   ]
 }
