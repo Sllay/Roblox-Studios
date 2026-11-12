@@ -21,7 +21,7 @@ local function getParent(r)
 end
 local function noCritical(obj)
     assert(obj~=W.Terrain and not obj:IsA("SpawnLocation") and obj.Name~="Baseplate","Use dedicated terrain/spawn migration")
-    for _,name in {"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets"} do
+    for _,name in {"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets","RSResourcesP45"} do
         local scene=W:FindFirstChild(name)
         assert(not scene or (obj~=scene and not obj:IsDescendantOf(scene)),"Use dedicated coupled environment migration")
     end

@@ -2,6 +2,7 @@
 local scenePathFor=pathFor
 -- __RS_ROCK_HELPERS__
 -- __RS_STICK_HELPER__
+-- __RS_VERIFY_HELPER__
 local W=workspace
 local function v(a)return Vector3.new(table.unpack(a)) end
 local function near(a,b,t)return (a-b).Magnitude<(t or 0.005) end
@@ -143,6 +144,8 @@ end
 local wind=game:GetService("StarterPlayer"):WaitForChild("StarterPlayerScripts"):FindFirstChild("RSWind")
 assert(wind and wind:IsA("LocalScript") and hash(wind.Source)==cfg.windBeforeHash,"Wind source changed")
 backup(wind,"StarterPlayer");wind.Source=cfg.windSource
+local proof=verifyPrepared()
+assert(proof.verified and proof.stones==108 and proof.sticks==108 and proof.treeProfiles==94,"Prepared verification")
 local after=inventory()
 assert(after.total+cfg.cloneReserve<=4500,"Inventory budget")
 local afterFingerprint=fingerprint(after)

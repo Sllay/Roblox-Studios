@@ -18,6 +18,8 @@ def dispatch():
     body=stick[start:end].replace('local root=Assets:LoadAssetAsync(tonumber(cfg.assetId))','local root=Assets:LoadAssetAsync(tonumber(cfg.assetId))')
     helper='local function extractStick()\nlocal cfg={assetId="9204066145",componentMode="extract",selector=cfg.stick.source.selector}\n'+body+'\nassert(digest==cfgExpectedStickDigest,"Stick source changed")\nclones[1]:Destroy();root:Destroy();return result\nend'
     source=SRC.read_text().replace("-- __RS_ROCK_HELPERS__",helpers).replace("-- __RS_STICK_HELPER__","local cfgExpectedStickDigest=cfg.stick.digest\n"+helper)
+    verifier=(ROOT/"tools/sync/p45_verify.luau").read_text().replace("return syncResult({","return ({")
+    source=source.replace("-- __RS_VERIFY_HELPER__","local function verifyPrepared()\n"+verifier+"\nend")
     return "do\n"+source+"\nend"
 def plans(base):
     r=read(DATA/"s03/resource-plan.json");c=read(DATA/"s04/collider-plan.json")

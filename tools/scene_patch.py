@@ -7,7 +7,7 @@ from deploy import load_all,resolve,WorkspaceError
 from scene_snapshot import canonical
 ID=re.compile(r"[a-z][a-z0-9-]{2,63}")
 NAME=re.compile(r"[A-Za-z0-9_ -]{1,80}")
-COUPLED_ROOTS={"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets"}
+COUPLED_ROOTS={"RSSceneBuilder","RSWorldVegetation","RSEnvironmentP4","RSEnvironmentP4Detail","RSManagedAssets","RSResourcesP45"}
 def require_uncoupled(r):
     path=r.get("path",[])
     require(r.get("service")!="Workspace" or not path or path[0]["name"] not in COUPLED_ROOTS,"Use dedicated coupled environment migration")
