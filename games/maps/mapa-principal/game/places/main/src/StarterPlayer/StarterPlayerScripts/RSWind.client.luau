@@ -8,9 +8,9 @@ local module=ReplicatedStorage:WaitForChild("RSWindPolicy",15)
 if not module or not module:IsA("ModuleScript") then return end
 local Policy=require(module)
 local player=Players.LocalPlayer
-local roots={RSSceneBuilder="RSSceneBuilderV1",RSWorldVegetation="RSWorldV1",RSEnvironmentP4="RSEnvironmentP4V1",RSManagedAssets="RobloxStudiosStaticV1"}
-local asset="79689531752352"
-local canopies:{[string]:string}={Tree_01="Canopy_01",Tree_08="Canopy_08",Tree_03="Canopy_03",Tree_12="Canopy_12",Bush_01="Bush_Canopy_01",Bush_03="Bush_Canopy_03"}
+local roots={RSSceneBuilder="RSSceneBuilderV1",RSWorldVegetation="RSWorldV1",RSEnvironmentP4="RSEnvironmentP4V1",RSEnvironmentP4Detail="RSEnvironmentP4DetailV1",RSManagedAssets="RobloxStudiosStaticV1"}
+local diagnostic=Instance.new("Folder")
+diagnostic.Name="RSWindDiagnostics";diagnostic.Parent=player
 type Entry={part:MeshPart,rest:CFrame,pivot:Vector3,phase:number,bush:boolean,active:boolean}
 local entries:{[MeshPart]:Entry}={}
 local function eligible(part:MeshPart): boolean
@@ -24,7 +24,9 @@ local function scan()
         local models=if name=="RSManagedAssets" then root else root:FindFirstChild("Models")
         if not models then continue end
         for _,model in models:GetChildren() do
-            if not model:IsA("Model") or model:GetAttribute("RSAssetId")~=asset then continue end
+            if not model:IsA("Model") then continue end
+            local asset=model:GetAttribute("RSAssetId")
+            if typeof(asset)~="string" then continue end
             local species=model:GetAttribute("RSSpecies")
             if typeof(species)~="string" then
                 local id=model:GetAttribute("RSManagedId")
@@ -34,13 +36,13 @@ local function scan()
                     if lower then species=string.upper(string.sub(lower,1,1))..string.sub(lower,2) end
                 end
             end
-            if typeof(species)~="string" or not canopies[species] then continue end
+            if typeof(species)~="string" then continue end
             local bush=string.sub(species,1,4)=="Bush"
             for _,obj in model:GetChildren() do
                 if not obj:IsA("MeshPart") or not eligible(obj) then continue end
                 -- Only audited per-species canopy names + authored foliage material.
                 -- Unknown mesh layouts fail closed; never infer from height alone.
-                if obj.Name~=canopies[species] or obj.Material~=Enum.Material.LeafyGrass then continue end
+                if not Policy.foliage(asset,species,obj.Name,obj.Material.Name,obj.MeshId) then continue end
                 seen[obj]=true
                 if not entries[obj] then
                     local rest=obj.CFrame
@@ -50,6 +52,9 @@ local function scan()
             end
         end
     end
+    local count=0
+    for _ in seen do count+=1 end
+    diagnostic:SetAttribute("Eligible",count)
     for part,e in entries do
         if not seen[part] then
             if e.active and part:IsDescendantOf(Workspace) and eligible(part) then part.CFrame=e.rest end
@@ -135,6 +140,8 @@ connection=RunService.Heartbeat:Connect(function(dt)
         end
     end
     if #parts>0 then Workspace:BulkMoveTo(parts,frames,Enum.BulkMoveMode.FireCFrameChanged) end
+    diagnostic:SetAttribute("Active",math.min(#active,Policy.maxActive))
+    diagnostic:SetAttribute("WindStrength",strength)
     for _,line in lines do
         if not hrp or not hrp:IsA("BasePart") or strength<0.01 then
             line.trail.Enabled=false;line.life=0
@@ -152,4 +159,5 @@ script.Destroying:Connect(function()
         if e.active and part:IsDescendantOf(Workspace) and eligible(part) then part.CFrame=e.rest end
     end
     folder:Destroy()
+    diagnostic:Destroy()
 end)

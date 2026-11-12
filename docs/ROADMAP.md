@@ -89,3 +89,5 @@
 - [x] P4.4 exact preflight 43183544747: 4/4 sources passed PBR/dependencies after hierarchical surface identity fix; eight geometry thumbnails reviewed, 50 MossLeaf meshes inventoried. 20-model detail plan approved for staging preview; surface-mount vines and static stick extraction remain pending.
 
 - [x] P4.4 first detailed batch staged v13: 20 models, 8 colliders, independent PBR/transform verification and Scene Sync 644b5c8; run 43184077707. All 49 terrain digests unchanged from v12. Total 182 environmental models (44 additions across P4.3 and P4.4). Remaining P4.4: dedicated surface mounting for MossLeaf foliage and inert stick extraction; original external Wind Effects scripts not activated. P4.5 is mobile validation and iterative polish, not final game quality.
+
+- [ ] P4.5 mobile feedback: wind foliage mapping and slower visible sway corrected in source; read-only v13 preflight and pure policy tests added. Full tree cylinder migration, smaller abundant stones/sticks, high-altitude dry trees and visible Bush_03 pending. See mapa-principal/docs/P45_POLISH.md.
