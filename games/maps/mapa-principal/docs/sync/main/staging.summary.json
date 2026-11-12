@@ -6,16 +6,16 @@
     "Clouds": 1,
     "Decal": 1,
     "DepthOfFieldEffect": 1,
-    "Folder": 37,
-    "InputAction": 420,
-    "InputBinding": 980,
-    "InputContext": 56,
+    "Folder": 41,
+    "InputAction": 450,
+    "InputBinding": 1050,
+    "InputContext": 60,
     "LocalScript": 8,
-    "MeshPart": 356,
-    "Model": 182,
-    "ModuleScript": 761,
-    "Part": 99,
-    "Script": 63,
+    "MeshPart": 564,
+    "Model": 390,
+    "ModuleScript": 815,
+    "Part": 194,
+    "Script": 67,
     "Sky": 1,
     "SpawnLocation": 63,
     "StarterCharacterScripts": 1,
@@ -26,10 +26,10 @@
     "Texture": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 14,
+  "loadedVersion": 15,
   "placeId": "93428341652658",
   "schemaVersion": 1,
-  "stateDigest": "fc6d1050b100b87ead072c99e4fd60a3a85781c840e7e11e39cbff81c76e4c08",
+  "stateDigest": "a971ba91f62e695308612ebe49b71d0df34ddd4cd09feb3a48bf03763ec429c0",
   "terrain": {
     "terrain:chunk--1--1": {
       "bounds": [
@@ -718,7 +718,7 @@
       "waterVoxels": 0
     }
   },
-  "total": 3385,
+  "total": 4062,
   "universeId": "10769712441",
   "workspaceRoots": [
     {
@@ -774,6 +774,12 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSEnvironmentP4Detail\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "RSEnvironmentP4Detail"
+    },
+    {
+      "class": "Folder",
+      "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSResourcesP45\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "RSResourcesP45"
     }
   ]
 }
