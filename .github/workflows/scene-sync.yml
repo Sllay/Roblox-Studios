@@ -12,9 +12,14 @@ on:
         type: choice
         options: [staging, production]
         default: staging
+      desired:
+        type: string
+        description: Optional desired-records JSON filename in docs/sync/<place>/
       record:
         type: boolean
         default: true
+  push:
+    paths: ['games/maps/mapa-principal/docs/sync-v7-once.trigger']
 permissions:
   contents: write
 concurrency:
@@ -36,16 +41,21 @@ jobs:
           GAME: ${{ inputs.game || 'mapa-principal' }}
           PLACE: ${{ inputs.place || 'main' }}
           ENVIRONMENT: ${{ inputs.environment || 'staging' }}
-          RECORD: ${{ inputs.record }}
+          RECORD: ${{ github.event_name == 'push' || inputs.record }}
+          DESIRED: ${{ inputs.desired }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
           if [[ "$RECORD" == true ]]; then args+=(--record); fi
+          if [[ -n "$DESIRED" ]]; then
+            [[ "$DESIRED" =~ ^[a-z0-9-]+\.json$ ]] || exit 1
+            args+=(--desired "games/maps/$GAME/docs/sync/$PLACE/$DESIRED")
+          fi
           python tools/scene_sync.py --game "$GAME" --place "$PLACE" --environment "$ENVIRONMENT" "${args[@]}"
           if [[ "$RECORD" == true ]]; then
             git config user.name "roblox-scene-sync[bot]"
             git config user.email "scene-sync@users.noreply.github.com"
-            git add -- "games/maps/$GAME/docs/sync/$PLACE/$ENVIRONMENT.json"
+            git add -- "games/maps/$GAME/docs/sync/$PLACE/$ENVIRONMENT.json" "games/maps/$GAME/docs/sync/$PLACE/$ENVIRONMENT.summary.json"
             if ! git diff --cached --quiet; then
               git commit -m "sync: $GAME/$PLACE/$ENVIRONMENT observed Roblox state"
               git push origin HEAD:main

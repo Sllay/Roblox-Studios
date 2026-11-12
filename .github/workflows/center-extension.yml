@@ -6,13 +6,15 @@ on:
         type: choice
         options: [preview, apply, verify, rollback]
         default: preview
+      reviewed_after:
+        type: boolean
+        default: false
+        description: Read-only verification of explicitly reviewed post-save inventory from evidence artifact
       evidence_run:
         type: string
       confirm_staging:
         type: boolean
         default: false
-  push:
-    paths: ['games/maps/mapa-principal/docs/center-verify-once.trigger']
 permissions:
   contents: read
   actions: read
@@ -21,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   center:
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'preview' || inputs.operation == 'verify' || inputs.confirm_staging) }}
+    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation == 'preview' || inputs.operation == 'verify' || inputs.confirm_staging) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -34,21 +36,22 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: python tools/script_quality.py
       - uses: actions/download-artifact@v4
-        if: ${{ github.event_name == 'push' || inputs.operation == 'verify' || inputs.operation == 'rollback' }}
+        if: ${{ inputs.operation == 'verify' || inputs.operation == 'rollback' }}
         with:
           name: center-extension-evidence
-          run-id: ${{ inputs.evidence_run || '43143508396' }}
+          run-id: ${{ inputs.evidence_run }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: dist/prior-center
       - name: Execute reviewed migration
         env:
           OP: ${{ inputs.operation || 'preview' }}
+          REVIEWED: ${{ inputs.reviewed_after }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
-          if [[ "$GITHUB_EVENT_NAME" == push ]]; then OP=verify; args+=(--reviewed-after dist/prior-center/after.json); fi
           if [[ "$OP" == apply || "$OP" == rollback ]]; then args+=(--confirm-staging); fi
           if [[ "$OP" == verify || "$OP" == rollback ]]; then args+=(--evidence dist/prior-center/rollback-evidence.json); fi
+          if [[ "$OP" == verify && "$REVIEWED" == true ]]; then args+=(--reviewed-after dist/prior-center/after.json); fi
           python tools/center_extension.py "$OP" "${args[@]}"
       - uses: actions/upload-artifact@v4
         if: always()

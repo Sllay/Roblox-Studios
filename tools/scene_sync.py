@@ -91,12 +91,14 @@ def main():
     if base:require((base["universeId"],base["placeId"])==(remote["universeId"],remote["placeId"]),"Baseline target mismatch")
     delta=reconcile(base,remote,read(p.desired) if p.desired else None)
     write(p.output/"inventory.json",remote);write(p.output/"changes.json",delta)
-    if p.record:
-        require(not delta["conflicts"] and not delta["local"],"Unresolved desired changes: do not advance baseline")
-        write(path,remote)
     classes={}
     for r in remote["records"].values():
         if "class" in r:classes[r["class"]]=classes.get(r["class"],0)+1
+    summary={"schemaVersion":1,"universeId":remote["universeId"],"placeId":remote["placeId"],"loadedVersion":remote["loadedVersion"],"stateDigest":remote["stateDigest"],"total":remote["total"],"classes":classes,"workspaceRoots":[{"name":v["name"],"class":v["class"],"key":k,"managedId":v["managedId"]} for k,v in remote["records"].items() if v.get("service")=="Workspace" and len(v.get("path",[]))==1],"terrain":{k:v for k,v in remote["records"].items() if k.startswith("terrain:")},"coverageNote":"Scoped inventory, not full backup. Query full records for object properties."}
+    write(p.output/"summary.json",summary)
+    if p.record:
+        require(not delta["conflicts"] and not delta["local"],"Unresolved desired changes: do not advance baseline")
+        write(path,remote);write(path.with_suffix(".summary.json"),summary)
     print("SCENE_SYNC",json.dumps({"version":remote["loadedVersion"],"objects":remote["total"],"classes":classes,"terrain":{k:v for k,v in remote["records"].items() if k.startswith("terrain:")},"changes":{k:len(v) for k,v in delta.items() if isinstance(v,list)},"digest":remote["stateDigest"]}),flush=True)
 if __name__=="__main__":
     try:main()
