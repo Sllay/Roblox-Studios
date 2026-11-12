@@ -10,7 +10,7 @@ def main():
     require(plan["complete"] and plan["stateDigest"]==base["stateDigest"] and base["loadedVersion"]==18,"Plan baseline")
     old=read(GAME/"docs/s06/resources-v16/plan.json")["resources"]
     specs={s["id"]:s for s in plan["specs"]}
-    src=(ROOT/"tools/sync/s07_geometry_yaw_probe.luau").read_text()
+    src=(ROOT/"tools/sync/s07_geometry_probe.luau").read_text()
     reports=[]
     def probe(rows):
         # Historical disposable sessions only. Never retry ambiguous publication.
