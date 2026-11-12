@@ -1,0 +1,287 @@
+{
+  "clientRenderVerified": false,
+  "loadedVersion": 17,
+  "noPlaceWrites": true,
+  "placeId": "93428341652658",
+  "rocks": [
+    {
+      "bottom": 22.39437961578369,
+      "burial": 0.66915,
+      "canCollide": true,
+      "estimatedBaseGap": -0.6691497959810135,
+      "estimatedTopGap": 7.033610900430119,
+      "expectedGround": 23.063529411764705,
+      "id": "p4-detail-mossy-rock1-m-mossy-rock-0-node-01",
+      "meshId": "rbxassetid://112710935392609",
+      "position": [
+        -157.5,
+        26.245759963989258,
+        -263.6000061035156
+      ],
+      "ray": {
+        "filtered": false,
+        "physical": false,
+        "unfiltered": {
+          "instance": "MeshPart",
+          "material": "Plastic",
+          "name": "Mossy_Rock1_M_Mossy_Rock_0",
+          "normal": [
+            0.038289427757263184,
+            0.9914385676383972,
+            -0.12483401596546173
+          ],
+          "y": 29.97246551513672
+        }
+      },
+      "size": [
+        4.518716812133789,
+        7.702760696411133,
+        3.964643716812134
+      ],
+      "top": 30.097140312194824,
+      "transparency": 0
+    },
+    {
+      "bottom": 20.973010540008545,
+      "burial": 0.5535,
+      "canCollide": true,
+      "estimatedBaseGap": -0.5534992639130252,
+      "estimatedTopGap": 5.817984538882385,
+      "expectedGround": 21.52650980392157,
+      "id": "p4-detail-mossy-rock1-m-mossy-rock-0-node-02",
+      "meshId": "rbxassetid://112710935392609",
+      "position": [
+        -212.3000030517578,
+        24.15875244140625,
+        -105.19999694824219
+      ],
+      "ray": {
+        "filtered": false,
+        "physical": false,
+        "unfiltered": {
+          "instance": "MeshPart",
+          "material": "Plastic",
+          "name": "Mossy_Rock1_M_Mossy_Rock_0",
+          "normal": [
+            0.11730792373418808,
+            0.9914385080337524,
+            0.05734632909297943
+          ],
+          "y": 27.24136734008789
+        }
+      },
+      "size": [
+        3.7377421855926514,
+        6.37148380279541,
+        3.2794299125671387
+      ],
+      "top": 27.344494342803955,
+      "transparency": 0
+    },
+    {
+      "bottom": 27.066420078277588,
+      "burial": 0.56205,
+      "canCollide": true,
+      "estimatedBaseGap": -0.5620505099577073,
+      "estimatedTopGap": 5.907854389639461,
+      "expectedGround": 27.628470588235295,
+      "id": "p4-detail-mossy-rock1-m-mossy-rock-0-node-03",
+      "meshId": "rbxassetid://112710935392609",
+      "position": [
+        -310.1000061035156,
+        30.301372528076172,
+        275.6000061035156
+      ],
+      "ray": {
+        "filtered": false,
+        "physical": false,
+        "unfiltered": {
+          "instance": "MeshPart",
+          "material": "Plastic",
+          "name": "Mossy_Rock1_M_Mossy_Rock_0",
+          "normal": [
+            0.10702859610319138,
+            0.9914384484291077,
+            -0.0747981145977974
+          ],
+          "y": 33.43160629272461
+        }
+      },
+      "size": [
+        3.7954797744750977,
+        6.469904899597168,
+        3.330087900161743
+      ],
+      "top": 33.536324977874756,
+      "transparency": 0
+    },
+    {
+      "bottom": 17.34173822402954,
+      "burial": 0.60885,
+      "canCollide": true,
+      "estimatedBaseGap": -0.6088500112645789,
+      "estimatedTopGap": 6.399781694973214,
+      "expectedGround": 17.95058823529412,
+      "id": "p4-detail-mossy-rock1-m-mossy-rock-0-node-04",
+      "meshId": "rbxassetid://112710935392609",
+      "position": [
+        -261.20001220703125,
+        20.846054077148438,
+        -215.8000030517578
+      ],
+      "ray": {
+        "filtered": false,
+        "physical": false,
+        "unfiltered": {
+          "instance": "MeshPart",
+          "material": "Plastic",
+          "name": "Mossy_Rock1_M_Mossy_Rock_0",
+          "normal": [
+            0.1272544264793396,
+            0.9914385080337524,
+            -0.029257575049996376
+          ],
+          "y": 24.23693084716797
+        }
+      },
+      "size": [
+        4.11151647567749,
+        7.008631706237793,
+        3.607372760772705
+      ],
+      "top": 24.350369930267334,
+      "transparency": 0
+    },
+    {
+      "bottom": 16.350232362747192,
+      "burial": 0.6471,
+      "canCollide": true,
+      "estimatedBaseGap": -0.6471009705861412,
+      "estimatedTopGap": 6.801836922327677,
+      "expectedGround": 16.997333333333334,
+      "id": "p4-detail-mossy-rock1-m-mossy-rock-0-node-05",
+      "meshId": "rbxassetid://112710935392609",
+      "position": [
+        -267.20001220703125,
+        20.0747013092041,
+        -19.200000762939453
+      ],
+      "ray": {
+        "filtered": false,
+        "physical": false,
+        "unfiltered": {
+          "instance": "MeshPart",
+          "material": "Plastic",
+          "name": "Mossy_Rock1_M_Mossy_Rock_0",
+          "normal": [
+            0.12102293223142624,
+            0.9914383888244629,
+            0.04902368783950806
+          ],
+          "y": 23.678604125976562
+        }
+      },
+      "size": [
+        4.369815826416016,
+        7.448937892913818,
+        3.8340003490448
+      ],
+      "top": 23.79917025566101,
+      "transparency": 0
+    },
+    {
+      "bottom": 23.767293214797974,
+      "burial": 0.59355,
+      "canCollide": true,
+      "estimatedBaseGap": -0.5935499224569227,
+      "estimatedTopGap": 6.238959595212755,
+      "expectedGround": 24.360843137254896,
+      "id": "p4-detail-mossy-rock1-m-mossy-rock-0-node-06",
+      "meshId": "rbxassetid://112710935392609",
+      "position": [
+        -219.89999389648438,
+        27.183547973632812,
+        -182.3000030517578
+      ],
+      "ray": {
+        "filtered": false,
+        "physical": false,
+        "unfiltered": {
+          "instance": "MeshPart",
+          "material": "Plastic",
+          "name": "Mossy_Rock1_M_Mossy_Rock_0",
+          "normal": [
+            0.01376630924642086,
+            0.9914385080337524,
+            -0.12984706461429596
+          ],
+          "y": 30.489213943481445
+        }
+      },
+      "size": [
+        4.008196830749512,
+        6.832509517669678,
+        3.5167219638824463
+      ],
+      "top": 30.59980273246765,
+      "transparency": 0
+    }
+  ],
+  "settings": {
+    "canCollide": true,
+    "canQuery": true,
+    "collisionGroup": "Default",
+    "decoration": true,
+    "grassLength": 0.699999988079071
+  },
+  "temporaryTerrain": {
+    "before": {
+      "filtered": false,
+      "physical": false,
+      "unfiltered": false
+    },
+    "delayed": {
+      "filtered": {
+        "instance": "Terrain",
+        "material": "Rock",
+        "name": "Terrain",
+        "normal": [
+          -0.002691759029403329,
+          0.998089611530304,
+          -0.06172361224889755
+        ],
+        "y": 177.96746826171875
+      },
+      "physical": {
+        "instance": "Terrain",
+        "material": "Rock",
+        "name": "Terrain",
+        "normal": [
+          -0.002691759029403329,
+          0.998089611530304,
+          -0.06172361224889755
+        ],
+        "y": 177.96746826171875
+      },
+      "unfiltered": {
+        "instance": "Terrain",
+        "material": "Rock",
+        "name": "Terrain",
+        "normal": [
+          -0.002691759029403329,
+          0.998089611530304,
+          -0.06172361224889755
+        ],
+        "y": 177.96746826171875
+      }
+    },
+    "filledVoxels": 64,
+    "immediate": {
+      "filtered": false,
+      "physical": false,
+      "unfiltered": false
+    },
+    "restoredExact": true
+  },
+  "universeId": "10769712441"
+}
