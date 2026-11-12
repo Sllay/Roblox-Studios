@@ -1,0 +1,72 @@
+name: Prop support reconciliation (staging)
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [preview, apply]
+        default: preview
+      game:
+        type: string
+        default: mapa-principal
+      place:
+        type: string
+        default: main
+      region:
+        type: string
+        default: chunk-0-0
+      intent:
+        type: choice
+        options: [sculpt, paint]
+        default: sculpt
+      baseline_run:
+        type: string
+      confirm_staging:
+        type: boolean
+        default: false
+  push:
+    paths: ['games/maps/mapa-principal/docs/prop-reconcile-once.trigger']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: roblox-place-write-${{ inputs.game || 'mapa-principal' }}-${{ inputs.place || 'main' }}-staging
+  cancel-in-progress: false
+jobs:
+  supports:
+    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation != 'apply' || inputs.confirm_staging) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: python tools/script_quality.py
+      - uses: actions/download-artifact@v4
+        if: ${{ inputs.operation == 'apply' }}
+        with:
+          name: prop-reconcile-evidence
+          run-id: ${{ inputs.baseline_run }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/prior-props
+      - name: Reconcile ground support
+        env:
+          OP: ${{ inputs.operation || 'preview' }}
+          GAME: ${{ inputs.game || 'mapa-principal' }}
+          PLACE: ${{ inputs.place || 'main' }}
+          REGION: ${{ inputs.region || 'chunk-0-0' }}
+          INTENT: ${{ inputs.intent || 'sculpt' }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          args=()
+          if [[ "$OP" == apply ]]; then args+=(--baseline dist/prior-props/preview.json --confirm-staging); fi
+          python tools/prop_reconcile.py "$OP" --game "$GAME" --place "$PLACE" --region "$REGION" --intent "$INTENT" "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prop-reconcile-evidence
+          path: dist/prop-reconcile/
+          if-no-files-found: warn

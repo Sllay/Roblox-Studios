@@ -55,3 +55,6 @@
 - [x] P4 initial typed Roblox gameplay policy, executable Luau logic tests (11), negative type gate and runtime diagnostics panel. CI and world verification passed.
 - [x] Place Provision: official inventory verified 43147338256, ID enrollment and owned-template clone path implemented; no new Place/Universe created.
 - [ ] P4 live mobile: actual spawn distribution, death/corpse physics, river traversal/shore appearance, clouds and FPS; broader typed script coverage and automated engine gameplay still pending.
+
+- [x] Scene Sync v8 registered 25 native regions, 2,162 observed instances and environment coverage (43147668959); exact world tile hashes match receipt.
+- [x] Dedicated prop support reconciliation preview/apply tool, no Terrain writes; paint transform preservation check added. Real preview pending.

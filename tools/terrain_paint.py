@@ -1,4 +1,3 @@
-
 """Paint native terrain surfaces without changing the terrain or water geometry."""
 from __future__ import annotations
 import argparse,json,os
@@ -54,9 +53,17 @@ def main():
     require(r["plan"]==p and r["universeId"]==t["universeId"] and r["placeId"]==t["placeId"] and r["changedVoxels"]>0,"Baseline mismatch")
     options={k:r[k] for k in ("beforeDigest","geometryDigest","afterDigest")}
     from scene_sync import require_current
-    require_current(t,key,r["loadedVersion"])
+    before=require_current(t,key,r["loadedVersion"])
     result=task(t,key,p,"apply",expectedVersion=r["loadedVersion"],**options);save(a.output/"save.json",result)
     v=task(t,key,p,"verify",geometryDigest=r["geometryDigest"],afterDigest=r["afterDigest"]);save(a.output/"verification.json",v)
     require(v["verified"] is True and v["loadedVersion"]>r["loadedVersion"],"Paint not persisted")
+    from scene_sync import capture
+    after=capture(t,key)
+    for k,row in before["records"].items():
+        props=row.get("properties",{})
+        for field in ("cframe","pivot"):
+            if field in props:require(after["records"].get(k,{}).get("properties",{}).get(field)==props[field],"Paint moved object: "+k)
+    v["propTransformsPreserved"]=True
+    save(a.output/"verification.json",v)
     print("PAINT_VERIFIED",json.dumps(v))
 if __name__=="__main__":main()
