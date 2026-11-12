@@ -1,0 +1,56 @@
+{
+  "batches": [
+    {
+      "checked": 64,
+      "loadedVersion": 16,
+      "maxHeightError": 6.639250443640776e-06,
+      "maxRadiusError": 5.346250163995592e-05,
+      "noPlaceWrites": true,
+      "placeId": "93428341652658",
+      "runtimeVerified": false,
+      "treeProfiles": 64,
+      "universeId": "10769712441"
+    },
+    {
+      "checked": 64,
+      "loadedVersion": 16,
+      "maxHeightError": 6.15587421748387e-06,
+      "maxRadiusError": 7.738145330549173e-05,
+      "noPlaceWrites": true,
+      "placeId": "93428341652658",
+      "runtimeVerified": false,
+      "treeProfiles": 64,
+      "universeId": "10769712441"
+    },
+    {
+      "checked": 64,
+      "loadedVersion": 16,
+      "maxHeightError": 3.4972546174572017e-06,
+      "maxRadiusError": 5.443397284565776e-05,
+      "noPlaceWrites": true,
+      "placeId": "93428341652658",
+      "runtimeVerified": false,
+      "treeProfiles": 4,
+      "universeId": "10769712441"
+    },
+    {
+      "checked": 20,
+      "loadedVersion": 16,
+      "maxHeightError": 2.5795955309604324e-06,
+      "maxRadiusError": 3.213884920860721e-05,
+      "noPlaceWrites": true,
+      "placeId": "93428341652658",
+      "runtimeVerified": false,
+      "treeProfiles": 0,
+      "universeId": "10769712441"
+    }
+  ],
+  "checked": 212,
+  "loadedVersion": 16,
+  "maxHeightError": 6.639250443640776e-06,
+  "maxRadiusError": 7.738145330549173e-05,
+  "noPlaceWrites": true,
+  "planDigest": "ed0c552053b8116dfb628efbf2fb45bbab7286e21ec481901714d822a455dc55",
+  "runtimeVerified": false,
+  "treeProfiles": 132
+}

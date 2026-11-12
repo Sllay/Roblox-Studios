@@ -1,0 +1,132 @@
+{
+  "applyAuthorized": false,
+  "budget": {
+    "allowed": false,
+    "cloneEstimate": 163,
+    "current": 4228,
+    "limit": 5000,
+    "newRecordsEstimate": 449,
+    "projected": 4840,
+    "reserve": 500
+  },
+  "loadedVersion": 16,
+  "metrics": {
+    "after": {
+      "bush": 80,
+      "pine": 12,
+      "tree": 120
+    },
+    "afterCoverage35": 0.7380051761895282,
+    "afterTiles": {
+      "chunk--1--1": {
+        "bush": 9,
+        "tree": 14
+      },
+      "chunk--1-0": {
+        "bush": 8,
+        "pine": 1,
+        "tree": 14
+      },
+      "chunk--1-1": {
+        "bush": 9,
+        "pine": 3,
+        "tree": 13
+      },
+      "chunk-0--1": {
+        "bush": 9,
+        "tree": 14
+      },
+      "chunk-0-0": {
+        "bush": 9,
+        "tree": 13
+      },
+      "chunk-0-1": {
+        "bush": 9,
+        "pine": 4,
+        "tree": 13
+      },
+      "chunk-1--1": {
+        "bush": 9,
+        "tree": 13
+      },
+      "chunk-1-0": {
+        "bush": 9,
+        "tree": 13
+      },
+      "chunk-1-1": {
+        "bush": 9,
+        "pine": 4,
+        "tree": 13
+      }
+    },
+    "before": {
+      "bush": 44,
+      "pine": 8,
+      "tree": 86
+    },
+    "beforeCoverage35": 0.48499758254884673,
+    "beforeTiles": {
+      "chunk--1--1": {
+        "bush": 4,
+        "pine": 1,
+        "tree": 8
+      },
+      "chunk--1-0": {
+        "bush": 6,
+        "pine": 2,
+        "tree": 6
+      },
+      "chunk--1-1": {
+        "bush": 4,
+        "pine": 2,
+        "tree": 9
+      },
+      "chunk-0--1": {
+        "bush": 3,
+        "pine": 1,
+        "tree": 8
+      },
+      "chunk-0-0": {
+        "bush": 4,
+        "tree": 6
+      },
+      "chunk-0-1": {
+        "bush": 2,
+        "tree": 10
+      },
+      "chunk-1--1": {
+        "bush": 6,
+        "pine": 1,
+        "tree": 7
+      },
+      "chunk-1-0": {
+        "bush": 13,
+        "tree": 24
+      },
+      "chunk-1-1": {
+        "bush": 2,
+        "pine": 1,
+        "tree": 8
+      }
+    },
+    "broadleafMaxGround": 29.70980453491211,
+    "pineHeightRange": [
+      67.40725147772334,
+      75.81092246525019
+    ],
+    "pineMinGround": 30.980392456054688,
+    "pineThreshold": 29.74117660522461,
+    "rejections": {
+      "boundary": 371,
+      "canopy_spacing": 2094,
+      "ground_occupancy": 3369,
+      "highland_reserved": 703,
+      "terrain_support": 4
+    }
+  },
+  "noPlaceWrites": true,
+  "planDigest": "ed0c552053b8116dfb628efbf2fb45bbab7286e21ec481901714d822a455dc55",
+  "resourcesReplan": 216,
+  "retainedOutside": 24,
+  "stateDigest": "54d6ed314ea37cec189e57ff499172af6fd1c117ed852e2608301ff6007bc6a5"
+}
