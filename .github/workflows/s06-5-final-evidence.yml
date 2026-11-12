@@ -1,0 +1,35 @@
+name: S06.5 persist corrected dependency audit
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s06-5-final.trigger']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: s06-5-asset-audit
+          run-id: 43284897132
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s06-5
+      - name: Verify and preserve corrected evidence
+        run: |
+          python - <<'PY'
+          import json,shutil
+          from pathlib import Path
+          p=Path("dist/s06-5/asset-runtime-audit.json");r=json.loads(p.read_text())
+          assert r["loadedVersion"]==16 and r["models"]==390 and r["dependencyCounts"]["total"]==r["dependencyCounts"]["success"]==45
+          assert r["noPlaceWrites"] and not r["clientRenderVerified"]
+          shutil.copyfile(p,Path("games/maps/mapa-principal/docs/s06/compatibility-v16/asset-runtime-audit-v2.json"))
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/s06/compatibility-v16/asset-runtime-audit-v2.json
+          git commit -m "evidence(s06.5): preserve corrected 45 dependency proof"
+          git push origin HEAD:main

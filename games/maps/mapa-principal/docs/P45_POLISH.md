@@ -29,3 +29,6 @@ User found no small stones/sticks, pines too small/low, vegetation too sparse an
 
 ## S06.3/S06.4 checkpoints
 Resources/clearings native preview verified 43281759955, all 216 IDs and 49 restored terrain hashes. Original canopy GLB, bone control, stronger macro and authored-rig controller checked in. Existing mesh editing denied; original model upload 403 denied (43282633795), actual skinning/client render still unverified. No staging changes; manual tests only after S06.6. See docs/s06/resources-v16 and wind-v16.
+
+## S06.5 compatibility checkpoint
+Exact sharded v16 parity, 16 identical PlayerModule subtrees, disposable reduction/recovery proof and 45/45 installed asset dependency fetch success. No live cleanup or regeneration published. S06.4 retry requires user key rotation and explicit authorization; S06.6 final integrated writer and runtime acceptance pending.

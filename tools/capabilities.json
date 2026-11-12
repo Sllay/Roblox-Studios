@@ -472,7 +472,7 @@
       "id": "scene.sync_sharded",
       "entry": "tools/sharded_scene_sync.py",
       "mode": "read",
-      "status": "implemented",
+      "status": "live_verified",
       "purpose": "Version-pinned service pages with exact identity completeness and canonical parity; no write authorization",
       "requires": [
         "scene.sync"
@@ -480,6 +480,34 @@
       "produces": [
         "shard parity proof",
         "default clone forensics"
+      ]
+    },
+    {
+      "id": "asset.installed_dependency_audit",
+      "entry": "tools/asset_runtime_audit.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Audit actual installed managed meshes and textures with instance preloads; no client render claim",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "dependency fetch proof",
+        "catalog reconciliation"
+      ]
+    },
+    {
+      "id": "scene.default_cleanup_preview",
+      "entry": "tools/default_cleanup_preview.py",
+      "mode": "read",
+      "status": "live_verified",
+      "purpose": "Disposable exact duplicate default-module reduction and restoration; no live deletion authorized",
+      "requires": [
+        "scene.sync_sharded"
+      ],
+      "produces": [
+        "native inverse proof",
+        "budget evidence"
       ]
     }
   ]
