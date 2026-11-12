@@ -8,6 +8,26 @@ local function write(region,d)
     T:WriteVoxelChannels(region,4,{SolidMaterial=d.SolidMaterial,SolidOccupancy=d.SolidOccupancy,LiquidOccupancy=d.LiquidOccupancy})
 end
 assert(game.PlaceId==93428341652658 and #F:GetChildren()==216 and #cfg.rows==2000,"Target/count")
+local function fingerprint()
+    local hashes={}
+    for _,name in cfg.services do
+        local svc=game:GetService(name)
+        for _,o in svc:GetDescendants() do
+            local row=record(svc,o)
+            -- Record serialization is canonicalized recursively; no table iteration order dependency.
+            local function canon(x)
+                if typeof(x)~="table" then return Http:JSONEncode(x) end
+                local keys={};for k in x do table.insert(keys,k) end
+                table.sort(keys,function(a,b)return tostring(a)<tostring(b)end)
+                local out={};for _,k in keys do table.insert(out,Http:JSONEncode(tostring(k))..":"..canon(x[k])) end
+                return "{"..table.concat(out,",").."}"
+            end
+            table.insert(hashes,hash(canon(row)))
+        end
+    end
+    table.sort(hashes);return hash(table.concat(hashes,";"))
+end
+local beforeFingerprint=fingerprint()
 local before=terrainState()
 for _,r in before do assert(cfg.terrainExpected[r.id]==r.digest,"Terrain baseline") end
 local templates={}
@@ -76,6 +96,7 @@ for _,m in created do
     local p=m:FindFirstChildWhichIsA("MeshPart",true)
     for _,other in W:GetPartBoundsInBox(p.CFrame,p.Size,op) do assert(other==p,"Resource overlap "..m.Name) end
 end
+local afterFingerprint=fingerprint()
 local after=terrainState()
 for i,r in after do assert(r.solidVoxels==before[i].solidVoxels and r.waterVoxels==before[i].waterVoxels,"Terrain volume") end
 for _,r in rotated do r.m:PivotTo(r.pivot);for _,c in r.colliders do c.p.CFrame=c.cf end end
@@ -85,5 +106,5 @@ for _,m in templates do m:Destroy() end
 for _,r in paint do write(r.region,r.original) end
 local restored=terrainState()
 for i,r in restored do assert(r.digest==before[i].digest,"Terrain inverse") end
-assert(#F:GetChildren()==216,"Resource inverse")
-return syncResult({preview=true,noPlaceWrites=true,counts=counts,vegetationRotated=#rotated,restoredMaterialVoxels=changed,terrain=after,all49Restored=#restored==49,resourceInverse=true,clientRenderVerified=false})
+assert(#F:GetChildren()==216 and fingerprint()==beforeFingerprint,"Exact object inverse")
+return syncResult({preview=true,noPlaceWrites=true,beforeFingerprint=beforeFingerprint,afterFingerprint=afterFingerprint,counts=counts,vegetationRotated=#rotated,restoredMaterialVoxels=changed,terrain=after,all49Restored=#restored==49,resourceInverse=true,clientRenderVerified=false})
