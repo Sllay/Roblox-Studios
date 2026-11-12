@@ -90,6 +90,15 @@ def validate_evidence(r):
                 if isinstance(v,dict): v=v.get("Uri","" if not v else None)
                 if v is None or (v not in ("","None") and not URI.fullmatch(v)):
                     raise WorkspaceError("Unknown runtime texture pack representation")
+    fetched=r.get("dependencyFetch") or {}
+    if fetched.get("verified") is not True:raise WorkspaceError("Dependency fetch not confirmed")
+    for row in a["rows"]:
+        if row["class"]=="MeshPart":
+            if fetched.get("meshes",{}).get(row["mesh"])!="Success":raise WorkspaceError("Mesh fetch missing")
+            if row["texture"] and fetched.get("textures",{}).get(row["texture"])!="Success":raise WorkspaceError("Texture fetch missing")
+        elif row["class"]=="SurfaceAppearance":
+            for uri in row["maps"].values():
+                if uri and fetched.get("textures",{}).get(uri)!="Success":raise WorkspaceError("PBR texture fetch missing")
     if any(not URI.fullmatch(x) for x in a["dependencies"]):
         raise WorkspaceError("Unsupported dependency")
     return a
@@ -106,6 +115,9 @@ def validate_plan(t,p):
     if any(r.get(k)!=p[k] for k in ("universeId","placeId","assetId")) or r["loadedVersion"]!=p["expectedVersion"]:
         raise WorkspaceError("Evidence target mismatch")
     validate_evidence(r)
+    registry=read(ROOT/"games"/"maps"/t["game"]/"game/assets/visual-reviews"/(p["assetId"]+".json"))
+    rows=[x for x in registry["reviews"] if x["selector"]==p["selector"] and x["visual"]["status"] in ("geometry_reviewed","visual_reviewed")]
+    if len(rows)!=1 or p["biome"] not in rows[0]["visual"]["inferred"]["suitableBiomes"]:raise WorkspaceError("Visual review or biome mismatch")
     if p["evidenceSha256"]!=hashlib.sha256(canonical(r).encode()).hexdigest():
         raise WorkspaceError("Evidence hash mismatch")
     if r["digest"]!=p["digest"]:raise WorkspaceError("Digest mismatch")
@@ -149,18 +161,34 @@ def apply(t,key,p,output):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument("operation",choices=["audit","apply"])
+    p.add_argument("operation",choices=["audit","prepare","apply"])
     p.add_argument("--game",default="mapa-principal")
     p.add_argument("--place",default="main")
     p.add_argument("--asset-id")
     p.add_argument("--selector",type=Path)
     p.add_argument("--plan",type=Path)
+    p.add_argument("--evidence",type=Path)
+    p.add_argument("--managed-id",default="yasu-tree-01")
+    p.add_argument("--biome",default="floresta-temperada")
+    p.add_argument("--rights-review")
+    p.add_argument("--position",nargs=3,type=float)
+    p.add_argument("--yaw",type=float,default=0)
     p.add_argument("--confirm-staging",action="store_true")
     p.add_argument("--output",type=Path,default=ROOT/"dist"/"pack-import")
     a=p.parse_args()
     try:
         games,targets=load_all();t=resolve(games,targets,a.game,a.place,"staging")
-        key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
+        key=os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY","")
+        if a.operation=="prepare":
+            if not a.evidence or not a.plan or not a.rights_review or not a.position:raise WorkspaceError("Evidence, plan, explicit position and rights review required")
+            r=read(a.evidence)
+            plan=dict(schemaVersion=2,game=t["game"],place=t["place"],environment="staging",universeId=t["universeId"],placeId=t["placeId"],assetId=r["assetId"],selector=r["selector"],managedId=a.managed_id,biome=a.biome,rightsReview=a.rights_review,position=a.position,yaw=a.yaw,expectedVersion=r["loadedVersion"],digest=r["digest"],evidence=r,evidenceSha256=hashlib.sha256(canonical(r).encode()).hexdigest())
+            validate_plan(t,plan)
+            if a.plan.exists():raise WorkspaceError("Plan already exists")
+            write(a.plan,plan)
+            print(f"Prepared plan {a.plan}; no write to Roblox")
+            return 0
+        if not key:raise WorkspaceError("Missing Open Cloud key")
         if a.operation=="audit":
             selector=json.loads(a.selector.read_text())
             report=audit_report(t,key,a.asset_id,selector)

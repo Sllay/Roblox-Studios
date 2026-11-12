@@ -1,1 +1,1 @@
-Repeat exact submodel audit including selector, full source maps and packed texture evidence. No save.
+Final read-only audit with mandatory dependency fetch. No save until reviewed plan exists.

@@ -6,7 +6,7 @@ from pack_import import validate_evidence,validate_plan,equivalent,WorkspaceErro
 
 class PackImportTests(unittest.TestCase):
     def report(self):
-        return {"audit":{"policyVersion":2,"parts":1,"instances":2,"surfaces":1,"dependencies":["rbxassetid://1"],"rows":[{"class":"SurfaceAppearance","path":[{"name":"Surface"}],"maps":{"ColorMapContent":"rbxassetid://1","NormalMapContent":""}}]},"offlinePbr":[{"name":"Surface","properties":{"ColorMapContent":{"Uri":"rbxassetid://1"},"NormalMapContent":"None","TexturePackContent":{"Uri":"rbxassetid://2"}}}]}
+        return {"audit":{"policyVersion":2,"parts":1,"instances":2,"surfaces":1,"dependencies":["rbxassetid://1"],"rows":[{"class":"SurfaceAppearance","path":[{"name":"Surface"}],"maps":{"ColorMapContent":"rbxassetid://1","NormalMapContent":""}}]},"dependencyFetch":{"verified":True,"meshes":{},"textures":{"rbxassetid://1":"Success"}},"offlinePbr":[{"name":"Surface","properties":{"ColorMapContent":{"Uri":"rbxassetid://1"},"NormalMapContent":"None","TexturePackContent":{"Uri":"rbxassetid://2"}}}]}
     def test_pbr_fields_match(self):
         validate_evidence(self.report())
     def test_reject_missing_or_changed_dependency(self):

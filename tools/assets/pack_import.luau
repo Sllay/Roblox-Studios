@@ -85,6 +85,31 @@ local function audit(model: Model)
     table.sort(rows,function(a,b) return Http:JSONEncode(a.path)<Http:JSONEncode(b.path) end)
     return {policyVersion=2,parts=parts,surfaces=surfaces,instances=#descendants,bounds=vector(size),dependencies=deps,rows=rows}
 end
+local function fetchDependencies(model: Model, report)
+    local cp=game:GetService("ContentProvider")
+    local meshes,meshIds,textures={},{},{}
+    local meshStatus,textureStatus={},{}
+    for _,obj in model:GetDescendants() do
+        if obj:IsA("MeshPart") then
+            table.insert(meshes,obj)
+            meshIds[content(obj.MeshContent)]=true
+        end
+    end
+    for _,row in report.rows do
+        if row.class=="SurfaceAppearance" then
+            for _,uri in row.maps do if uri~="" then textures[uri]=true end end
+        elseif row.class=="MeshPart" and row.texture~="" then textures[row.texture]=true end
+    end
+    local textureList={}
+    for uri in textures do table.insert(textureList,uri) end
+    if #textureList>0 then
+        cp:PreloadAsync(textureList,function(uri,status) textureStatus[uri]=status.Name end)
+    end
+    cp:PreloadAsync(meshes,function(uri,status) meshStatus[uri]=status.Name end)
+    for uri in meshIds do assert(meshStatus[uri]=="Success","Mesh fetch not confirmed: "..uri) end
+    for uri in textures do assert(textureStatus[uri]=="Success","Texture fetch not confirmed: "..uri) end
+    return {meshes=meshStatus,textures=textureStatus,verified=true}
+end
 local function serialize(model: Model)
     local blob=Serial:SerializeInstancesAsync({model})
     assert(buffer.len(blob)<=512000,"Serialized model exceeds policy")
@@ -131,11 +156,13 @@ if cfg.mode=="verify" then
     local actual={model:GetPivot():GetComponents()}
     for i,v in {expected:GetComponents()} do assert(math.abs(v-actual[i])<0.02,"Pivot mismatch") end
     local report=audit(model)
+    local fetched=fetchDependencies(model,report)
     local blob,digest=serialize(model)
-    return output({verified=true,audit=report,persistedDigest=digest,serializedBase64=buffer.tostring(Encoding:Base64Encode(blob))})
+    return output({verified=true,audit=report,dependencyFetch=fetched,persistedDigest=digest,serializedBase64=buffer.tostring(Encoding:Base64Encode(blob))})
 end
 local model=cloneSelected()
 local report=audit(model)
+local fetched=fetchDependencies(model,report)
 local blob,digest=serialize(model)
 if cfg.mode=="audit" then
     local encoded=buffer.tostring(Encoding:Base64Encode(blob))
@@ -151,7 +178,7 @@ if cfg.mode=="audit" then
     local spawn=Workspace:FindFirstChildWhichIsA("SpawnLocation",true)
     local spawnPosition=if spawn then vector(spawn.Position) else nil
     model:Destroy()
-    return output({audit=report,digest=digest,serializedBase64=encoded,bottomOffset=bottomOffset,ground=ground,spawn=spawnPosition})
+    return output({audit=report,dependencyFetch=fetched,digest=digest,serializedBase64=encoded,bottomOffset=bottomOffset,ground=ground,spawn=spawnPosition})
 end
 assert(cfg.mode=="apply","Unknown mode")
 assert(game.PlaceVersion==cfg.expectedVersion,"Place changed")
@@ -189,4 +216,4 @@ if not root then
 end
 model.Parent=root
 Assets:SavePlaceAsync({SaveWithoutPublish=false})
-return output({saved=true,managedId=cfg.managedId,audit=final})
+return output({saved=true,managedId=cfg.managedId,audit=final,dependencyFetch=fetched})
