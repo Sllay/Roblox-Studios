@@ -95,13 +95,16 @@ def apply(target,key,plan,catalog,output):
         position=plan["position"],yaw=plan["yaw"],biome=plan["biome"])
     write(output/"save-result.json",result)
     if result.get("saved") is not True: raise WorkspaceError("Save unconfirmed")
-    verified=call(target,key,"verify",plan["assetId"],managedId=plan["managedId"],parts=audit["parts"])
+    verified=call(target,key,"verify",plan["assetId"],managedId=plan["managedId"],parts=audit["parts"],position=plan["position"],yaw=plan["yaw"],biome=plan["biome"])
     write(output/"verification.json",verified)
     if verified.get("verified") is not True or verified["loadedVersion"]<=before["loadedVersion"]:
         raise WorkspaceError("Persistence/version not confirmed; investigate before retry")
     after=capture(target,key)
     write(output/"after.json",after)
-    write(output/"diff.json",compare(before,after))
+    delta=compare(before,after)
+    write(output/"diff.json",delta)
+    if after["loadedVersion"] != verified["loadedVersion"] or delta["removed"]:
+        raise WorkspaceError("Unexpected version or removal after save; inspect evidence before retrying")
     print(f"STAGING IMPORT VERIFIED: {plan['managedId']} version {verified['loadedVersion']}")
 
 def main():

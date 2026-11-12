@@ -54,3 +54,21 @@ class AssetPipelineTests(unittest.TestCase):
                     with self.assertRaises(pipeline.WorkspaceError):
                         pipeline.apply(self.target,"secret",p,self.catalog,Path(tmp))
                     remote.assert_not_called()
+
+    def test_apply_protocol_and_evidence(self):
+        import tempfile
+        import json
+        p=self.plan()
+        before=dict(schemaVersion=1,universeId="1",placeId="2",loadedVersion=5,objects=[],truncated=False)
+        after=dict(before,loadedVersion=6,objects=[{"managedId":"tree-one","path":"Workspace.RSManagedAssets.tree-one"}])
+        with tempfile.TemporaryDirectory() as tmp:
+            output=Path(tmp)
+            with patch.object(pipeline,"capture",side_effect=[before,after]), patch.object(pipeline,"call",side_effect=[
+                    {"saved":True,"loadedVersion":5},
+                    {"verified":True,"loadedVersion":6}]) as remote:
+                pipeline.apply(self.target,"secret",p,self.catalog,output)
+                self.assertEqual([x.args[2] for x in remote.call_args_list],["apply","verify"])
+                self.assertEqual(remote.call_args_list[0].kwargs["signature"],["record"])
+                self.assertEqual(remote.call_args_list[1].kwargs["position"],[1,2,3])
+                self.assertEqual(json.loads((output/"diff.json").read_text())["afterVersion"],6)
+                self.assertTrue((output/"verification.json").is_file())

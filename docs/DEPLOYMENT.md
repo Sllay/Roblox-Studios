@@ -84,3 +84,7 @@ Referências:
 - https://create.roblox.com/docs/cloud/guides/usage-place-publishing
 - https://create.roblox.com/docs/cloud/auth/api-keys
 - https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets
+
+## Proteção de Places parcialmente gerenciados
+
+O upload integral pelo Rojo agora é bloqueado por padrão. Só é permitido se o registro do Place em game.manifest.json tiver `fullPlaceBuildAuthoritative: true`, após verificar que a árvore Git contém toda a cena e que nenhuma alteração remota será perdida. O mapa-principal não possui essa autorização. Para decoração estática, use o fluxo staging de `docs/ASSET_IMPORT.md`. Não existe rollback automático nesta etapa.

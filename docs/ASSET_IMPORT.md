@@ -35,3 +35,5 @@ O fluxo é inicialmente limitado a decoração estática; não há compra autom�
 - Asset 257489726: carregado e recusado corretamente; 2 Scripts, Humanoid, sons e juntas, 7 Parts, 26 descendentes ([auditoria](https://github.com/Sllay/Roblox-Studios/actions/runs/43129081020)).
 - Primeira tentativa falhou ao ler AllowInsertFreeAssets (capacidade protegida); leitura removida. Não alterar permissões automaticamente.
 - Full Place publish bloqueado por padrão; requer fullPlaceBuildAuthoritative=true no registro do Place, após verificação explícita de que Git representa a cena completa. Não habilitar para o mapa-principal.
+
+A verificação pós-save exige também o pivot (posição e rotação), Biome e versão consistente; se o diff indicar remoções inesperadas, o job reporta falha e mantém evidências. Não confundir isso com rollback automático.

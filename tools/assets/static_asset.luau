@@ -138,6 +138,11 @@ if cfg.mode == "verify" then
         end
     end
     assert(parts == cfg.parts, "Part count mismatch")
+    assert(found:GetAttribute("Biome") == cfg.biome, "Biome mismatch")
+    local expected = CFrame.new(cfg.position[1],cfg.position[2],cfg.position[3]) * CFrame.Angles(0,math.rad(cfg.yaw),0)
+    local actual = {found:GetPivot():GetComponents()}
+    local desired = {expected:GetComponents()}
+    for i, value in actual do assert(math.abs(value - desired[i]) < 0.02, "Model pivot mismatch") end
     return output({verified=true,managedId=cfg.managedId,parts=parts})
 end
 local model = loadAsset()
