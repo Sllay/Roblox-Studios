@@ -1,8 +1,8 @@
-name: S06.7 measured support with doubled sticks
+name: S06.7 measured support with doubled sticks v2
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/s06-resource-contact-scaled-preview.yml']
+    paths: ['.github/workflows/s06-resource-contact-scaled-preview.yml', 'tools/sync/resource_contact_scaled_preview.luau', 'tools/resource_contact_scaled_preview.py']
 permissions:
   contents: write
 concurrency:
