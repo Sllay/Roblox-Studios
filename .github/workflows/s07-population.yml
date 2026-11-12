@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        tile: [chunk-0-0, chunk-0-1, chunk-0-2, chunk-1-0, chunk-1-1, chunk-1-2, chunk-2-0, chunk-2-1, chunk-2-2]
+        tile: [chunk--1--1, chunk--1-0, chunk--1-1, chunk-0--1, chunk-0-0, chunk-0-1, chunk-1--1, chunk-1-0, chunk-1-1]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
