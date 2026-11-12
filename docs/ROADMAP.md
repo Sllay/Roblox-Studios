@@ -40,5 +40,6 @@
 
 - [x] P2.2 Scene Builder pilot implementation: deterministic vegetation distribution, native voxel material masks, per-species audits, scaled burial and trunk proxies.
 - [x] P2.2 publicação e verificação estrutural: staging v6, 32 plantas, 20 colisores, PBR preservado e terreno intacto (43140641424).
-- [ ] P2.2 aceite mobile: assentamento das três espécies, colisão dos troncos, trilhas livres, aparência e desempenho; RuntimeGroundCheck ainda não observado em gameplay.
+- [x] P2.2 aceite visual mobile: usuário aprovou a distribuição da vegetação em staging v6 e confirmou que areia e trilhas foram respeitadas (screenshot IMG_0930.jpeg).
+- [ ] Validação específica do assentamento individual, colisões dos troncos, FPS e resultados do RuntimeGroundCheck; não bloqueia início de P3.
 - [ ] P2 evolução: generalizar regiões, assets e planos além do piloto; integrar edição incremental P3.

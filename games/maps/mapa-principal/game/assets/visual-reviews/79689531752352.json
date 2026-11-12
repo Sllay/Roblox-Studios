@@ -84,7 +84,7 @@
         "run": "43140641424",
         "status": "staging_verified",
         "placement": "provisional_terrain_scaled",
-        "clientVisualValidation": "pending"
+        "clientVisualValidation": "user_accepted_distribution_and_general_appearance_v6; sand_and_paths_clear; individual_ground_contact_collision_fps_not_measured"
       }
     },
     {
@@ -369,7 +369,7 @@
         "run": "43140641424",
         "status": "staging_verified",
         "placement": "provisional_terrain_scaled",
-        "clientVisualValidation": "pending"
+        "clientVisualValidation": "user_accepted_distribution_and_general_appearance_v6; sand_and_paths_clear; individual_ground_contact_collision_fps_not_measured"
       }
     },
     {
@@ -877,7 +877,7 @@
         "run": "43140641424",
         "status": "staging_verified",
         "placement": "provisional_terrain_scaled",
-        "clientVisualValidation": "pending"
+        "clientVisualValidation": "user_accepted_distribution_and_general_appearance_v6; sand_and_paths_clear; individual_ground_contact_collision_fps_not_measured"
       }
     },
     {
