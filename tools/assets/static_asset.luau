@@ -190,11 +190,19 @@ local function selectPackModel(root: Model, path)
 end
 local function describeModel(root: Model, obj: Model)
     local counts={}
+    local visualComponents={}
     local parts, scripts, pbr, nested, unsupported=0,0,0,0,0
     local descendants=obj:GetDescendants()
     for _, child in descendants do
         counts[child.ClassName]=(counts[child.ClassName] or 0)+1
         if child:IsA("BasePart") then parts+=1 end
+        if child:IsA("MeshPart") and #visualComponents<100 then
+            local appearance=child:FindFirstChildWhichIsA("SurfaceAppearance")
+            local tint=if appearance then appearance.Color else child.Color
+            table.insert(visualComponents,{name=child.Name,meshId=child.MeshId,textureId=child.TextureID,
+                tint={tint.R,tint.G,tint.B},tintSource=if appearance then "SurfaceAppearance.Color" else "BasePart.Color",
+                material=child.Material.Name,pbr=appearance~=nil})
+        end
         if child:IsA("LuaSourceContainer") then scripts+=1 end
         if child:IsA("SurfaceAppearance") then pbr+=1 end
         if child:IsA("Model") then nested+=1 end
@@ -203,7 +211,7 @@ local function describeModel(root: Model, obj: Model)
     local _, size=obj:GetBoundingBox()
     return {name=obj.Name, selector=packPath(root,obj), instances=#descendants,
         parts=parts, meshes=counts.MeshPart or 0, scripts=scripts, pbr=pbr,
-        nestedModels=nested, unsupported=unsupported, counts=counts,
+        nestedModels=nested, unsupported=unsupported, counts=counts,visualComponents=visualComponents,
         bounds={size.X,size.Y,size.Z},
         technicalCandidate=parts>0 and parts<=MAX_PARTS and #descendants<=MAX_DESCENDANTS
             and scripts==0 and unsupported==0 and math.max(size.X,size.Y,size.Z)<=512}
