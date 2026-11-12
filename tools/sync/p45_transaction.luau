@@ -1,4 +1,5 @@
 -- Dedicated coupled P4.5 transaction. Preview mutates only disposable edit session.
+local scenePathFor=pathFor
 -- __RS_ROCK_HELPERS__
 -- __RS_STICK_HELPER__
 local W=workspace
@@ -41,7 +42,7 @@ local beforeFingerprint=fingerprint(before)
 if cfg.mode=="apply" then assert(beforeFingerprint==cfg.beforeFingerprint,"Native baseline changed") end
 local backups={}
 local function backup(obj,svc)
-    local path=pathFor(game:GetService(svc),obj)
+    local path=scenePathFor(game:GetService(svc),obj)
     local blob=Serial:SerializeInstancesAsync({obj})
     local copies=Serial:DeserializeInstancesAsync(blob)
     assert(#copies==1 and copies[1].ClassName==obj.ClassName and copies[1].Name==obj.Name,"Backup roundtrip")
