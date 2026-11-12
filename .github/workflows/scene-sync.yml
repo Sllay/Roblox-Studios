@@ -16,7 +16,7 @@ on:
         type: boolean
         default: true
   push:
-    paths: ['games/maps/mapa-principal/docs/sync-once.trigger']
+    paths: ['games/maps/mapa-principal/docs/sync-check-once.trigger']
 permissions:
   contents: write
 concurrency:

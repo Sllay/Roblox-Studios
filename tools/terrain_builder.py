@@ -98,6 +98,8 @@ def main():
     require(args.confirm_staging and args.expected_version is not None,"Explicit staging confirmation and version required")
     from script_quality import main as quality
     require(quality([])==0,"Luau gate failed")
+    from scene_sync import require_current
+    require_current(t,key,args.expected_version)
     before=capture(t,key);save(out/"before.json",before)
     require(before["loadedVersion"]==args.expected_version,"Staging version changed")
     r=task(t,key,p,"apply",expectedVersion=args.expected_version);save(out/"save.json",r)

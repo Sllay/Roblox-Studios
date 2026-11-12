@@ -162,6 +162,8 @@ def request_json(url, key, *, method="GET", data=None, content_type=None):
 def publish(target, key):
     if target.get("fullPlaceBuildAuthoritative") is not True:
         raise WorkspaceError("Full Place replacement blocked: repository is not declared authoritative for this Place")
+    from scene_sync import require_current
+    require_current(target,key)
     artifact = target["file"]
     if not artifact.is_file() or artifact.stat().st_size == 0:
         raise WorkspaceError(f"Missing/empty built Place: {artifact}. Run 'workspace.py build' first.")

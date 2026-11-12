@@ -27,3 +27,7 @@ Validação e compilação são separadas da publicação. CI executa validaçã
 2. Lint/análise estática Luau e testes no motor Roblox.
 3. Catálogo de assets com rastreamento, licenças e IDs.
 4. Publicação controlada com credenciais mínimas, homologação e aprovação.
+
+## Estado observado vs. estado desejado (P3)
+
+Para Places existentes, o Roblox publicado é a autoridade do estado observado. Git guarda o código desejado, planos declarativos, inventários observados e histórico; ausência no Git não autoriza remoção. Scene Sync captura serviços, referências, hashes de scripts e regiões Terrain registradas, reconcilia mudanças externas e bloqueia escrita stale. O snapshot não é exportação completa do DataModel. Operações incrementais exigem baseline, plano e verificação pós-save. Ver docs/SCENE_SYNC.md.

@@ -105,6 +105,8 @@ def main():
     opts=dict(rows=r["rows"],sources=r["sources"],planDigest=r["planDigest"],runtimeSource=(ROOT/"tools/scene_builder_ground.server.luau").read_text())
     if a.operation=="apply":
         require(a.confirm_staging,"Explicit confirmation")
+        from scene_sync import require_current
+        require_current(t,key,a.expected_version)
         before=capture(t,key);save(out/"before.json",before)
         require(before["loadedVersion"]==r["loadedVersion"]==a.expected_version,"Version changed")
         result=task(t,key,p,"apply",expectedVersion=a.expected_version,**opts);save(out/"save.json",result)

@@ -139,6 +139,8 @@ def equivalent(a,b):
 
 def apply(t,key,p,output):
     validate_plan(t,p)
+    from scene_sync import require_current
+    require_current(t,key,p["expectedVersion"])
     before=capture(t,key);write(output/"before.json",before)
     if before["loadedVersion"]!=p["expectedVersion"]:raise WorkspaceError("Place version changed; prepare new plan")
     if any(x.get("managedId")==p["managedId"] for x in before["objects"]):raise WorkspaceError("Already imported")

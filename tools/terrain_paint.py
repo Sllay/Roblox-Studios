@@ -53,6 +53,8 @@ def main():
     r=json.loads(a.baseline.read_text())
     require(r["plan"]==p and r["universeId"]==t["universeId"] and r["placeId"]==t["placeId"] and r["changedVoxels"]>0,"Baseline mismatch")
     options={k:r[k] for k in ("beforeDigest","geometryDigest","afterDigest")}
+    from scene_sync import require_current
+    require_current(t,key,r["loadedVersion"])
     result=task(t,key,p,"apply",expectedVersion=r["loadedVersion"],**options);save(a.output/"save.json",result)
     v=task(t,key,p,"verify",geometryDigest=r["geometryDigest"],afterDigest=r["afterDigest"]);save(a.output/"verification.json",v)
     require(v["verified"] is True and v["loadedVersion"]>r["loadedVersion"],"Paint not persisted")

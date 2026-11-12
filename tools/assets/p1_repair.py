@@ -19,6 +19,8 @@ def main():
     item=next(x for x in registry["reviews"] if x["name"]=="Tree_01")
     profile=validate_profile(item["placementProfile"])
     out=ROOT/"dist"/"p1-repair"
+    from scene_sync import require_current
+    require_current(t,key,2)
     before=capture(t,key);write(out/"before.json",before)
     if before["loadedVersion"]!=2:raise WorkspaceError("Expected staging version 2; inspect before retry")
     client=Path(__file__).with_name("lighting_lab.client.luau").read_text()

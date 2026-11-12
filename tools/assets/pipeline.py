@@ -82,6 +82,8 @@ def apply(target,key,plan,catalog,output):
     expected=prepare(target,plan["assetId"],plan["managedId"],plan["position"],plan["yaw"],plan["biome"],
                     plan["rightsReview"],plan["audit"],catalog)
     if expected!=plan: raise WorkspaceError("Plan does not match reviewed target/evidence")
+    from scene_sync import require_current
+    require_current(target,key,plan["expectedVersion"])
     before=capture(target,key)
     write(output/"before.json",before)
     if before["loadedVersion"]!=plan["expectedVersion"]:

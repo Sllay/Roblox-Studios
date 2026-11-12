@@ -212,6 +212,9 @@ def main(argv=None):
         key = os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY", "").strip()
         if not key:
             raise WorkspaceError("Missing secret ROBLOX_OPEN_CLOUD_API_KEY in GitHub Actions")
+        from scene_sync import require_current
+        current=require_current(t,key)
+        apply=f"assert(game.PlaceVersion == {current['loadedVersion']}, \"Sync version changed\")\n"+apply
         print("1/3 Remote identity and name-collision preflight", flush=True)
         execute_task(t["universeId"], t["placeId"], key, preflight)
         print("2/3 Applying Part, server Script and LocalScript; saving current Place", flush=True)
