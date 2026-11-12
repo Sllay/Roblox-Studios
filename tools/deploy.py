@@ -83,7 +83,29 @@ def load_targets(game_slug, game):
 
 def load_all():
     games = load_games()
-    return games, {slug: load_targets(slug, game) for slug, game in games.items()}
+    targets = {slug: load_targets(slug, game) for slug, game in games.items()}
+    validate_global_targets(targets)
+    return games, targets
+
+
+def validate_global_targets(targets):
+    """Prevent any Place alias and staging/production Universe overlap repository-wide."""
+    occupied = {}
+    universe_env = {}
+    for slug, config in targets.items():
+        for env, dest in config["environments"].items():
+            universe = normalized_id(dest["universeId"], "universeId")
+            if universe:
+                if universe in universe_env and universe_env[universe] != env:
+                    raise WorkspaceError(f"Universe {universe} shared across staging and production")
+                universe_env[universe] = env
+            for place, raw in dest["placeIds"].items():
+                pid = normalized_id(raw, "placeId")
+                if pid:
+                    label = f"{slug}/{place}/{env}"
+                    if pid in occupied:
+                        raise WorkspaceError(f"Place ID {pid} shared by {occupied[pid]} and {label}")
+                    occupied[pid] = label
 
 
 def resolve(games, targets, game_slug, place_slug, environment):

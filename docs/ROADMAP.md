@@ -12,3 +12,6 @@
 - [ ] Scene Builder e sincronização declarativa completa; recuperação de versões e rollback.
 - [ ] Análise Luau com tipos Roblox, testes de gameplay e performance.
 - [ ] MCP Lite e orquestrador de agentes.
+
+- [x] Asset access preflight com diagnóstico separado de autorização, política e rate limit.
+- [x] Staging readiness e bloqueio global de aliases de produção.

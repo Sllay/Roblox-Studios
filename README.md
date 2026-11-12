@@ -72,3 +72,8 @@ python tools/deploy.py show --game sandbox-demo --place lobby --environment stag
 - [Roblox Open Cloud](https://create.roblox.com/docs/cloud)
 
 Cada Place tem seu próprio projeto Rojo e pode ser compilado independentemente. Documentos de agentes e GDDs ficam fora da árvore de objetos exportada ao Roblox.
+
+### Pré-validação de assets e staging
+
+- [Asset access preflight](.github/workflows/asset-access.yml) diferencia autorização de carregamento, auditoria e falhas temporárias sem salvar o Place.
+- [Staging readiness](.github/workflows/staging-readiness.yml) verifica a identidade do ambiente de teste; exige IDs reais separados da produção. Consulte `docs/ASSET_IMPORT.md`.

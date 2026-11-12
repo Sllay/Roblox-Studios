@@ -49,6 +49,14 @@ class DeployTests(unittest.TestCase):
             finally:
                 deploy.MAPS = base
 
+    def test_cross_game_target_alias_rejected(self):
+        cfg = lambda env, u, p: {"environments": {env: {"universeId": u, "placeIds": {"main": p}}}}
+        with self.assertRaisesRegex(deploy.WorkspaceError, "shared across"):
+            deploy.validate_global_targets({"a":cfg("production","1","2"),"b":cfg("staging","1","3")})
+        with self.assertRaisesRegex(deploy.WorkspaceError, "shared by"):
+            deploy.validate_global_targets({"a":cfg("production","1","2"),"b":cfg("staging","3","2")})
+        deploy.validate_global_targets({"a":cfg("production","1","2"),"b":cfg("staging","3","4")})
+
     def test_partial_place_cannot_be_replaced(self):
         games, targets = deploy.load_all()
         target = deploy.resolve(games, targets, "mapa-principal", "main", "production")
