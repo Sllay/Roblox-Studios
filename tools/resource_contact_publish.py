@@ -34,7 +34,7 @@ def scope(base,expected,opts):
             seen.add(names[2])
     require(seen==ids,"All resources accounted for")
 def main():
-    p=argparse.ArgumentParser();p.add_argument("--output",type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument("mode",choices=["preview","apply"]);p.add_argument("--output",type=Path,required=True);p.add_argument("--reviewed",type=Path);a=p.parse_args()
     a.output.mkdir(parents=True,exist_ok=True)
     g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging");key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
     base=read(state_path(target));plan=read(PLAN)
@@ -49,12 +49,18 @@ def main():
     scope_opts={**opts,"expectedTerrainRows":plan["expectedTerrain"]}
     src="do\n"+(ROOT/"tools/sync/resource_contact_publish.luau").read_text()+"\nend"
     require(latest(target,key)==17,"Fresh staging head")
-    r=task(target,key,src,read_version=17,compile_source=True,mode="preview",**opts)
-    require(r["loadedVersion"]==17 and r["inverseVerified"] and r["noPlaceWrites"],"Exact transaction inverse")
-    expected=expected_from(base,r);scope(base,expected,scope_opts)
-    require(sum("class" in x for x in expected["records"].values())==expected["total"],"Complete inventory")
-    manifest={"version":17,"baseDigest":base["stateDigest"],"planDigest":APPROVED,"sourceHash":hashlib.sha256(src.encode()).hexdigest(),"beforeFingerprint":r["beforeFingerprint"],"afterFingerprint":r["afterFingerprint"],"expectedDigest":expected["stateDigest"],"expectedTotal":expected["total"],"inverseVerified":True}
-    write(a.output/"manifest.json",manifest);write(a.output/"expected.json",expected)
+    if a.mode=="preview":
+        r=task(target,key,src,read_version=17,compile_source=True,mode="preview",**opts)
+        require(r["loadedVersion"]==17 and r["inverseVerified"] and r["noPlaceWrites"],"Exact transaction inverse")
+        expected=expected_from(base,r);scope(base,expected,scope_opts)
+        require(sum("class" in x for x in expected["records"].values())==expected["total"],"Complete inventory")
+        manifest={"version":17,"baseDigest":base["stateDigest"],"planDigest":APPROVED,"sourceHash":hashlib.sha256(src.encode()).hexdigest(),"beforeFingerprint":r["beforeFingerprint"],"afterFingerprint":r["afterFingerprint"],"expectedDigest":expected["stateDigest"],"expectedTotal":expected["total"],"inverseVerified":True}
+        write(a.output/"manifest.json",manifest);write(a.output/"expected.json",expected)
+        return
+    require(a.reviewed is not None,"Reviewed manifest required")
+    manifest=read(a.reviewed/"manifest.json");expected=read(a.reviewed/"expected.json")
+    require(manifest["version"]==17 and manifest["baseDigest"]==base["stateDigest"] and manifest["planDigest"]==APPROVED and manifest["sourceHash"]==hashlib.sha256(src.encode()).hexdigest() and manifest["inverseVerified"] and expected["stateDigest"]==sha(expected["records"])==manifest["expectedDigest"] and expected["total"]==manifest["expectedTotal"],"Reviewed manifest")
+    scope(base,expected,scope_opts)
     require(latest(target,key)==17,"Head changed before save")
     receipt={**manifest,"status":"started","retryAllowed":False}
     with (a.output/"receipt.json").open("x") as o: json.dump(receipt,o);o.flush();os.fsync(o.fileno())
