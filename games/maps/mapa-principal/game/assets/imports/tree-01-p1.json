@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 2,
+  "game": "mapa-principal",
+  "place": "main",
+  "environment": "staging",
+  "universeId": "10769712441",
+  "placeId": "93428341652658",
+  "assetId": "79689531752352",
+  "selector": [
+    {
+      "class": "Folder",
+      "index": 1,
+      "name": "Yasu's_Stylized_Tree_Pack"
+    },
+    {
+      "class": "Folder",
+      "index": 4,
+      "name": "Models_Trees"
+    },
+    {
+      "class": "Folder",
+      "index": 1,
+      "name": "Models"
+    },
+    {
+      "class": "Model",
+      "index": 1,
+      "name": "Tree_01"
+    }
+  ],
+  "managedId": "yasu-tree-01",
+  "biome": "floresta-temperada",
+  "rightsReview": "User acquired this free Creator Store model with Get Model and explicitly requested staging integration. Use only within Roblox experience for homologation; preserve original asset references, no third-party model or texture redistribution. Creator Store terms apply.",
+  "position": [
+    40,
+    7.9986114501953125,
+    -18
+  ],
+  "yaw": 0,
+  "expectedVersion": 1,
+  "digest": "MfM7bOoaA6wAmcvhc5ZLLF8IiO4MqPRLbPmuHu4nenA=",
+  "evidence": {
+    "bottomOffset": -7.9986114501953125,
+    "universeId": "10769712441",
+    "audit": {
+      "bounds": [
+        34.1169319152832,
+        47.071327209472656,
+        31.46033477783203
+      ],
+      "policyVersion": 2,
+      "surfaces": 2,
+      "dependencies": [
+        "rbxassetid://13244568809",
+        "rbxassetid://13255359293",
+        "rbxassetid://18716595484",
+        "rbxassetid://18716595527",
+        "rbxassetid://18718123628",
+        "rbxassetid://18718124198",
+        "rbxassetid://18718124854"
+      ],
+      "rows": [
+        {
+          "resampleMode": "Default",
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Trunk_01"
+            },
+            {
+              "class": "SurfaceAppearance",
+              "index": 1,
+              "name": "Bark_Grooved"
+            }
+          ],
+          "maps": {
+            "MetalnessMapContent": "",
+            "RoughnessMapContent": "rbxassetid://18718124854",
+            "NormalMapContent": "rbxassetid://18718124198",
+            "EmissiveMaskContent": "",
+            "ColorMapContent": "rbxassetid://18718123628"
+          },
+          "emissiveTint": [
+            1,
+            1,
+            1
+          ],
+          "color": [
+            0.41568630933761597,
+            0.3137255012989044,
+            0.2549019753932953
+          ],
+          "class": "SurfaceAppearance",
+          "emissiveStrength": 1,
+          "alphaMode": "Overlay"
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 1,
+              "name": "Trunk_01"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Default",
+          "transparency": 0,
+          "size": [
+            21.853382110595703,
+            41.864784240722656,
+            18.394573211669922
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            1.195465087890625,
+            12.933778762817383,
+            2.2760696411132812,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "Wood",
+          "mesh": "rbxassetid://18716595484",
+          "texture": ""
+        },
+        {
+          "resampleMode": "Default",
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 2,
+              "name": "Canopy_01"
+            },
+            {
+              "class": "SurfaceAppearance",
+              "index": 1,
+              "name": "Leaves_01_4"
+            }
+          ],
+          "maps": {
+            "MetalnessMapContent": "",
+            "RoughnessMapContent": "rbxassetid://13244568809",
+            "NormalMapContent": "",
+            "EmissiveMaskContent": "",
+            "ColorMapContent": "rbxassetid://13255359293"
+          },
+          "emissiveTint": [
+            1,
+            1,
+            1
+          ],
+          "color": [
+            0.364705890417099,
+            0.41960787773132324,
+            0.1098039299249649
+          ],
+          "class": "SurfaceAppearance",
+          "emissiveStrength": 1,
+          "alphaMode": "Transparency"
+        },
+        {
+          "path": [
+            {
+              "class": "MeshPart",
+              "index": 2,
+              "name": "Canopy_01"
+            }
+          ],
+          "reflectance": 0,
+          "color": [
+            0.6392157077789307,
+            0.6352941393852234,
+            0.6470588445663452
+          ],
+          "class": "MeshPart",
+          "collisionFidelity": "Box",
+          "transparency": 0,
+          "size": [
+            34.1169319152832,
+            32.528419494628906,
+            31.46033477783203
+          ],
+          "renderFidelity": "Automatic",
+          "relative": [
+            -0.48431396484375,
+            22.808504104614258,
+            1.6161270141601562,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "material": "LeafyGrass",
+          "mesh": "rbxassetid://18716595527",
+          "texture": ""
+        }
+      ],
+      "instances": 4,
+      "parts": 2
+    },
+    "placeId": "93428341652658",
+    "assetId": "79689531752352",
+    "dependencyFetch": {
+      "textures": {
+        "rbxassetid://18718123628": "Success",
+        "rbxassetid://18718124854": "Success",
+        "rbxassetid://13244568809": "Success",
+        "rbxassetid://18718124198": "Success",
+        "rbxassetid://13255359293": "Success"
+      },
+      "meshes": {
+        "rbxassetid://18716595527": "Success",
+        "rbxassetid://18716595484": "Success"
+      },
+      "verified": true
+    },
+    "spawn": [
+      0,
+      0.5,
+      0
+    ],
+    "ground": {
+      "top": 0,
+      "size": [
+        2048,
+        16,
+        2048
+      ],
+      "position": [
+        0,
+        -8,
+        0
+      ]
+    },
+    "digest": "MfM7bOoaA6wAmcvhc5ZLLF8IiO4MqPRLbPmuHu4nenA=",
+    "loadedVersion": 1,
+    "offlinePbr": [
+      {
+        "name": "Bark_Grooved",
+        "properties": {
+          "ColorMapContent": {
+            "Uri": "rbxassetid://18718123628"
+          },
+          "EmissiveMaskContent": "None",
+          "MetalnessMapContent": "None",
+          "NormalMapContent": {
+            "Uri": "rbxassetid://18718124198"
+          },
+          "RoughnessMapContent": {
+            "Uri": "rbxassetid://18718124854"
+          },
+          "TexturePackContent": {
+            "Uri": "rbxassetid://18718124981"
+          }
+        }
+      },
+      {
+        "name": "Leaves_01_4",
+        "properties": {
+          "ColorMapContent": {
+            "Uri": "rbxassetid://13255359293"
+          },
+          "EmissiveMaskContent": "None",
+          "MetalnessMapContent": "None",
+          "NormalMapContent": "None",
+          "RoughnessMapContent": {
+            "Uri": "rbxassetid://13244568809"
+          },
+          "TexturePackContent": {
+            "Uri": "rbxassetid://18484846264"
+          }
+        }
+      }
+    ],
+    "selector": [
+      {
+        "class": "Folder",
+        "index": 1,
+        "name": "Yasu's_Stylized_Tree_Pack"
+      },
+      {
+        "class": "Folder",
+        "index": 4,
+        "name": "Models_Trees"
+      },
+      {
+        "class": "Folder",
+        "index": 1,
+        "name": "Models"
+      },
+      {
+        "class": "Model",
+        "index": 1,
+        "name": "Tree_01"
+      }
+    ]
+  },
+  "evidenceSha256": "cafccb3bbd6dce30fff83486e3c80398dec56b92b0b4ea05aa4a5ee24fca770f"
+}
