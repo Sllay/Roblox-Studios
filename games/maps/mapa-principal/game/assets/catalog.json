@@ -8,17 +8,38 @@
       "sourceUrl": "https://create.roblox.com/store/asset/79689531752352/Yasus-Stylized-Tree-Pack",
       "biome": null,
       "reviewStatus": "user_selected",
-      "securityStatus": "not_inspected",
+      "securityStatus": "audit_incomplete_policy_rejected",
       "importStatus": "not_imported",
       "access": {
-        "status": "asset_access_denied",
+        "status": "loadable_audit_incomplete",
         "environment": "staging",
         "universeId": "10769712441",
         "placeId": "93428341652658",
         "loadedVersion": 1,
-        "verificationRun": "43131202122"
+        "verificationRun": "43131666285",
+        "userAcquired": true
       },
-      "note": "Selected by user; creator metadata, rights and visual biome review not verified. Do not import."
+      "note": "Get Model confirmed by user; actual detached loading now works. Pack contains multiple models and exceeds static-decoration limits. Select an individual tree subtree and audit its dependencies before any import.",
+      "auditSummary": {
+        "instances": 1096,
+        "inspectedInstancesLimit": 350,
+        "partsInSample": 122,
+        "surfaceAppearancesInSample": 56,
+        "serializedBytes": 370728,
+        "dimensions": [
+          149.31631469726562,
+          195.36074829101562,
+          672.94287109375
+        ],
+        "issues": [
+          "Instance budget exceeded",
+          "Disallowed UI and other classes",
+          "Part budget exceeded",
+          "Restricted PBR texture properties",
+          "Model bounds exceed policy"
+        ],
+        "note": "Counts of classes/parts are sampled, not whole-pack totals. No import authorized."
+      }
     }
   ]
 }

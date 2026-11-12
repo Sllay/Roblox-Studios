@@ -8,8 +8,9 @@
 - [x] Asset Inspector: carregamento remoto real e rejeição de modelo com Scripts e classes proibidas.
 - [x] Safe Import implementado: plano, reauditoria, versão, ID, verificação e evidências; testes automatizados.
 - [x] Staging mapa-principal cadastrado e identidade remota verificada (versão 1).
-- [ ] Homologar importação real no staging (asset selecionado 79689531752352 negado pelo Roblox; aguarda autorização).
-- [ ] Verificar um modelo decorativo autorizado em staging e confirmar dependências, posicionamento e persistência real.
+- [x] Get Model habilitou o carregamento de asset público 79689531752352 no staging.
+- [ ] Homologar importação real no staging: pacote excede política; selecionar e auditar árvore individual, incluindo texturas PBR restritas.
+- [ ] Inventário de submodelos, inspeção offline de PBR e importação real com verificação de persistência.
 - [ ] Scene Builder e sincronização declarativa completa; recuperação de versões e rollback.
 - [ ] Análise Luau com tipos Roblox, testes de gameplay e performance.
 - [ ] MCP Lite e orquestrador de agentes.
