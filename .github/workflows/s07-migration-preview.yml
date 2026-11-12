@@ -1,0 +1,38 @@
+name: S07 integrated migration preview
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/s07-migration-preview.yml','tools/s07_migration_preview.py','tools/sync/s07_migration_preview.luau','tools/sync/s07_original_columns.luau']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - uses: actions/download-artifact@v4
+        with:
+          name: s07-repaired-population
+          run-id: 43323228750
+          github-token: ${{ github.token }}
+          path: dist/s07/
+      - name: Disposable integrated migration
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s07_migration_preview.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s07-migration-preview
+          path: dist/s07/
