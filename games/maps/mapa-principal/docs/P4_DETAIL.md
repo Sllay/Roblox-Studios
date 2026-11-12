@@ -15,3 +15,6 @@ First P4.4 audit on v12 (43182858125) observed exact Mossy_Rock pass; three Inno
 
 ## Reviewed detail preview
 Run 43183938384: 20/20 placements over six chunks; 162 existing models preserved; digest c57570c5c410f009f761fe4ff36ff4dc9dcac43f4410450479034cd7f12e92d9. Preview used actual v12 terrain and excluded existing props/spawns. Exact plan checked in at docs/sync/main/patches/p4-detail-layout-reviewed.json. Explicit staging apply authorized; independent post-save verification required.
+
+## Staging v13 verified
+Run 43184077707: 20/20 new detail models, 8 trunk colliders, independent geometry/transform/physics/PBR check passed. Scene Sync 644b5c8, digest a7f9b87a4233d04abb416bf9516edaf64cee241b481d9119ee9169683f16068e; all 49 terrain hashes unchanged from v12. Total 182 models; 138 original + 24 first batch + 20 detail batch. No production write. Remaining P4.4: exact inert stick extraction and dedicated MossLeaf mount geometry/normal/contact validation, not whole pack import. New pine foliage is static under current Yasu-only wind policy; extend exact mapping during polish. P4.5: mobile full day-night cycle, wind canopy attachment and direction, barrier corners/ceiling, new model ground support and appearance, respawn/death, FPS/thermal/memory. Default-module duplicate accumulation remains open; no final quality claim.

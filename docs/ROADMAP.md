@@ -87,3 +87,5 @@
 - [x] P4.3 staging v12: 24 models / 8 colliders saved v11, independently verified, then seven scripts applied and verified v12. Sync ebc235a; run 43182858125. Exact default-module clone delta remains documented and must be addressed before repeated saves become routine. P4.4 exact asset preflight follows in same run; detail layout engine merged PR #2 (CI passed).
 
 - [x] P4.4 exact preflight 43183544747: 4/4 sources passed PBR/dependencies after hierarchical surface identity fix; eight geometry thumbnails reviewed, 50 MossLeaf meshes inventoried. 20-model detail plan approved for staging preview; surface-mount vines and static stick extraction remain pending.
+
+- [x] P4.4 first detailed batch staged v13: 20 models, 8 colliders, independent PBR/transform verification and Scene Sync 644b5c8; run 43184077707. All 49 terrain digests unchanged from v12. Total 182 environmental models (44 additions across P4.3 and P4.4). Remaining P4.4: dedicated surface mounting for MossLeaf foliage and inert stick extraction; original external Wind Effects scripts not activated. P4.5 is mobile validation and iterative polish, not final game quality.

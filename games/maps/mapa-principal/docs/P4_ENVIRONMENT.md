@@ -20,3 +20,5 @@ Run 43182382445 saved 24 models / 8 colliders; independent inventory v11 confirm
 
 ## P4.3 completed
 Run 43182858125 recovered and verified v11 (24 objects, 8 colliders, sampled offline PBR), synchronized 5b594a5, applied seven scripts and independently verified v12, synchronized ebc235a. All 49 recorded terrain region digests preserved. Script hashes checked; 175 total delta records including exact default clones. Production unchanged. Mobile appearance, wind and clock behavior pending P4.5. Default-module duplicate accumulation remains a technical issue; do not normalize away arbitrary changes.
+
+P4.4 first detail batch verified in v13 (run 43184077707, sync 644b5c8); 20 additional objects, 8 additional colliders, 182 total environment models. See P4_DETAIL.md for remaining surface-mount/stick scope and P4.5 polish criteria.
