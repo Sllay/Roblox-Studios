@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "expectedVersion": 8,
+  "baselineDigest": "bb06f4ab717b8511672736744d80a9c140bc55d7fe29666cad9d67bdf06b4251",
+  "operations": [
+    {
+      "kind": "update_script",
+      "targetKey": "path:[\"ServerScriptService\",[{\"class\":\"Script\",\"name\":\"RSCentralSpawnSafety\",\"ordinal\":1}]]",
+      "archiveId": "spawn-v8-lockout",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSCentralSpawnSafety.server.luau"
+    },
+    {
+      "kind": "update_script",
+      "targetKey": "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1},{\"class\":\"LocalScript\",\"name\":\"RSQualityPanel\",\"ordinal\":1}]]",
+      "archiveId": "panel-v8-lockout",
+      "sourcePath": "games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSQualityPanel.client.luau"
+    }
+  ]
+}

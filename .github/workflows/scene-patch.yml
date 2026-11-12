@@ -18,6 +18,8 @@ on:
       confirm_staging:
         type: boolean
         default: false
+  push:
+    paths: ['games/maps/mapa-principal/docs/spawn-hotfix-once.trigger']
 permissions:
   contents: read
 concurrency:
@@ -25,7 +27,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   patch:
-    if: ${{ github.ref == 'refs/heads/main' && (inputs.operation == 'preview' || inputs.confirm_staging) }}
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'preview' || inputs.confirm_staging) }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -37,6 +39,8 @@ jobs:
       - run: bash tools/install-luau.sh
       - run: python -m unittest discover -s tests -v
       - run: python tools/script_quality.py
+      - run: bash tools/install-luau-lsp.sh
+      - run: python tools/quality_gate_v2.py
       - name: Preview or apply exact scene patch
         env:
           GAME: ${{ inputs.game || 'mapa-principal' }}
@@ -47,6 +51,7 @@ jobs:
         run: |
           [[ "$GAME" =~ ^[a-z0-9-]+$ && "$PLACE" =~ ^[a-z0-9-]+$ && "$PLAN" =~ ^[a-z0-9-]+\.json$ ]] || exit 1
           args=()
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then OP=apply; PLAN=spawn-hotfix-v9.json; fi
           if [[ "$OP" == apply ]]; then args+=(--confirm-staging); fi
           python tools/scene_patch.py "$OP" --game "$GAME" --place "$PLACE" --plan "games/maps/$GAME/docs/sync/$PLACE/patches/$PLAN" "${args[@]}"
       - uses: actions/upload-artifact@v4

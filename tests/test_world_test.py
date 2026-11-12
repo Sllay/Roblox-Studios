@@ -12,7 +12,10 @@ class WorldTests(unittest.TestCase):
         s=(ROOT/"games/maps/mapa-principal/game/places/main/src/ServerScriptService/RSCentralSpawnSafety.server.luau").read_text()
         self.assertIn("not alive(character)",s)
         self.assertIn("hum.BreakJointsOnDeath=true",s)
-        self.assertIn("player:LoadCharacterAsync()",s)
+        self.assertIn("Players.CharacterAutoLoads=true",s)
+        self.assertNotIn("Players.CharacterAutoLoads=false",s)
+        self.assertNotIn("LoadCharacterAsync",s)
+        self.assertIn("voxel_estimate",s)
     def test_support_not_terrain(self):
         s=(ROOT/"tools/sync/prop_support.luau").read_text()
         self.assertNotIn("WriteVoxel",s);self.assertIn("model:PivotTo(cf)",s)
