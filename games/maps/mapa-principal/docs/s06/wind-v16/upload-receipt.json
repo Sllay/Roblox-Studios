@@ -1,0 +1,14 @@
+{
+  "creatorId": "8136365379",
+  "creatorType": "User",
+  "httpStatus": 403,
+  "noPlaceWrites": true,
+  "originalSha256": "32b04f3e0c5bd57430741b400783021ec4bc471e3a16ff0979d68c414a38bb49",
+  "response": {
+    "code": "PERMISSION_DENIED",
+    "message": "User not authenticated"
+  },
+  "retryAllowed": false,
+  "schemaVersion": 1,
+  "status": "denied"
+}
