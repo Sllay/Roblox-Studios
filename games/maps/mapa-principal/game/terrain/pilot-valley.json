@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "bounds": [
+    96,
+    0,
+    -128,
+    352,
+    64,
+    128
+  ],
+  "seed": 4291,
+  "baseHeight": 25,
+  "edgeHeight": 4,
+  "edgeBlend": 36,
+  "minSolidDepth": 4,
+  "surfaceDepth": 8,
+  "soilDepth": 16,
+  "noiseLayers": [
+    {
+      "wavelength": 130,
+      "amplitude": 7,
+      "octaves": 3,
+      "lacunarity": 2,
+      "persistence": 0.5,
+      "seedOffset": 0
+    },
+    {
+      "wavelength": 44,
+      "amplitude": 2,
+      "octaves": 2,
+      "lacunarity": 2,
+      "persistence": 0.4,
+      "seedOffset": 21
+    }
+  ],
+  "warp": {
+    "amplitude": 6,
+    "wavelength": 100
+  },
+  "lake": {
+    "center": [
+      224,
+      28
+    ],
+    "radius": 34,
+    "depth": 12,
+    "level": 20,
+    "bankWidth": 16,
+    "bankRise": 8,
+    "blendWidth": 16,
+    "sandWidth": 12,
+    "irregularity": 0.12
+  },
+  "path": {
+    "points": [
+      [
+        96,
+        -68
+      ],
+      [
+        144,
+        -62
+      ],
+      [
+        184,
+        -70
+      ],
+      [
+        224,
+        -78
+      ],
+      [
+        272,
+        -64
+      ],
+      [
+        312,
+        -54
+      ],
+      [
+        352,
+        -48
+      ]
+    ],
+    "width": 12,
+    "material": "Ground"
+  },
+  "cleanupLightingLab": true
+}

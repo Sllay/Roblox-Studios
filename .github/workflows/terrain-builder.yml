@@ -1,0 +1,55 @@
+name: Native Terrain Builder (staging)
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [preview, apply, verify]
+        default: preview
+      expected_version:
+        type: string
+        default: '3'
+      digest:
+        type: string
+        required: false
+      confirm_staging:
+        type: boolean
+        default: false
+  push:
+    paths: ['games/maps/mapa-principal/docs/terrain-preview-once.trigger']
+permissions:
+  contents: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  terrain:
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation != 'apply' || inputs.confirm_staging) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/script_quality.py
+      - name: Compile and verify native terrain
+        env:
+          OP: ${{ inputs.operation || 'preview' }}
+          VERSION: ${{ inputs.expected_version }}
+          DIGEST: ${{ inputs.digest }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          args=()
+          if [[ "$OP" == apply ]]; then args+=(--expected-version "$VERSION" --confirm-staging); fi
+          if [[ "$OP" == verify ]]; then args+=(--digest "$DIGEST"); fi
+          python tools/terrain_builder.py "$OP" --plan games/maps/mapa-principal/game/terrain/pilot-valley.json "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: terrain-builder-evidence
+          path: dist/terrain/
+          if-no-files-found: warn
