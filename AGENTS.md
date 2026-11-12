@@ -31,3 +31,7 @@ python -m unittest discover -s tests -v
 python tools/workspace.py build --all
 ```
 O último comando requer o Rojo CLI. Relate claramente quando uma verificação não puder ser executada.
+
+## Controle de alterações e assets
+
+Antes de editar um Place remoto, consulte `docs/ASSET_IMPORT.md`. Não confundir snapshot estrutural com backup completo. Nunca habilite `fullPlaceBuildAuthoritative` para uma cena parcialmente sincronizada. A importação estática exige staging, pré-seleção visual, auditoria, revisão de direitos, plano versionado e confirmação explícita. Não publicar ou ativar scripts de terceiros. Não inventar resultados de auditoria.

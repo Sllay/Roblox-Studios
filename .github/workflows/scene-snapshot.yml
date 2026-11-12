@@ -15,8 +15,6 @@ on:
         options: [production, staging]
         default: production
         required: true
-  push:
-    paths: ['games/maps/mapa-principal/docs/snapshot-once.trigger']
 permissions:
   contents: read
 jobs:

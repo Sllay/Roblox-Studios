@@ -28,3 +28,10 @@ O teste de versão reduz o risco de alterações concorrentes, mas não é uma t
 ## Estado
 
 O fluxo é inicialmente limitado a decoração estática; não há compra automática, scripts de terceiros, validação visual de cena renderizada, exportação integral do modelo para Rojo ou promoção para produção. Git guarda o plano e evidências; o modelo remoto é materializado via Open Cloud. Não usar o build Rojo de um Place parcialmente gerenciado para substituir sua cena inteira.
+
+## Evidências iniciais
+
+- Snapshot remoto: versão 2, 8 objetos do Workspace ([execução](https://github.com/Sllay/Roblox-Studios/actions/runs/43128968404)).
+- Asset 257489726: carregado e recusado corretamente; 2 Scripts, Humanoid, sons e juntas, 7 Parts, 26 descendentes ([auditoria](https://github.com/Sllay/Roblox-Studios/actions/runs/43129081020)).
+- Primeira tentativa falhou ao ler AllowInsertFreeAssets (capacidade protegida); leitura removida. Não alterar permissões automaticamente.
+- Full Place publish bloqueado por padrão; requer fullPlaceBuildAuthoritative=true no registro do Place, após verificação explícita de que Git representa a cena completa. Não habilitar para o mapa-principal.

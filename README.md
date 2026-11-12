@@ -42,6 +42,13 @@ O build gera arquivos em `dist/<jogo>/<place>.rbxlx`. O GitHub Actions pode vali
 - Cada jogo tem `ASSET_STYLE_GUIDE.md` e `game/assets/catalog.json`. O CLI `tools/assets/catalog.py` registra escolhas visuais como **pré-selecionadas, não auditadas e não importadas**.
 - [Manual dos workflows de assets e inspeção](docs/ASSET_AND_SCENE_WORKFLOWS.md).
 
+## Snapshots e importação estática
+
+- [Manual de auditoria e Safe Import](docs/ASSET_IMPORT.md): política de decoração estática, snapshots, planos versionados e importação somente em staging.
+- [Versioned scene snapshot](.github/workflows/scene-snapshot.yml): captura estrutural da versão real, sem escrever.
+- [Asset audit and safe staging import](.github/workflows/asset-pipeline.yml): audita um modelo isolado ou aplica um plano explicitamente aprovado em staging. O mapa-principal não tem staging configurado; não há importação real validada ainda.
+- A substituição integral do Place fica bloqueada até que seu manifesto declare `fullPlaceBuildAuthoritative: true` após revisão da fonte integral.
+
 ## Diagnóstico automático de Luau
 
 Os workflows verificam a sintaxe de Scripts, LocalScripts e ModuleScripts com Luau oficial 0.744 e SHA-256 validado. Erros bloqueiam a publicação. Consulte [Quality Gates](docs/QUALITY_GATES.md). Testes de runtime ainda são independentes.
