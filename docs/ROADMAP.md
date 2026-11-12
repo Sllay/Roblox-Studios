@@ -97,3 +97,6 @@
 - [ ] Terrain Surface Fields: reusable pure Luau height/dry footprint/slope/relief/altitude percentile integrated into environment layout, executable tests; remote layout regression and persistent spatial cache pending.
 
 - [x] P4.5 read-only preflight 43257411211: 182 models, 162 foliage candidates, 93 coupled trunk colliders, exact wind script preview. Terrain surface module CI passed 43257553076. Script-only verified transaction wrapper implemented; wind staging apply initiated.
+
+- [x] P4.5 wind script transaction verified staging v14 (43257825675), sync dd359a0; 49 terrain hashes unchanged. Mobile motion still pending.
+- [ ] Roblox API capability research and pinned read probe: official Studio MCP, native geometry/physics, binary input, asset versioning, serialization, testing and runtime stats. Live probe pending; see docs/ROBLOX_API_RESEARCH.md.

@@ -22,3 +22,6 @@ Pure Luau tools/terrain/surface_fields.luau extracts the existing four-stud inte
 
 ## First reusable verified script transaction
 Added tools/verified_script_stage.py wrapping existing Scene Patch with versioned plan, current baseline, script-only operation budget, explicit staging authorization, independent verification/sync, terrain equality and durable receipt. Failures mark requires_reconciliation and no automatic retry. This is script-only, not yet the generic multi-operation transaction engine or automatic rollback. Pilot P4.5 wind correction v13.
+
+## Official API research
+See docs/ROBLOX_API_RESEARCH.md. Studio MCP is a local optional visual/playtest backend, not currently connected. Pinned read transport and capability probe added; live result pending. Script transaction verified v14, 49 terrain hashes unchanged.

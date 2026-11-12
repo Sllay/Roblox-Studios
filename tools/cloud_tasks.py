@@ -18,15 +18,20 @@ def poll_task(path, key):
             time.sleep(delay)
 
 
-def run_task(universe, place, key, source):
+def run_task(universe, place, key, source, *, read_version=None):
     if not all(re.fullmatch(r"[1-9][0-9]*", str(x)) for x in (universe, place)):
         raise WorkspaceError("Invalid Universe/Place ID")
     prefix = f"universes/{universe}/places/{place}/"
-    task = request_api(prefix + "luau-execution-session-tasks", key,
+    if read_version is not None and (type(read_version) is not int or read_version<1):
+        raise WorkspaceError("Invalid historical read version")
+    endpoint=prefix+(f"versions/{read_version}/" if read_version is not None else "")+"luau-execution-session-tasks"
+    task = request_api(endpoint, key,
                        payload={"script": source, "timeout": "90s"})
     path = task.get("path")
     if not isinstance(path, str) or not path.startswith(prefix):
         raise WorkspaceError("Unexpected task path")
+    if read_version is not None and not path.startswith(prefix+f"versions/{read_version}/"):
+        raise WorkspaceError("Pinned read task loaded unexpected version")
     print(f"Cloud task: {path}", flush=True)
     for _ in range(45):
         task = poll_task(path, key)
@@ -47,6 +52,8 @@ def run_task(universe, place, key, source):
             if not match:
                 raise WorkspaceError("Cloud task did not report a versioned path")
             data["loadedVersion"] = int(match.group(1))
+            if read_version is not None and data["loadedVersion"] != read_version:
+                raise WorkspaceError("Pinned read result version mismatch")
             return data
         if state not in ("QUEUED", "PROCESSING", "PENDING"):
             raise WorkspaceError(f"Cloud task failed: {task.get('error', state)}")

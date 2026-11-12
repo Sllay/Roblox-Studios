@@ -172,7 +172,7 @@
       "id": "scene.inspect",
       "entry": "tools/p45_preflight.py",
       "mode": "read",
-      "status": "implemented",
+      "status": "live_verified",
       "purpose": "Inspect managed foliage and collider geometry",
       "requires": [
         "scene.sync"
@@ -242,7 +242,7 @@
       "id": "scene.script_transaction",
       "entry": "tools/verified_script_stage.py",
       "mode": "staging_write",
-      "status": "implemented",
+      "status": "live_verified",
       "purpose": "Reviewed script-only transaction with verification and durable receipt",
       "requires": [
         "scene.sync",
@@ -253,6 +253,19 @@
         "receipt",
         "scene baseline",
         "archive"
+      ]
+    },
+    {
+      "id": "cloud.api_probe",
+      "entry": "tools/roblox_api_probe.py",
+      "mode": "read",
+      "status": "implemented",
+      "purpose": "Pinned staging version API support probe for native terrain, physics, navigation, mesh and serialization",
+      "requires": [
+        "scene.sync"
+      ],
+      "produces": [
+        "context-specific support evidence"
       ]
     }
   ]
