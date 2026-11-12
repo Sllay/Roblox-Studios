@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "scope": "staging only",
+  "sourceInventoryRun": 43179707585,
+  "assets": [
+    {
+      "assetId": "18817890736",
+      "name": "Pine_01.1",
+      "role": "tree",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 8,
+          "name": "Pine_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Variation_01"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Pine_01.1"
+        }
+      ],
+      "count": 4,
+      "targetWidth": [
+        14,
+        20
+      ],
+      "foliageName": "Leaves"
+    },
+    {
+      "assetId": "18817890736",
+      "name": "Pine_03.1",
+      "role": "tree",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 8,
+          "name": "Pine_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 3,
+          "name": "Variation_03"
+        },
+        {
+          "class": "Model",
+          "index": 4,
+          "name": "Pine_03.1"
+        }
+      ],
+      "count": 4,
+      "targetWidth": [
+        14,
+        20
+      ],
+      "foliageName": "Leaves"
+    },
+    {
+      "assetId": "18817890736",
+      "name": "Blue_Flowers",
+      "role": "flower",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Inno's_Stylized_Asset_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Regular_Assets"
+        },
+        {
+          "class": "Folder",
+          "index": 3,
+          "name": "Flowers"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Blue_Flowers"
+        }
+      ],
+      "count": 6,
+      "targetWidth": [
+        3,
+        5
+      ]
+    },
+    {
+      "assetId": "85389927254160",
+      "name": "Mossy_Rock1_M_Mossy_Rock_0_Node",
+      "role": "rock",
+      "selector": [
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Low Poly Stylized Rock Pack"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Sketchfab_model"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "e9e516dd21d04df28714d133134029a3.fbx"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "RootNode"
+        },
+        {
+          "class": "Model",
+          "index": 2,
+          "name": "Mossy_Rock1"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Mossy_Rock1_M_Mossy_Rock_0_Node"
+        }
+      ],
+      "count": 6,
+      "targetWidth": [
+        3,
+        5
+      ]
+    }
+  ],
+  "proposedTotal": 20,
+  "moss": {
+    "assetId": "9002291527",
+    "status": "standalone_geometry_review_pending",
+    "noWholePackImport": true
+  },
+  "stick": {
+    "assetId": "9204066145",
+    "status": "static_extraction_pending",
+    "externalScriptsBlocked": true
+  },
+  "importAuthorized": false
+}

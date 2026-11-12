@@ -340,6 +340,19 @@ local function inspectPack(root: Model)
 end
 
 local model = loadAsset()
+if cfg.mode == "detail_geometry" then
+    local rows={}
+    for _,obj in model:GetDescendants() do
+        if obj:IsA("MeshPart") and #rows<128 then
+            local textureCount=0
+            for _,c in obj:GetDescendants() do if c:IsA("Texture") or c:IsA("Decal") then textureCount+=1 end end
+            table.insert(rows,{name=obj.Name,selector=packPath(model,obj),meshId=obj.MeshId,material=obj.Material.Name,
+                size={obj.Size.X,obj.Size.Y,obj.Size.Z},textureCount=textureCount,importAuthorized=false})
+        end
+    end
+    model:Destroy()
+    return output({meshRows=rows,codeExecuted=false})
+end
 if cfg.mode == "code_source_audit" then
     -- Return sources only to trusted runner memory for compile/static analysis.
     -- Runner must never log, upload, persist or execute these source strings.

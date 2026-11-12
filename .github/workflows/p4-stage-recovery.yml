@@ -27,7 +27,7 @@ jobs:
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
-          test "$(cat games/maps/mapa-principal/docs/p4-stage-v10-once.trigger)" = "authorized-recover-v11"
+          test "$(cat games/maps/mapa-principal/docs/p4-stage-v11-recover-once.trigger)" = "authorized-recover-v11-r2"
           python tools/p4_stage.py recover-layout
       - name: Record verified baseline
         run: |
@@ -81,4 +81,29 @@ jobs:
           path: |
             dist/scene-patch/
             dist/scene-sync/
+          if-no-files-found: warn
+
+  detail-audit:
+    needs: scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: P4.4 exact assets and moss geometry
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          sleep 45
+          python tools/assets/p4_detail_preflight.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p4-detail-preflight
+          path: dist/p4-detail/
           if-no-files-found: warn
