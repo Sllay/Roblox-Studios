@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "assetId": "79689531752352",
+  "biome": "bosque-fantasia",
+  "bounds": [
+    96,
+    0,
+    -128,
+    352,
+    64,
+    128
+  ],
+  "terrainDigest": "+9jG2LoEvoHDF4Ux6xX9R5w77c96xo21r22RIJsp5Bk=",
+  "seed": 7321,
+  "maxModels": 32,
+  "minSpacing": 7,
+  "canopySpacing": 0.85,
+  "species": [
+    {
+      "name": "Tree_01",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Tree_01"
+        }
+      ],
+      "count": 12,
+      "minCount": 8,
+      "scale": [
+        0.65,
+        0.9
+      ],
+      "clearance": 9,
+      "collision": {
+        "radius": 1.6,
+        "height": 8
+      },
+      "profile": {
+        "schemaVersion": 1,
+        "mountType": "bury_in_ground",
+        "orientation": "upright",
+        "contactRule": "bounds_bottom_plus_burial",
+        "buryDepthStuds": 6,
+        "supportRadiusStuds": 2,
+        "maxSlopeDegrees": 15,
+        "maxHeightDeltaStuds": 1,
+        "rayTop": 256,
+        "rayBottom": -128,
+        "groundNames": [
+          "Terrain"
+        ],
+        "calibrationStatus": "provisional",
+        "note": "Accepted original burial scaled proportionally; new Terrain and scale require mobile review."
+      },
+      "digest": "MfM7bOoaA6wAmcvhc5ZLLF8IiO4MqPRLbPmuHu4nenA="
+    },
+    {
+      "name": "Tree_08",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 4,
+          "name": "Models_Trees"
+        },
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 8,
+          "name": "Tree_08"
+        }
+      ],
+      "count": 8,
+      "minCount": 4,
+      "scale": [
+        0.55,
+        0.75
+      ],
+      "clearance": 8,
+      "collision": {
+        "radius": 1.1,
+        "height": 8
+      },
+      "profile": {
+        "schemaVersion": 1,
+        "mountType": "bury_in_ground",
+        "orientation": "upright",
+        "contactRule": "bounds_bottom_plus_burial",
+        "buryDepthStuds": 4,
+        "supportRadiusStuds": 2,
+        "maxSlopeDegrees": 15,
+        "maxHeightDeltaStuds": 1,
+        "rayTop": 256,
+        "rayBottom": -128,
+        "groundNames": [
+          "Terrain"
+        ],
+        "calibrationStatus": "provisional",
+        "note": "Provisional pilot calibration from component shape; mobile review required."
+      }
+    },
+    {
+      "name": "Bush_01",
+      "selector": [
+        {
+          "class": "Folder",
+          "index": 1,
+          "name": "Yasu's_Stylized_Tree_Pack"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models_Bushes"
+        },
+        {
+          "class": "Folder",
+          "index": 2,
+          "name": "Models"
+        },
+        {
+          "class": "Model",
+          "index": 1,
+          "name": "Bush_01"
+        }
+      ],
+      "count": 12,
+      "minCount": 8,
+      "scale": [
+        0.75,
+        1
+      ],
+      "clearance": 5,
+      "collision": null,
+      "profile": {
+        "schemaVersion": 1,
+        "mountType": "bury_in_ground",
+        "orientation": "upright",
+        "contactRule": "bounds_bottom_plus_burial",
+        "buryDepthStuds": 1,
+        "supportRadiusStuds": 2,
+        "maxSlopeDegrees": 15,
+        "maxHeightDeltaStuds": 1,
+        "rayTop": 256,
+        "rayBottom": -128,
+        "groundNames": [
+          "Terrain"
+        ],
+        "calibrationStatus": "provisional",
+        "note": "Provisional pilot calibration from component shape; mobile review required."
+      }
+    }
+  ]
+}

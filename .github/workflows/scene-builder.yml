@@ -1,0 +1,61 @@
+name: Scene Builder forest pilot (staging)
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [preview, apply, verify]
+        default: preview
+      baseline_run:
+        type: string
+      expected_version:
+        type: string
+        default: '5'
+      confirm_staging:
+        type: boolean
+        default: false
+  push:
+    paths: ['games/maps/mapa-principal/docs/forest-preview-once.trigger']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  forest:
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation != 'apply' || inputs.confirm_staging) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/script_quality.py
+      - uses: actions/download-artifact@v4
+        if: ${{ inputs.operation == 'apply' || inputs.operation == 'verify' }}
+        with:
+          name: scene-builder-evidence
+          run-id: ${{ inputs.baseline_run }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/prior-scene
+      - name: Preview or apply forest plan
+        env:
+          OP: ${{ inputs.operation || 'preview' }}
+          VERSION: ${{ inputs.expected_version || '5' }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          args=()
+          if [[ "$OP" != preview ]]; then args+=(--baseline dist/prior-scene/preview.json); fi
+          if [[ "$OP" == apply ]]; then args+=(--confirm-staging); fi
+          python tools/scene_builder.py "$OP" --plan games/maps/mapa-principal/game/terrain/forest-pilot.json --expected-version "$VERSION" "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scene-builder-evidence
+          path: dist/scene-builder/
+          if-no-files-found: warn
