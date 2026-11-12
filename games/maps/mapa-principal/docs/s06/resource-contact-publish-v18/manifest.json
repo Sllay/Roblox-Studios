@@ -1,0 +1,11 @@
+{
+  "afterFingerprint": "jihIoClLhxz5JTeI36J22WURa0ylcnrywZg1tZyZ1QU=",
+  "baseDigest": "a44bcd60970d3049cace86cfb3787ddaeb19364c94779e819291d552f378bceb",
+  "beforeFingerprint": "axy5qsOxHJrz1EHqcGz68irNhQqLL+CzculEGBuqKUo=",
+  "expectedDigest": "e19828130a46af836d4e4e34292eaba787b659b1dff471218d62a3522eaedcfb",
+  "expectedTotal": 4843,
+  "inverseVerified": true,
+  "planDigest": "4fe7b59ac7488dc1bcd26a8e50bbc8d854cccf3239ad7c0a6a25243b64334b79",
+  "sourceHash": "d102ad311a8194cd01fb02d26e5da8259ec5fcab5c4917926a26d124e0e11a5d",
+  "version": 17
+}
