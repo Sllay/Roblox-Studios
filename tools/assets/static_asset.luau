@@ -144,7 +144,7 @@ local model = loadAsset()
 local report = audit(model)
 if cfg.mode == "audit" then
     model:Destroy()
-    return output({audit=report, thirdPartyEnabled=Assets.AllowInsertFreeAssets})
+    return output({audit=report})
 end
 assert(cfg.mode == "apply", "Unknown operation")
 assert(game.PlaceVersion == cfg.expectedVersion, "Place version changed; create a new plan")

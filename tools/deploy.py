@@ -104,6 +104,7 @@ def resolve(games, targets, game_slug, place_slug, environment):
         )
     return {"game": game_slug, "place": place_slug, "environment": environment,
             "universeId": universe, "placeId": place,
+            "fullPlaceBuildAuthoritative": next(p for p in game["places"] if p["slug"] == place_slug).get("fullPlaceBuildAuthoritative") is True,
             "file": ROOT / "dist" / game_slug / (place_slug + ".rbxlx")}
 
 
@@ -137,6 +138,8 @@ def request_json(url, key, *, method="GET", data=None, content_type=None):
 
 
 def publish(target, key):
+    if target.get("fullPlaceBuildAuthoritative") is not True:
+        raise WorkspaceError("Full Place replacement blocked: repository is not declared authoritative for this Place")
     artifact = target["file"]
     if not artifact.is_file() or artifact.stat().st_size == 0:
         raise WorkspaceError(f"Missing/empty built Place: {artifact}. Run 'workspace.py build' first.")

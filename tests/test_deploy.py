@@ -49,6 +49,13 @@ class DeployTests(unittest.TestCase):
             finally:
                 deploy.MAPS = base
 
+    def test_partial_place_cannot_be_replaced(self):
+        games, targets = deploy.load_all()
+        target = deploy.resolve(games, targets, "mapa-principal", "main", "production")
+        self.assertFalse(target["fullPlaceBuildAuthoritative"])
+        with self.assertRaisesRegex(deploy.WorkspaceError, "Full Place replacement blocked"):
+            deploy.publish(target, "unused")
+
     def test_multipart_body_contains_required_fields(self):
         with tempfile.TemporaryDirectory() as tmp:
             file = Path(tmp) / "test.rbxlx"

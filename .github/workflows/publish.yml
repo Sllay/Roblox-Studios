@@ -34,12 +34,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: publish-${{ inputs.game }}-${{ inputs.place }}-${{ inputs.environment }}
+  group: roblox-place-write-${{ inputs.game }}-${{ inputs.place }}-${{ inputs.environment }}
   cancel-in-progress: false
 
 jobs:
   publish:
-    if: ${{ inputs.confirm_publish && inputs.confirm_full_place_replacement }}
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_publish && inputs.confirm_full_place_replacement }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     timeout-minutes: 20
@@ -48,6 +48,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+      - run: python -m pip install Pillow==11.3.0
       - name: Validate repository and target mappings
         run: |
           python tools/workspace.py validate
