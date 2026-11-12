@@ -43,3 +43,7 @@ Antes de buscar ou avaliar novamente um asset conhecido, consulte docs/ASSET_VIS
 Safe Import 2.0: for reviewed pack submodels with PBR, follow docs/ASSET_IMPORT.md and tools/assets/pack_import.py. Never use v1 whole-pack import for a single submodel. Do not commit serialized third-party binaries. Staging-only, explicit plan, no automatic production promotion. Confirm actual mobile rendering separately.
 
 Placement: read docs/ASSET_PLACEMENT.md; require reviewed per-model profile and live placement-probe. Do not infer contact from bounds alone; use explicit burial or local anchor. Reject unknown mount, invalid ground or excessive slope. A provisional calibration is not visually validated. P1 lighting lab is staging-only; never treat its test lighting as a production decision.
+
+## Native terrain
+
+Use docs/TERRAIN_BUILDER.md and tools/terrain_builder.py for new native terrain regions. Separate sculpting/solid occupancy, water/liquid occupancy, and painting/material. Never excavate Air just to change material, never create unsupported water or use Terrain:Clear. Plan all geometry in a bounded common height/density field, ensure continuous solid floor and margins, preview, verify exact paint invariants, save staging and verify native voxel hash. Do not treat the Workspace structural snapshot as a terrain backup. Preserve existing terrain; existing region edits require explicit reviewed baseline. Use placement ground allowlist Terrain and reject water rather than plant on underwater beds.

@@ -57,7 +57,7 @@ local function column(x,z)
     elseif shoreline<lake.bankWidth then
         height=mix(lake.level,lake.level+lake.bankRise,smooth(shoreline/lake.bankWidth))
     elseif shoreline<lake.bankWidth+lake.blendWidth then
-        height=mix(lake.level+lake.bankRise,math.max(height,lake.level+lake.bankRise),smooth((shoreline-lake.bankWidth)/lake.blendWidth))
+        height=mix(lake.level+lake.bankRise,height,smooth((shoreline-lake.bankWidth)/lake.blendWidth))
     end
     -- No disconnected water outside the basin. Every dry neighbor of water
     -- reaches the same water plane. Sand is a surface material, not geometry.

@@ -28,3 +28,6 @@
 
 - [x] Memória visual de 23 plantas com descrição baseada em miniaturas reais de componentes; consulta offline, correspondência de evidências e atualização controlada.
 - [ ] Preview texturizado de submodelos e confirmação de cores PBR por planta.
+
+- [x] P2.1 native terrain plan, multi-noise, solid/liquid channels, material-only paint, bounded lake; preview compiled on Roblox staging v3 (43138809195).
+- [ ] Validate native voxel write, paint invariant, persisted lake and mobile traversal; then expand general terrain painting, placement and batch scene builder.

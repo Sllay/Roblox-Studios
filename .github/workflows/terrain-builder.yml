@@ -16,7 +16,7 @@ on:
         type: boolean
         default: false
   push:
-    paths: ['games/maps/mapa-principal/docs/terrain-preview-once.trigger']
+    paths: ['games/maps/mapa-principal/docs/terrain-apply-once.trigger']
 permissions:
   contents: read
 concurrency:
@@ -44,6 +44,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           args=()
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then OP=apply; VERSION=3; fi
           if [[ "$OP" == apply ]]; then args+=(--expected-version "$VERSION" --confirm-staging); fi
           if [[ "$OP" == verify ]]; then args+=(--digest "$DIGEST"); fi
           python tools/terrain_builder.py "$OP" --plan games/maps/mapa-principal/game/terrain/pilot-valley.json "${args[@]}"

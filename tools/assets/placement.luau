@@ -16,7 +16,7 @@ local function solvePlacement(model: Model, x: number, z: number, yaw: number, p
     local ground={}
     for _,name in profile.groundNames do
         local obj=Workspace:FindFirstChild(name)
-        assert(obj and obj:IsA("BasePart") and obj.Anchored and obj.CanCollide,"Approved ground missing: "..name)
+        assert(obj and (obj:IsA("Terrain") or (obj:IsA("BasePart") and obj.Anchored and obj.CanCollide)),"Approved ground missing: "..name)
         table.insert(ground,obj)
     end
     assert(#ground>0,"No approved ground")
@@ -24,7 +24,7 @@ local function solvePlacement(model: Model, x: number, z: number, yaw: number, p
     params.FilterType=Enum.RaycastFilterType.Include
     params.FilterDescendantsInstances=ground
     params.RespectCanCollide=true
-    params.IgnoreWater=true
+    params.IgnoreWater=false
     local radius=profile.supportRadiusStuds
     local heights={}
     local hitNames={}
