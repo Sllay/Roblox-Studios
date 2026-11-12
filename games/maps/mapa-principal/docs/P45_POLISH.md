@@ -35,3 +35,6 @@ Exact sharded v16 parity, 16 identical PlayerModule subtrees, disposable reducti
 
 ## S06.4-C permission retry
 Original canopy GLB created successfully (91515745821527); native proof confirms one loaded mesh, 20 bones and 18 branch transform round-trips. No scripts, no Place writes. Vertex editing still blocked by staging Mesh/Image APIs setting and third-party ownership; client render/skin weights pending. Evidence in docs/s06/wind-v16/permission-retry. No reupload.
+
+## S06 integrated v17
+Published and independently verified 43306041111. 212 playable vegetation, 216 resources in 36 clearings, 132 tree profiles, 6 solid rocks, stronger macro wind and optional owned vertex demo. Terrain occupancy preserved, 40/49 regions unchanged, 9 material-only. Full scoped inverse and collision matrix proven; 134 tests. Client acceptance pending, no production. See NEXT_STEPS.md.

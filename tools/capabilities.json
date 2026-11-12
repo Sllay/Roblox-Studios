@@ -536,6 +536,24 @@
         "owned vertex proof",
         "update timing"
       ]
+    },
+    {
+      "id": "scene.s06_integrated_transaction",
+      "entry": "tools/s06_integrated.py",
+      "mode": "staging_write",
+      "status": "live_verified",
+      "purpose": "Dedicated reviewed v16-to-v17 coupled vegetation/resource/paint/script publication; native inverse and collision matrix, sharded persisted proof; historical plan not reusable",
+      "requires": [
+        "scene.sync_sharded",
+        "scene.vegetation_regeneration_preview",
+        "scene.resource_visibility_preview",
+        "quality.gate"
+      ],
+      "produces": [
+        "reviewed baseline and expected state",
+        "publication receipt",
+        "native persisted verification"
+      ]
     }
   ]
 }
