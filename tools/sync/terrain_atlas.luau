@@ -2,9 +2,12 @@
 local T=workspace.Terrain
 local tiles={}
 local channels={"SolidMaterial","SolidOccupancy","LiquidOccupancy"}
-local step=2
+local native=cfg.surfaceNative==true
+local step=if native then 1 else 2
+local selected={}
+if native then for _,id in cfg.surfaceTileIds do selected[id]=true end end
 for _,region in cfg.regions do
-    if not region.playable then continue end
+    if not region.playable or (native and not selected[region.id]) then continue end
     local b=region.bounds
     local nx,ny,nz=(b[4]-b[1])/4,(b[5]-b[2])/4,(b[6]-b[3])/4
     assert(nx%step==0 and nz%step==0,"Atlas alignment")
@@ -17,7 +20,8 @@ for _,region in cfg.regions do
         buffer.writeu16(all,offset+4,d.SolidMaterial[x][y][z].Value);offset+=6
     end end end
     local digest=buffer.tostring(Encoding:Base64Encode(Encoding:ComputeBufferHash(all,Enum.HashAlgorithm.Sha256)))
-    local samples=buffer.create(nx*nz/(step*step)*5)
+    local stride=if native then 7 else 5
+    local samples=buffer.create(nx*nz/(step*step)*stride)
     local at=0
     for z=1,nz,step do for x=1,nx,step do
         local h=b[2];local material=Enum.Material.Air.Value;local wet=false
@@ -26,11 +30,15 @@ for _,region in cfg.regions do
             if o>0.02 then h=b[2]+(y-1+o)*4;material=d.SolidMaterial[x][y][z].Value end
             if d.LiquidOccupancy[x][y][z]>0.02 then wet=true end
         end
-        buffer.writei16(samples,at,math.round(h*10));buffer.writeu16(samples,at+2,material);buffer.writeu8(samples,at+4,if wet then 1 else 0)
-        at+=5
+        if native then
+            buffer.writef32(samples,at,h);buffer.writeu16(samples,at+4,material);buffer.writeu8(samples,at+6,if wet then 1 else 0)
+        else
+            buffer.writei16(samples,at,math.round(h*10));buffer.writeu16(samples,at+2,material);buffer.writeu8(samples,at+4,if wet then 1 else 0)
+        end
+        at+=stride
     end end
     table.insert(tiles,{id=region.id,bounds=b,digest=digest,nx=nx/step,nz=nz/step,samples=buffer.tostring(Encoding:Base64Encode(samples))})
 end
 local materials={}
 for _,m in Enum.Material:GetEnumItems() do materials[tostring(m.Value)]=m.Name end
-return syncResult({schemaVersion=1,stepStuds=8,sampleOffsetStuds=2,tiles=tiles,materials=materials,noPlaceWrites=true})
+return syncResult({schemaVersion=if native then 2 else 1,stepStuds=4*step,sampleOffsetStuds=2,tiles=tiles,materials=materials,noPlaceWrites=true})

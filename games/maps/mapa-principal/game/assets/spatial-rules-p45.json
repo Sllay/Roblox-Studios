@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "status": "provisional_preview_only",
+  "stone": {
+    "materials": [
+      "Grass"
+    ],
+    "radius": 0.75,
+    "footprint": 0.75,
+    "supportRadius": 1,
+    "waterClearance": 4,
+    "maxSlope": 18,
+    "maxRelief": 1.5,
+    "spacing": 2,
+    "altitudePercentile": null
+  },
+  "stick": {
+    "materials": [
+      "Grass"
+    ],
+    "radius": 1,
+    "footprint": 1,
+    "supportRadius": 1,
+    "waterClearance": 4,
+    "maxSlope": 18,
+    "maxRelief": 1.5,
+    "spacing": 2,
+    "altitudePercentile": null
+  },
+  "dryTree": {
+    "materials": [
+      "Grass"
+    ],
+    "radius": 12,
+    "footprint": 8,
+    "supportRadius": 1.2,
+    "waterClearance": 8,
+    "maxSlope": 15,
+    "maxRelief": 1.5,
+    "spacing": 2,
+    "altitudePercentile": 0.8
+  },
+  "notes": "Candidate locations only; assets/geometry, final contact and species appearance require S03/S04. Grass-only mask excludes non-grass paths; no explicit road semantic graph yet."
+}
