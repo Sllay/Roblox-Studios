@@ -79,18 +79,21 @@ def main():
         require(r["preview"] and r["noPlaceWrites"] and r["planDigest"]==opts["planDigest"],"Preview contract")
         expected=normalize({**r["after"],"loadedVersion":14});check_backups(r["backups"])
         changes,clones=scope(base,expected,opts);require(clones==0,"Unexpected preview clone")
-        manifest.update(expectedDigest=expected["stateDigest"],backupDigest=sha(r["backups"]),backupCount=len(r["backups"]),expectedTotal=expected["total"])
+        restored=normalize({**r["restored"],"loadedVersion":14})
+        require(restored["records"].keys()==base["records"].keys() and all(equal(v,restored["records"][k]) for k,v in base["records"].items()),"Isolated inverse did not restore baseline")
+        manifest.update(expectedDigest=expected["stateDigest"],backupDigest=sha(r["backups"]),backupCount=len(r["backups"]),expectedTotal=expected["total"],beforeFingerprint=r["beforeFingerprint"],afterFingerprint=r["afterFingerprint"],isolatedInverseVerified=True)
         atomic_json(a.output/"manifest.json",manifest);write(a.output/"expected.json",expected);write(a.output/"preimages.json",r["backups"])
         print("S05_PREVIEW "+json.dumps({**manifest,"changes":changes}),flush=True);return
     require(a.confirm_staging and a.reviewed is not None,"Reviewed staging authorization")
     m=read(a.reviewed/"manifest.json");expected=read(a.reviewed/"expected.json");backups=read(a.reviewed/"preimages.json")
     require(all(m[k]==v for k,v in manifest.items()) and expected["stateDigest"]==sha(expected["records"])==m["expectedDigest"] and sha(backups)==m["backupDigest"],"Reviewed manifest mismatch")
     check_backups(backups);scope(base,expected,opts)
+    require(m["isolatedInverseVerified"] is True,"Recovery proof required")
     receipt={**manifest,"status":"started","retryAllowed":False}
     a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/"receipt.json").open("x") as o:json.dump(receipt,o);o.flush();os.fsync(o.fileno())
     try:
-        r=task(target,key,src,compile_source=True,journal=a.output/"cloud-task.json",mode="apply",confirmStaging=True,backupCount=m["backupCount"],**opts)
+        r=task(target,key,src,compile_source=True,journal=a.output/"cloud-task.json",mode="apply",confirmStaging=True,backupCount=m["backupCount"],beforeFingerprint=m["beforeFingerprint"],afterFingerprint=m["afterFingerprint"],**opts)
         require(r["saved"] and r["loadedVersion"]==14 and r["planDigest"]==opts["planDigest"],"Save unconfirmed")
         write(a.output/"save.json",{k:v for k,v in r.items() if k!="after"})
         after=capture(target,key);write(a.output/"after.json",after);require(after["loadedVersion"]>14,"Version not advanced")

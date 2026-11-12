@@ -21,12 +21,24 @@ assert(not W:FindFirstChild("RSResourcesP45"),"Resource root exists")
 local terrain=terrainState()
 for _,r in terrain do assert(cfg.terrainExpected[r.id]==r.digest,"Terrain changed "..r.id) end
 assert(#terrain==49,"Terrain scope")
-local oldRecords={}
-local before=inventory()
-for _,r in before.objects do
-    local k=if r.managedId~="" then "managed:"..r.managedId else Http:JSONEncode({r.service,r.path})
-    oldRecords[k]=r
+local function canonicalValue(v)
+    if typeof(v)~="table" then return Http:JSONEncode(v) end
+    local keys={}
+    for k in v do table.insert(keys,k) end
+    table.sort(keys,function(a,b)return tostring(a)<tostring(b) end)
+    local out={}
+    for _,k in keys do table.insert(out,Http:JSONEncode(tostring(k))..":"..canonicalValue(v[k])) end
+    return "{"..table.concat(out,",").."}"
 end
+local function fingerprint(state)
+    local hashes={}
+    for _,r in state.objects do table.insert(hashes,hash(canonicalValue(r))) end
+    table.sort(hashes)
+    return hash(table.concat(hashes,";")..canonicalValue(state.terrain)..canonicalValue(state.lighting)..canonicalValue(state.workspaceSettings))
+end
+local before=inventory()
+local beforeFingerprint=fingerprint(before)
+if cfg.mode=="apply" then assert(beforeFingerprint==cfg.beforeFingerprint,"Native baseline changed") end
 local backups={}
 local function backup(obj,svc)
     local path=pathFor(game:GetService(svc),obj)
@@ -132,18 +144,33 @@ assert(wind and wind:IsA("LocalScript") and hash(wind.Source)==cfg.windBeforeHas
 backup(wind,"StarterPlayer");wind.Source=cfg.windSource
 local after=inventory()
 assert(after.total+cfg.cloneReserve<=4500,"Inventory budget")
-local changes={}
-for _,r in after.objects do
-    local k=if r.managedId~="" then "managed:"..r.managedId else Http:JSONEncode({r.service,r.path})
-    local old=oldRecords[k]
-    -- Return all changed records by structural equality; Python derives exact scope.
-    if not old or Http:JSONEncode(old)~=Http:JSONEncode(r) then table.insert(changes,r) end
-end
--- Return full post inventory in preview so Python can independently normalize it.
--- Backups are only exported before a write, not duplicated into the Place.
+local afterFingerprint=fingerprint(after)
 if cfg.mode=="preview" then
-    return syncResult({schemaVersion=1,preview=true,noPlaceWrites=true,planDigest=cfg.planDigest,after=after,backups=backups,resources=count,colliders=#cfg.colliders})
+    -- Exercise the inverse in this disposable session, not in the live place.
+    newRoot:Destroy()
+    for _,row in cfg.colliders do
+        local _,root=getModel(row.root,row.id)
+        local folder=root:FindFirstChild("Collisions")
+        folder:FindFirstChild(row.id.."-cap"):Destroy()
+        if row.action=="add" then
+            folder:FindFirstChild(row.id):Destroy()
+            if row.root=="RSManagedAssets" and #folder:GetChildren()==0 then folder:Destroy() end
+        end
+    end
+    for _,r in backups do
+        local parentPath=table.clone(r.path);local last=table.remove(parentPath)
+        local parent=locate(r.service,parentPath)
+        local blob=Encoding:Base64Decode(buffer.fromstring(r.serializedBase64))
+        assert(digestBuffer(blob)==r.digest,"Recovery blob")
+        local copies=Serial:DeserializeInstancesAsync(blob)
+        assert(#copies==1 and copies[1].Name==last.name and copies[1].ClassName==last.class,"Recovery selector")
+        local old=parent:FindFirstChild(last.name)
+        if copies[1]:IsA("LocalScript") then assert(old and old:IsA("LocalScript"),"Recovery script");old.Source=copies[1].Source;copies[1]:Destroy()
+        else if old then assert(old.ClassName==last.class,"Recovery class");old:Destroy() end;copies[1].Parent=parent end
+    end
+    local restored=inventory()
+    return syncResult({schemaVersion=1,preview=true,noPlaceWrites=true,planDigest=cfg.planDigest,after=after,backups=backups,resources=count,colliders=#cfg.colliders,beforeFingerprint=beforeFingerprint,afterFingerprint=afterFingerprint,restored=restored})
 end
-assert(cfg.confirmStaging==true and #backups==cfg.backupCount,"Reviewed apply required")
+assert(cfg.confirmStaging==true and #backups==cfg.backupCount and afterFingerprint==cfg.afterFingerprint,"Reviewed apply fingerprint mismatch")
 Assets:SavePlaceAsync({SaveWithoutPublish=false})
-return syncResult({schemaVersion=1,saved=true,planDigest=cfg.planDigest,resources=count,colliders=#cfg.colliders,after=after})
+return syncResult({schemaVersion=1,saved=true,planDigest=cfg.planDigest,resources=count,colliders=#cfg.colliders})

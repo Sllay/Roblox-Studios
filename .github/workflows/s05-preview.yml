@@ -1,4 +1,4 @@
-name: S05 coupled environment transaction preview
+name: S05 coupled environment transaction and inverse preview
 on:
   push:
     branches: [main]
