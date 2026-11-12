@@ -92,6 +92,11 @@ for _,r in cfg.resources do
 end
 -- Persist visual collision flags and the exact collision matrix via reviewed server policy.
 -- __RS_PHYSICS__
+local collisionApi=if pcall(function() return W:GetRegisteredCollisionGroups() end) then W else game:GetService("PhysicsService")
+local groupsBefore={};local matrixBefore={}
+for _,g in collisionApi:GetRegisteredCollisionGroups() do table.insert(groupsBefore,g.name) end
+table.sort(groupsBefore)
+for _,a in groupsBefore do matrixBefore[a]={};for _,b in groupsBefore do matrixBefore[a][b]=collisionApi:CollisionGroupsAreCollidable(a,b) end end
 local api=configure(W)
 local stones,sticks,rocks=applyResources(W)
 assert(stones==108 and sticks==108 and rocks==6,"Physical resource counts")
@@ -141,9 +146,17 @@ if cfg.mode=="preview" then
     for _,r in scriptRest do r.obj.Source=r.source end
     for _,o in created do o:Destroy() end
     for _,r in detached do r.obj.Parent=r.parent end
+    -- Newly registered groups are not part of Scene Sync records; restore them explicitly.
+    for _,name in {"RSPlayerBody","RSNaturalResource"} do
+        if not table.find(groupsBefore,name) then api:UnregisterCollisionGroup(name) end
+    end
+    for _,a in groupsBefore do for _,b in groupsBefore do api:CollisionGroupSetCollidable(a,b,matrixBefore[a][b]) end end
+    local names={};for _,g in api:GetRegisteredCollisionGroups() do table.insert(names,g.name) end;table.sort(names)
+    assert(canonical(names)==canonical(groupsBefore),"Collision registry inverse")
+    for _,a in groupsBefore do for _,b in groupsBefore do assert(api:CollisionGroupsAreCollidable(a,b)==matrixBefore[a][b],"Collision matrix inverse") end end
     local restored=snapshot()
     assert(fingerprint(restored)==bf,"Exact inverse mismatch")
-    return syncResult({preview=true,noPlaceWrites=true,beforeFingerprint=bf,afterFingerprint=af,afterTotal=after.total,changed=changed,removed=removed,terrain=after.terrain,lighting=after.lighting,workspaceSettings=after.workspaceSettings,inverseVerified=true,forest=212,trees=132,resources=216,tiles=tiles,planDigest=cfg.planDigest})
+    return syncResult({preview=true,noPlaceWrites=true,beforeFingerprint=bf,afterFingerprint=af,afterTotal=after.total,changed=changed,removed=removed,terrain=after.terrain,lighting=after.lighting,workspaceSettings=after.workspaceSettings,inverseVerified=true,collisionInverseVerified=true,forest=212,trees=132,resources=216,tiles=tiles,planDigest=cfg.planDigest})
 end
 assert(cfg.mode=="apply" and cfg.confirmStaging and af==cfg.afterFingerprint,"Reviewed apply")
 A:SavePlaceAsync({SaveWithoutPublish=false})

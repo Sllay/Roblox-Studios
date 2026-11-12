@@ -60,15 +60,15 @@ def main():
     manifest={"version":16,"baseDigest":base["stateDigest"],"planDigest":opts["planDigest"],"sourceHash":sourceHash}
     if a.mode=="preview":
         r=task(target,key,src,read_version=16,compile_source=True,mode="preview",**opts)
-        require(r["inverseVerified"] and r["noPlaceWrites"] and r["loadedVersion"]==16,"Inverse")
+        require(r["inverseVerified"] and r["collisionInverseVerified"] and r["noPlaceWrites"] and r["loadedVersion"]==16,"Inverse")
         expected=expected_from(base,r);scope(base,expected,opts)
         require(sum("class" in x for x in expected["records"].values())==expected["total"],"Complete expected inventory")
-        manifest.update(beforeFingerprint=r["beforeFingerprint"],afterFingerprint=r["afterFingerprint"],expectedDigest=expected["stateDigest"],expectedTotal=expected["total"],inverseVerified=True)
+        manifest.update(beforeFingerprint=r["beforeFingerprint"],afterFingerprint=r["afterFingerprint"],expectedDigest=expected["stateDigest"],expectedTotal=expected["total"],inverseVerified=True,collisionInverseVerified=True)
         write(a.output/"manifest.json",manifest);write(a.output/"expected.json",expected)
         print("S066_PREVIEW "+json.dumps(manifest),flush=True);return
     require(a.reviewed is not None,"Reviewed manifest")
     m=read(a.reviewed/"manifest.json");expected=read(a.reviewed/"expected.json")
-    require(all(m[k]==v for k,v in manifest.items()) and m["inverseVerified"] and expected["stateDigest"]==sha(expected["records"])==m["expectedDigest"],"Review mismatch")
+    require(all(m[k]==v for k,v in manifest.items()) and m["inverseVerified"] and m["collisionInverseVerified"] and expected["stateDigest"]==sha(expected["records"])==m["expectedDigest"],"Review mismatch")
     scope(base,expected,opts)
     # Fresh head is checked in native fingerprint before save, no historical write.
     receipt={**m,"status":"started","retryAllowed":False};a.output.mkdir(parents=True,exist_ok=True)
@@ -83,6 +83,9 @@ def main():
         for d in scoped:
             k=d["key"];require(k in expected["records"] and k in actual["records"] and equal(expected["records"][k],actual["records"][k]),"Persisted mismatch "+k)
         scope(base,expected,opts)
+        proof=task(target,key,"do\n"+(ROOT/"tools/sync/s06_integrated_verify.luau").read_text()+"\nend",read_version=version,compile_source=True,**opts)
+        require(proof["verified"] and proof["loadedVersion"]==version and proof["noPlaceWrites"] and proof["trees"]==132 and proof["resources"]==216,"Independent native proof")
+        write(a.output/"verification.json",proof)
         classes=Counter(r["class"] for r in actual["records"].values() if "class" in r)
         summary={k:actual[k] for k in ("schemaVersion","universeId","placeId","loadedVersion","stateDigest","total")}
         summary.update(classes=dict(classes),workspaceRoots=[{"name":v["name"],"class":v["class"],"key":k,"managedId":v["managedId"]} for k,v in actual["records"].items() if v.get("service")=="Workspace" and len(v["path"])==1],terrain={k:v for k,v in actual["records"].items() if k.startswith("terrain:")},coverageNote="Scoped inventory, not full backup. Sharded observed state.")
