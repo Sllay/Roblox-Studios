@@ -155,6 +155,13 @@ if cfg.mode=="verify" then
     local expected=CFrame.new(cfg.position[1],cfg.position[2],cfg.position[3])*CFrame.Angles(0,math.rad(cfg.yaw),0)
     local actual={model:GetPivot():GetComponents()}
     for i,v in {expected:GetComponents()} do assert(math.abs(v-actual[i])<0.02,"Pivot mismatch") end
+    if cfg.verifyLab then
+        local control=game:GetService("ReplicatedStorage"):FindFirstChild("RSLightingLabSource")
+        local lab=game:GetService("StarterPlayer"):WaitForChild("StarterPlayerScripts"):FindFirstChild("RSLightingLab")
+        assert(control and control:IsA("Model") and control:GetAttribute("RSOwner")=="RSLightingLabV1" and control:GetAttribute("RSModelDigest")==cfg.digest,"Control missing")
+        assert(lab and lab:IsA("LocalScript") and lab:GetAttribute("RSOwner")=="RSLightingLabV1" and lab.Source==cfg.clientSource,"Lab script missing or changed")
+        assert(model:GetAttribute("RSPlacementProfile")~=nil,"Placement profile missing")
+    end
     local report=audit(model)
     local fetched=fetchDependencies(model,report)
     local blob,digest=serialize(model)
@@ -186,6 +193,64 @@ if cfg.mode=="audit" then
     model:Destroy()
     return output({audit=report,dependencyFetch=fetched,digest=digest,serializedBase64=encoded,bottomOffset=bottomOffset,ground=ground,spawn=spawnPosition})
 end
+
+if cfg.mode=="repair" then
+    assert(cfg.environment=="staging" and game.PlaceVersion==cfg.expectedVersion,"Repair target/version mismatch")
+    assert(digest==cfg.digest,"Source digest changed")
+    local root=managed()
+    assert(root,"Managed root missing")
+    local existing=root:FindFirstChild(cfg.managedId)
+    assert(existing and existing:IsA("Model") and existing:GetAttribute("RSManagedId")==cfg.managedId
+        and existing:GetAttribute("RSAssetId")==cfg.assetId and existing:GetAttribute("RSModelDigest")==digest
+        and existing:GetAttribute("RSSelector")==cfg.selectorJson,"Existing provenance mismatch")
+    local function equivalent(a,b)
+        if typeof(a)~=typeof(b) then return false end
+        if typeof(a)=="number" then return math.abs(a-b)<0.025 end
+        if typeof(a)~="table" then return a==b end
+        for k,v in a do if not equivalent(v,b[k]) then return false end end
+        for k in b do if a[k]==nil then return false end end
+        return true
+    end
+    local before=audit(existing)
+    assert(equivalent(before,report),"Existing model differs from source")
+    local old=existing:GetPivot()
+    for i,v in {old:GetComponents()} do assert(math.abs(v-cfg.oldPivot[i])<0.02,"Existing pivot changed") end
+    local solved=solvePlacement(model,cfg.position[1],cfg.position[3],cfg.yaw,cfg.placementProfile)
+    assert(math.abs(solved.position[2]-cfg.position[2])<0.05,"Ground differs from reviewed position")
+    local target=CFrame.new(solved.position[1],solved.position[2],solved.position[3])*CFrame.Angles(0,math.rad(cfg.yaw),0)
+    local RS=game:GetService("ReplicatedStorage")
+    local SPS=game:GetService("StarterPlayer"):WaitForChild("StarterPlayerScripts")
+    assert(not RS:FindFirstChild("RSLightingLabSource") and not SPS:FindFirstChild("RSLightingLab"),"Lab already exists")
+    -- Control is freshly loaded source. Only physics and behavior metadata
+    -- are sanitized; its original visual properties remain untouched.
+    for _,obj in model:GetDescendants() do
+        for name in obj:GetAttributes() do obj:SetAttribute(name,nil) end
+        for _,tag in Tags:GetTags(obj) do Tags:RemoveTag(obj,tag) end
+        if obj:IsA("BasePart") then obj.Anchored=true;obj.CanCollide=false;obj.CanTouch=false;obj.CanQuery=false end
+    end
+    for name in model:GetAttributes() do model:SetAttribute(name,nil) end
+    for _,tag in Tags:GetTags(model) do Tags:RemoveTag(model,tag) end
+    model.Name="RSLightingLabSource"
+    model:SetAttribute("RSOwner","RSLightingLabV1")
+    model:SetAttribute("RSModelDigest",digest)
+    model:PivotTo(target)
+    existing:PivotTo(target)
+    existing:SetAttribute("RSPlacementProfile",Http:JSONEncode(cfg.placementProfile))
+    assert(equivalent(audit(existing),before) and equivalent(audit(model),report),"Geometry or appearance changed")
+    model.Parent=RS
+    local scriptObj=Instance.new("LocalScript")
+    scriptObj.Name="RSLightingLab"
+    scriptObj:SetAttribute("RSOwner","RSLightingLabV1")
+    scriptObj.Source=cfg.clientSource
+    scriptObj.Parent=SPS
+    local L=game:GetService("Lighting")
+    local settings={brightness=L.Brightness,exposure=L.ExposureCompensation,specular=L.EnvironmentSpecularScale,diffuse=L.EnvironmentDiffuseScale,clock=L.ClockTime,style=L.LightingStyle.Name}
+    local post={}
+    for _,obj in L:GetChildren() do if obj:IsA("PostEffect") then table.insert(post,{name=obj.Name,class=obj.ClassName,enabled=obj.Enabled}) end end
+    Assets:SavePlaceAsync({SaveWithoutPublish=false})
+    return output({saved=true,placement=solved,lighting=settings,postEffects=post,sourceMatches=true,audit=before})
+end
+
 assert(cfg.mode=="apply","Unknown mode")
 assert(game.PlaceVersion==cfg.expectedVersion,"Place changed")
 assert(digest==cfg.digest,"Serialized model changed since offline audit")
