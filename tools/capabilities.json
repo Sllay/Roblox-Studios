@@ -383,6 +383,26 @@
       "produces": [
         "wind policy evidence"
       ]
+    },
+    {
+      "id": "scene.coupled_p45_transaction",
+      "entry": "tools/p45_transaction.py",
+      "mode": "staging_write",
+      "status": "live_verified",
+      "purpose": "Dedicated reviewed v14-to-v15 resource, bush, tree collider and wind transaction; historical plan not reusable without replan; isolated inverse verified, no universal rollback",
+      "requires": [
+        "scene.sync",
+        "quality.gate",
+        "terrain.spatial_index",
+        "asset.component_extract",
+        "scene.physics_preview"
+      ],
+      "produces": [
+        "scoped preimages",
+        "reviewed manifest",
+        "publication receipt",
+        "persisted verification"
+      ]
     }
   ]
 }

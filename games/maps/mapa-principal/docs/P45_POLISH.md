@@ -17,3 +17,6 @@ A correção de vento foi publicada e verificada no run 43257825675, sync dd359a
 
 ## S04 physics and wind preparation
 94 playable tree profiles prepared (93 replacements, standalone yasu-tree-01 added). Native detached geometry, shape/axis/top/bottom/seam and serialization verified. 86 Yasu widths provisional; 8 pines use branchless trunk bounds. No exact cross-section available; real slide/jump and visual trunk fit pending. 162 foliage candidates verified against published v14 policy, peak sampled 2.764°/1.382°, fixed pivot and wind direction. Added throttled diagnostic source for future deployment; no staging write. S05 requires coupled transaction/recovery and combined plan review.
+
+## S05 published v15
+Run 43270255683, sync b07058b. 108 stones, 108 sticks, 3 Bush_03 moves, 94 tree profiles (188 parts) and wind diagnostics persisted; 49 terrain hashes unchanged. 105 preimages stored and isolated inverse proved, one save. 129 Python tests and Luau/LSP/Quality Gate passed. 86 Yasu widths provisional, yellow pine relocation excluded, runtime contact/visibility/collision/slide/foliage and performance not yet accepted. Staging play link https://www.roblox.com/games/93428341652658/ . Next S06 client development lab and manual mobile checklist. No production.
