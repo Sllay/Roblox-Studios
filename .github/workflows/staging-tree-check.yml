@@ -1,6 +1,8 @@
 name: Staging tree access verification
 on:
   workflow_dispatch:
+  push:
+    paths: ['games/maps/mapa-principal/docs/staging-tree-check-once.trigger']
 permissions:
   contents: read
 jobs:
