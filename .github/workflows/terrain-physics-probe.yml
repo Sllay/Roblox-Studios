@@ -1,8 +1,6 @@
 name: Terrain physics probe (read-only)
 on:
   workflow_dispatch:
-  push:
-    paths: ['games/maps/mapa-principal/docs/physics-probe-once.trigger']
 permissions:
   contents: read
 jobs:

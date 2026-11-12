@@ -94,11 +94,11 @@ for i=1,nx do
   local x,z=b[1]+(i-0.5)*4,b[3]+(j-0.5)*4
   local c=column(d,i,j,b[2],ny)
   local old={h=c.h,w=c.w,mat=c.mat}
-  local distance=math.abs(x-curve(z))
+  local distance=math.sqrt((x-curve(z))^2+math.max(0,z-300)^2)
   local source=math.sqrt((x-curve(300))^2+(z-300)^2)
   local hill=17*math.exp(-((x-220)^2+(z-302)^2)/(62*62))
   local natural=base(x,z)+hill
-  local weight=math.max(1-smooth((oldDist(x,z)-35)/20),1-smooth((distance-38)/26),math.exp(-source^2/(60*60)))
+  local weight=math.max(1-smooth((oldDist(x,z)-35)/20),1-smooth((distance-38)/26),math.exp(-source^2/(60*60)))*smooth(math.min(x-b[1],b[4]-x,b[6]-z)/16)
   -- Preserve the original lake, except the mouth cut which must overlap its water.
   if z>=44 and z<=332 then
    c.h=mix(c.h,natural,weight);if old.w and z>=56 then c.w=nil;c.mat=Enum.Material.Grass end
@@ -107,7 +107,7 @@ for i=1,nx do
   local width=12+2.5*math.sin(z/24)+1.5*math.cos(z/17)
   local level=20+16*smooth((z-48)/252)
   -- The mouth extends into actual lake cells at z=28. No sandy plug.
-  if z>=24 and z<=308 and distance<width+40 then
+  if z>=24 and z<=332 and distance<width+40 then
    local q=distance-width
    if q<0 then
     local depth=4.8+0.8*math.cos(z/32)
@@ -121,9 +121,7 @@ for i=1,nx do
     c.mat=if q<5 then Enum.Material.Sand else Enum.Material.Grass
    end
   end
-  if z>308 and source<48 then
-   c.h=mix(c.h,natural,1-smooth(source/48));c.w=nil;c.mat=Enum.Material.Grass
-  end
+
   if c.w then wet+=1 end
   if math.abs(c.h-old.h)>0.02 or c.w~=old.w or c.mat~=old.mat then changed+=1;c.changed=true;setColumn(d,i,j,b[2],ny,c) end
   field[i][j]=c
@@ -191,6 +189,10 @@ end
 table.sort(moves,function(a,c) return a.root..a.name<c.root..c.name end)
 -- Horizon ring: blend from existing edge heights; preserve all original tiles.
 local edges={}
+local edgeWest=read({-640,-32,-640,-636,112,640})
+local edgeEast=read({636,-32,-640,640,112,640})
+local edgeNorth=read({-640,-32,-640,640,112,-636})
+local edgeSouth=read({-640,-32,636,640,112,640})
 for _,tile in outer do
  local bb=tile.bounds
  local old=read(bb)
@@ -200,8 +202,10 @@ local function edgeHeight(x,z)
  local ex,ez=math.clamp(x,-638,638),math.clamp(z,-638,638)
  local ix,iz=math.floor(ex/4),math.floor(ez/4);local key=ix..":"..iz
  if edges[key]==nil then
-  local bb={ix*4,-32,iz*4,ix*4+4,112,iz*4+4}
-  edges[key]=column(read(bb),1,1,-32,36).h
+  if ix==-160 then edges[key]=column(edgeWest,1,iz+161,-32,36).h
+  elseif ix==159 then edges[key]=column(edgeEast,1,iz+161,-32,36).h
+  elseif iz==-160 then edges[key]=column(edgeNorth,ix+161,1,-32,36).h
+  else edges[key]=column(edgeSouth,ix+161,1,-32,36).h end
  end
  return edges[key]
 end
@@ -210,13 +214,19 @@ local function horizon(x,z)
  local h=math.clamp(67+math.noise(x/145,z/145,18)*45+math.noise(x/65,z/65,71)*15,35,98)
  return mix(edgeHeight(x,z),h,smooth((dist-2)/100))
 end
-local preview={oldHash=oldHash,changedColumns=changed,wetColumns=wet,riverColumns=riverWet,connectedDeep=#q,moves=moves,horizonTiles=#outer,boundaries=5}
+local map={}
+for i=1,nx do local col={};for j=1,nz do local c=field[i][j];table.insert(col,{math.round(c.h*100)/100,c.w or 0,c.mat.Name}) end;table.insert(map,col) end
+local preview={map=map,oldHash=oldHash,changedColumns=changed,wetColumns=wet,riverColumns=riverWet,connectedDeep=#q,moves=moves,horizonTiles=#outer,boundaries=5}
 if cfg.mode=="preview" then return output(preview) end
 assert(cfg.mode=="apply" and cfg.preview.oldHash==oldHash and cfg.preview.changedColumns==changed and cfg.preview.connectedDeep==#q,"Preview changed")
 assert(#cfg.preview.moves==#moves,"Move count changed")
 for i,r in moves do assert(r.name==cfg.preview.moves[i].name and (Vector3.new(table.unpack(r.after))-Vector3.new(table.unpack(cfg.preview.moves[i].after))).Magnitude<0.025,"Move changed") end
 T:WriteVoxelChannels(region(b),4,d)
-local hashes={river=digest(read(b),nx,ny,nz)}
+local persisted=read(b)
+local hashes={river=digest(persisted,nx,ny,nz)}
+local maxError=0
+for i=1,nx do for y=1,ny do for j=1,nz do maxError=math.max(maxError,math.abs(persisted.SolidOccupancy[i][y][j]-d.SolidOccupancy[i][y][j]),math.abs(persisted.LiquidOccupancy[i][y][j]-d.LiquidOccupancy[i][y][j])) end end end
+assert(maxError<=0.02,"River readback error")
 for _,tile in outer do
  local bb=tile.bounds;local a={SolidMaterial={},SolidOccupancy={},LiquidOccupancy={}}
  for i=1,64 do
@@ -244,4 +254,4 @@ SPS.RSQualityPanel.Source=cfg.client
 local grid=Instance.new("LocalScript");grid.Name="RSBoundaryGrid";grid.Source=cfg.grid;grid.Parent=SPS
 game:GetService("Lighting"):FindFirstChildOfClass("Atmosphere").Haze=2.2
 game:GetService("AssetService"):SavePlaceAsync({SaveWithoutPublish=false})
-return output({saved=true,hashes=hashes,moves=moves,changedColumns=changed,connectedDeep=#q,horizonTiles=#outer,boundaries=5})
+return output({saved=true,hashes=hashes,moves=moves,changedColumns=changed,connectedDeep=#q,horizonTiles=#outer,boundaries=5,maxError=maxError})
