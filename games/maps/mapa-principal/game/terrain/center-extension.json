@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "bounds": [
+    -352,
+    -16,
+    -128,
+    96,
+    64,
+    128
+  ],
+  "seed": 7342,
+  "pilotDigest": "+9jG2LoEvoHDF4Ux6xX9R5w77c96xo21r22RIJsp5Bk=",
+  "spawnCenter": [
+    0,
+    0
+  ],
+  "spawnRadius": 32,
+  "spawnPoints": [
+    [
+      -20,
+      -20
+    ],
+    [
+      -20,
+      0
+    ],
+    [
+      -20,
+      20
+    ],
+    [
+      0,
+      -20
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      20
+    ],
+    [
+      20,
+      -20
+    ],
+    [
+      20,
+      0
+    ],
+    [
+      20,
+      20
+    ]
+  ],
+  "expectedVersion": 6,
+  "rights": "Existing user-owned Place; archive original default objects unchanged."
+}
