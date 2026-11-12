@@ -6,6 +6,18 @@ import time
 from scene_inspector import request_api
 from workspace import WorkspaceError
 
+def poll_task(path, key):
+    """Retry idempotent GET only. Never resubmit a task or ambiguous write."""
+    for delay in (8, 16, 32, None):
+        try:
+            return request_api(path, key)
+        except WorkspaceError as exc:
+            if "HTTP 429" not in str(exc) or delay is None:
+                raise
+            print(f"Rate-limited reading task; retry GET in {delay}s", flush=True)
+            time.sleep(delay)
+
+
 def run_task(universe, place, key, source):
     if not all(re.fullmatch(r"[1-9][0-9]*", str(x)) for x in (universe, place)):
         raise WorkspaceError("Invalid Universe/Place ID")
@@ -17,7 +29,7 @@ def run_task(universe, place, key, source):
         raise WorkspaceError("Unexpected task path")
     print(f"Cloud task: {path}", flush=True)
     for _ in range(45):
-        task = request_api(path, key)
+        task = poll_task(path, key)
         state = task.get("state")
         if state == "COMPLETE":
             if task.get("error"):

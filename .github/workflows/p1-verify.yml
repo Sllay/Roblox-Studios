@@ -1,0 +1,35 @@
+name: P1 verification resume (read only)
+on:
+  workflow_dispatch:
+  push:
+    paths: ['games/maps/mapa-principal/docs/p1-verify-once.trigger']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: p1-repair-evidence
+          run-id: 43136736242
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/prior-repair
+      - name: Resume read-only verification
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/assets/p1_verify.py --prior dist/prior-repair
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-final-verification
+          path: dist/p1-verify/
+          if-no-files-found: warn

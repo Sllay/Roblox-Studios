@@ -5,8 +5,6 @@ on:
       confirm:
         type: boolean
         default: false
-  push:
-    paths: ['games/maps/mapa-principal/docs/p1-repair-once.trigger']
 permissions:
   contents: read
 concurrency:
@@ -14,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   repair:
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.confirm) }}
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
