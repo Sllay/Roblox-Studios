@@ -28,3 +28,10 @@ class AssetAccessTests(unittest.TestCase):
     def test_cloud_and_rate_errors_distinct(self):
         for message,status in [("Roblox API HTTP 429","rate_limited"),("Roblox API HTTP 403","cloud_access_denied"),("unexpected","unknown_error"),("Asset load denied or unavailable: server unavailable","asset_unavailable")]:
             self.assertEqual(classify_failure(WorkspaceError(message))[0],status)
+
+    def test_restricted_texture_is_incomplete_not_access_denied(self):
+        with patch("access.call",return_value={"loadedVersion":1,"audit":{"policyVersion":1,"allowed":False,"inspectionComplete":False}}):
+            r=assess(self.t,"key","123")
+        self.assertEqual(r["status"],"loadable_audit_incomplete")
+        self.assertTrue(r["loadable"])
+        self.assertFalse(r["importAuthorized"])

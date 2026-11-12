@@ -41,10 +41,13 @@ def assess(target,key,asset_id):
     if audit.get("policyVersion")!=1 or not isinstance(audit.get("allowed"),bool):
         raise WorkspaceError("Malformed audit result")
     passed=audit["allowed"]
-    return {**result,"status":"loadable_policy_pass" if passed else "loadable_policy_rejected",
+    incomplete=audit.get("inspectionComplete") is False
+    status="loadable_audit_incomplete" if incomplete else ("loadable_policy_pass" if passed else "loadable_policy_rejected")
+    return {**result,"status":status,
             "loadable":True,"policyPassed":passed,"loadedVersion":report["loadedVersion"],
-            "nextAction":("Review visuals, rights and dependencies; prepare a staging plan." if passed else
-                          "Reject model under static decoration policy; choose another candidate."),
+            "nextAction":("Inspect restricted texture properties via an authorized offline model inspection path; do not import." if incomplete else
+                          ("Review visuals, rights and dependencies; prepare a staging plan." if passed else
+                           "Reject model under static decoration policy; choose another candidate.")),
             "auditReport":report}
 
 def main(argv=None):
@@ -74,7 +77,7 @@ def main(argv=None):
         write(args.output/"summary.json",{"schemaVersion":1,"requested":ids,"results":results,
             "complete":len(results)==len(ids),"noPlaceWrites":True})
         return 0 if len(results)==len(ids) and all(r["status"] in
-            ("asset_access_denied","loadable_policy_pass","loadable_policy_rejected") for r in results) else 2
+            ("asset_access_denied","loadable_policy_pass","loadable_policy_rejected","loadable_audit_incomplete") for r in results) else 2
     except (WorkspaceError,OSError,ValueError) as exc:
         print(f"ERROR: {exc}",file=sys.stderr)
         return 1

@@ -26,7 +26,11 @@ jobs:
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
-          python tools/assets/access.py --game mapa-principal --place main --environment staging --asset-id 79689531752352
+          python tools/assets/access.py --game mapa-principal --place main --environment staging --asset-id 79689531752352 || STATUS=$?
+          if [[ -f dist/asset-access/summary.json ]]; then
+            python -c 'import json; r=json.load(open("dist/asset-access/summary.json"))["results"][0]; print("DIAGNOSTIC",r.get("diagnostic","none"))'
+          fi
+          if [[ "${STATUS:-0}" != 0 ]]; then exit "$STATUS"; fi
           python -c 'import json; d=json.load(open("dist/asset-access/summary.json")); r=d["results"][0]; print("ACCESS",r["status"]); a=r.get("auditReport",{}).get("audit",{}); print("AUDIT",json.dumps({k:v for k,v in a.items() if k!="signature"}))'
       - name: Collect staging structure
         env:

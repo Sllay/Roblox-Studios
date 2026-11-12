@@ -66,3 +66,7 @@ Staging do mapa-principal: Universe 10769712441, Place 93428341652658. Candidato
 - Asset 79689531752352 (Yasu's Stylized Tree Pack): `asset_access_denied` (User is not authorized to access Asset). Não foi possível inspecionar seu conteúdo. Não confundir este ID com outras listagens homônimas.
 - Pendência: confirmar aquisição via Get Model pela conta proprietária da experiência (ou autorização explícita do proprietário do asset). Depois repetir o preflight manual. Não habilitar permissões por meios não documentados, não gravar no Place enquanto o asset estiver bloqueado.
 - A chave tem acesso à execução de leitura no staging; permissão de SavePlaceAsync ainda não testada. Nenhuma importação ou publicação feita.
+
+### Get Model e texturas PBR
+
+A aquisição confirmada pelo usuário permitiu carregar o pacote 79689531752352. A auditoria inicial atingiu SurfaceAppearance.ColorMap e falhou por ausência de capacidade Plugin (execução 43131478842). O inspetor agora registra propriedades inacessíveis, distingue inspeção incompleta de acesso negado e mantém o bloqueio de importação. Uma sonda oficial SerializationService/EncodingService registra somente tamanho/hash, não exporta modelo nem modifica o Place. Hash não prova segurança das dependências. https://create.roblox.com/docs/reference/engine/classes/SurfaceAppearance

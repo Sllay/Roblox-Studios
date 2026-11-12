@@ -19,6 +19,7 @@ local function audit(model: Instance)
     assert(model:IsA("Model") and model.Parent == nil, "Expected detached model")
     local descendants = model:GetDescendants()
     local problems, records, dependencies = {}, {}, {}
+    local unreadableProperties = {}
     local counts = {}
     local partCount, collisions = 0, 0
     local function issue(message: string)
@@ -76,10 +77,23 @@ local function audit(model: Instance)
                 table.insert(record,{obj.StudsPerTileU,obj.StudsPerTileV,obj.OffsetStudsU,obj.OffsetStudsV})
             end
         elseif obj:IsA("SurfaceAppearance") then
-            table.insert(record,{dep(obj.ColorMap),dep(obj.NormalMap),dep(obj.MetalnessMap),dep(obj.RoughnessMap),obj.AlphaMode.Name})
+            -- These map properties require Plugin capability. Open Cloud may
+            -- load the model but cannot read them. Never interpret denial as empty.
+            local maps = {}
+            for _, property in {"ColorMap","NormalMap","MetalnessMap","RoughnessMap","EmissiveMaskContent","TexturePackContent"} do
+                local ok, value = pcall(function() return (obj :: any)[property] end)
+                if ok and typeof(value) == "string" then
+                    table.insert(maps, {property, dep(value)})
+                else
+                    unreadableProperties[property] = (unreadableProperties[property] or 0) + 1
+                    table.insert(maps, {property, "UNINSPECTED"})
+                end
+            end
+            table.insert(record,{maps,obj.AlphaMode.Name,obj.Color.R,obj.Color.G,obj.Color.B})
         end
         table.insert(records,Http:JSONEncode(record))
     end
+    if next(unreadableProperties) ~= nil then issue("SurfaceAppearance texture dependencies not fully inspectable in Open Cloud") end
     if partCount < 1 then issue("No visual parts") end
     if partCount > MAX_PARTS then issue("Part budget exceeded") end
     local deps = {}
@@ -92,6 +106,7 @@ local function audit(model: Instance)
     return {
         policyVersion=1, allowed=#problems==0, issues=problems,
         counts=counts, parts=partCount, collisionParts=collisions,
+        unreadableProperties=unreadableProperties, inspectionComplete=next(unreadableProperties)==nil,
         instances=#descendants, dependencies=deps, signature=records,
         bounds={bounds.X,bounds.Y,bounds.Z},
     }
@@ -148,6 +163,19 @@ end
 local model = loadAsset()
 local report = audit(model)
 if cfg.mode == "audit" then
+    -- Official serialization probe: only fingerprint and byte count, never
+    -- publish or export a third-party binary to this public repository.
+    local ok, evidence = pcall(function()
+        local serialized = game:GetService("SerializationService"):SerializeInstancesAsync({model})
+        local encoding = game:GetService("EncodingService")
+        local digest = encoding:ComputeBufferHash(serialized, Enum.HashAlgorithm.Sha256)
+        return {bytes=buffer.len(serialized), sha256Base64=buffer.tostring(encoding:Base64Encode(digest))}
+    end)
+    if ok then
+        report.serialization = evidence
+    else
+        report.serialization = {unavailable=true, reason=tostring(evidence)}
+    end
     model:Destroy()
     return output({audit=report})
 end

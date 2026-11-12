@@ -1,1 +1,1 @@
-User confirmed Get Model for asset 79689531752352. Retry read-only staging identity and audit; no save.
+Retry after Get Model: classify protected SurfaceAppearance texture properties and probe official serialization; read only, no save.
