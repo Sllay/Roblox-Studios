@@ -1,0 +1,33 @@
+{
+  "runId": 43262312131,
+  "sourceCommit": "93cff7c84c1b6e5300c1af66fe1aa5910e0f593d",
+  "scope": "diagnostic preview only; not a reviewed apply plan",
+  "noPlaceWrites": true,
+  "manifest": {
+    "schemaVersion": 1,
+    "kind": "scene_patch",
+    "environment": "staging",
+    "game": "mapa-principal",
+    "place": "main",
+    "universeId": "10769712441",
+    "placeId": "93428341652658",
+    "beforeVersion": 14,
+    "beforeDigest": "fc6d1050b100b87ead072c99e4fd60a3a85781c840e7e11e39cbff81c76e4c08",
+    "planDigest": "919c906b9aba3dd9fb9ecc3bce0f349cd787e2ba52de1d0232ad791213be6a9d",
+    "preparedDigest": "a3fd788dc1da975f7e36d984deb7a36949ce4e5588c2865b07e102ba99a82ca8",
+    "operationKinds": [
+      "add_part"
+    ],
+    "inventoryBudget": {
+      "current": 3385,
+      "knownCloneEstimate": 163,
+      "patchEstimate": 3,
+      "projected": 3551,
+      "inventoryLimit": 5000,
+      "reserve": 500,
+      "allowed": true,
+      "estimateOnly": true
+    },
+    "manifestDigest": "d66352fabc3327f658cca42bb594f2f43f84e662d62a3af5f0b66bc9c29116e0"
+  }
+}

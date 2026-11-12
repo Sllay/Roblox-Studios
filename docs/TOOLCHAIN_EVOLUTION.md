@@ -36,3 +36,5 @@ Use [NEXT_STEPS.md](NEXT_STEPS.md) as the current prioritized game/toolchain bac
 S01-A: exact composed Scene Patch compilation, task identity and exclusive write journal, GET-only resume, expected version/digest guard before baseline record. Pinned v13/v14 duplicate comparison read-only. See NEXT_STEPS.md for status; no automatic rollback or duplicate removal.
 
 S01 forensic evidence: v13→v14 164 exact default clone delta records; 14 PlayerModule roots, 2268 records inside, 3385 total. Engine cause still unproven. New transaction manifest binds prepared operations/source hashes and target baseline; preview is read-only, apply existing Scene Patch only, 500-record reserve. GET-only reconciliation does not promote baseline or authorize retry. See NEXT_STEPS.md.
+
+S01-D: hash-bound Scene Patch transaction preview live verified v14 (43262312131), 119 unit tests and CI 43262312418 passed. Diagnostic only, no save. Generic apply path is not newly live-tested; legacy script transaction verified separately v14. Dedicated coupled/Terrain adapter and isolated restore still pending. S02 read-only can proceed.

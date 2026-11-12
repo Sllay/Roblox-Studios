@@ -200,8 +200,8 @@
       "id": "scene.transaction",
       "entry": "tools/scene_transaction.py",
       "mode": "staging_write",
-      "status": "implemented",
-      "purpose": "Hash-bound reviewed transaction for existing Scene Patch operations; not coupled environment or terrain",
+      "status": "live_verified",
+      "purpose": "Hash-bound Scene Patch transaction: live preview verified, new apply path not live-tested; excludes coupled terrain/environment",
       "requires": [
         "scene.sync",
         "quality.gate"
