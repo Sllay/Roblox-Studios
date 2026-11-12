@@ -68,7 +68,8 @@
         "calibrationStatus": "provisional",
         "note": "Accepted original burial scaled proportionally; new Terrain and scale require mobile review."
       },
-      "digest": "MfM7bOoaA6wAmcvhc5ZLLF8IiO4MqPRLbPmuHu4nenA="
+      "digest": "MfM7bOoaA6wAmcvhc5ZLLF8IiO4MqPRLbPmuHu4nenA=",
+      "biome": "bosque-fantasia"
     },
     {
       "name": "Tree_08",
@@ -121,7 +122,8 @@
         ],
         "calibrationStatus": "provisional",
         "note": "Provisional pilot calibration from component shape; mobile review required."
-      }
+      },
+      "biome": "floresta-temperada"
     },
     {
       "name": "Bush_01",
@@ -171,7 +173,8 @@
         ],
         "calibrationStatus": "provisional",
         "note": "Provisional pilot calibration from component shape; mobile review required."
-      }
+      },
+      "biome": "sub-bosque"
     }
   ]
 }

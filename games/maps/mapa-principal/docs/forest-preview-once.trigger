@@ -1,1 +1,1 @@
-Read-only preview and audit for P2 forest on approved terrain v5.
+Preview v2: explicit per-species biomes and yaw-invariant audit; read-only.

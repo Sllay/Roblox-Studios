@@ -65,8 +65,13 @@ local function normalized(model,scale)
     for _,row in a.rows do if row.class=="MeshPart" then
         for i=1,3 do row.relative[i]/=scale;row.size[i]/=scale end
     end end
-    for i=1,3 do a.bounds[i]/=scale end
+    -- Bounding boxes can be axis-aligned differently after yaw. Relative
+    -- geometry and each mesh size are the invariant, not the world AABB.
+    a.bounds=nil
     return a
+end
+local function sourceAudit(a)
+    local copy=table.clone(a);copy.bounds=nil;return copy
 end
 local function sanitize(model)
     for _,obj in model:GetDescendants() do
@@ -151,6 +156,7 @@ if cfg.mode=="verify" then
     local collisions=root:FindFirstChild("Collisions")
     assert(models and collisions and #models:GetChildren()==#cfg.rows,"Scene count mismatch")
     local expectedColliders=0
+    local samples={}
     for _,row in cfg.rows do
         local spec=specs[row.species]
         local m=models:FindFirstChild(row.id)
@@ -158,7 +164,7 @@ if cfg.mode=="verify" then
         assert(math.abs(m:GetScale()-row.scale)<0.001,"Scale mismatch")
         local cf=CFrame.new(table.unpack(row.position))*CFrame.Angles(0,math.rad(row.yaw),0)
         assert(equivalent({m:GetPivot():GetComponents()},{cf:GetComponents()}),"Pivot mismatch")
-        assert(equivalent(normalized(m,row.scale),cfg.sources[row.species].audit),"Visual/geometry audit changed")
+        assert(equivalent(normalized(m,row.scale),sourceAudit(cfg.sources[row.species].audit)),"Visual/geometry audit changed")
         for _,obj in m:GetDescendants() do if obj:IsA("BasePart") then
             assert(obj.Anchored and not obj.CanCollide and not obj.CanTouch and not obj.CanQuery,"Visual physics mismatch")
         end end
@@ -166,6 +172,10 @@ if cfg.mode=="verify" then
         local solved=solvePlacement(check,row.position[1],row.position[3],row.yaw,scaledProfile(spec,row.scale))
         check:Destroy()
         assert(equivalent(solved.position,row.position) and clearGround(row.position[1],row.position[3],row.clearance),"Persisted placement mismatch")
+        if not samples[row.species] then
+            local blob,digest=serialize(m)
+            samples[row.species]={persistedDigest=digest,serializedBase64=buffer.tostring(Encoding:Base64Encode(blob))}
+        end
         if spec.collision then
             expectedColliders+=1
             local c=collisions:FindFirstChild(row.id)
@@ -176,7 +186,7 @@ if cfg.mode=="verify" then
     end
     assert(#collisions:GetChildren()==expectedColliders,"Collider count mismatch")
     separation(cfg.rows)
-    return output({verified=true,terrainDigest=terrainDigest,models=#cfg.rows,colliders=expectedColliders,planDigest=cfg.planDigest})
+    return output({verified=true,terrainDigest=terrainDigest,models=#cfg.rows,colliders=expectedColliders,planDigest=cfg.planDigest,serializedSamples=samples})
 end
 assert(game.PlaceVersion==cfg.expectedVersion and not rootFolder(),"Scene version changed or already exists")
 local sources,reports=sourceModels()
@@ -237,9 +247,9 @@ for _,row in cfg.rows do
     positionCheck(row,source)
     local m=source:Clone();sanitize(m);m:ScaleTo(row.scale)
     m:PivotTo(CFrame.new(table.unpack(row.position))*CFrame.Angles(0,math.rad(row.yaw),0))
-    assert(equivalent(normalized(m,row.scale),reports[row.species].audit),"Scaled model changed appearance")
+    assert(equivalent(normalized(m,row.scale),sourceAudit(reports[row.species].audit)),"Scaled model changed appearance")
     m.Name=row.id;m:SetAttribute("RSManagedId",row.id);m:SetAttribute("RSAssetId",plan.assetId)
-    m:SetAttribute("RSModelDigest",reports[row.species].digest);m:SetAttribute("Biome",plan.biome)
+    m:SetAttribute("RSModelDigest",reports[row.species].digest);m:SetAttribute("Biome",spec.biome)
     m:SetAttribute("RSSelector",Http:JSONEncode(spec.selector));m.Parent=models
     collider(row,collisions)
 end

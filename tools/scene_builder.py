@@ -24,7 +24,7 @@ def validate(p):
     for s in p["species"]:
         validate_selector(s["selector"]);validate_profile(s["profile"])
         rows=[r for r in registry["reviews"] if r["name"]==s["name"] and r["selector"]==s["selector"]]
-        require(len(rows)==1 and p["biome"] in rows[0]["visual"]["inferred"]["suitableBiomes"] or len(rows)==1 and s["name"]=="Bush_01" and p["biome"]=="bosque-fantasia","Visual review")
+        require(len(rows)==1 and s["biome"] in rows[0]["visual"]["inferred"]["suitableBiomes"],"Visual review")
         require(type(s["count"]) is int and 1<=s["minCount"]<=s["count"]<=20,"Species count")
         require(len(s["scale"])==2 and 0.45<=s["scale"][0]<=s["scale"][1]<=1.2 and 4<=s["clearance"]<=24,"Scale/clearance")
         if s["collision"]:
@@ -108,7 +108,12 @@ def main():
         require(before["loadedVersion"]==r["loadedVersion"]==a.expected_version,"Version changed")
         result=task(t,key,p,"apply",expectedVersion=a.expected_version,**opts);save(out/"save.json",result)
         require(result.get("saved") is True,"Save not confirmed")
-    v=task(t,key,p,"verify",**opts);save(out/"verification.json",v)
+    v=task(t,key,p,"verify",**opts)
+    for name,report in v.pop("serializedSamples").items():
+        actual=inspect_blob(report)
+        require(sorted(actual,key=lambda x:x["name"])==sorted(r["sources"][name]["offlinePbr"],key=lambda x:x["name"]),"Persisted PBR mismatch")
+    v["offlinePbrVerified"]=True
+    save(out/"verification.json",v)
     require(v["verified"] is True and v["loadedVersion"]>r["loadedVersion"],"Persistence not confirmed")
     if a.operation=="apply":
         after=capture(t,key);save(out/"after.json",after);delta=compare(before,after);save(out/"diff.json",delta)
