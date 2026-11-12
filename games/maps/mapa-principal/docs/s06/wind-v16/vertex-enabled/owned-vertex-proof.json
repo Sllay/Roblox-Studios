@@ -1,0 +1,20 @@
+{
+  "activeVertices": 354,
+  "assetId": "91515745821527",
+  "clientVerified": false,
+  "fixedVertices": 384,
+  "frames": 24,
+  "height": 8.71999979019165,
+  "linkedMesh": true,
+  "loadedVersion": 16,
+  "meanUpdateMs": 0.3132629578127914,
+  "meshId": "rbxassetid://91110653005310",
+  "noPlaceWrites": true,
+  "peakDisplacement": 0.22628271579742432,
+  "placeId": "93428341652658",
+  "restoredExact": true,
+  "status": "native_vertices_verified",
+  "universeId": "10769712441",
+  "vertices": 738,
+  "width": 9
+}
