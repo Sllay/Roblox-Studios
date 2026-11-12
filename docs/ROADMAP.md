@@ -31,8 +31,9 @@
 
 - [x] P2.1 native terrain plan, multi-noise, solid/liquid channels, material-only paint, bounded lake; preview compiled on Roblox staging v3 (43138809195).
 - [x] Native terrain pilot persisted in staging v4; material-only painting exact zero occupancy/liquid changes, independent voxel verification passed (43138959424).
-- [ ] Mobile terrain traversal and shore appearance, native terrain placement calibration, batch scene builder.
+- [x] P2.1: usuário aprovou visualmente o terreno piloto no cliente mobile (staging v5), sem ressalvas relatadas.
+- [ ] Calibração de assentamento em Terrain, testes específicos de natação/colisões e desempenho medido, batch Scene Builder.
 
 - [x] Native terrain paint on existing region: branch trail, 98 voxels repainted, exact occupancy/liquid invariants and persistence in staging v5 (43139201978).
 - [x] P1 temporary lighting lab removed during P2 terrain creation; Tree_01 preserved.
-- [ ] P2 continuation: terrain-aware region catalog, multi-feature sculpt editing with baseline, procedural vegetation and collision budgets; mobile validation of lake and trails.
+- [ ] P2 continuation: terrain-aware region catalog, multi-feature sculpt editing with baseline, procedural vegetation and collision budgets; dedicated lake traversal and performance tests.
