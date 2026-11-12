@@ -1,0 +1,72 @@
+name: S06.6 reviewed integrated staging publication
+on:
+  push:
+    branches: [main]
+    paths: ['games/maps/mapa-principal/docs/s06-final-publish.trigger']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: bash tools/install-luau-lsp.sh
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/script_quality.py
+      - run: python tools/quality_gate_v2.py
+      - uses: actions/download-artifact@v4
+        with:
+          name: s06-final-preview
+          run-id: 43305830340
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s06-final-review
+      - name: Preserve exact reviewed expected state before save
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import hashlib,shutil
+          from pathlib import Path
+          from scene_sync import read,sha
+          from s06_integrated import compose,scope
+          root=Path("games/maps/mapa-principal");src=Path("dist/s06-final-review");dest=root/"docs/s06/final-v16";dest.mkdir(parents=True,exist_ok=True)
+          trigger=read(root/"docs/s06-final-publish.trigger");m=read(src/"manifest.json");e=read(src/"expected.json");b=read(root/"docs/sync/main/staging.json")
+          assert trigger["authorized"] is True and trigger["environment"]=="staging" and trigger["previewRun"]==43305830340
+          assert m==trigger["manifest"] and m["inverseVerified"] and m["collisionInverseVerified"]
+          opts,source=compose(b)
+          assert b["loadedVersion"]==16 and b["stateDigest"]==m["baseDigest"] and opts["planDigest"]==m["planDigest"] and hashlib.sha256(source.encode()).hexdigest()==m["sourceHash"]
+          assert e["stateDigest"]==sha(e["records"])==m["expectedDigest"] and e["total"]==m["expectedTotal"]==4680
+          scope(b,e,opts)
+          for n in ("manifest.json","expected.json"):shutil.copyfile(src/n,dest/n)
+          shutil.copyfile(root/"docs/sync/main/staging.json",dest/"baseline-v16.json")
+          PY
+          git config user.name "roblox-scene-sync[bot]"
+          git config user.email "scene-sync@users.noreply.github.com"
+          git add games/maps/mapa-principal/docs/s06/final-v16
+          git commit -m "evidence(s06.6): preserve exact reviewed pre-save baseline and expected state"
+          git push origin HEAD:main
+      - name: Apply once and verify via sharded observation
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s06_integrated.py apply --reviewed dist/s06-final-review --output dist/s06-final-apply
+      - name: Commit independently verified live baseline
+        run: |
+          cp dist/s06-final-apply/receipt.json games/maps/mapa-principal/docs/s06/final-v16/publication-receipt.json
+          cp dist/s06-final-apply/verification.json games/maps/mapa-principal/docs/s06/final-v16/persisted-verification.json
+          git add games/maps/mapa-principal/docs/s06/final-v16 games/maps/mapa-principal/docs/sync/main/staging.json games/maps/mapa-principal/docs/sync/main/staging.summary.json
+          git commit -m "sync: S06.6 verified integrated environment staging"
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s06-final-publication
+          path: dist/s06-final-apply/
+          if-no-files-found: warn
