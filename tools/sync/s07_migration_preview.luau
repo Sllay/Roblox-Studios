@@ -91,10 +91,10 @@ for _,m in V.Models:GetChildren() do
         m:PivotTo(target);rotated[#rotated+1]=saved
     end
 end
-local op=OverlapParams.new();op.FilterType=Enum.RaycastFilterType.Include;op.FilterDescendantsInstances={F};op.MaxParts=0
+local op=OverlapParams.new();op.FilterType=Enum.RaycastFilterType.Include;op.FilterDescendantsInstances={F,V.Collisions};op.MaxParts=0
 for _,m in created do
     local p=m:FindFirstChildWhichIsA("MeshPart",true)
-    for _,other in W:GetPartBoundsInBox(p.CFrame,p.Size,op) do assert(other==p,"Resource overlap "..m.Name) end
+    for _,other in W:GetPartBoundsInBox(p.CFrame,p.Size,op) do assert(other==p,"Resource/collider overlap "..m.Name) end
 end
 local afterFingerprint=fingerprint()
 local after=terrainState()
