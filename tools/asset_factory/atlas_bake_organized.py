@@ -34,6 +34,8 @@ for o in objects:
                 for f in e.link_faces:
                     if f in remaining:remaining.remove(f);stack.append(f)
     if components>1:fallback=True
+    # A wound grip is not a simple cylindrical shell even when connected.
+    if o.name.lower().split(".")[0]=="wrap":fallback=True
     print("UV topology",o.name,"shells",components)
     # Separate broad blade faces from the rim; keep the rim connected except one cut.
     if fallback:
