@@ -43,3 +43,17 @@ changes=[{"path":k,"before":a.get(k),"after":b.get(k)} for k in sorted(set(a)|se
 write(out/"player-audit.json",{"changes":changes})
 print("S07_PLAYER_PATHS",json.dumps([{"path":x["path"],"added":x["before"] is None,"removed":x["after"] is None} for x in changes]),flush=True)
 require(latest(target,key)==19,"Head changed")
+
+# Reopen each historical version independently to detect session-injected controllers.
+# Never waive a persisted difference merely because its name resembles a Roblox default.
+repeat={}
+for v in (18,19):
+    z=task(target,key,dispatch,read_version=v,compile_source=True,rows=[0]*2000,mode="playerAudit")
+    require(z["loadedVersion"]==v and z["noPlaceWrites"],"Repeat audit read-only")
+    repeat[v]=z["playerRecords"]
+def changed(a,b):
+    return sorted(k for k in set(a)|set(b) if a.get(k)!=b.get(k))
+report={"v18Repeat":changed(players[18],repeat[18]),"v19Repeat":changed(players[19],repeat[19]),"crossVersionRepeat":changed(repeat[18],repeat[19])}
+write(out/"controller-repeat-audit.json",report)
+print("S07_CONTROLLER_REPEAT_COUNTS",json.dumps({k:len(v) for k,v in report.items()}),flush=True)
+require(latest(target,key)==19,"Head changed")
