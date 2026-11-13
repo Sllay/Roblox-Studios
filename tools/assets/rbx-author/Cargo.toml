@@ -1,0 +1,7 @@
+[package]
+name = "rs-rbx-author"
+version = "0.1.0"
+edition = "2021"
+[dependencies]
+rbx_binary = "=3.0.1"
+rbx_dom_weak = "=4.2.0"
