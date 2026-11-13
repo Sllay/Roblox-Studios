@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
       - name: Render actual queue candidate
         run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- asset-library/candidates/axe-paint-roundtrip-001/painted/asset.glb /tmp/roundtrip-review
       - name: Bake new atlas
@@ -22,6 +22,8 @@ jobs:
       - name: Render baked candidate
         if: always()
         run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/baked-axe/asset.glb /tmp/baked-review
+      - name: Compare actual paint renders
+        run: python3 tools/asset_factory/compare_paint.py /tmp/roundtrip-review /tmp/baked-review /tmp/baked-axe/visual-fidelity.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
