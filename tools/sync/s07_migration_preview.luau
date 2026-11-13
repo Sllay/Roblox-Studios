@@ -29,6 +29,12 @@ local function fingerprint()
     table.sort(hashes);return hash(table.concat(hashes,";")),records
 end
 local beforeFingerprint,beforeRecords=fingerprint()
+if cfg.mode=="diagnose" then
+    local counts={Branch=0,Stone=0,Other=0}
+    for _,m in F:GetChildren() do local k=m:GetAttribute("RSResourceType");if k=="Stick" then counts.Branch+=1 elseif k=="Stone" then counts.Stone+=1 else counts.Other+=1 end end
+    local terrain=terrainState();local mismatches={};for _,r in terrain do if cfg.expectedTerrain[r.id]~=r.digest then table.insert(mismatches,r.id) end end
+    return syncResult({noPlaceWrites=true,afterFingerprint=beforeFingerprint,counts=counts,terrain=terrain,terrainMismatches=mismatches,objectCount=#F:GetChildren()})
+end
 if cfg.mode=="verify" then
     assert(#F:GetChildren()==2000,"Persisted count")
     assert(beforeFingerprint==cfg.expectedAfter,"Persisted fingerprint")
