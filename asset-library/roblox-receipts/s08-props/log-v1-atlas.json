@@ -3,7 +3,7 @@
   "sha256": "e8bb1175bfd24f19905b514fa578088641cb7020d25af391d7656c2a60304094",
   "bytes": 36982,
   "source": "asset-library/approved/log/v1/atlas.png",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "254a2cc4-bffa-4fa0-8640-5a8064ea3fba",
     "done": false
   },
-  "operationPath": "operations/254a2cc4-bffa-4fa0-8640-5a8064ea3fba"
+  "operationPath": "operations/254a2cc4-bffa-4fa0-8640-5a8064ea3fba",
+  "operation": {
+    "path": "operations/254a2cc4-bffa-4fa0-8640-5a8064ea3fba",
+    "operationId": "254a2cc4-bffa-4fa0-8640-5a8064ea3fba",
+    "done": true,
+    "response": {
+      "path": "assets/129687460952107",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:50:03.533Z",
+      "assetId": "129687460952107",
+      "displayName": "Black Islands log-v1-atlas",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Image",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Reviewing"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "129687460952107"
 }
