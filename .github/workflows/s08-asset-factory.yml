@@ -47,6 +47,10 @@ jobs:
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_budget_probe.py -- "$PWD/dist/asset-factory/p2-budget"
+      - name: Recover parametric handle
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_handle_probe.py -- "$PWD/dist/asset-factory/p2-handle"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
