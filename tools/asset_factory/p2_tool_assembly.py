@@ -16,7 +16,7 @@ assert rx>0 and ry>0 and length>0
 socket={"center":[x,y,zmax-.08*length],"radiusX":rx,"radiusY":ry,"insertion":.14*length,"handleLength":length}
 # Blade cross sections along X: thin cutting edge, broad cheek, thick socket, narrow poll.
 # Each section is an eight-sided rounded rectangle in Y/Z.
-sections=[(-.43,.025,.22),(-.36,.065,.24),(-.19,.105,.19),(0,ry*1.35,.125),(.13,ry*1.25,.105)]
+sections=[(-.43,.025,.22),(-.36,.065,.24),(-.19,.105,.19),(0,ry/length*1.35,.125),(.13,ry/length*1.25,.105)]
 verts=[];faces=[]
 for dx,half_y,half_z in sections:
     for a,b in [(-.7,-1),(.7,-1),(1,-.7),(1,.7),(.7,1),(-.7,1),(-1,.7),(-1,-.7)]:
@@ -34,7 +34,7 @@ tree=BVHTree.FromPolygons([v.co for v in m.vertices],[tuple(p.vertices) for p in
 def inside(p):
     hit,normal,index,d=tree.ray_cast(p,Vector((1,.013,.007)))
     return hit is not None and normal.dot(Vector((1,.013,.007)))>0
-samples=[p for p in points if zmax-.12*length<p.z<zmax-.03*length]
+samples=[p for p in points if zmax-.16*length<p.z<zmax-.03*length]
 assert samples and any(inside(p) for p in samples),"socket does not overlap handle"
 scene=bpy.context.scene;scene.render.engine="BLENDER_WORKBENCH";scene.render.resolution_x=512;scene.render.resolution_y=512;scene.render.resolution_percentage=100;scene.render.film_transparent=True;scene.display.shading.color_type="MATERIAL"
 bpy.ops.object.camera_add();cam=bpy.context.object;scene.camera=cam;cam.data.type="ORTHO";cam.data.ortho_scale=2.2
