@@ -79,7 +79,7 @@ def submit(key,owner,kind,id,path,typ):
     r=dict(id=id,sha256=h,bytes=len(b),source=str(path.relative_to(ROOT)),state="post_intent",retryAllowed=False,creatorId=owner,creatorType=kind,noPlaceWrites=True)
     write(receipt,r);commit([receipt],"intent(s08): one-shot upload "+id)
     desc={"assetType":typ,"displayName":"Black Islands "+id,"description":"S08 project asset; not a Place publication","creationContext":{"creator":{("userId" if kind=="User" else "groupId"):owner}}}
-    boundary="RSPropS08"+h[:24];mime="model/gltf-binary" if typ=="Model" else "image/png"
+    boundary="RSPropS08"+h[:24];mime=("model/x-rbxm" if path.suffix==".rbxm" else "model/gltf-binary") if typ=="Model" else "image/png"
     body=(f"--{boundary}\r\nContent-Disposition: form-data; name=\"request\"\r\nContent-Type: application/json\r\n\r\n"+json.dumps(desc)+f"\r\n--{boundary}\r\nContent-Disposition: form-data; name=\"fileContent\"; filename=\"{path.name}\"\r\nContent-Type: {mime}\r\n\r\n").encode()+b+f"\r\n--{boundary}--\r\n".encode()
     try:
         code,o=request("https://apis.roblox.com/assets/v1/assets",key,"POST",body,{"Content-Type":"multipart/form-data; boundary="+boundary})
