@@ -8,9 +8,9 @@ local function write(region,d)
     T:WriteVoxelChannels(region,4,{SolidMaterial=d.SolidMaterial,SolidOccupancy=d.SolidOccupancy,LiquidOccupancy=d.LiquidOccupancy})
 end
 assert(game.PlaceId==93428341652658 and #cfg.rows==2000,"Target/count")
-local function fingerprint()
+local function fingerprint(services)
     local hashes={};local records={}
-    for _,name in cfg.services do
+    for _,name in (services or cfg.services) do
         local svc=game:GetService(name)
         for _,o in svc:GetDescendants() do
             local row=record(svc,o)
@@ -52,9 +52,9 @@ local function playerRecords(records)
     end
     return out
 end
-local beforeFingerprint,beforeRecords=fingerprint()
 if cfg.mode=="playerAudit" then
-    return syncResult({noPlaceWrites=true,playerRecords=playerRecords(beforeRecords)})
+    local _,records=fingerprint({"StarterPlayer"})
+    return syncResult({noPlaceWrites=true,playerRecords=playerRecords(records)})
 end
 if cfg.mode=="controllerMultiset" then
     local svc=game:GetService("StarterPlayer")
@@ -91,6 +91,7 @@ if cfg.mode=="controllerInventory" then
     end
     return syncResult({noPlaceWrites=true,roots=roots})
 end
+local beforeFingerprint,beforeRecords=fingerprint()
 if cfg.mode=="diagnose" then
     local counts={Branch=0,Stone=0,Other=0}
     for _,m in F:GetChildren() do local k=m:GetAttribute("RSResourceType");if k=="Stick" then counts.Branch+=1 elseif k=="Stone" then counts.Stone+=1 else counts.Other+=1 end end
