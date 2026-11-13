@@ -17,7 +17,8 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y blender python3-pil
       - name: Test UV on disposable geometry
         run: |
-          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_author.py -- asset-library/candidates/43366843609-1/p2-tint/axe.glb /tmp/uv-smoke
+          blender -b --factory-startup --python-exit-code 1 --python-expr 'import bpy; bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.mesh.primitive_cube_add(); bpy.ops.mesh.primitive_cube_add(location=(3,0,0)); bpy.ops.export_scene.gltf(filepath="/tmp/uv-fixture.glb",export_format="GLB")'
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_author.py -- /tmp/uv-fixture.glb /tmp/uv-smoke
       - name: Verify original artistic PNG intake
         run: |
           mkdir -p asset-library/inbox
