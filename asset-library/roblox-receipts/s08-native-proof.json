@@ -1,0 +1,358 @@
+{
+  "assetProof": {
+    "eggydrasil-v8": {
+      "meshes": [
+        {
+          "name": "Canopy_Gray",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://103296456917046",
+          "loadOK": true,
+          "size": [
+            49.48659896850586,
+            36.20093536376953,
+            44.16695785522461
+          ]
+        },
+        {
+          "name": "Canopy_White",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://84762421083050",
+          "loadOK": true,
+          "size": [
+            48.71356201171875,
+            37.88142395019531,
+            44.58673858642578
+          ]
+        },
+        {
+          "name": "Wood_V4",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://130112209862755",
+          "loadOK": true,
+          "size": [
+            43.75764465332031,
+            48.53534698486328,
+            36.8404655456543
+          ]
+        },
+        {
+          "name": "Wood_V42",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://115832734263570",
+          "loadOK": true,
+          "size": [
+            43.71914291381836,
+            48.53534698486328,
+            36.8404655456543
+          ]
+        },
+        {
+          "name": "Wood_V43",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://72921288790767",
+          "loadOK": true,
+          "size": [
+            43.706443786621094,
+            48.29509353637695,
+            36.70964050292969
+          ]
+        }
+      ],
+      "scripts": 0,
+      "id": "128359463933045",
+      "class": "Model",
+      "bounds": [
+        49.48478317260742,
+        50.75820541381836,
+        44.58673858642578
+      ]
+    },
+    "eggydrasil-v8-tintable": {
+      "meshes": [
+        {
+          "name": "Canopy_White",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://84762421083050",
+          "loadOK": true,
+          "size": [
+            48.71356201171875,
+            37.88142395019531,
+            44.58673858642578
+          ]
+        },
+        {
+          "name": "Canopy_Gray",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://103296456917046",
+          "loadOK": true,
+          "size": [
+            49.48659896850586,
+            36.20093536376953,
+            44.16695785522461
+          ]
+        },
+        {
+          "name": "Wood_V4",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://130112209862755",
+          "loadOK": true,
+          "size": [
+            43.75764465332031,
+            48.53534698486328,
+            36.8404655456543
+          ]
+        },
+        {
+          "name": "Wood_V42",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://115832734263570",
+          "loadOK": true,
+          "size": [
+            43.71914291381836,
+            48.53534698486328,
+            36.8404655456543
+          ]
+        },
+        {
+          "name": "Wood_V43",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://72921288790767",
+          "loadOK": true,
+          "size": [
+            43.706443786621094,
+            48.29509353637695,
+            36.70964050292969
+          ]
+        }
+      ],
+      "scripts": 0,
+      "id": "101702879360748",
+      "class": "Model",
+      "bounds": [
+        49.48478317260742,
+        50.75820541381836,
+        44.58673858642578
+      ]
+    },
+    "stick-v1": {
+      "meshes": [
+        {
+          "name": "Fork",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://99759842304342",
+          "loadOK": true,
+          "size": [
+            0.5619316101074219,
+            0.17959272861480713,
+            0.757293701171875
+          ]
+        },
+        {
+          "name": "Fork2",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://82131143726491",
+          "loadOK": true,
+          "size": [
+            0.5619316101074219,
+            0.14919310808181763,
+            0.757293701171875
+          ]
+        },
+        {
+          "name": "Main branch",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://77419167957542",
+          "loadOK": true,
+          "size": [
+            2.424903392791748,
+            0.28979918360710144,
+            0.35462379455566406
+          ]
+        },
+        {
+          "name": "Main branch2",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://80191314931778",
+          "loadOK": true,
+          "size": [
+            2.424903392791748,
+            0.2596220374107361,
+            0.34328198432922363
+          ]
+        }
+      ],
+      "scripts": 0,
+      "id": "130260326508150",
+      "class": "Model",
+      "bounds": [
+        2.424903392791748,
+        0.29480719566345215,
+        0.8135066628456116
+      ]
+    },
+    "log-v1": {
+      "meshes": [
+        {
+          "name": "Log",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://101948872329648",
+          "loadOK": true,
+          "size": [
+            3.119999885559082,
+            0.9615709781646729,
+            0.9501986503601074
+          ]
+        },
+        {
+          "name": "Log2",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://89066393387078",
+          "loadOK": true,
+          "size": [
+            3.119999885559082,
+            0.8541479110717773,
+            0.8688113689422607
+          ]
+        },
+        {
+          "name": "Log3",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://89145635524814",
+          "loadOK": true,
+          "size": [
+            3.119999885559082,
+            0.5113904476165771,
+            0.8964247703552246
+          ]
+        },
+        {
+          "name": "Log4",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://88767802055750",
+          "loadOK": true,
+          "size": [
+            3.121999979019165,
+            0.8814400434494019,
+            0.8966189622879028
+          ]
+        },
+        {
+          "name": "Log5",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://102650586944906",
+          "loadOK": true,
+          "size": [
+            3.121999979019165,
+            0.7580385208129883,
+            0.7710922956466675
+          ]
+        }
+      ],
+      "scripts": 0,
+      "id": "121122185136963",
+      "class": "Model",
+      "bounds": [
+        3.1213886737823486,
+        0.9615709781646729,
+        0.9819298982620239
+      ]
+    },
+    "eggydrasil-gray": {
+      "id": "109528136250293",
+      "image": {
+        "ok": true,
+        "error": "",
+        "status": "Success"
+      }
+    },
+    "eggydrasil-white": {
+      "id": "89626593244521",
+      "image": {
+        "ok": true,
+        "error": "",
+        "status": "Success"
+      }
+    },
+    "stone-v1": {
+      "meshes": [
+        {
+          "name": "Icosphere.001",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://134326557990787",
+          "loadOK": true,
+          "size": [
+            1.3610808849334717,
+            0.7346290349960327,
+            0.9551143646240234
+          ]
+        },
+        {
+          "name": "Icosphere.0012",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://108710891988172",
+          "loadOK": true,
+          "size": [
+            1.2251183986663818,
+            0.7346290349960327,
+            0.9551143646240234
+          ]
+        },
+        {
+          "name": "Icosphere.0013",
+          "surfaces": [],
+          "loaded": true,
+          "meshId": "rbxassetid://122288887353272",
+          "loadOK": true,
+          "size": [
+            1.3610808849334717,
+            0.6610777974128723,
+            0.9332685470581055
+          ]
+        }
+      ],
+      "scripts": 0,
+      "id": "110570312341773",
+      "class": "Model",
+      "bounds": [
+        1.3610808849334717,
+        0.7346290349960327,
+        0.9551143646240234
+      ]
+    }
+  },
+  "noPlaceWrites": true,
+  "placeId": "93428341652658",
+  "universeId": "10769712441",
+  "loadedVersion": 18,
+  "assetIds": {
+    "stone-v1": "110570312341773",
+    "stick-v1": "130260326508150",
+    "log-v1": "121122185136963",
+    "eggydrasil-v8": "128359463933045",
+    "eggydrasil-white": "89626593244521",
+    "eggydrasil-gray": "109528136250293",
+    "eggydrasil-v8-tintable": "101702879360748"
+  },
+  "clientRenderVerified": false
+}
