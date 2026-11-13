@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'asset-library/queue/*.json'
+      - 'tools/asset_factory/queue_worker.py'
+      - '.github/workflows/s08-production-queue.yml'
 permissions:
   contents: write
 concurrency:
@@ -22,4 +24,5 @@ jobs:
       - run: |
           git config user.name "asset-factory[bot]"
           git config user.email "asset-factory[bot]@users.noreply.github.com"
+          git pull --ff-only origin main
           xvfb-run -a python3 tools/asset_factory/queue_worker.py
