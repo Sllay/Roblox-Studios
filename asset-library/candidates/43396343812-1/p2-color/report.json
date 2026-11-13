@@ -1,0 +1,21 @@
+{
+  "input": "color renders of independently authored P1 asset",
+  "methods": {
+    "front": "alpha",
+    "right": "alpha",
+    "top": "alpha"
+  },
+  "silhouetteIoU": {
+    "front": 1.0,
+    "right": 1.0,
+    "top": 1.0
+  },
+  "renderIoU": {
+    "front": 1.0,
+    "right": 1.0,
+    "top": 1.0
+  },
+  "triangles": 138,
+  "meshObjects": 1,
+  "published": false
+}
