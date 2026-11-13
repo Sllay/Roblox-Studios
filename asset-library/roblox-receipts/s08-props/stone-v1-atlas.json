@@ -3,7 +3,7 @@
   "sha256": "14ebec67686832e40973716da3697685bf55fdf99792b4ae6f16cc09995e009d",
   "bytes": 47527,
   "source": "asset-library/approved/stone/v1/atlas.png",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "42e07312-4478-42f2-8d7e-c4aa1ffafd1f",
     "done": false
   },
-  "operationPath": "operations/42e07312-4478-42f2-8d7e-c4aa1ffafd1f"
+  "operationPath": "operations/42e07312-4478-42f2-8d7e-c4aa1ffafd1f",
+  "operation": {
+    "path": "operations/42e07312-4478-42f2-8d7e-c4aa1ffafd1f",
+    "operationId": "42e07312-4478-42f2-8d7e-c4aa1ffafd1f",
+    "done": true,
+    "response": {
+      "path": "assets/106957063387208",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:49:24.891Z",
+      "assetId": "106957063387208",
+      "displayName": "Black Islands stone-v1-atlas",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Image",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Reviewing"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "106957063387208"
 }
