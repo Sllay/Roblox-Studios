@@ -57,6 +57,29 @@ local beforeFingerprint,beforeRecords=fingerprint()
 if cfg.mode=="playerAudit" then
     return syncResult({noPlaceWrites=true,playerRecords=playerRecords(beforeRecords)})
 end
+if cfg.mode=="controllerMultiset" then
+    local svc=game:GetService("StarterPlayer")
+    local function canon(x)
+        if typeof(x)~="table" then return Http:JSONEncode(x) end
+        local keys={};for k in x do table.insert(keys,k) end
+        table.sort(keys,function(a,b)return tostring(a)<tostring(b)end)
+        local out={};for _,k in keys do table.insert(out,Http:JSONEncode(tostring(k))..":"..canon(x[k])) end
+        return "{"..table.concat(out,",").."}"
+    end
+    local roots={}
+    for _,o in svc:GetChildren() do
+        local hashes={}
+        local function add(c)
+            local row=record(svc,c)
+            table.insert(hashes,hash(canon(row)))
+        end
+        add(o)
+        for _,c in o:GetDescendants() do add(c) end
+        table.sort(hashes)
+        table.insert(roots,{name=o.Name,class=o.ClassName,count=#hashes,digest=hash(table.concat(hashes,";"))})
+    end
+    return syncResult({noPlaceWrites=true,roots=roots})
+end
 if cfg.mode=="controllerInventory" then
     local svc=game:GetService("StarterPlayer")
     local roots={}
