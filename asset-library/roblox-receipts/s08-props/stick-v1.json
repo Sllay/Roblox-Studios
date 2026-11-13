@@ -3,9 +3,16 @@
   "sha256": "8d07c0882f873f4b45d30cb559b8f8df1f8c08189bec7a80042e6ac0f492c249",
   "bytes": 53668,
   "source": "asset-library/approved/stick/v1/asset.glb",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/d88025b2-f18d-40ee-ae2e-8c62c7f298aa",
+    "operationId": "d88025b2-f18d-40ee-ae2e-8c62c7f298aa",
+    "done": false
+  },
+  "operationPath": "operations/d88025b2-f18d-40ee-ae2e-8c62c7f298aa"
 }
