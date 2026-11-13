@@ -51,8 +51,19 @@ bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT");bp
 bpy.ops.uv.average_islands_scale();bpy.ops.uv.pack_islands(margin=0.02)
 bpy.ops.object.mode_set(mode="OBJECT")
 scene=bpy.context.scene;scene.render.engine="CYCLES";scene.cycles.samples=16
-scene.render.bake.margin=8;scene.render.bake.use_clear=True
-bpy.ops.object.bake(type="EMIT")
+scene.cycles.use_denoising=False
+for layer in scene.view_layers:layer.cycles.use_denoising=False
+scene.render.bake.margin=8
+# Bake each mesh separately, retaining previously baked islands.
+for i,o in enumerate(objects):
+    bpy.ops.object.select_all(action="DESELECT");o.select_set(True);bpy.context.view_layer.objects.active=o
+    scene.render.bake.use_clear=(i==0)
+    bpy.ops.object.bake(type="EMIT",uv_layer="BakedUV")
+# Reject empty/near-black output rather than exporting a broken atlas.
+import numpy as np
+pixels=np.empty(len(image.pixels),dtype=np.float32);image.pixels.foreach_get(pixels)
+rgb=pixels.reshape(-1,4)[:,:3]
+assert np.count_nonzero(rgb.max(axis=1)>0.05)>1024,"Bake produced empty or near-black atlas"
 image.filepath_raw=str(out/"atlas.png");image.file_format="PNG";image.save();image.pack()
 for mat,bs,output,em,target in records:
     n=mat.node_tree.nodes;l=mat.node_tree.links
