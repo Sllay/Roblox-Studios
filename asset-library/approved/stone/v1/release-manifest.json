@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "status": "approved",
+  "approval": "User authorized S08 natural prop import after modelling review",
+  "sourceRun": 43427280002,
+  "technicalValidation": "Pinned GLB and UV audit",
+  "files": [
+    {
+      "path": "asset.glb",
+      "sha256": "e616861e0605ceec597e57b6b7bd63f96f77b1be12cc6a0019a5f97d101b6663",
+      "bytes": 61220
+    },
+    {
+      "path": "atlas.png",
+      "sha256": "14ebec67686832e40973716da3697685bf55fdf99792b4ae6f16cc09995e009d",
+      "bytes": 47527
+    },
+    {
+      "path": "audit.json",
+      "sha256": "1cb6b8b2a43bf36444fc1bb8f4ce37c0d190a9d082cb618fe1fe5928da8f30e2",
+      "bytes": 465
+    }
+  ]
+}

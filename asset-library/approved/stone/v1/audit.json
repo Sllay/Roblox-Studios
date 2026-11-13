@@ -1,0 +1,15 @@
+{
+  "source": "/tmp/organic/stone/baked/asset.glb",
+  "sharedAtlas": true,
+  "triangles": 80,
+  "degenerate": 0,
+  "outsideUnitSquare": 0,
+  "overlapPairs": 0,
+  "pairwiseOverlapArea": 0,
+  "stretchP50": 1.169873946416735,
+  "stretchP95": 1.407853573174945,
+  "stretchMax": 1.4915730558616376,
+  "densityP05": 0.2947149443208035,
+  "densityP95": 0.5572852917113787,
+  "scope": "overlap per material unless shared atlas; distortion reported, not artistic approval"
+}
