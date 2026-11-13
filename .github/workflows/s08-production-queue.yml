@@ -1,0 +1,25 @@
+name: S08 Production Queue
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'asset-library/queue/*.json'
+permissions:
+  contents: write
+concurrency:
+  group: s08-production-queue
+  cancel-in-progress: false
+jobs:
+  drain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - run: sudo apt-get update && sudo apt-get install -y blender xvfb python3-numpy python3-pil python3-scipy python3-skimage
+      - run: |
+          git config user.name "asset-factory[bot]"
+          git config user.email "asset-factory[bot]@users.noreply.github.com"
+          xvfb-run -a python3 tools/asset_factory/queue_worker.py
