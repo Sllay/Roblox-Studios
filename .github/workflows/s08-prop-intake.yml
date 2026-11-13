@@ -1,0 +1,50 @@
+name: S08 Natural Prop Intake
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/s08-prop-intake.yml']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: s08-natural-prop-intake
+  cancel-in-progress: false
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: organic-props-preview
+          run-id: 43427280002
+          github-token: ${{ github.token }}
+          path: /tmp/s08-organic
+      - uses: actions/download-artifact@v4
+        with:
+          name: log-preview
+          run-id: 43501908191
+          github-token: ${{ github.token }}
+          path: /tmp/s08-log
+      - run: bash tools/install-luau.sh
+      - name: Register and upload approved assets only
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          git config user.name "asset-factory[bot]"
+          git config user.email "asset-factory[bot]@users.noreply.github.com"
+          python tools/asset_factory/s08_prop_intake.py --publish
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s08-prop-intake-receipts
+          path: asset-library/roblox-receipts/s08-props/
+          if-no-files-found: warn
