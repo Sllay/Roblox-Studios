@@ -63,6 +63,10 @@ jobs:
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_pickaxe_probe.py -- "$PWD/dist/asset-factory/p2-pickaxe"
+      - name: Build reference sword
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_sword_probe.py -- "$PWD/dist/asset-factory/p2-sword"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
