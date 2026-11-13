@@ -84,6 +84,35 @@ for o in objects:
         else:
             while goal in prev:
                 goal,e=prev[goal];e.seam=True
+    # Merge only tiny seam-separated patches across nearly coplanar edges.
+    # Keep the cylindrical caps and original wound-grip charts intact.
+    if not fallback:
+        groups=[];remaining=set(bm.faces)
+        while remaining:
+            group={remaining.pop()};stack=list(group)
+            while stack:
+                for e in stack.pop().edges:
+                    if e.seam or not e.is_manifold:continue
+                    for f in e.link_faces:
+                        if f in remaining:remaining.remove(f);group.add(f);stack.append(f)
+            groups.append(group)
+        owner={f:i for i,g in enumerate(groups) for f in g}
+        merged=0
+        for i,g in sorted(enumerate(groups),key=lambda x:len(x[1])):
+            if len(g)>4:continue
+            candidates={}
+            for f in g:
+                for e in f.edges:
+                    if not e.seam or not e.is_manifold:continue
+                    other=next(x for x in e.link_faces if x!=f);j=owner[other]
+                    if j==i or len(groups[j])<=len(g):continue
+                    if f.normal.dot(other.normal)<math.cos(math.radians(15)):continue
+                    candidates.setdefault(j,[]).append(e)
+            if candidates:
+                j=max(candidates,key=lambda k:sum(e.calc_length() for e in candidates[k]))
+                for e in candidates[j]:e.seam=False
+                merged+=1
+        print("UV tiny patches merged",o.name,merged)
     bm.to_mesh(proxy);bm.free()
     p=bpy.data.objects.new("UVProxy",proxy);bpy.context.collection.objects.link(p)
     p.matrix_world=o.matrix_world.copy()
