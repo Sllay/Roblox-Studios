@@ -3,19 +3,51 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'tools/asset_factory/approved/*.glb'
+      - 'tools/asset_factory/approved/*.zip'
+      - '.github/workflows/s08-approved-intake.yml'
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: s08-approved-intake
+  cancel-in-progress: false
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Verify approved models
-        run: python3 tools/asset_factory/validate_approved.py
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Extract only manifest-listed models
+        run: |
+          python3 - <<'PY'
+          import zipfile,json,hashlib
+          from pathlib import Path
+          p=Path('tools/asset_factory/approved')
+          m=json.loads((p/'v6-manifest.json').read_text())
+          with zipfile.ZipFile(p/'Black-Islands-Assets-A1.zip') as z:
+              for a in m['assets']:
+                  names=[n for n in z.namelist() if Path(n).name==a['file']]
+                  assert len(names)==1,names
+                  b=z.read(names[0])
+                  assert hashlib.sha256(b).hexdigest()==a['sha256'],a['file']
+                  (p/a['file']).write_bytes(b)
+          PY
+      - run: python3 tools/asset_factory/validate_approved.py
+      - name: Persist verified models
+        run: |
+          git config user.name "asset-factory[bot]"
+          git config user.email "asset-factory[bot]@users.noreply.github.com"
+          git add tools/asset_factory/approved/*.glb
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "assets: persist verified V6 models"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
       - uses: actions/upload-artifact@v4
         with:
           name: approved-v6
-          path: tools/asset_factory/approved/
-          if-no-files-found: error
+          path: tools/asset_factory/approved/*.glb
