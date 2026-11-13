@@ -1,0 +1,21 @@
+{
+  "trials": [
+    {
+      "method": "ANY",
+      "coverage": 0.6418477625624226
+    },
+    {
+      "method": "AXIS_ALIGNED",
+      "coverage": 0.6418477625624226
+    },
+    {
+      "method": "CARDINAL",
+      "coverage": 0.6418477605416459
+    }
+  ],
+  "selected": "AXIS_ALIGNED",
+  "coverage": 0.6418477625624226,
+  "marginFraction": 0.0234375,
+  "requestedMarginPixels": 24,
+  "bakeMarginPixels": 8
+}

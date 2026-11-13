@@ -1,0 +1,15 @@
+{
+  "source": "/tmp/tmp2yawnwyj/output/baked/asset.glb",
+  "sharedAtlas": true,
+  "triangles": 284,
+  "degenerate": 0,
+  "outsideUnitSquare": 0,
+  "overlapPairs": 0,
+  "pairwiseOverlapArea": 0,
+  "stretchP50": 1.0271594465290237,
+  "stretchP95": 1.2983085704876591,
+  "stretchMax": 1.4397000274913487,
+  "densityP05": 0.5129586268897247,
+  "densityP95": 0.7381005730038669,
+  "scope": "overlap per material unless shared atlas; distortion reported, not artistic approval"
+}

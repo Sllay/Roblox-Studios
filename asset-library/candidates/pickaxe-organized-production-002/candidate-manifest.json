@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "af93889c295893432a2ffdadf251182200d26e67",
+  "runId": "43403925706",
+  "files": [
+    {
+      "path": "baked/asset.glb",
+      "bytes": 579568,
+      "sha256": "106bf78ce10c114652efd3381cb7c05bcfc2c052d46a5364c5d259cb3f18e715"
+    },
+    {
+      "path": "baked/atlas.png",
+      "bytes": 561315,
+      "sha256": "f5044c327e6d04c85bc2200b6ab0b8b10f2ab00ea1ec794877a9efa6efac9d82"
+    },
+    {
+      "path": "baked/audit.json",
+      "bytes": 473,
+      "sha256": "3bb5f98c9ed576af4a7835c2476207437659be61651f395193d878f19b4b8e22"
+    },
+    {
+      "path": "baked/bake-report.json",
+      "bytes": 277,
+      "sha256": "a9535a3c266de36e43d3e1dfdb1e3dc5ab46098a7f5287c7919052ab225a74e0"
+    },
+    {
+      "path": "baked/islands.json",
+      "bytes": 205,
+      "sha256": "5c234286077806b6f24c2c816d861318d03d408b9e737be4d1ed594dbca52cd4"
+    },
+    {
+      "path": "baked/packing-report.json",
+      "bytes": 404,
+      "sha256": "b48b2a983bf55f15c616bcbaef1ccc5ca667c7f189c38f44bb720a4fcbc96f35"
+    },
+    {
+      "path": "baked/uv-layout.png",
+      "bytes": 44394,
+      "sha256": "5f186c106aeabe56743e274a3dcca6b64a61849ae1f07572bca1adbeb60d5509"
+    },
+    {
+      "path": "baked/visual-fidelity.json",
+      "bytes": 448,
+      "sha256": "bc74abf7870236e78b47671cdc34409e167bada4e138decec83f4a3efa72a25b"
+    },
+    {
+      "path": "reference/original-front.png",
+      "bytes": 324819,
+      "sha256": "0a5d0f8959a86109cbd06de96acf19aeaa068a47221f2b0ef46c5c7db25c00f5"
+    },
+    {
+      "path": "reference/original-quarter.png",
+      "bytes": 318258,
+      "sha256": "6ddee37bffe57ebef0ddedd86b95b5aac646d9f1ebd4c6a9a7c31088280ea899"
+    },
+    {
+      "path": "reference/report.json",
+      "bytes": 355,
+      "sha256": "c5fa41bc7e50611b30ab58db24ef12f310cd50be2ee1dfbcde0735e222c3ab5f"
+    },
+    {
+      "path": "reference/restored-front.png",
+      "bytes": 324819,
+      "sha256": "676e5f870fd80000072572df4c35339d6e50e9a443b77143ffce8033050186e8"
+    },
+    {
+      "path": "reference/restored-quarter.png",
+      "bytes": 318258,
+      "sha256": "bc46c6feb6de2a5e640f812703579bfaec69d89980163edaad1080183333a3db"
+    },
+    {
+      "path": "reference/unpainted-front.png",
+      "bytes": 287648,
+      "sha256": "f22656b98fa97a1814c656dc090f8f6c2613238e2cb4827113e7a9d0cc070008"
+    },
+    {
+      "path": "reference/unpainted-quarter.png",
+      "bytes": 284818,
+      "sha256": "feaca6a632d3d1f2e774ac3a19a180bd2c11977c87090b90fc89c6e687a43aee"
+    },
+    {
+      "path": "reference/uv-front.png",
+      "bytes": 293710,
+      "sha256": "0a62802bcd196007959f02657f52dcf9f487bcf1e346562b39688c135a1d1db7"
+    },
+    {
+      "path": "reference/uv-quarter.png",
+      "bytes": 293311,
+      "sha256": "ecc545982fe8cb7b452c9323ed0c26fcc7845e09ed8b35e12985c4c9525fa79b"
+    },
+    {
+      "path": "review/original-front.png",
+      "bytes": 324643,
+      "sha256": "a7be15a441ba37e258689e1062fad18bde34b2649ccd3df1b52f7d629531431a"
+    },
+    {
+      "path": "review/original-quarter.png",
+      "bytes": 317945,
+      "sha256": "6b3a2813f9f7b64bbeb281b7e863ea8e25f30ed423466a18a23336db5e8a54de"
+    },
+    {
+      "path": "review/report.json",
+      "bytes": 297,
+      "sha256": "d8dd31652a4e80a9dbdb4a7b85414edc8458869e4f6965ff0e3458918bd1453a"
+    },
+    {
+      "path": "review/restored-front.png",
+      "bytes": 324643,
+      "sha256": "cf1e42153c30fac8e19510b8ef25b303a980cdf27f82560f57474f9511b11563"
+    },
+    {
+      "path": "review/restored-quarter.png",
+      "bytes": 317945,
+      "sha256": "f5ad296bd529deaf3df97d08895bdc5b33cc64fc290b42a0a4980c2a77423eee"
+    },
+    {
+      "path": "review/unpainted-front.png",
+      "bytes": 287636,
+      "sha256": "0a9507430ef0c8775132c8503f8be1163fe1291fd76286f28c2185bb3a626f74"
+    },
+    {
+      "path": "review/unpainted-quarter.png",
+      "bytes": 284806,
+      "sha256": "d0c8975aee82aaf4967b24164870962496839bca9997bdf500531a085af1d5db"
+    },
+    {
+      "path": "review/uv-front.png",
+      "bytes": 293732,
+      "sha256": "e8bbb2e8bd66c0093b168ad60f152beb02e18eefd2c098f65ad2a216b31611b5"
+    },
+    {
+      "path": "review/uv-quarter.png",
+      "bytes": 293326,
+      "sha256": "d5edc9500385dfa1ebd21a43d5f68b340b3061567b14931e88e12f8a49d227b3"
+    }
+  ]
+}
