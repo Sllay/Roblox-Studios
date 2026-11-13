@@ -3,9 +3,16 @@
   "sha256": "2007e0cd1ac1712ab45687fa0afa1fb6f2a2e82a19e3b4f458b9c980c14e23ec",
   "bytes": 62106,
   "source": "asset-library/approved/eggydrasil/v8/leaves-gray.png",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/9dbbec83-0cdf-4e3d-8d3f-5a96c6853432",
+    "operationId": "9dbbec83-0cdf-4e3d-8d3f-5a96c6853432",
+    "done": false
+  },
+  "operationPath": "operations/9dbbec83-0cdf-4e3d-8d3f-5a96c6853432"
 }
