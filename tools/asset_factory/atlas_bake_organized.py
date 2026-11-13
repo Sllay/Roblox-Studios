@@ -9,6 +9,7 @@ objects=[o for o in bpy.context.scene.objects if o.type=="MESH"]
 assert objects
 image=bpy.data.images.new("TransferredAtlas",width=1024,height=1024,alpha=False)
 records=[]
+proxies=[]
 for o in objects:
     o.data=o.data.copy();m=o.data
     old=m.uv_layers.active
@@ -22,7 +23,20 @@ for o in objects:
     ids=bm.faces.layers.int.new("source_face")
     for f in bm.faces:f[ids]=f.index
     bmesh.ops.remove_doubles(bm,verts=list(bm.verts),dist=1e-6)
-    for e in bm.edges:e.seam=not e.is_manifold or e.calc_face_angle(0)>math.radians(75) or len({f.material_index for f in e.link_faces})>1
+    bm.normal_update()
+    # Separate broad blade faces from the rim; keep the rim connected except one cut.
+    if "blade" in o.name.lower():
+        axis=min(range(3),key=lambda a:max(v.co[a] for v in bm.verts)-min(v.co[a] for v in bm.verts))
+        def region(f):
+            n=f.normal[axis]
+            return 1 if n>0.7 else -1 if n< -0.7 else 0
+        rim=[]
+        for e in bm.edges:
+            e.seam=not e.is_manifold or len({region(f) for f in e.link_faces})>1
+            if e.is_manifold and all(region(f)==0 for f in e.link_faces) and abs((e.verts[1].co-e.verts[0].co)[axis])>1e-6:rim.append(e)
+        if rim:max(rim,key=lambda e:abs((e.verts[1].co-e.verts[0].co)[axis])).seam=True
+    else:
+        for e in bm.edges:e.seam=not e.is_manifold or e.calc_face_angle(0)>math.radians(55)
     bm.to_mesh(proxy);bm.free()
     p=bpy.data.objects.new("UVProxy",proxy);bpy.context.collection.objects.link(p)
     p.matrix_world=o.matrix_world.copy()
@@ -32,6 +46,17 @@ for o in objects:
     bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.uv.unwrap(method="ANGLE_BASED",margin=0.02)
     bpy.ops.object.mode_set(mode="OBJECT")
+    proxies.append((o,p))
+    continue
+# Pack connected proxies, never the split source topology.
+bpy.ops.object.select_all(action="DESELECT")
+for o,p in proxies:p.select_set(True)
+bpy.context.view_layer.objects.active=proxies[0][1]
+bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT");bpy.ops.uv.select_all(action="SELECT")
+bpy.ops.uv.average_islands_scale();bpy.ops.uv.pack_islands(margin=0.02)
+bpy.ops.object.mode_set(mode="OBJECT")
+for o,p in proxies:
+    m=o.data;proxy=p.data;new=m.uv_layers["BakedUV"]
     assert len(proxy.polygons)==len(m.polygons),"Proxy changed face count"
     faceids=proxy.attributes["source_face"].data
     for f in proxy.polygons:
@@ -66,12 +91,7 @@ for o in objects:
         l.new(em.outputs[0],output.inputs["Surface"])
         target=n.new("ShaderNodeTexImage");target.image=image;n.active=target
         records.append((mat,bs,output,em,target))
-bpy.ops.object.select_all(action="DESELECT")
-for o in objects:o.select_set(True)
-bpy.context.view_layer.objects.active=objects[0]
-bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT");bpy.ops.uv.select_all(action="SELECT")
-bpy.ops.uv.average_islands_scale();bpy.ops.uv.pack_islands(margin=0.02)
-bpy.ops.object.mode_set(mode="OBJECT")
+
 scene=bpy.context.scene;scene.render.engine="CYCLES";scene.cycles.samples=16
 scene.cycles.use_denoising=False
 for layer in scene.view_layers:layer.cycles.use_denoising=False
