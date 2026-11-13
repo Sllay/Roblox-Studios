@@ -3,9 +3,16 @@
   "sha256": "e8d0379acd6f9c0cf3ab22c478410d1e52806458121cf3b2ca94d51e926d8048",
   "bytes": 1134204,
   "source": "asset-library/approved/eggydrasil/v8/eggydrasil-v8-tintable.glb",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/687250a3-6e95-4c0e-9bc6-0452d2452610",
+    "operationId": "687250a3-6e95-4c0e-9bc6-0452d2452610",
+    "done": false
+  },
+  "operationPath": "operations/687250a3-6e95-4c0e-9bc6-0452d2452610"
 }
