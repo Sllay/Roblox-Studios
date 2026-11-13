@@ -27,7 +27,8 @@ mesh.materials.append(m)
 bpy.ops.export_scene.gltf(filepath=str(out/"eggydrasil-v2.glb"),export_format="GLB",use_selection=True)
 bpy.ops.wm.save_as_mainfile(filepath=str(out/"eggydrasil-v2.blend"))
 points=[v.co for v in mesh.vertices];lo=Vector(tuple(min(p[i] for p in points) for i in range(3)));hi=Vector(tuple(max(p[i] for p in points) for i in range(3)));center=(lo+hi)/2;size=max(hi-lo)
-scene=bpy.context.scene;scene.render.engine="CYCLES";scene.cycles.samples=24;scene.cycles.use_denoising=True
+scene=bpy.context.scene;scene.render.engine="CYCLES";scene.cycles.samples=48;scene.cycles.use_denoising=False
+for layer in scene.view_layers: layer.cycles.use_denoising=False
 scene.render.resolution_x=720;scene.render.resolution_y=720;scene.render.resolution_percentage=100
 scene.render.film_transparent=True;scene.render.image_settings.color_mode="RGBA"
 scene.world=bpy.data.worlds.new("Studio");scene.world.use_nodes=True;scene.world.node_tree.nodes["Background"].inputs[0].default_value=(.3,.3,.3,1);scene.world.node_tree.nodes["Background"].inputs[1].default_value=.65
