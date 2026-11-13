@@ -12,6 +12,8 @@ def candidate(source,kind):
         for factor in (.45,-.47,.45,-.47):
             mod=o.modifiers.new("Surface relaxation","SMOOTH");mod.factor=factor;mod.iterations=1
             bpy.ops.object.modifier_apply(modifier=mod.name)
+        mod=o.modifiers.new("Mobile reduction","DECIMATE");mod.ratio=.25
+        bpy.ops.object.modifier_apply(modifier=mod.name)
         for p in o.data.polygons:p.use_smooth=True
     elif kind=="hard":
         mod=o.modifiers.new("Planar simplification","DECIMATE");mod.decimate_type="DISSOLVE";mod.angle_limit=.01
