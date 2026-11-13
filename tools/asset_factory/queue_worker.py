@@ -6,7 +6,7 @@ root=Path(__file__).resolve().parents[2]
 factory=root/"tools/asset_factory"
 library=root/"asset-library"
 queue=library/"queue"
-backends={"axe":"p2_tint_probe.py","pickaxe":"p2_pickaxe_probe.py","sword":"p2_sword_probe.py","axe-paint-roundtrip":"real_paint_probe.py"}
+backends={"axe":"p2_tint_probe.py","pickaxe":"p2_pickaxe_probe.py","sword":"p2_sword_probe.py","axe-paint-roundtrip":"real_paint_probe.py","axe-atlas-bake":"atlas_bake.py"}
 def save(path,data):
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(data,indent=2)+"\n")
@@ -50,6 +50,17 @@ for request in sorted(queue.glob("*.json")):
                 blender("real_paint_probe.py",source,prep)
                 blender("bind_paint.py",prep/"unpainted.glb",prep/"color.png",prep/"contract.json",out/"painted")
                 blender("uv_audit.py",out/"painted"/"asset.glb",out/"legacy-uv-audit.json")
+            elif d["backend"]=="axe-atlas-bake":
+                source=library/"approved"/"axe"/"v6"/"machado-v6.glb"
+                if hashlib.sha256(source.read_bytes()).hexdigest()!="6089929739d0a08983faa5d5f7ecaf26d6e42896880cd98a2c7aa2be470a7507": raise ValueError("Approved source hash mismatch")
+                def blender(script,*args):
+                    subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/script),"--",*map(str,args)],check=True,timeout=1200)
+                baked=out/"baked"
+                blender("atlas_bake.py",source,baked)
+                blender("uv_audit.py",baked/"asset.glb",baked/"audit.json","--shared","--uv-index","1")
+                blender("visual_paint_probe.py",source,out/"reference")
+                blender("visual_paint_probe.py",baked/"asset.glb",out/"review")
+                subprocess.run([sys.executable,str(factory/"compare_paint.py"),str(out/"reference"),str(out/"review"),str(baked/"visual-fidelity.json")],check=True)
             else:
                 subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/backends[d["backend"]]),"--",str(out)],check=True,timeout=600)
             dest=library/"candidates"/key
