@@ -3,6 +3,9 @@ from pathlib import Path
 from job import load
 def main():
     p=argparse.ArgumentParser();p.add_argument("--job",type=Path,required=True);p.add_argument("--out",type=Path,required=True);a=p.parse_args()
+    if json.loads(a.job.read_text()).get("mode")=="layered_multi_view":
+        subprocess.run([__import__("sys").executable,str(Path(__file__).with_name("layered_hull.py")),"--job",str(a.job),"--out",str(a.out)],check=True)
+        return
     d,h=load(a.job);a.out.mkdir(parents=True,exist_ok=True)
     def checkpoint(state): (a.out/"checkpoint.json").write_text(json.dumps({"job":d,"referenceHashes":h,"state":state},indent=2))
     checkpoint("validated")
