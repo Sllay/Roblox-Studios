@@ -3,7 +3,7 @@
   "sha256": "69808bb43888b3164dce014b3f84afaeb925189802154c0278c7473963793217",
   "bytes": 1010012,
   "source": "asset-library/approved/eggydrasil/v8/eggydrasil-v8-planes-no-texture.glb",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "bac1a2cf-df4a-4f06-b5e9-66cfdcae9137",
     "done": false
   },
-  "operationPath": "operations/bac1a2cf-df4a-4f06-b5e9-66cfdcae9137"
+  "operationPath": "operations/bac1a2cf-df4a-4f06-b5e9-66cfdcae9137",
+  "operation": {
+    "path": "operations/bac1a2cf-df4a-4f06-b5e9-66cfdcae9137",
+    "operationId": "bac1a2cf-df4a-4f06-b5e9-66cfdcae9137",
+    "done": true,
+    "response": {
+      "path": "assets/128359463933045",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:45:10.021Z",
+      "assetId": "128359463933045",
+      "displayName": "Black Islands eggydrasil-v8",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "128359463933045"
 }
