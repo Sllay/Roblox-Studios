@@ -14,9 +14,9 @@ jobs:
       - uses: actions/checkout@v4
       - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
       - name: Render actual queue candidate
-        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- asset-library/candidates/axe-paint-roundtrip-001/painted/asset.glb /tmp/roundtrip-review
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- asset-library/approved/axe/v6/machado-v6.glb /tmp/roundtrip-review
       - name: Bake new atlas
-        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/atlas_bake.py -- asset-library/approved/axe/v6/machado-v6.glb /tmp/baked-axe
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/atlas_bake_organized.py -- asset-library/approved/axe/v6/machado-v6.glb /tmp/baked-axe
       - name: Count and visualize islands
         run: |
           blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_islands.py -- asset-library/candidates/axe-atlas-bake-001/baked/asset.glb /tmp/roundtrip-review
