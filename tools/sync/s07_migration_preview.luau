@@ -61,7 +61,9 @@ if cfg.mode=="verify" then
 end
 assert(#F:GetChildren()==216,"Baseline count")
 if cfg.mode=="apply" then assert(beforeFingerprint==cfg.expectedBefore,"Reviewed baseline") end
-local before=terrainState()
+local historicalAudit=cfg.mode=="historicalAudit"
+if historicalAudit then assert(game.PlaceVersion==18 and cfg.audit,"Historical audit only") end
+local before=if historicalAudit then {} else terrainState()
 for _,r in before do assert(cfg.terrainExpected[r.id]==r.digest,"Terrain baseline") end
 local templates={}
 for _,id in cfg.sources do
@@ -133,8 +135,12 @@ for _,m in created do
     for _,other in W:GetPartBoundsInBox(p.CFrame,p.Size,op) do assert(other==p,"Resource/collider overlap "..m.Name) end
 end
 local afterFingerprint,afterRecords=fingerprint()
-local after=terrainState()
+local after=if historicalAudit then {} else terrainState()
 for i,r in after do assert(r.solidVoxels==before[i].solidVoxels and r.waterVoxels==before[i].waterVoxels,"Terrain volume") end
+if historicalAudit then
+    assert(changed==864 and #rotated==212,"Historical counts")
+    return syncResult({historicalAudit=true,noPlaceWrites=true,afterFingerprint=afterFingerprint,audit=audit(afterRecords),counts=counts})
+end
 if cfg.mode=="apply" then
     assert(afterFingerprint==cfg.expectedAfter,"Reviewed after fingerprint")
     for _,r in after do assert(cfg.expectedTerrain[r.id]==r.digest,"Reviewed terrain") end
