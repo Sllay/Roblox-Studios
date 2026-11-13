@@ -1,0 +1,142 @@
+{
+  "placeId": "93428341652658",
+  "noPlaceWrites": true,
+  "universeId": "10769712441",
+  "textureProbe": {
+    "stone-v1": {
+      "meshParts": [
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://134326557990787",
+          "name": "Icosphere.001",
+          "textureId": "rbxassetid://128545806900242"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://108710891988172",
+          "name": "Icosphere.0012",
+          "textureId": "rbxassetid://128545806900242"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://122288887353272",
+          "name": "Icosphere.0013",
+          "textureId": "rbxassetid://128545806900242"
+        }
+      ]
+    },
+    "eggydrasil-v8-tintable": {
+      "meshParts": [
+        {
+          "surfaceAPI": {
+            "ok": false,
+            "error": "AssetService:CreateSurfaceAppearance: ColorMap value should be an EditableImage Content"
+          },
+          "name": "Canopy_White",
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://84762421083050",
+          "textureAssignment": {
+            "ok": true,
+            "error": ""
+          },
+          "textureId": "rbxassetid://129115343423293"
+        },
+        {
+          "surfaceAPI": {
+            "ok": false,
+            "error": "AssetService:CreateSurfaceAppearance: ColorMap value should be an EditableImage Content"
+          },
+          "name": "Canopy_Gray",
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://103296456917046",
+          "textureAssignment": {
+            "ok": true,
+            "error": ""
+          },
+          "textureId": "rbxassetid://79836897011545"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://130112209862755",
+          "name": "Wood_V4",
+          "textureId": ""
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://115832734263570",
+          "name": "Wood_V42",
+          "textureId": ""
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://72921288790767",
+          "name": "Wood_V43",
+          "textureId": ""
+        }
+      ]
+    },
+    "stick-v1": {
+      "meshParts": [
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://99759842304342",
+          "name": "Fork",
+          "textureId": "rbxassetid://85889049717671"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://82131143726491",
+          "name": "Fork2",
+          "textureId": "rbxassetid://85889049717671"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://77419167957542",
+          "name": "Main branch",
+          "textureId": "rbxassetid://85889049717671"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://80191314931778",
+          "name": "Main branch2",
+          "textureId": "rbxassetid://85889049717671"
+        }
+      ]
+    },
+    "log-v1": {
+      "meshParts": [
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://101948872329648",
+          "name": "Log",
+          "textureId": "rbxassetid://108771405368419"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://89066393387078",
+          "name": "Log2",
+          "textureId": "rbxassetid://108771405368419"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://89145635524814",
+          "name": "Log3",
+          "textureId": "rbxassetid://108771405368419"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://88767802055750",
+          "name": "Log4",
+          "textureId": "rbxassetid://108771405368419"
+        },
+        {
+          "surfaceCount": 0,
+          "meshId": "rbxassetid://102650586944906",
+          "name": "Log5",
+          "textureId": "rbxassetid://108771405368419"
+        }
+      ]
+    }
+  },
+  "loadedVersion": 18
+}
