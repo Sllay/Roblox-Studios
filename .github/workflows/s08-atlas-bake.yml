@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'tools/asset_factory/atlas_bake.py'
+      - 'tools/asset_factory/uv_audit.py'
       - '.github/workflows/s08-atlas-bake.yml'
 jobs:
   review:
@@ -19,6 +20,7 @@ jobs:
       - name: Audit exported atlas
         run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- /tmp/baked-axe/asset.glb /tmp/baked-axe/audit.json --shared --uv-index 1
       - name: Render baked candidate
+        if: always()
         run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/baked-axe/asset.glb /tmp/baked-review
       - uses: actions/upload-artifact@v4
         if: always()
