@@ -6,7 +6,7 @@ on:
       - 'tools/asset_factory/**'
       - '.github/workflows/s08-asset-factory.yml'
 permissions:
-  contents: read
+  contents: write
 jobs:
   author:
     runs-on: ubuntu-24.04
@@ -67,6 +67,23 @@ jobs:
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_sword_probe.py -- "$PWD/dist/asset-factory/p2-sword"
+      - name: Persist candidate revision in repository
+        if: success()
+        run: |
+          set -euo pipefail
+          revision="asset-library/candidates/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python3 tools/asset_factory/persist_candidates.py dist/asset-factory "$revision"
+          git config user.name "asset-factory[bot]"
+          git config user.email "asset-factory[bot]@users.noreply.github.com"
+          git add "$revision"
+          git commit -m "assets: archive candidate run ${GITHUB_RUN_ID}"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 5
+          done
+          exit 1
       - uses: actions/upload-artifact@v4
         if: always()
         with:
