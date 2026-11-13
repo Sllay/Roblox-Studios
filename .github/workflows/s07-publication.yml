@@ -32,7 +32,7 @@ jobs:
           run-id: 43328065190
           github-token: ${{ github.token }}
           path: dist/s07/reviewed/
-      - name: Reopen v19 without saving
+      - name: Compare historical v18 preview with v19 without saving
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python tools/s07_reconcile.py
