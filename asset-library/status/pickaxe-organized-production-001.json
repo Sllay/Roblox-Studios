@@ -2,5 +2,6 @@
   "id": "pickaxe-organized-production-001",
   "requestSha256": "2fafae9f8af155e779d95b0cb95982a3727f7ee8c199cd8a28335ed4712c187d",
   "runId": "43403094879",
-  "state": "running"
+  "state": "failed",
+  "error": "Source hash mismatch"
 }
