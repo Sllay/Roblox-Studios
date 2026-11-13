@@ -3,9 +3,16 @@
   "sha256": "69808bb43888b3164dce014b3f84afaeb925189802154c0278c7473963793217",
   "bytes": 1010012,
   "source": "asset-library/approved/eggydrasil/v8/eggydrasil-v8-planes-no-texture.glb",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/bac1a2cf-df4a-4f06-b5e9-66cfdcae9137",
+    "operationId": "bac1a2cf-df4a-4f06-b5e9-66cfdcae9137",
+    "done": false
+  },
+  "operationPath": "operations/bac1a2cf-df4a-4f06-b5e9-66cfdcae9137"
 }
