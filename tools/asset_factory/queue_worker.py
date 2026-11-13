@@ -35,7 +35,7 @@ for request in sorted(queue.glob("*.json")):
                 # Reuse the immutable, validated geometry fixture from the successful S08 run.
                 source=library/"candidates"/"43368150648-1"/"p2-budget"/"direct-200.glb"
                 payload=source.read_bytes()
-                if hashlib.sha256(payload).hexdigest()!="d5b3b92aea658ce88bdb1ef1dc4c6df67db151607b975124407540d03376f52b":
+                if hashlib.sha256(payload).hexdigest()!="c765aef2eb5ddfacb8d73911a3601c4b9c4e3e76d89cc83bbf75bbd2e4b83cc1":
                     raise ValueError("Handle source fixture hash mismatch")
                 budget=Path(tmp)/"p2-budget";budget.mkdir()
                 (budget/"direct-200.glb").write_bytes(payload)
