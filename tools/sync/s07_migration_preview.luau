@@ -57,6 +57,18 @@ local beforeFingerprint,beforeRecords=fingerprint()
 if cfg.mode=="playerAudit" then
     return syncResult({noPlaceWrites=true,playerRecords=playerRecords(beforeRecords)})
 end
+if cfg.mode=="controllerInventory" then
+    local svc=game:GetService("StarterPlayer")
+    local roots={}
+    for _,o in svc:GetChildren() do
+        local entry={name=o.Name,class=o.ClassName,descendants=#o:GetDescendants(),children={}}
+        for _,c in o:GetChildren() do
+            table.insert(entry.children,{name=c.Name,class=c.ClassName,descendants=#c:GetDescendants()})
+        end
+        table.insert(roots,entry)
+    end
+    return syncResult({noPlaceWrites=true,roots=roots})
+end
 if cfg.mode=="diagnose" then
     local counts={Branch=0,Stone=0,Other=0}
     for _,m in F:GetChildren() do local k=m:GetAttribute("RSResourceType");if k=="Stick" then counts.Branch+=1 elseif k=="Stone" then counts.Stone+=1 else counts.Other+=1 end end
