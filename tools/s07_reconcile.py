@@ -57,3 +57,12 @@ report={"v18Repeat":changed(players[18],repeat[18]),"v19Repeat":changed(players[
 write(out/"controller-repeat-audit.json",report)
 print("S07_CONTROLLER_REPEAT_COUNTS",json.dumps({k:len(v) for k,v in report.items()}),flush=True)
 require(latest(target,key)==19,"Head changed")
+
+inventory={}
+for v in (18,19):
+    z=task(target,key,dispatch,read_version=v,compile_source=True,rows=[0]*2000,mode="controllerInventory")
+    require(z["loadedVersion"]==v and z["noPlaceWrites"],"Inventory read-only")
+    inventory[str(v)]=z["roots"]
+write(out/"controller-inventory.json",inventory)
+print("S07_CONTROLLER_INVENTORY",json.dumps(inventory),flush=True)
+require(latest(target,key)==19,"Head changed")
