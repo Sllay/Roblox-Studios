@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "id": "pickaxe-organized-production-002",
+  "backend": "atlas-bake",
+  "source": "asset-library/approved/pickaxe/v6/picareta-v6.glb",
+  "sourceSha256": "4fa8a3ed0dc336802d987754693a9541e0ba2fc8996507f57bc181885797b1f1"
+}
