@@ -23,7 +23,7 @@ local function fingerprint()
                 return "{"..table.concat(out,",").."}"
             end
             local k=svc.Name..":"..canon(row.path)
-            local digest=hash(canon(row));table.insert(hashes,digest);records[k]={digest=digest,row=row}
+            local digest=hash(canon(row));table.insert(hashes,digest);table.insert(records,{digest=digest,row=row,key=k})
         end
     end
     table.sort(hashes);return hash(table.concat(hashes,";")),records
@@ -48,8 +48,12 @@ local function audit(records)
 end
 local function playerRecords(records)
     local out={}
-    for k,entry in records do
-        if entry.row.service=="StarterPlayer" then out[k]=entry.row end
+    for _,entry in records do
+        if entry.row.service=="StarterPlayer" then
+            local k=entry.key..":"..entry.digest
+            out[k]=out[k] or {row=entry.row,count=0}
+            out[k].count+=1
+        end
     end
     return out
 end
