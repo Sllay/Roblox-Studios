@@ -1,0 +1,11 @@
+{
+  "id": "stone-v1-atlas",
+  "sha256": "14ebec67686832e40973716da3697685bf55fdf99792b4ae6f16cc09995e009d",
+  "bytes": 47527,
+  "source": "asset-library/approved/stone/v1/atlas.png",
+  "state": "post_intent",
+  "retryAllowed": false,
+  "creatorId": "8136365379",
+  "creatorType": "User",
+  "noPlaceWrites": true
+}
