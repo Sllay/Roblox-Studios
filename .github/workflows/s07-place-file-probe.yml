@@ -38,14 +38,21 @@ jobs:
               req=urllib.request.Request(endpoint,headers={"x-api-key":key,"Accept":"application/json"})
               try:
                   with opener.open(req,timeout=60) as response:
-                      meta=json.load(response)
+                      raw=response.read(256*1024*1024+1)
+                  if raw.startswith(b"<roblox"):
+                      if len(raw)>256*1024*1024: raise ValueError("Place exceeds bounded probe size")
+                      report.append({"version":version,"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"format":"rbxl" if raw.startswith(b"<roblox!") else "rbxlx"})
+                      continue
+                  meta=json.loads(raw)
+                  if not isinstance(meta,dict): raise ValueError("Metadata is not an object")
+                  print("S07_METADATA_SHAPE",version,sorted(meta.keys()),"errorCodes",[e.get("code") for e in (meta.get("errors") or []) if isinstance(e,dict) and isinstance(e.get("code"),int)])
                   location=meta.get("location")
                   if not location:
                       locations=meta.get("locations") or []
                       location=locations[0].get("location") if locations else None
                   parsed=urllib.parse.urlparse(location or "")
                   if parsed.scheme!="https" or not parsed.hostname or not (parsed.hostname.endswith(".rbxcdn.com") or parsed.hostname=="rbxcdn.com"):
-                      raise ValueError("Unexpected CDN location; no download")
+                      raise ValueError("Missing or unapproved CDN location; no download")
                   with opener.open(urllib.request.Request(location),timeout=120) as response:
                       data=response.read(256*1024*1024+1)
                   if len(data)>256*1024*1024: raise ValueError("Place exceeds bounded probe size")
@@ -54,7 +61,7 @@ jobs:
               except urllib.error.HTTPError as exc:
                   report.append({"version":version,"httpStatus":exc.code})
               except (ValueError, OSError) as exc:
-                  report.append({"version":version,"errorType":type(exc).__name__})
+                  report.append({"version":version,"errorType":type(exc).__name__,"stage":str(exc) if type(exc) is ValueError else "decode-or-transport"})
           (out/"report.json").write_text(json.dumps(report,indent=2))
           print("S07_PLACE_FILE_PROBE",json.dumps(report))
           assert all("sha256" in x for x in report), "Immutable place delivery unavailable; no write attempted"
