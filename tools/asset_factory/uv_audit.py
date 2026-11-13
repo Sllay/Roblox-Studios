@@ -4,8 +4,9 @@ Positive-area intersections only; touching edges are not overlaps.
 import bpy,sys,json,math
 from pathlib import Path
 from mathutils import Vector
-src,out=map(Path,sys.argv[sys.argv.index("--")+1:3])
-shared="--shared" in sys.argv
+args=sys.argv[sys.argv.index("--")+1:]
+src,out=map(Path,args[:2])
+shared="--shared" in args
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=str(src.resolve()))
 def cross(a,b,c): return (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x)
@@ -56,4 +57,5 @@ def percentile(a,p):
     a=sorted(a);return a[round((len(a)-1)*p)] if a else None
 report={"source":str(src),"sharedAtlas":shared,"triangles":len(ratios),"degenerate":degenerate,"outsideUnitSquare":outside,"overlapPairs":pairs,"pairwiseOverlapArea":overlap,"stretchP50":percentile(stretch,.5),"stretchP95":percentile(stretch,.95),"stretchMax":max(stretch,default=None),"densityP05":percentile(ratios,.05),"densityP95":percentile(ratios,.95),"scope":"overlap per material unless shared atlas; distortion reported, not artistic approval"}
 out.write_text(json.dumps(report,indent=2))
+print(json.dumps(report,indent=2))
 if shared and (pairs or degenerate or outside):raise ValueError("Shared atlas failed UV audit")
