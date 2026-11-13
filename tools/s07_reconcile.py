@@ -22,11 +22,11 @@ require(base["loadedVersion"]==18 and base["stateDigest"]==sha(base["records"])=
 old=read(ROOT/"games/maps/mapa-principal/docs/s06/resources-v16/plan.json")
 sources={kind:min(x["id"] for x in old["resources"] if x["category"]==cat) for kind,cat in (("Branch","stick"),("Stone","stone"))}
 rows=[[x["id"],x["type"],x["tile"],sources[x["type"]],x["native"]["newSize"],x["native"]["frame"],x["groundY"],x["radius"]] for x in pop["rows"]]
-opts=dict(rows=rows,sources=list(sources.values()),columns=read(out/"reviewed/original-columns.json"),terrainExpected={k[8:]:v["digest"] for k,v in base["records"].items() if k.startswith("terrain:")},audit=True)
+opts=dict(mode="historicalAudit",rows=rows,sources=list(sources.values()),columns=read(out/"reviewed/original-columns.json"),terrainExpected={k[8:]:v["digest"] for k,v in base["records"].items() if k.startswith("terrain:")},audit=True)
 dispatch="do\n"+src+"\nend"
 require(len(compose_task(target,dispatch,**opts).encode())<=1048576,"Historical audit size")
 p=task(target,key,dispatch,read_version=18,compile_source=True,**opts)
-require(p["loadedVersion"]==18 and p["preview"] and p["noPlaceWrites"] and p["afterFingerprint"]==reviewed["afterFingerprint"],"Historical preview proof")
+require(p["loadedVersion"]==18 and p["historicalAudit"] and p["noPlaceWrites"] and p["afterFingerprint"]==reviewed["afterFingerprint"],"Historical preview proof")
 diff=[k for k in sorted(set(p["audit"])|set(r["audit"])) if p["audit"].get(k)!=r["audit"].get(k)]
 write(out/"property-audit.json",{"differences":diff,"expected":p["audit"],"actual":r["audit"]})
 print("S07_PROPERTY_DIFFERENCES",json.dumps(diff),flush=True)
