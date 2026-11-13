@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "id": "p1-smoke",
+  "mode": "text",
+  "prompt": "Original stylized stone axe infrastructure smoke test",
+  "style": "black-islands-draft",
+  "triangle_budget": 1200,
+  "references": {}
+}
