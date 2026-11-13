@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "status": "candidate_pending_binary_intake",
+  "assets": [
+    {
+      "file": "espada-v6-materials.glb",
+      "sha256": "cc30b01c0ff76c5c908c1a6bd29309508af6bb4c17c32ce27173a3cd7b97b714",
+      "triangles": 1024,
+      "tintMaterial": "TintableBlade"
+    },
+    {
+      "file": "machado-v6.glb",
+      "sha256": "6089929739d0a08983faa5d5f7ecaf26d6e42896880cd98a2c7aa2be470a7507",
+      "triangles": 268,
+      "tintMaterial": "TintableBlade"
+    },
+    {
+      "file": "picareta-v6.glb",
+      "sha256": "4fa8a3ed0dc336802d987754693a9541e0ba2fc8996507f57bc181885797b1f1",
+      "triangles": 284,
+      "tintMaterial": "TintableBlade"
+    }
+  ],
+  "notes": "Binary intake pending. No Roblox publication. Sword material split preserves geometry and atlas."
+}
