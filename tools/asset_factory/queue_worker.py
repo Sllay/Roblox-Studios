@@ -32,6 +32,13 @@ for request in sorted(queue.glob("*.json")):
         with tempfile.TemporaryDirectory() as tmp:
             out=Path(tmp)/"output";out.mkdir()
             if d["backend"] in ("axe","pickaxe"):
+                # Reuse the immutable, validated geometry fixture from the successful S08 run.
+                source=library/"candidates"/"43368150648-1"/"p2-budget"/"direct-200.glb"
+                payload=source.read_bytes()
+                if hashlib.sha256(payload).hexdigest()!="d5b3b92aea658ce88bdb1ef1dc4c6df67db151607b975124407540d03376f52b":
+                    raise ValueError("Handle source fixture hash mismatch")
+                budget=Path(tmp)/"p2-budget";budget.mkdir()
+                (budget/"direct-200.glb").write_bytes(payload)
                 dep=Path(tmp)/"p2-handle";dep.mkdir()
                 subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/"p2_handle_probe.py"),"--",str(dep)],check=True,timeout=600)
             subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/backends[d["backend"]]),"--",str(out)],check=True,timeout=600)
