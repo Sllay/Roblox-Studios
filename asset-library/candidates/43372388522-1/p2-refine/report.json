@@ -1,0 +1,50 @@
+{
+  "organic": {
+    "kind": "organic",
+    "baseline": {
+      "front": 1.0,
+      "right": 1.0,
+      "top": 1.0
+    },
+    "candidate": {
+      "front": 1.0,
+      "right": 1.0,
+      "top": 1.0
+    },
+    "accepted": true,
+    "before": {
+      "triangles": 7596,
+      "vertices": 3800,
+      "area": 6.593749975785613
+    },
+    "after": {
+      "triangles": 1898,
+      "vertices": 951,
+      "area": 6.436501432966907
+    }
+  },
+  "hard": {
+    "kind": "hard",
+    "baseline": {
+      "front": 1.0,
+      "right": 1.0,
+      "top": 1.0
+    },
+    "candidate": {
+      "front": 1.0,
+      "right": 1.0,
+      "top": 1.0
+    },
+    "accepted": true,
+    "before": {
+      "triangles": 3080,
+      "vertices": 1542,
+      "area": 1.50390625
+    },
+    "after": {
+      "triangles": 138,
+      "vertices": 71,
+      "area": 1.50390625
+    }
+  }
+}
