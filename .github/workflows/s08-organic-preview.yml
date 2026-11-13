@@ -1,0 +1,75 @@
+name: S08 Organic Preview
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s08-organic-preview.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
+      - name: Generate original organic meshes
+        run: |
+          mkdir -p /tmp/organic
+          cat > /tmp/organic.py <<'PY'
+          import bpy, math, random
+          from mathutils import Vector
+          random.seed(81)
+          def material(name, color):
+              m=bpy.data.materials.new(name); m.diffuse_color=(*color,1); m.use_nodes=True
+              m.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value=(*color,1)
+              return m
+          def export(name):
+              bpy.ops.export_scene.gltf(filepath='/tmp/organic/'+name+'.glb', export_format='GLB')
+          bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
+          bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2)
+          o=bpy.context.object; o.name='Stone'
+          for v in o.data.vertices:
+              f=random.uniform(.85,1.12); v.co.x*=.65*f; v.co.y*=.48*f; v.co.z*=.38*f
+          for v in o.data.vertices: v.co.z-=min(x.co.z for x in o.data.vertices) if False else 0
+          low=min(v.co.z for v in o.data.vertices)
+          for v in o.data.vertices: v.co.z-=low
+          for c in [(0.29,.31,.32),(.38,.40,.39),(.23,.25,.27)]: o.data.materials.append(material('Stone tone',c))
+          for p in o.data.polygons: p.material_index=random.choices([0,1,2],[7,2,1])[0]
+          export('stone')
+          bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
+          wood=material('Bark',(.25,.12,.055)); tip=material('End grain',(.58,.36,.17))
+          def limb(name, points, radii):
+              verts=[]; faces=[]; n=8
+              for i,p in enumerate(points):
+                  p=Vector(p); tangent=Vector(points[min(i+1,len(points)-1)])-Vector(points[max(0,i-1)])
+                  tangent.normalize(); a=tangent.cross(Vector((0,0,1))).normalized(); b=tangent.cross(a)
+                  for k in range(n):
+                      angle=2*math.pi*k/n; verts.append(p+radii[i]*(math.cos(angle)*a+math.sin(angle)*b))
+              for i in range(len(points)-1):
+                  for k in range(n): faces.append((i*n+k,i*n+(k+1)%n,(i+1)*n+(k+1)%n,(i+1)*n+k))
+              faces.extend([tuple(reversed(range(n))),tuple(range((len(points)-1)*n,len(points)*n))])
+              mesh=bpy.data.meshes.new(name); mesh.from_pydata(verts,[],faces); mesh.update()
+              obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj); mesh.materials.append(wood); mesh.materials.append(tip)
+              for p in mesh.polygons: p.material_index=int(p.index>=len(faces)-2)
+              bpy.context.view_layer.objects.active=obj; obj.select_set(True); bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT'); bpy.ops.uv.smart_project(); bpy.ops.object.mode_set(mode='OBJECT'); obj.select_set(False)
+          limb('Main branch',[(-1.2,0,.13),(-.65,.08,.16),(0,-.04,.19),(.65,.1,.14),(1.2,.18,.08)],[.13,.12,.10,.075,.035])
+          limb('Fork',[(.0,-.04,.19),(.28,.35,.24),(.48,.66,.18)],[.075,.055,.025])
+          export('stick')
+          PY
+          blender -b --factory-startup --python-exit-code 1 --python /tmp/organic.py
+      - name: Render and audit candidates
+        run: |
+          for asset in stone stick; do
+            mkdir -p /tmp/organic/$asset
+            blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/organic/$asset.glb /tmp/organic/$asset/original
+            blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/atlas_bake_organized.py -- /tmp/organic/$asset.glb /tmp/organic/$asset/baked
+            blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_islands.py -- /tmp/organic/$asset/baked/asset.glb /tmp/organic/$asset/baked
+            blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- /tmp/organic/$asset/baked/asset.glb /tmp/organic/$asset/baked/audit.json --shared --uv-index 1
+            blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/organic/$asset/baked/asset.glb /tmp/organic/$asset/candidate
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: organic-props-preview
+          path: /tmp/organic/
