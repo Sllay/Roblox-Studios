@@ -29,18 +29,13 @@ local function fingerprint()
     table.sort(hashes);return hash(table.concat(hashes,";")),records
 end
 local function audit(records)
+    -- Reuse canonical full-record digests, retaining all properties and multiplicities.
     local groups={}
     for _,entry in records do
         local row=entry.row
         local root=row.service..":"..row.path[1].name..":"..row.class
-        local function add(field,value)
-            local k=root..":"..field
-            groups[k]=groups[k] or {}
-            table.insert(groups[k],hash(Http:JSONEncode(value)))
-        end
-        add("identity",{row.path,row.managedId})
-        add("attributes",row.attributesHash);add("tags",row.tagsHash)
-        for k,v in row.properties do add(k,{row.path,v}) end
+        groups[root]=groups[root] or {}
+        table.insert(groups[root],entry.digest)
     end
     local out={}
     for k,v in groups do table.sort(v);out[k]=hash(table.concat(v,";")) end
