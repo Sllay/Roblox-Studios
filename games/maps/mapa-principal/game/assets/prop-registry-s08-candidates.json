@@ -51,7 +51,7 @@
       "parts": 1,
       "count": null,
       "proof": "asset-library/roblox-receipts/s08-runtime-proof.json",
-      "state": "atlas-preload-pending"
+      "state": "native-verified"
     },
     {
       "id": "Eggydrasil",
