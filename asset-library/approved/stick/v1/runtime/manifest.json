@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "sourceSha256": "8d07c0882f873f4b45d30cb559b8f8df1f8c08189bec7a80042e6ac0f492c249",
+  "sha256": "3b570d28a44d83c04b267c3017056b013fe2cdddc80a2216e2bf5d03dd5b0abf",
+  "atlasSha256": "8fe94992da11f97b88c42d0438f0f1f7ac99406615ca71f79eeb2c559f5d1439",
+  "triangleStreamSha256": "c489187f2f87530039868393515390fa36e45b25a5fa7dabefa806b6088b01db",
+  "triangles": 120,
+  "meshes": 1,
+  "materials": 1,
+  "uv": "TEXCOORD_0",
+  "geometryUnchanged": true
+}
