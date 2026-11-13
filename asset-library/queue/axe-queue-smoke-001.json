@@ -1,0 +1,5 @@
+{
+  "schema": 1,
+  "backend": "axe",
+  "purpose": "Queue persistence smoke; not artistic V6 approval"
+}
