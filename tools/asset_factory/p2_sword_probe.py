@@ -64,15 +64,10 @@ def box(name,loc,scale,material,bevel=.025):
     b=o.modifiers.new("Bevel","BEVEL");b.width=bevel;b.segments=1;bpy.ops.object.modifier_apply(modifier=b.name);o.data.materials.append(material);return o
 # Contour-driven guard traced from the original image, in original pixel coordinates.
 # Original sword points right; rotate into upright X/Z coordinates.
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from contour_mesh import contour_geometry
 def traced(name,poly,depth,material):
-    coords=[((234-y)*.0052,(x-9)*.0052) for x,y in poly]
-    cx=sum(x for x,z in coords)/len(coords);cz=sum(z for x,z in coords)/len(coords)
-    v=[];f=[];n=len(coords)
-    for yy,scale in [(-depth*.5,.84),(-depth*.32,1),(depth*.32,1),(depth*.5,.84)]:
-        v.extend([(cx+(x-cx)*scale,yy,cz+(z-cz)*scale) for x,z in coords])
-    for j in range(3):
-        for i in range(n):f.append((j*n+i,j*n+(i+1)%n,(j+1)*n+(i+1)%n,(j+1)*n+i))
-    f.extend([tuple(reversed(range(n))),tuple(range(3*n,4*n))])
+    v,f=contour_geometry(poly,depth,origin=(9,234),scale=.0052)
     return mesh(name,v,f,material)
 objects.append(traced("GuardContour",[(114,222),(118,195),(115,193),(117,181),(133,167),(148,163),(150,174),(148,183),(149,204),(151,218),(151,250),(148,266),(149,299),(144,302),(131,297),(117,284),(115,273),(118,271),(114,243)],.18,guard))
 objects.append(traced("GuardLanget",[(143,219),(160,220),(182,226),(213,234),(182,241),(160,247),(143,247)],.105,guard))
