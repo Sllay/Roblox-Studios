@@ -45,37 +45,17 @@ write(out/"property-audit.json",{"differences":diff,"expected":p["audit"],"actua
 print("S07_PROPERTY_DIFFERENCES",json.dumps(diff),flush=True)
 require(latest(target,key)==19,"Head changed")
 
-# Identify exact changed controller paths, without excluding any from the gate.
-players={}
+# Compare complete root multisets; path-keyed records collapse duplicate siblings.
+from collections import Counter
+roots={}
 for v in (18,19):
-    a=task(target,key,dispatch,read_version=v,compile_source=True,rows=[0]*2000,mode="playerAudit")
-    require(a["loadedVersion"]==v and a["noPlaceWrites"],"Player audit read-only")
-    players[v]=a["playerRecords"]
-a,b=players[18],players[19]
-changes=[{"path":k,"before":a.get(k),"after":b.get(k)} for k in sorted(set(a)|set(b)) if a.get(k)!=b.get(k)]
-write(out/"player-audit.json",{"changes":changes})
-print("S07_PLAYER_PATHS",json.dumps([{"path":x["path"],"added":x["before"] is None,"removed":x["after"] is None} for x in changes]),flush=True)
-require(latest(target,key)==19,"Head changed")
-
-# Reopen each historical version independently to detect session-injected controllers.
-# Never waive a persisted difference merely because its name resembles a Roblox default.
-repeat={}
-for v in (18,19):
-    z=task(target,key,dispatch,read_version=v,compile_source=True,rows=[0]*2000,mode="playerAudit")
-    require(z["loadedVersion"]==v and z["noPlaceWrites"],"Repeat audit read-only")
-    repeat[v]=z["playerRecords"]
-def changed(a,b):
-    return sorted(k for k in set(a)|set(b) if a.get(k)!=b.get(k))
-report={"v18Repeat":changed(players[18],repeat[18]),"v19Repeat":changed(players[19],repeat[19]),"crossVersionRepeat":changed(repeat[18],repeat[19])}
-write(out/"controller-repeat-audit.json",report)
-print("S07_CONTROLLER_REPEAT_COUNTS",json.dumps({k:len(v) for k,v in report.items()}),flush=True)
-require(latest(target,key)==19,"Head changed")
-
-inventory={}
-for v in (18,19):
-    z=task(target,key,dispatch,read_version=v,compile_source=True,rows=[0]*2000,mode="controllerInventory")
-    require(z["loadedVersion"]==v and z["noPlaceWrites"],"Inventory read-only")
-    inventory[str(v)]=z["roots"]
-write(out/"controller-inventory.json",inventory)
-print("S07_CONTROLLER_INVENTORY",json.dumps(inventory),flush=True)
+    z=task(target,key,dispatch,read_version=v,compile_source=True,rows=[0]*2000,mode="controllerMultiset")
+    require(z["loadedVersion"]==v and z["noPlaceWrites"],"Multiset read-only")
+    roots[v]=z["roots"]
+def counter(v):
+    return Counter((x["name"],x["class"],x["count"],x["digest"]) for x in roots[v])
+a,b=counter(18),counter(19)
+report={"roots":roots,"removed":[[list(k),n] for k,n in (a-b).items()],"added":[[list(k),n] for k,n in (b-a).items()]}
+write(out/"controller-multiset.json",report)
+print("S07_CONTROLLER_MULTISET",json.dumps(report),flush=True)
 require(latest(target,key)==19,"Head changed")
