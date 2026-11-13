@@ -1,0 +1,63 @@
+{
+  "placeId": "93428341652658",
+  "noPlaceWrites": true,
+  "universeId": "10769712441",
+  "props": {
+    "stone": {
+      "originalTextureId": "rbxassetid://128545806900242",
+      "meshId": "rbxassetid://120877868842825",
+      "atlasId": "106957063387208",
+      "textureBound": true,
+      "textureError": "",
+      "bounds": [
+        1.3610808849334717,
+        0.7346290349960327,
+        0.9551143646240234
+      ],
+      "name": "stone",
+      "scripts": 0,
+      "meshLoaded": true,
+      "imageLoaded": true,
+      "assetId": "136422313125209",
+      "parts": 1
+    },
+    "log": {
+      "originalTextureId": "rbxassetid://108771405368419",
+      "meshId": "rbxassetid://84426557612247",
+      "atlasId": "129687460952107",
+      "textureBound": true,
+      "textureError": "",
+      "bounds": [
+        3.121694564819336,
+        0.9615709781646729,
+        0.9819298386573792
+      ],
+      "name": "log",
+      "scripts": 0,
+      "meshLoaded": true,
+      "imageLoaded": false,
+      "assetId": "72836155682285",
+      "parts": 1
+    },
+    "stick": {
+      "originalTextureId": "rbxassetid://85889049717671",
+      "meshId": "rbxassetid://101820304976769",
+      "atlasId": "110578979081477",
+      "textureBound": true,
+      "textureError": "",
+      "bounds": [
+        2.424903392791748,
+        0.29480719566345215,
+        0.8135215044021606
+      ],
+      "name": "stick",
+      "scripts": 0,
+      "meshLoaded": true,
+      "imageLoaded": true,
+      "assetId": "94558539418999",
+      "parts": 1
+    }
+  },
+  "loadedVersion": 18,
+  "clientRenderVerified": false
+}
