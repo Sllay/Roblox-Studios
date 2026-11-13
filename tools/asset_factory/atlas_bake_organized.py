@@ -24,6 +24,7 @@ for o in objects:
     for f in bm.faces:f[ids]=f.index
     bmesh.ops.remove_doubles(bm,verts=list(bm.verts),dist=1e-6)
     bm.normal_update()
+    fallback=False
     # Separate broad blade faces from the rim; keep the rim connected except one cut.
     if "blade" in o.name.lower():
         axis=min(range(3),key=lambda a:max(v.co[a] for v in bm.verts)-min(v.co[a] for v in bm.verts))
@@ -63,9 +64,12 @@ for o in objects:
                 w=e.other_vert(v);nd=d+e.calc_length()
                 if nd<dist.get(w,float("inf")):
                     dist[w]=nd;prev[w]=(v,e);heapq.heappush(heap,(nd,w.index,w))
-        assert goal is not None,"Handle seam path missing"
-        while goal in prev:
-            goal,e=prev[goal];e.seam=True
+        if goal is None:
+            fallback=True
+            print("UV strategy fallback:",o.name,"no cap-to-cap path")
+        else:
+            while goal in prev:
+                goal,e=prev[goal];e.seam=True
     bm.to_mesh(proxy);bm.free()
     p=bpy.data.objects.new("UVProxy",proxy);bpy.context.collection.objects.link(p)
     p.matrix_world=o.matrix_world.copy()
@@ -73,7 +77,8 @@ for o in objects:
     proxy.uv_layers.active=proxy.uv_layers["BakedUV"]
     bpy.context.scene.tool_settings.use_uv_select_sync=True
     bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.uv.unwrap(method="ANGLE_BASED",margin=0.02)
+    if fallback:bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=0.02)
+    else:bpy.ops.uv.unwrap(method="ANGLE_BASED",margin=0.02)
     bpy.ops.object.mode_set(mode="OBJECT")
     proxies.append((o,p))
     continue
