@@ -1,0 +1,23 @@
+name: S08 Eggydrasil V3
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/asset_factory/eggydrasil_v3.py'
+      - '.github/workflows/s08-eggydrasil-v3.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender
+      - name: Generate direct geometry and renders
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/eggydrasil_v3.py -- /tmp/eggydrasil-v3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eggydrasil-v3
+          path: /tmp/eggydrasil-v3/
