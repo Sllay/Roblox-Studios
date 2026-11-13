@@ -1,0 +1,39 @@
+name: S08 Organic Source Audit
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s08-organic-source-audit.yml'
+      - 'tools/asset_factory/approved/Black-Islands-Assets-A1.zip'
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inventory source archive
+        run: |
+          mkdir -p organic-audit
+          python - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          p = pathlib.Path('tools/asset_factory/approved/Black-Islands-Assets-A1.zip')
+          with zipfile.ZipFile(p) as z:
+              bad = z.testzip()
+              if bad:
+                  raise RuntimeError('CRC failure: ' + bad)
+              entries = []
+              for i in z.infolist():
+                  if i.is_dir():
+                      continue
+                  with z.open(i) as f:
+                      digest = hashlib.file_digest(f, 'sha256').hexdigest()
+                  entries.append({'path': i.filename, 'bytes': i.file_size, 'sha256': digest})
+              report = {'archive': str(p), 'archiveSha256': hashlib.sha256(p.read_bytes()).hexdigest(), 'entries': entries}
+              pathlib.Path('organic-audit/inventory.json').write_text(json.dumps(report, indent=2))
+              print(json.dumps(report, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s08-organic-source-inventory
+          path: organic-audit/inventory.json
