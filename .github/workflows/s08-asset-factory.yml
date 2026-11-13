@@ -51,6 +51,10 @@ jobs:
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_handle_probe.py -- "$PWD/dist/asset-factory/p2-handle"
+      - name: Assemble modular axe
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_tool_assembly.py -- "$PWD/dist/asset-factory/p2-assembly"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
