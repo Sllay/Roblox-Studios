@@ -1,0 +1,15 @@
+{
+  "status": "candidate",
+  "contract": {
+    "schema": 1,
+    "modelSha256": "715b8006b4ec639893742142cce120862488fb0b842d549ea4bf2b0bd889992c",
+    "pngSha256": "66871d396634cd869fdbe4cfcd3616e764df0ac28340d1eb6f10a49471766497",
+    "object": "RecoveredHandle",
+    "materialSlot": 0,
+    "material": "WoodGrain.001",
+    "uv": "UVMap",
+    "uvSha256": "b828b0d1eb43305f1225e59c29e5f17d439b5e520b6b43a45c492b7657d20647"
+  },
+  "outputSha256": "517e5fe7e180c4fc32e9a85b6566013d6164cc73d54b4e111e32724df730fc81",
+  "exactPngEmbedded": true
+}

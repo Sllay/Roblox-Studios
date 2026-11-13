@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "9898769edcc00a0c3588b0708db1705ab4459147",
+  "runId": "43387856934",
+  "files": [
+    {
+      "path": "legacy-uv-audit.json",
+      "bytes": 492,
+      "sha256": "5c204ad1c742f792f2cf085d1d07ab534d3c40d152ada5a9230ec7036d04dd1c"
+    },
+    {
+      "path": "painted/asset.glb",
+      "bytes": 585236,
+      "sha256": "517e5fe7e180c4fc32e9a85b6566013d6164cc73d54b4e111e32724df730fc81"
+    },
+    {
+      "path": "painted/paint-report.json",
+      "bytes": 542,
+      "sha256": "011b860c4e55446485934175fda9be12ea57cc8196a6b6e6c01c0b8925e4421c"
+    },
+    {
+      "path": "prep/color.png",
+      "bytes": 303351,
+      "sha256": "66871d396634cd869fdbe4cfcd3616e764df0ac28340d1eb6f10a49471766497"
+    },
+    {
+      "path": "prep/contract.json",
+      "bytes": 367,
+      "sha256": "b1fac342a16b1399a16d7e8b36a8da2b1cbae967ba0a6cfa74e076a6bae8c2d9"
+    },
+    {
+      "path": "prep/provenance.json",
+      "bytes": 169,
+      "sha256": "48366d715ab335f05df3a4e0c27055e6cff56ca899cd1af2aa55a20b2f2ffa18"
+    },
+    {
+      "path": "prep/unpainted.glb",
+      "bytes": 281792,
+      "sha256": "715b8006b4ec639893742142cce120862488fb0b842d549ea4bf2b0bd889992c"
+    }
+  ]
+}

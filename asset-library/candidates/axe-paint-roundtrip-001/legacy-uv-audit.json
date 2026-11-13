@@ -1,0 +1,15 @@
+{
+  "source": "/tmp/tmp5bmx4r8m/output/painted/asset.glb",
+  "sharedAtlas": false,
+  "triangles": 220,
+  "degenerate": 48,
+  "outsideUnitSquare": 3,
+  "overlapPairs": 60,
+  "pairwiseOverlapArea": 0.6080054230578538,
+  "stretchP50": 2.110275196969402,
+  "stretchP95": 5.372748532058442,
+  "stretchMax": 6.110263703980703,
+  "densityP05": 1.0029668157744103,
+  "densityP95": 1.7184481316103453,
+  "scope": "overlap per material unless shared atlas; distortion reported, not artistic approval"
+}
