@@ -1,0 +1,13 @@
+{
+  "sourceAssetId": "128359463933045",
+  "sha256": "128cb59a890d74c1f49ea088c1b6f2649800c0d78d35eec3c4e1a1a172eee358",
+  "proof": {
+    "grayUri": "rbxassetid://109528136250293",
+    "independentTint": true,
+    "alphaMode": "Transparency",
+    "meshCount": 5,
+    "whiteUri": "rbxassetid://89626593244521"
+  },
+  "nativeRoundTrip": true,
+  "noPlaceWrites": true
+}
