@@ -1,0 +1,19 @@
+{
+  "socket": {
+    "center": [
+      0.028906249161809682,
+      1.3394574536559967e-18,
+      1.240421896930784
+    ],
+    "radiusX": 0.10937500679865479,
+    "radiusY": 0.10402180999517441,
+    "insertion": 0.1883437533443794,
+    "handleLength": 1.345312523888424
+  },
+  "handleTriangles": 176,
+  "headTriangles": 108,
+  "overlapSamples": 10,
+  "sampleCount": 10,
+  "components": 2,
+  "published": false
+}
