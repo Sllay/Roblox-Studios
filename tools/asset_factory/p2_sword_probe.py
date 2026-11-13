@@ -53,7 +53,7 @@ def rings(name,sections,material,n=8):
     return mesh(name,v,f,material)
 # Beveled blade cross section: edge, shoulder, center ridge, shoulder, edge.
 v=[];f=[]
-for z,w,t in [(0.72,.14,.045),(.82,.17,.05),(.93,.125,.045),(1.95,.105,.036),(2.12,.08,.025),(2.20,.035,.012),(2.23,.002,.002)]:
+for z,w,t in [(.72,.14,.045),(.81,.17,.05),(.88,.12,.045),(1.00,.115,.045),(1.90,.09,.036),(2.12,.06,.025),(2.21,.002,.002)]:
     v.extend([(-w,0,z),(-w*.68,-t*.75,z),(0,-t,z),(w*.68,-t*.75,z),(w,0,z),(w*.68,t*.75,z),(0,t,z),(-w*.68,t*.75,z)])
 for j in range(6):
     for i in range(8):f.append((j*8+i,j*8+(i+1)%8,(j+1)*8+(i+1)%8,(j+1)*8+i))
@@ -62,19 +62,32 @@ objects=[mesh("Blade",v,f,blade)]
 def box(name,loc,scale,material,bevel=.025):
     bpy.ops.mesh.primitive_cube_add(size=1,location=loc);o=bpy.context.object;o.name=name;o.scale=scale;bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
     b=o.modifiers.new("Bevel","BEVEL");b.width=bevel;b.segments=1;bpy.ops.object.modifier_apply(modifier=b.name);o.data.materials.append(material);return o
-objects.append(box("GuardCenter",(0,0,.69),(.48,.19,.18),guard))
-for sign in (-1,1):
-    o=box("GuardTip",(sign*.27,0,.72),(.15,.20,.19),blue);o.rotation_euler.y=sign*-.32;objects.append(o)
-objects.append(rings("Grip",[(.15,.064,.064),(.61,.064,.064)],tan,12))
+# Contour-driven guard traced from the original image, in original pixel coordinates.
+# Original sword points right; rotate into upright X/Z coordinates.
+def traced(name,poly,depth,material):
+    coords=[((234-y)*.0052,(x-9)*.0052) for x,y in poly]
+    cx=sum(x for x,z in coords)/len(coords);cz=sum(z for x,z in coords)/len(coords)
+    v=[];f=[];n=len(coords)
+    for yy,scale in [(-depth*.5,.84),(-depth*.32,1),(depth*.32,1),(depth*.5,.84)]:
+        v.extend([(cx+(x-cx)*scale,yy,cz+(z-cz)*scale) for x,z in coords])
+    for j in range(3):
+        for i in range(n):f.append((j*n+i,j*n+(i+1)%n,(j+1)*n+(i+1)%n,(j+1)*n+i))
+    f.extend([tuple(reversed(range(n))),tuple(range(3*n,4*n))])
+    return mesh(name,v,f,material)
+objects.append(traced("GuardContour",[(114,222),(118,195),(115,193),(117,181),(133,167),(148,163),(150,174),(148,183),(149,204),(151,218),(151,250),(148,266),(149,299),(144,302),(131,297),(117,284),(115,273),(118,271),(114,243)],.18,guard))
+objects.append(traced("GuardLanget",[(143,219),(160,220),(182,226),(213,234),(182,241),(160,247),(143,247)],.105,guard))
+objects.append(traced("GuardTipUpper",[(117,181),(133,167),(148,163),(150,174),(148,183),(118,195)],.19,blue))
+objects.append(traced("GuardTipLower",[(118,271),(115,273),(117,284),(131,297),(144,302),(148,302),(149,287)],.19,blue))
+objects.append(rings("Grip",[(.19,.064,.064),(.57,.064,.064)],tan,12))
 # Continuous helical wrap, not flat stripes.
 v=[];f=[];steps=64
 for i in range(steps+1):
-    t=i/steps;a=t*math.tau*3.5;z=.18+.40*t
+    t=i/steps;a=t*math.tau*3.5;z=.24+.25*t
     for r,dz in [(.065,-.035),(.079,-.035),(.079,.035),(.065,.035)]:v.append((r*math.cos(a),r*math.sin(a),z+dz))
 for j in range(steps):
     for i in range(4):f.append((j*4+i,j*4+(i+1)%4,(j+1)*4+(i+1)%4,(j+1)*4+i))
 f.extend([(3,2,1,0),tuple(range(steps*4,steps*4+4))]);objects.append(mesh("Wrap",v,f,red))
-objects.append(rings("Pommel",[(.02,.003,.003),(.09,.085,.065),(.16,.075,.06),(.20,.055,.05)],guard))
+objects.append(rings("Pommel",[(.02,.003,.003),(.08,.075,.055),(.15,.078,.058),(.19,.055,.045)],guard))
 scene=bpy.context.scene;scene.render.engine="BLENDER_WORKBENCH";scene.render.resolution_x=512;scene.render.resolution_y=512;scene.render.resolution_percentage=100;scene.render.film_transparent=True;scene.display.shading.color_type="TEXTURE"
 bpy.ops.object.camera_add();cam=bpy.context.object;scene.camera=cam;cam.data.type="ORTHO";cam.data.ortho_scale=2.65
 center=Vector((0,0,1.12))
