@@ -1,4 +1,4 @@
-name: S07 guarded publication
+name: S07 read-only publication reconciliation
 on:
   push:
     branches: [main]
@@ -32,13 +32,12 @@ jobs:
           run-id: 43328065190
           github-token: ${{ github.token }}
           path: dist/s07/reviewed/
-      - name: Reviewed migration and single save
+      - name: Reopen v19 without saving
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          S07_PUBLISH: '1'
-        run: python tools/s07_migration_preview.py
+        run: python tools/s07_reconcile.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: s07-publication-proof
+          name: s07-reconciliation-proof
           path: dist/s07/
