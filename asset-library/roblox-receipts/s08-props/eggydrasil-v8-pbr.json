@@ -3,7 +3,7 @@
   "sha256": "128cb59a890d74c1f49ea088c1b6f2649800c0d78d35eec3c4e1a1a172eee358",
   "bytes": 95077,
   "source": "asset-library/approved/eggydrasil/v8/native/eggydrasil-v8-pbr.rbxm",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,38 @@
     "operationId": "ff9b9246-1395-4bc9-9881-61f192b093a5",
     "done": false
   },
-  "operationPath": "operations/ff9b9246-1395-4bc9-9881-61f192b093a5"
+  "operationPath": "operations/ff9b9246-1395-4bc9-9881-61f192b093a5",
+  "operation": {
+    "path": "operations/ff9b9246-1395-4bc9-9881-61f192b093a5",
+    "operationId": "ff9b9246-1395-4bc9-9881-61f192b093a5",
+    "metadata": {
+      "progress": 1.0,
+      "childOperations": [
+        "operations/3cc34546-a24d-4e60-b1ea-555b0beccffe"
+      ],
+      "nonBlockingErrors": []
+    },
+    "done": true,
+    "response": {
+      "path": "assets/128938533912044",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:52:16.684Z",
+      "assetId": "128938533912044",
+      "displayName": "Black Islands eggydrasil-v8-pbr",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "128938533912044"
 }
