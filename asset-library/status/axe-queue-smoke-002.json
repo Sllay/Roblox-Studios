@@ -2,5 +2,6 @@
   "id": "axe-queue-smoke-002",
   "requestSha256": "084f2cbceb0ebdb4f0ba06a739e6892bab4b1ef15157da67a8cbd9dcd8973aff",
   "runId": "43367964549",
-  "state": "running"
+  "state": "failed",
+  "error": "Command '['blender', '-b', '--factory-startup', '--python-exit-code', '1', '--python', '/home/runner/work/Roblox-Studios/Roblox-Studios/tools/asset_factory/p2_handle_probe.py', '--', '/tmp/tmp7dwn3e6v/p2-handle']' returned non-zero exit status 1."
 }
