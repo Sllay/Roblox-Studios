@@ -3,7 +3,7 @@
   "sha256": "a7a0ac6bfa9b0cac091accd1e2f86aa48a6cbb9a17de9f8b0b4800f606a65e03",
   "bytes": 61664,
   "source": "asset-library/approved/eggydrasil/v8/leaves-white.png",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "7055df40-8fe5-4927-bc3c-20e773baceb9",
     "done": false
   },
-  "operationPath": "operations/7055df40-8fe5-4927-bc3c-20e773baceb9"
+  "operationPath": "operations/7055df40-8fe5-4927-bc3c-20e773baceb9",
+  "operation": {
+    "path": "operations/7055df40-8fe5-4927-bc3c-20e773baceb9",
+    "operationId": "7055df40-8fe5-4927-bc3c-20e773baceb9",
+    "done": true,
+    "response": {
+      "path": "assets/89626593244521",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:45:15.053Z",
+      "assetId": "89626593244521",
+      "displayName": "Black Islands eggydrasil-white",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Image",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "89626593244521"
 }
