@@ -16,7 +16,7 @@ jobs:
       - name: Install Blender and software graphics
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
+          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy python3-pil
           blender --version
           blender -b --python-exit-code 1 --python-expr 'import numpy; print(numpy.__version__)'
       - name: Author and render
@@ -27,6 +27,10 @@ jobs:
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_probe.py -- "$PWD/dist/asset-factory/p2"
+      - name: Reconstruct color references
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/p2_color_probe.py -- "$PWD/dist/asset-factory/p2-color"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
