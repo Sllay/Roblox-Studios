@@ -3,9 +3,16 @@
   "sha256": "0c055d44788bffc8b0318ac816b7edf847da30bb76a14dec4fa83ad8464b433d",
   "bytes": 69488,
   "source": "asset-library/approved/log/v1/runtime/asset.glb",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/33b61355-024f-4ece-8fa8-7693c5089c27",
+    "operationId": "33b61355-024f-4ece-8fa8-7693c5089c27",
+    "done": false
+  },
+  "operationPath": "operations/33b61355-024f-4ece-8fa8-7693c5089c27"
 }
