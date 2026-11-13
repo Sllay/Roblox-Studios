@@ -28,12 +28,30 @@ local function fingerprint()
     end
     table.sort(hashes);return hash(table.concat(hashes,";")),records
 end
+local function audit(records)
+    local groups={}
+    for _,entry in records do
+        local row=entry.row
+        local root=row.service..":"..row.path[1].name..":"..row.class
+        local function add(field,value)
+            local k=root..":"..field
+            groups[k]=groups[k] or {}
+            table.insert(groups[k],hash(Http:JSONEncode(value)))
+        end
+        add("identity",{row.path,row.managedId})
+        add("attributes",row.attributesHash);add("tags",row.tagsHash)
+        for k,v in row.properties do add(k,{row.path,v}) end
+    end
+    local out={}
+    for k,v in groups do table.sort(v);out[k]=hash(table.concat(v,";")) end
+    return out
+end
 local beforeFingerprint,beforeRecords=fingerprint()
 if cfg.mode=="diagnose" then
     local counts={Branch=0,Stone=0,Other=0}
     for _,m in F:GetChildren() do local k=m:GetAttribute("RSResourceType");if k=="Stick" then counts.Branch+=1 elseif k=="Stone" then counts.Stone+=1 else counts.Other+=1 end end
     local terrain=terrainState();local mismatches={};for _,r in terrain do if cfg.expectedTerrain[r.id]~=r.digest then table.insert(mismatches,r.id) end end
-    return syncResult({noPlaceWrites=true,afterFingerprint=beforeFingerprint,counts=counts,terrain=terrain,terrainMismatches=mismatches,objectCount=#F:GetChildren()})
+    return syncResult({noPlaceWrites=true,afterFingerprint=beforeFingerprint,counts=counts,terrain=terrain,terrainMismatches=mismatches,objectCount=#F:GetChildren(),audit=if cfg.audit then audit(beforeRecords) else nil})
 end
 if cfg.mode=="verify" then
     assert(#F:GetChildren()==2000,"Persisted count")
@@ -114,7 +132,7 @@ for _,m in created do
     local p=m:FindFirstChildWhichIsA("MeshPart",true)
     for _,other in W:GetPartBoundsInBox(p.CFrame,p.Size,op) do assert(other==p,"Resource/collider overlap "..m.Name) end
 end
-local afterFingerprint=fingerprint()
+local afterFingerprint,afterRecords=fingerprint()
 local after=terrainState()
 for i,r in after do assert(r.solidVoxels==before[i].solidVoxels and r.waterVoxels==before[i].waterVoxels,"Terrain volume") end
 if cfg.mode=="apply" then
@@ -144,4 +162,4 @@ if restoredFingerprint~=beforeFingerprint then
     return syncResult({preview=false,noPlaceWrites=true,inverseMismatch=true,differenceCount=#differences,differences={table.unpack(differences,1,math.min(5,#differences))}})
 end
 assert(#F:GetChildren()==216,"Resource inverse")
-return syncResult({preview=true,noPlaceWrites=true,beforeFingerprint=beforeFingerprint,afterFingerprint=afterFingerprint,counts=counts,vegetationRotated=#rotated,restoredMaterialVoxels=changed,terrain=after,all49Restored=#restored==49,resourceInverse=true,clientRenderVerified=false})
+return syncResult({preview=true,noPlaceWrites=true,beforeFingerprint=beforeFingerprint,afterFingerprint=afterFingerprint,counts=counts,vegetationRotated=#rotated,restoredMaterialVoxels=changed,terrain=after,all49Restored=#restored==49,resourceInverse=true,clientRenderVerified=false,audit=if cfg.audit then audit(afterRecords) else nil})
