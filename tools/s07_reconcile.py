@@ -59,3 +59,19 @@ report={"roots":roots,"removed":[[list(k),n] for k,n in (a-b).items()],"added":[
 write(out/"controller-multiset.json",report)
 print("S07_CONTROLLER_MULTISET",json.dumps(report),flush=True)
 require(latest(target,key)==19,"Head changed")
+
+# Compare every controller record with multiplicity, including the extra
+# StarterPlayerScripts module. No normalization or place write is permitted.
+players={}
+for v in (18,19):
+    z=task(target,key,dispatch,read_version=v,compile_source=True,rows=[0]*2000,mode="playerAudit")
+    require(z["loadedVersion"]==v and z["noPlaceWrites"],"Controller records read-only")
+    players[v]=z["playerRecords"]
+def record_delta(left,right):
+    return [{"key":k,"count":x["count"]-right.get(k,{}).get("count",0),"row":x["row"]}
+            for k,x in left.items() if x["count"]>right.get(k,{}).get("count",0)]
+removed=record_delta(players[18],players[19])
+added=record_delta(players[19],players[18])
+write(out/"controller-record-delta.json",{"removed":removed,"added":added})
+print("S07_CONTROLLER_RECORD_DELTA",json.dumps({"removed":sum(x["count"] for x in removed),"added":sum(x["count"] for x in added),"starterScripts":[x for x in added if x["row"]["path"][0]["name"]=="StarterPlayerScripts"]}),flush=True)
+require(latest(target,key)==19,"Head changed")
