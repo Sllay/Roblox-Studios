@@ -1,0 +1,15 @@
+{
+  "woodTriangles": 14460,
+  "cards": 3600,
+  "whiteCards": 2078,
+  "grayCards": 1522,
+  "totalTriangles": 21660,
+  "woodSourceSha256": "78c46a0c66382bccafe2d9496507a283252f149971821574a5fb9c4cbab99edf",
+  "textures": {
+    "leaves-white.png": "a7a0ac6bfa9b0cac091accd1e2f86aa48a6cbb9a17de9f8b0b4800f606a65e03",
+    "leaves-gray.png": "2007e0cd1ac1712ab45687fa0afa1fb6f2a2e82a19e3b4f458b9c980c14e23ec"
+  },
+  "alphaPreserved": true,
+  "separateMeshNodes": true,
+  "published": false
+}

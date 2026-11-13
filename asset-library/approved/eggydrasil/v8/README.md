@@ -1,0 +1,3 @@
+# Eggydrasil V8 — tintable Roblox import
+
+Import wood-v4.glb and canopy-white-lod0.glb / canopy-gray-lod0.glb as separate MeshParts at the same origin, or import the combined textureless GLB preserving the three nodes. Upload leaves-white.png and leaves-gray.png as ColorMaps. Use one SurfaceAppearance per canopy MeshPart, AlphaMode = Transparency, ColorMap set to the corresponding uploaded texture and Color set independently. Set MeshPart.DoubleSided = true, CanCollide = false on foliage. Wood remains V4 geometry, with provisional bark materials. LOD1/LOD2 are optional replacements, not additional visible meshes. The textured combined GLB is for preview. No Roblox IDs or map publication included.
