@@ -1,0 +1,29 @@
+name: S08 Eggydrasil V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s08-eggydrasil-v2.yml'
+      - 'tools/asset_factory/eggydrasil_references.py'
+      - 'tools/asset_factory/layered_preview.py'
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install numpy scipy scikit-image pillow
+      - run: sudo apt-get update && sudo apt-get install -y blender
+      - name: Generate calibrated references
+        run: python tools/asset_factory/eggydrasil_references.py /tmp/eggydrasil-v2/references
+      - name: Reconstruct layered tree
+        run: python tools/asset_factory/run.py --job /tmp/eggydrasil-v2/references/job.json --out /tmp/eggydrasil-v2/geometry
+      - name: Export and render
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/layered_preview.py -- /tmp/eggydrasil-v2/geometry/geometry.obj /tmp/eggydrasil-v2/preview
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eggydrasil-v2
+          path: /tmp/eggydrasil-v2/
