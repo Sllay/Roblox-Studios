@@ -103,7 +103,11 @@ assert(corrected==cfg.expectedAfter,"Correction does not reproduce reviewed fing
 return syncResult({noPlaceWrites=true,correctionPreview=true,afterFingerprint=corrected})
 """
 require(sum(x["count"] for x in removed)==1 and sum(x["count"] for x in added)==164,"Unexpected controller delta")
-repair_src=src.replace('if cfg.mode=="playerAudit" then', 'if cfg.mode=="correctionPreview" then\n'+repair+'\nend\nif cfg.mode=="playerAudit" then',1)
+# Run the correction before the unconditional baseline fingerprint. The
+# independent diagnose session already verified the unmodified v19.
+anchor='local beforeFingerprint,beforeRecords=fingerprint()'
+require(src.count(anchor)==1,"Correction insertion anchor")
+repair_src=src.replace(anchor, 'if cfg.mode=="correctionPreview" then\n'+repair+'\nend\n'+anchor,1)
 z=task(target,key,"do\n"+repair_src+"\nend",read_version=19,compile_source=True,rows=[0]*2000,mode="correctionPreview",expectedAfter=reviewed["afterFingerprint"])
 require(z["loadedVersion"]==19 and z["noPlaceWrites"] and z["correctionPreview"] and z["afterFingerprint"]==reviewed["afterFingerprint"],"Correction preview proof")
 write(out/"controller-correction-preview.json",z)
