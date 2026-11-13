@@ -25,8 +25,20 @@ for o in objects:
     bmesh.ops.remove_doubles(bm,verts=list(bm.verts),dist=1e-6)
     bm.normal_update()
     fallback=False
+    # Cylindrical opening requires a single connected shell.
+    remaining=set(bm.faces);components=0
+    while remaining:
+        components+=1;stack=[remaining.pop()]
+        while stack:
+            for e in stack.pop().edges:
+                for f in e.link_faces:
+                    if f in remaining:remaining.remove(f);stack.append(f)
+    if components>1:fallback=True
+    print("UV topology",o.name,"shells",components)
     # Separate broad blade faces from the rim; keep the rim connected except one cut.
-    if "blade" in o.name.lower():
+    if fallback:
+        pass
+    elif "blade" in o.name.lower():
         axis=min(range(3),key=lambda a:max(v.co[a] for v in bm.verts)-min(v.co[a] for v in bm.verts))
         def region(f):
             n=f.normal[axis]
