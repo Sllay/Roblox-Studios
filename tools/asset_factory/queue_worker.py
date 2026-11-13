@@ -6,7 +6,7 @@ root=Path(__file__).resolve().parents[2]
 factory=root/"tools/asset_factory"
 library=root/"asset-library"
 queue=library/"queue"
-backends={"axe":"p2_tint_probe.py","pickaxe":"p2_pickaxe_probe.py","sword":"p2_sword_probe.py"}
+backends={"axe":"p2_tint_probe.py","pickaxe":"p2_pickaxe_probe.py","sword":"p2_sword_probe.py","axe-paint-roundtrip":"real_paint_probe.py"}
 def save(path,data):
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(data,indent=2)+"\n")
@@ -41,7 +41,17 @@ for request in sorted(queue.glob("*.json")):
                 (budget/"direct-200.glb").write_bytes(payload)
                 dep=Path(tmp)/"p2-handle";dep.mkdir()
                 subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/"p2_handle_probe.py"),"--",str(dep)],check=True,timeout=600)
-            subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/backends[d["backend"]]),"--",str(out)],check=True,timeout=600)
+            if d["backend"]=="axe-paint-roundtrip":
+                source=library/"approved"/"axe"/"v6"/"machado-v6.glb"
+                if hashlib.sha256(source.read_bytes()).hexdigest()!="6089929739d0a08983faa5d5f7ecaf26d6e42896880cd98a2c7aa2be470a7507": raise ValueError("Approved source hash mismatch")
+                def blender(script,*args):
+                    subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/script),"--",*map(str,args)],check=True,timeout=900)
+                prep=out/"prep"
+                blender("real_paint_probe.py",source,prep)
+                blender("bind_paint.py",prep/"unpainted.glb",prep/"color.png",prep/"contract.json",out/"painted")
+                blender("uv_audit.py",out/"painted"/"asset.glb",out/"legacy-uv-audit.json")
+            else:
+                subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/backends[d["backend"]]),"--",str(out)],check=True,timeout=600)
             dest=library/"candidates"/key
             subprocess.run([sys.executable,str(factory/"persist_candidates.py"),str(out),str(dest)],check=True)
         record.update(state="review_ready",candidate=key)
