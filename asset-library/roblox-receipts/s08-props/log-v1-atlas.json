@@ -3,9 +3,16 @@
   "sha256": "e8bb1175bfd24f19905b514fa578088641cb7020d25af391d7656c2a60304094",
   "bytes": 36982,
   "source": "asset-library/approved/log/v1/atlas.png",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/254a2cc4-bffa-4fa0-8640-5a8064ea3fba",
+    "operationId": "254a2cc4-bffa-4fa0-8640-5a8064ea3fba",
+    "done": false
+  },
+  "operationPath": "operations/254a2cc4-bffa-4fa0-8640-5a8064ea3fba"
 }
