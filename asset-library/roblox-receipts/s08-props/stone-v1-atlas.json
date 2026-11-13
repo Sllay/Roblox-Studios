@@ -3,9 +3,16 @@
   "sha256": "14ebec67686832e40973716da3697685bf55fdf99792b4ae6f16cc09995e009d",
   "bytes": 47527,
   "source": "asset-library/approved/stone/v1/atlas.png",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/42e07312-4478-42f2-8d7e-c4aa1ffafd1f",
+    "operationId": "42e07312-4478-42f2-8d7e-c4aa1ffafd1f",
+    "done": false
+  },
+  "operationPath": "operations/42e07312-4478-42f2-8d7e-c4aa1ffafd1f"
 }
