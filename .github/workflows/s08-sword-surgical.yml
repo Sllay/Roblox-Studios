@@ -38,3 +38,5 @@ jobs:
             /tmp/candidate/
             /tmp/original/
             /tmp/review/
+
+# Retest preserved wrap charts.
