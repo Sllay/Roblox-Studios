@@ -42,7 +42,10 @@ from PIL import Image
 N=256
 u,v=np.meshgrid(np.linspace(0,1,N),np.linspace(0,1,N))
 rng=np.random.default_rng(42)
-gray=np.clip(.83+.045*np.sin(21*u+9*v)+.035*np.sin(47*u-31*v)+.018*rng.normal(size=(N,N))+.13*np.exp(-u*18),.55,1)
+# Shape-aware painted shading: bright cutting edge, darker underside, no stripes.
+edge=np.exp(-u*28)
+base=.77-.22*(1-v)**2-.07*np.exp(-((u-.5)/.18)**2)*(1-v)
+gray=np.clip(base+.29*edge,.42,1)
 woodgrain=np.clip(.75+.13*np.sin(55*u+3*np.sin(9*v))+.05*np.sin(127*u+7*v),.4,1)
 def texture(name,arr):
     path=out/(name+".png");Image.fromarray(np.uint8(np.clip(arr,0,1)*255),"RGB").save(path)
