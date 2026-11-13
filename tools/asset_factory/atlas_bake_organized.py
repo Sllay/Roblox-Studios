@@ -29,14 +29,43 @@ for o in objects:
         axis=min(range(3),key=lambda a:max(v.co[a] for v in bm.verts)-min(v.co[a] for v in bm.verts))
         def region(f):
             n=f.normal[axis]
-            return 1 if n>0.7 else -1 if n< -0.7 else 0
+            return 1 if n>0.01 else -1 if n< -0.01 else 0
         rim=[]
         for e in bm.edges:
             e.seam=not e.is_manifold or len({region(f) for f in e.link_faces})>1
             if e.is_manifold and all(region(f)==0 for f in e.link_faces) and abs((e.verts[1].co-e.verts[0].co)[axis])>1e-6:rim.append(e)
         if rim:max(rim,key=lambda e:abs((e.verts[1].co-e.verts[0].co)[axis])).seam=True
     else:
-        for e in bm.edges:e.seam=not e.is_manifold or e.calc_face_angle(0)>math.radians(55)
+        # Handle: separate caps and open the cylindrical side along a shortest
+        # edge path connecting the two cap boundaries.
+        import heapq
+        axis=max(range(3),key=lambda a:max(v.co[a] for v in bm.verts)-min(v.co[a] for v in bm.verts))
+        def region(f):
+            n=f.normal[axis]
+            return 1 if n>0.8 else -1 if n< -0.8 else 0
+        ends={-1:set(),1:set()}
+        for e in bm.edges:
+            rs={region(f) for f in e.link_faces}
+            e.seam=not e.is_manifold or len(rs)>1
+            if 0 in rs:
+                for k in (-1,1):
+                    if k in rs:ends[k].update(e.verts)
+        bm.verts.index_update()
+        dist={v:0.0 for v in ends[-1]};prev={}
+        heap=[(0.0,v.index,v) for v in ends[-1]];heapq.heapify(heap)
+        goal=None
+        while heap:
+            d,_,v=heapq.heappop(heap)
+            if d!=dist[v]:continue
+            if v in ends[1]:goal=v;break
+            for e in v.link_edges:
+                if not all(region(f)==0 for f in e.link_faces):continue
+                w=e.other_vert(v);nd=d+e.calc_length()
+                if nd<dist.get(w,float("inf")):
+                    dist[w]=nd;prev[w]=(v,e);heapq.heappush(heap,(nd,w.index,w))
+        assert goal is not None,"Handle seam path missing"
+        while goal in prev:
+            goal,e=prev[goal];e.seam=True
     bm.to_mesh(proxy);bm.free()
     p=bpy.data.objects.new("UVProxy",proxy);bpy.context.collection.objects.link(p)
     p.matrix_world=o.matrix_world.copy()
