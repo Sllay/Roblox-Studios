@@ -12,16 +12,20 @@ bpy.ops.import_scene.gltf(filepath=str(src.resolve()))
 def cross(a,b,c): return (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x)
 def area(p): return abs(sum(a.x*b.y-a.y*b.x for a,b in zip(p,p[1:]+p[:1])))/2 if len(p)>2 else 0
 def intersect(p,q):
-    if cross(*q)<0:q=q[::-1]
+    # Blender Vector arithmetic is float32; clip in Python double precision.
+    p=[(float(v.x),float(v.y)) for v in p]
+    q=[(float(v.x),float(v.y)) for v in q]
+    def orient(a,b,c):return (b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
+    if orient(*q)<0:q=q[::-1]
     for a,b in zip(q,q[1:]+q[:1]):
         result=[]
         if not p:return 0
         for s,e in zip(p,p[1:]+p[:1]):
-            ds,de=cross(a,b,s),cross(a,b,e)
-            if (ds>=0)!=(de>=0):result.append(s+(e-s)*(ds/(ds-de)))
+            ds,de=orient(a,b,s),orient(a,b,e)
+            if (ds>=0)!=(de>=0):result.append(tuple(s[i]+(e[i]-s[i])*(ds/(ds-de)) for i in range(2)))
             if de>=0:result.append(e)
         p=result
-    return area(p)
+    return abs(sum(a[0]*b[1]-a[1]*b[0] for a,b in zip(p,p[1:]+p[:1])))/2 if len(p)>2 else 0
 groups={};degenerate=0;outside=0;ratios=[];stretch=[]
 for o in bpy.context.scene.objects:
     if o.type!="MESH":continue
