@@ -17,7 +17,7 @@ bpy.ops.object.camera_add();cam=bpy.context.object;scene.camera=cam;cam.data.typ
 center=Vector((.1,0,.7))
 views={"front":(0,-4,0),"right":(4,0,0),"top":(0,0,4)}
 for k,d in views.items():
-    cam.location=center+Vector(d);cam.rotation_euler=(center-cam.location).to_track_quat("-Z","Y").to_euler()
+    cam.location=center+Vector(d);cam.rotation_euler=(0,0,0) if k=="top" else (center-cam.location).to_track_quat("-Z","Y").to_euler()
     scene.render.filepath=str(out/("reference-"+k+".png"));bpy.ops.render.render(write_still=True)
 # Camera right view horizontal axis is +Y; top view vertical axis is +Y.
 refs={k:out/("reference-"+k+".png") for k in views}
@@ -34,7 +34,7 @@ bpy.ops.export_scene.gltf(filepath=str(out/"asset.glb"),export_format="GLB",use_
 scene=bpy.context.scene;scene.render.engine="BLENDER_WORKBENCH";scene.render.resolution_x=256;scene.render.resolution_y=256;scene.render.resolution_percentage=100;scene.render.film_transparent=True
 bpy.ops.object.camera_add();cam=bpy.context.object;scene.camera=cam;cam.data.type="ORTHO";cam.data.ortho_scale=2
 for k,d in views.items():
-    cam.location=Vector(d);cam.rotation_euler=(-cam.location).to_track_quat("-Z","Y").to_euler();scene.render.filepath=str(out/("render-"+k+".png"));bpy.ops.render.render(write_still=True)
+    cam.location=Vector(d);cam.rotation_euler=(0,0,0) if k=="top" else (-cam.location).to_track_quat("-Z","Y").to_euler();scene.render.filepath=str(out/("render-"+k+".png"));bpy.ops.render.render(write_still=True)
 render_masks,_=load_views({k:out/("render-"+k+".png") for k in views},64)
 render_scores={k:iou(m,render_masks[k]) for k,m in masks.items()}
 assert min(render_scores.values())>=.85,render_scores
