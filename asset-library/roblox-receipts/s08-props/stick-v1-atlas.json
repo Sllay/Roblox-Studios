@@ -3,9 +3,16 @@
   "sha256": "8fe94992da11f97b88c42d0438f0f1f7ac99406615ca71f79eeb2c559f5d1439",
   "bytes": 39103,
   "source": "asset-library/approved/stick/v1/atlas.png",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/d2b2e178-7d20-448b-abd2-2ea565c555a9",
+    "operationId": "d2b2e178-7d20-448b-abd2-2ea565c555a9",
+    "done": false
+  },
+  "operationPath": "operations/d2b2e178-7d20-448b-abd2-2ea565c555a9"
 }
