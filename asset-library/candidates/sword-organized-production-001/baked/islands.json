@@ -1,0 +1,71 @@
+{
+  "Blade": {
+    "islands": 4,
+    "facesPerIsland": [
+      48,
+      48,
+      6,
+      6
+    ]
+  },
+  "Grip": {
+    "islands": 3,
+    "facesPerIsland": [
+      24,
+      10,
+      10
+    ]
+  },
+  "GuardContour": {
+    "islands": 5,
+    "facesPerIsland": [
+      138,
+      4,
+      2,
+      2,
+      2
+    ]
+  },
+  "GuardLanget": {
+    "islands": 5,
+    "facesPerIsland": [
+      18,
+      18,
+      7,
+      7,
+      2
+    ]
+  },
+  "GuardTipLower": {
+    "islands": 3,
+    "facesPerIsland": [
+      42,
+      5,
+      5
+    ]
+  },
+  "GuardTipUpper": {
+    "islands": 3,
+    "facesPerIsland": [
+      36,
+      4,
+      4
+    ]
+  },
+  "Pommel": {
+    "islands": 3,
+    "facesPerIsland": [
+      48,
+      6,
+      6
+    ]
+  },
+  "Wrap": {
+    "islands": 3,
+    "facesPerIsland": [
+      512,
+      2,
+      2
+    ]
+  }
+}

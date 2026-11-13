@@ -1,0 +1,16 @@
+{
+  "front": {
+    "meanAbsoluteRGB": 0.005333870560428116,
+    "p95AbsoluteRGB": 0.02352941176470591,
+    "foregroundPixels": 20731,
+    "referenceMean": 0.3254519848554925,
+    "candidateMean": 0.3245474634148034
+  },
+  "quarter": {
+    "meanAbsoluteRGB": 0.006298114087655633,
+    "p95AbsoluteRGB": 0.027450980392156876,
+    "foregroundPixels": 15329,
+    "referenceMean": 0.27604945472654896,
+    "candidateMean": 0.27524649975675136
+  }
+}
