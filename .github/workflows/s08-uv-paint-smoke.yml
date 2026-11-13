@@ -8,6 +8,7 @@ on:
       - 'tools/asset_factory/ingest_png.py'
       - 'tools/asset_factory/bind_paint.py'
       - 'tools/asset_factory/paint_smoke.py'
+      - 'tools/asset_factory/uv_audit.py'
 permissions:
   contents: read
 jobs:
@@ -23,6 +24,10 @@ jobs:
         run: |
           blender -b --factory-startup --python-exit-code 1 --python-expr 'import bpy; bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.mesh.primitive_cube_add(); bpy.context.object.data.materials.append(bpy.data.materials.new("PaintFixture")); bpy.ops.mesh.primitive_cube_add(location=(3,0,0)); bpy.context.object.data.materials.append(bpy.data.materials["PaintFixture"]); bpy.ops.export_scene.gltf(filepath="/tmp/uv-fixture.glb",export_format="GLB")'
           blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_author.py -- /tmp/uv-fixture.glb /tmp/uv-smoke
+      - name: Audit UV overlap and distortion
+        run: |
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- /tmp/uv-smoke/asset.glb /tmp/uv-smoke/audit.json --shared
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- asset-library/approved/axe/v6/machado-v6.glb /tmp/uv-smoke/axe-v6-audit.json
       - name: Verify original artistic PNG intake
         run: |
           mkdir -p asset-library/inbox
