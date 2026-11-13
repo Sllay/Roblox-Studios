@@ -1,0 +1,44 @@
+name: S08 Real Asset Generalization
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s08-generalization.yml'
+jobs:
+  review:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: axe
+            source: asset-library/approved/axe/v6/machado-v6.glb
+          - name: pickaxe
+            source: asset-library/approved/pickaxe/v6/picareta-v6.glb
+          - name: sword
+            source: asset-library/approved/sword/v6/espada-v6-materials.glb
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
+      - name: Bake candidate
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/atlas_bake_organized.py -- "${{ matrix.source }}" /tmp/candidate
+      - name: Audit UV
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- /tmp/candidate/asset.glb /tmp/candidate/audit.json --shared --uv-index 1
+      - name: Count islands
+        if: always()
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_islands.py -- /tmp/candidate/asset.glb /tmp/candidate
+      - name: Render original
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- "${{ matrix.source }}" /tmp/original
+      - name: Render candidate
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/candidate/asset.glb /tmp/review
+      - name: Compare paint
+        run: python3 tools/asset_factory/compare_paint.py /tmp/original /tmp/review /tmp/candidate/visual-fidelity.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: generalization-${{ matrix.name }}
+          path: |
+            /tmp/candidate/
+            /tmp/original/
+            /tmp/review/
