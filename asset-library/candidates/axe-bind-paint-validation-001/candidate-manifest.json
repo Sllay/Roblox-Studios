@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "af93889c295893432a2ffdadf251182200d26e67",
+  "runId": "43403925706",
+  "files": [
+    {
+      "path": "painted/asset.glb",
+      "bytes": 585236,
+      "sha256": "517e5fe7e180c4fc32e9a85b6566013d6164cc73d54b4e111e32724df730fc81"
+    },
+    {
+      "path": "painted/paint-report.json",
+      "bytes": 542,
+      "sha256": "011b860c4e55446485934175fda9be12ea57cc8196a6b6e6c01c0b8925e4421c"
+    },
+    {
+      "path": "review/original-front.png",
+      "bytes": 326352,
+      "sha256": "2399a522087903a774d92534aebcac541f7d10a58ede85c7200fe94ad325e3ef"
+    },
+    {
+      "path": "review/original-quarter.png",
+      "bytes": 320775,
+      "sha256": "13f06e9329962d85fd9185af488e08decc795b695cb840779aff2f566ccbb4df"
+    },
+    {
+      "path": "review/report.json",
+      "bytes": 299,
+      "sha256": "b2bd3f673782bd5495b3ae9a11a038b22b7b8586f32f31f9a5bf62dfb198f1b4"
+    },
+    {
+      "path": "review/restored-front.png",
+      "bytes": 326352,
+      "sha256": "744e9ec96e1a12619b691970b9caba869a62f32f8ddbdc7d14090d0978d83541"
+    },
+    {
+      "path": "review/restored-quarter.png",
+      "bytes": 320775,
+      "sha256": "4640a53ad69e70ef11f6f998d3a3d40d03f31945bc8430a8afa1ec41a447916b"
+    },
+    {
+      "path": "review/unpainted-front.png",
+      "bytes": 286171,
+      "sha256": "93aea22168539116416a31a759d9fb65b9e6a47a2ececa09cb9c9e70ffcf0b50"
+    },
+    {
+      "path": "review/unpainted-quarter.png",
+      "bytes": 286577,
+      "sha256": "9bb3dc655993e8213c90bc71ac92a4a92ed28f7fe21e31a779167c95b4b4fded"
+    },
+    {
+      "path": "review/uv-front.png",
+      "bytes": 293577,
+      "sha256": "152133b9b12a96386e26b6d95ae81a6cac85f0f9e66f4f569c12ae45137a1a5c"
+    },
+    {
+      "path": "review/uv-quarter.png",
+      "bytes": 297226,
+      "sha256": "c9682f8c6b05d0c3d93d70d5ed6e44294b9dffb00805e67828cc5a7bc5d4710c"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "source": "/tmp/tmpfcmy6exx/output/painted/asset.glb",
+  "sha256": "517e5fe7e180c4fc32e9a85b6566013d6164cc73d54b4e111e32724df730fc81",
+  "objects": 2,
+  "materialSlots": 2,
+  "scope": "visual material restoration on original UV; not bind_paint integration or new artwork",
+  "published": false
+}
