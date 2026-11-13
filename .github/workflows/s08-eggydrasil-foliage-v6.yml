@@ -52,7 +52,8 @@ jobs:
           assert len(report['majorCoverage'])==10 and all(v==[0,1,2] for v in report['majorCoverage'].values())
           # Count disconnected alpha islands using a flood fill at the actual clip threshold.
           import numpy as np
-          a=np.array(im.getchannel('A'))>=108
+          with Image.open(p/'leaves-atlas.png') as atlas:
+              a=np.array(atlas.getchannel('A'))>=108
           islands=0
           for yy,xx in zip(*np.nonzero(a)):
               if not a[yy,xx]:continue
