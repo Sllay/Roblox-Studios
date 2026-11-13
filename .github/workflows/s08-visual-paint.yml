@@ -1,0 +1,22 @@
+name: S08 Visual Paint Review
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s08-visual-paint.yml'
+      - 'tools/asset_factory/visual_paint_probe.py'
+permissions:
+  contents: read
+jobs:
+  visual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy
+      - name: Render original UV and restored materials
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- asset-library/approved/axe/v6/machado-v6.glb /tmp/visual-axe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s08-visual-axe
+          path: /tmp/visual-axe/
