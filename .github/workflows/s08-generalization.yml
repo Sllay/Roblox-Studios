@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/s08-generalization.yml'
+      - 'tools/asset_factory/atlas_bake_organized.py'
 jobs:
   review:
     strategy:
