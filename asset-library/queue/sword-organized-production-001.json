@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "id": "sword-organized-production-001",
+  "backend": "atlas-bake",
+  "source": "asset-library/approved/sword/v6/espada-v6-materials.glb",
+  "sourceSha256": "cc30b01c0ff76c5c908c1a6bd29309508af6bb4c17c32ce27173a3cd7b97b714"
+}
