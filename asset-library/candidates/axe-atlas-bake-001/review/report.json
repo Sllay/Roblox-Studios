@@ -1,0 +1,8 @@
+{
+  "source": "/tmp/tmp3l7za1v8/output/baked/asset.glb",
+  "sha256": "61189593c1aa7eae6630b44c745c5b5ee717226d2ff594ba09e7598d83f2b82f",
+  "objects": 2,
+  "materialSlots": 2,
+  "scope": "visual material restoration on original UV; not bind_paint integration or new artwork",
+  "published": false
+}

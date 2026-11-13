@@ -2,5 +2,6 @@
   "id": "axe-atlas-bake-001",
   "requestSha256": "259e7e1207791dd8fd6009f48521e42b1d3b906254c3cf56893f8f886eb82e36",
   "runId": "43392882310",
-  "state": "running"
+  "state": "review_ready",
+  "candidate": "axe-atlas-bake-001"
 }
