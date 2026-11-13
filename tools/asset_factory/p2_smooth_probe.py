@@ -30,7 +30,7 @@ def make(name,geometry):
 # Compare old 64-cell hull to continuous 192-cell reconstruction.
 oldm,_=load_views({k:out/("original-"+k+".png") for k in masks},64)
 old=make("Voxel",surface(reconstruct(oldm)))
-new=make("Continuous",continuous_surface(masks))
+new=make("Continuous",continuous_surface(masks,sigma=1.6))
 bpy.ops.object.select_all(action="DESELECT");new.select_set(True);bpy.context.view_layer.objects.active=new
 mod=new.modifiers.new("Reduce","DECIMATE");new.data.calc_loop_triangles();mod.ratio=min(1,1100/len(new.data.loop_triangles));bpy.ops.object.modifier_apply(modifier=mod.name)
 for p in new.data.polygons:p.use_smooth=True
