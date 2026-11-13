@@ -13,7 +13,11 @@ def save(path,data):
 def commit(paths,message):
     subprocess.run(["git","add",*map(str,paths)],cwd=root,check=True)
     subprocess.run(["git","commit","-m",message],cwd=root,check=True)
-    subprocess.run(["git","push","origin","HEAD:main"],cwd=root,check=True)
+    for attempt in range(3):
+        subprocess.run(["git","fetch","origin","main"],cwd=root,check=True)
+        subprocess.run(["git","rebase","origin/main"],cwd=root,check=True)
+        if subprocess.run(["git","push","origin","HEAD:main"],cwd=root).returncode==0: return
+    raise RuntimeError("Concurrent repository update; retry queue")
 for request in sorted(queue.glob("*.json")):
     key=request.stem
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}",key): continue
