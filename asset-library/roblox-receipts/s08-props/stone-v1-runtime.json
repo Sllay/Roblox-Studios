@@ -3,7 +3,7 @@
   "sha256": "a4b5433ceaf5d0ec01da574f4922aa6e3bac482cb272d3eca6c60db324eac248",
   "bytes": 57520,
   "source": "asset-library/approved/stone/v1/runtime/asset.glb",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "1c314af0-9b89-41d4-8b38-094f5c802195",
     "done": false
   },
-  "operationPath": "operations/1c314af0-9b89-41d4-8b38-094f5c802195"
+  "operationPath": "operations/1c314af0-9b89-41d4-8b38-094f5c802195",
+  "operation": {
+    "path": "operations/1c314af0-9b89-41d4-8b38-094f5c802195",
+    "operationId": "1c314af0-9b89-41d4-8b38-094f5c802195",
+    "done": true,
+    "response": {
+      "path": "assets/136422313125209",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:49:17.552Z",
+      "assetId": "136422313125209",
+      "displayName": "Black Islands stone-v1-runtime",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "136422313125209"
 }
