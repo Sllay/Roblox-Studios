@@ -3,7 +3,7 @@
   "sha256": "8fe94992da11f97b88c42d0438f0f1f7ac99406615ca71f79eeb2c559f5d1439",
   "bytes": 39103,
   "source": "asset-library/approved/stick/v1/atlas.png",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "d2b2e178-7d20-448b-abd2-2ea565c555a9",
     "done": false
   },
-  "operationPath": "operations/d2b2e178-7d20-448b-abd2-2ea565c555a9"
+  "operationPath": "operations/d2b2e178-7d20-448b-abd2-2ea565c555a9",
+  "operation": {
+    "path": "operations/d2b2e178-7d20-448b-abd2-2ea565c555a9",
+    "operationId": "d2b2e178-7d20-448b-abd2-2ea565c555a9",
+    "done": true,
+    "response": {
+      "path": "assets/110578979081477",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:49:42.153Z",
+      "assetId": "110578979081477",
+      "displayName": "Black Islands stick-v1-atlas",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Image",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Reviewing"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "110578979081477"
 }
