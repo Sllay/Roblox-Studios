@@ -6,6 +6,8 @@ on:
       - '.github/workflows/s08-uv-paint-smoke.yml'
       - 'tools/asset_factory/uv_author.py'
       - 'tools/asset_factory/ingest_png.py'
+      - 'tools/asset_factory/bind_paint.py'
+      - 'tools/asset_factory/paint_smoke.py'
 permissions:
   contents: read
 jobs:
@@ -17,7 +19,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y blender python3-pil
       - name: Test UV on disposable geometry
         run: |
-          blender -b --factory-startup --python-exit-code 1 --python-expr 'import bpy; bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.mesh.primitive_cube_add(); bpy.ops.mesh.primitive_cube_add(location=(3,0,0)); bpy.ops.export_scene.gltf(filepath="/tmp/uv-fixture.glb",export_format="GLB")'
+          blender -b --factory-startup --python-exit-code 1 --python-expr 'import bpy; bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.mesh.primitive_cube_add(); bpy.context.object.data.materials.append(bpy.data.materials.new("PaintFixture")); bpy.ops.mesh.primitive_cube_add(location=(3,0,0)); bpy.context.object.data.materials.append(bpy.data.materials["PaintFixture"]); bpy.ops.export_scene.gltf(filepath="/tmp/uv-fixture.glb",export_format="GLB")'
           blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_author.py -- /tmp/uv-fixture.glb /tmp/uv-smoke
       - name: Verify original artistic PNG intake
         run: |
@@ -32,9 +34,14 @@ jobs:
           PY
           python3 tools/asset_factory/ingest_png.py asset-library/inbox/smoke.png smoke v1
           cmp asset-library/inbox/smoke.png asset-library/paint-inputs/smoke/v1/color.png
+      - name: Bind exact PNG to fixture UV
+        run: |
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/paint_smoke.py -- /tmp/uv-smoke/asset.glb asset-library/paint-inputs/smoke/v1/color.png /tmp/paint-contract.json
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/bind_paint.py -- /tmp/uv-smoke/asset.glb asset-library/paint-inputs/smoke/v1/color.png /tmp/paint-contract.json /tmp/paint-smoke
       - uses: actions/upload-artifact@v4
         with:
           name: uv-paint-smoke
           path: |
             /tmp/uv-smoke/
+            /tmp/paint-smoke/
             asset-library/paint-inputs/smoke/
