@@ -113,3 +113,24 @@ require(z["loadedVersion"]==19 and z["noPlaceWrites"] and z["correctionPreview"]
 write(out/"controller-correction-preview.json",z)
 print("S07_CONTROLLER_CORRECTION_PREVIEW",json.dumps(z),flush=True)
 require(latest(target,key)==19,"Head changed")
+
+# The historical endpoint and the live execution endpoint may initialize
+# built-in controllers differently. Establish the actual pre-save session
+# contract without calling SavePlaceAsync or changing the published version.
+require(latest(target,key)==19,"Head changed before live-session probe")
+time.sleep(12)
+live=raw_task(target,key,dispatch,compile_source=True,rows=[0]*2000,mode="controllerMultiset")
+require(live["loadedVersion"]==19 and live["noPlaceWrites"],"Live session read-only contract")
+live_roots=Counter((x["name"],x["class"],x["count"],x["digest"]) for x in live["roots"])
+require(latest(target,key)==19,"Head changed during live-session probe")
+write(out/"live-session-controller-probe.json",{"loadedVersion":19,"noPlaceWrites":True,"matchesHistorical":live_roots==b,"roots":live["roots"]})
+print("S07_LIVE_SESSION_CONTROLLER_PROBE",json.dumps({"matchesHistorical":live_roots==b,"roots":live["roots"]}),flush=True)
+# A fresh live session must independently reproduce the exact approved
+# fingerprint before any future publication can be considered.
+require(live_roots==b,"Live session differs from historical session; no save")
+time.sleep(12)
+live_preview=raw_task(target,key,"do\n"+repair_src+"\nend",compile_source=True,rows=[0]*2000,mode="correctionPreview",expectedAfter=reviewed["afterFingerprint"])
+require(live_preview["loadedVersion"]==19 and live_preview["noPlaceWrites"] and live_preview["correctionPreview"] and live_preview["afterFingerprint"]==reviewed["afterFingerprint"],"Live correction preview proof")
+require(latest(target,key)==19,"Head changed during live correction preview")
+write(out/"live-session-correction-preview.json",live_preview)
+print("S07_LIVE_SESSION_CORRECTION_PREVIEW",json.dumps(live_preview),flush=True)
