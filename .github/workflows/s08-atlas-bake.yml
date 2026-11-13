@@ -1,0 +1,30 @@
+name: S08 Atlas Bake Review
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/asset_factory/atlas_bake.py'
+      - '.github/workflows/s08-atlas-bake.yml'
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy
+      - name: Render actual queue candidate
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- asset-library/candidates/axe-paint-roundtrip-001/painted/asset.glb /tmp/roundtrip-review
+      - name: Bake new atlas
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/atlas_bake.py -- asset-library/approved/axe/v6/machado-v6.glb /tmp/baked-axe
+      - name: Audit exported atlas
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- /tmp/baked-axe/asset.glb /tmp/baked-axe/audit.json --shared --uv-index 1
+      - name: Render baked candidate
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/baked-axe/asset.glb /tmp/baked-review
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: axe-atlas-review
+          path: |
+            /tmp/roundtrip-review/
+            /tmp/baked-axe/
+            /tmp/baked-review/
