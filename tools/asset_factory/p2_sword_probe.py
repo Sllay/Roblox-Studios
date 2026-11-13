@@ -82,8 +82,8 @@ objects.append(rings("Grip",[(.19,.064,.064),(.57,.064,.064)],tan,12))
 # Continuous helical wrap, not flat stripes.
 v=[];f=[];steps=64
 for i in range(steps+1):
-    t=i/steps;a=t*math.tau*3.5;z=.24+.25*t
-    for r,dz in [(.065,-.035),(.079,-.035),(.079,.035),(.065,.035)]:v.append((r*math.cos(a),r*math.sin(a),z+dz))
+    t=i/steps;a=t*math.tau*3.5;z=.22+.31*t
+    for r,dz in [(.065,-.019),(.079,-.019),(.079,.019),(.065,.019)]:v.append((r*math.cos(a),r*math.sin(a),z+dz))
 for j in range(steps):
     for i in range(4):f.append((j*4+i,j*4+(i+1)%4,(j+1)*4+(i+1)%4,(j+1)*4+i))
 f.extend([(3,2,1,0),tuple(range(steps*4,steps*4+4))]);objects.append(mesh("Wrap",v,f,red))
