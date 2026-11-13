@@ -46,7 +46,17 @@ local function audit(records)
     for k,v in groups do table.sort(v);out[k]=hash(table.concat(v,";")) end
     return out
 end
+local function playerRecords(records)
+    local out={}
+    for k,entry in records do
+        if entry.row.service=="StarterPlayer" then out[k]=entry.row end
+    end
+    return out
+end
 local beforeFingerprint,beforeRecords=fingerprint()
+if cfg.mode=="playerAudit" then
+    return syncResult({noPlaceWrites=true,playerRecords=playerRecords(beforeRecords)})
+end
 if cfg.mode=="diagnose" then
     local counts={Branch=0,Stone=0,Other=0}
     for _,m in F:GetChildren() do local k=m:GetAttribute("RSResourceType");if k=="Stick" then counts.Branch+=1 elseif k=="Stone" then counts.Stone+=1 else counts.Other+=1 end end
