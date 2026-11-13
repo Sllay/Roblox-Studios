@@ -1,0 +1,65 @@
+{
+  "master": 8936,
+  "variants": [
+    {
+      "method": "direct",
+      "budget": 200,
+      "triangles": 200
+    },
+    {
+      "method": "reduced",
+      "budget": 200,
+      "triangles": 198
+    },
+    {
+      "method": "direct",
+      "budget": 500,
+      "triangles": 488
+    },
+    {
+      "method": "reduced",
+      "budget": 500,
+      "triangles": 498
+    },
+    {
+      "method": "direct",
+      "budget": 1000,
+      "triangles": 1000
+    },
+    {
+      "method": "reduced",
+      "budget": 1000,
+      "triangles": 998
+    },
+    {
+      "method": "direct",
+      "budget": 3000,
+      "triangles": 2952
+    },
+    {
+      "method": "reduced",
+      "budget": 3000,
+      "triangles": 2998
+    },
+    {
+      "method": "direct",
+      "budget": 7000,
+      "triangles": 6632
+    },
+    {
+      "method": "reduced",
+      "budget": 7000,
+      "triangles": 6998
+    },
+    {
+      "method": "direct",
+      "budget": 10000,
+      "triangles": 8936
+    },
+    {
+      "method": "reduced",
+      "budget": 10000,
+      "triangles": 8936
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "input": "three PNG orthographic masks",
+  "silhouetteIoU": {
+    "front": 1.0,
+    "right": 1.0,
+    "top": 1.0
+  },
+  "volumeIoU": 0.887496803886474,
+  "trianglesBefore": 3404,
+  "triangles": 414,
+  "meshObjects": 1,
+  "published": false,
+  "limitations": "synthetic aligned masks; concavities and arbitrary photos not validated"
+}
