@@ -3,7 +3,7 @@
   "sha256": "478518b081103073bf1b5a44634c4e0c56f2aa544b7d0eadbec88db6fe1936a3",
   "bytes": 81260,
   "source": "asset-library/approved/log/v1/asset.glb",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "f79beea5-d5b4-406a-9688-d7b0adbf6528",
     "done": false
   },
-  "operationPath": "operations/f79beea5-d5b4-406a-9688-d7b0adbf6528"
+  "operationPath": "operations/f79beea5-d5b4-406a-9688-d7b0adbf6528",
+  "operation": {
+    "path": "operations/f79beea5-d5b4-406a-9688-d7b0adbf6528",
+    "operationId": "f79beea5-d5b4-406a-9688-d7b0adbf6528",
+    "done": true,
+    "response": {
+      "path": "assets/121122185136963",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:44:55.485Z",
+      "assetId": "121122185136963",
+      "displayName": "Black Islands log-v1",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "121122185136963"
 }
