@@ -1,0 +1,65 @@
+name: S08 Log Preview
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s08-log-preview.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
+      - name: Generate log
+        run: |
+          mkdir -p /tmp/log
+          cat > /tmp/log.py <<'PY'
+          import bpy, math, random
+          random.seed(93)
+          bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
+          n=16; verts=[]; faces=[]; mats=[]
+          def ring(x,r,cy,cz):
+              start=len(verts)
+              for k in range(n):
+                  a=2*math.pi*k/n
+                  rr=r*(1+.07*math.sin(3*a)+.04*math.cos(5*a))
+                  verts.append((x,cy+rr*math.cos(a),cz+rr*math.sin(a)))
+              return start
+          def bridge(a,b,mi,reverse=False):
+              for k in range(n):
+                  f=(a+k,a+(k+1)%n,b+(k+1)%n,b+k)
+                  faces.append(f[::-1] if reverse else f); mats.append(mi(k) if callable(mi) else mi)
+          rings=[ring(x,r,y,z) for x,r,y,z in [(-1.6,.44,0,.48),(-1.48,.48,0,.49),(-.7,.45,.035,.48),(.3,.43,-.035,.46),(1.4,.39,.025,.44),(1.52,.36,.025,.44)]]
+          for a,b in zip(rings,rings[1:]): bridge(a,b,lambda k: 1 if k%5==0 else (2 if k%7==0 else 0))
+          for side,x,r,y,z,outer in [(-1,-1.6,.44,0,.48,rings[0]),(1,1.52,.36,.025,.44,rings[-1])]:
+              prev=outer
+              for f,mi in [(.86,3),(.77,4),(.61,3),(.55,4),(.37,3),(.30,4),(.12,3)]:
+                  inner=ring(x+side*.001,r*f,y,z); bridge(prev,inner,mi,side<0); prev=inner
+              faces.append(tuple(range(prev,prev+n))[::-1] if side<0 else tuple(range(prev,prev+n))); mats.append(4)
+          low=min(v[2] for v in verts); verts=[(x,y,z-low) for x,y,z in verts]
+          mesh=bpy.data.meshes.new('Log'); mesh.from_pydata(verts,[],faces); mesh.update()
+          obj=bpy.data.objects.new('Log',mesh); bpy.context.collection.objects.link(obj)
+          for name,c in [('Bark',(.25,.115,.045)),('Bark ridge',(.34,.17,.065)),('Bark shadow',(.17,.07,.025)),('Wood',(.64,.40,.19)),('Growth ring',(.43,.24,.095))]:
+              m=bpy.data.materials.new(name); m.diffuse_color=(*c,1); m.use_nodes=True; m.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value=(*c,1); mesh.materials.append(m)
+          for p,i in zip(mesh.polygons,mats): p.material_index=i
+          bpy.context.view_layer.objects.active=obj; obj.select_set(True)
+          bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT'); bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.uv.smart_project(); bpy.ops.object.mode_set(mode='OBJECT')
+          bpy.ops.export_scene.gltf(filepath='/tmp/log/log.glb',export_format='GLB')
+          PY
+          blender -b --factory-startup --python-exit-code 1 --python /tmp/log.py
+      - name: Render and audit
+        run: |
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/log/log.glb /tmp/log/original
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/atlas_bake_organized.py -- /tmp/log/log.glb /tmp/log/baked
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_islands.py -- /tmp/log/baked/asset.glb /tmp/log/baked
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- /tmp/log/baked/asset.glb /tmp/log/baked/audit.json --shared --uv-index 1
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/log/baked/asset.glb /tmp/log/candidate
+          python3 tools/asset_factory/compare_paint.py /tmp/log/original /tmp/log/candidate /tmp/log/baked/visual-fidelity.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: log-preview
+          path: /tmp/log/
