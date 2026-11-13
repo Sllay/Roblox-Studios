@@ -1,0 +1,14 @@
+{
+  "iou": {
+    "front": 0.9741461423322901,
+    "right": 0.9292749658002736,
+    "quarter": 0.984037293403023,
+    "rear": 0.9814319876213251
+  },
+  "triangles": 176,
+  "input": "isolated front/right masks",
+  "heldOut": [
+    "quarter",
+    "rear"
+  ]
+}
