@@ -1,0 +1,39 @@
+name: S08 UV and Paint Smoke
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s08-uv-paint-smoke.yml'
+      - 'tools/asset_factory/uv_author.py'
+      - 'tools/asset_factory/ingest_png.py'
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-pil
+      - name: Test UV on disposable geometry
+        run: |
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_author.py -- asset-library/candidates/43366843609-1/p2-tint/axe.glb /tmp/uv-smoke
+      - name: Verify original artistic PNG intake
+        run: |
+          mkdir -p asset-library/inbox
+          python3 - <<'PY'
+          import zipfile
+          from pathlib import Path
+          with zipfile.ZipFile('tools/asset_factory/approved/Black-Islands-Assets-A1.zip') as z:
+              names=[n for n in z.namelist() if n.lower().endswith('.png')]
+              assert names
+              Path('asset-library/inbox/smoke.png').write_bytes(z.read(names[0]))
+          PY
+          python3 tools/asset_factory/ingest_png.py asset-library/inbox/smoke.png smoke v1
+          cmp asset-library/inbox/smoke.png asset-library/paint-inputs/smoke/v1/color.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uv-paint-smoke
+          path: |
+            /tmp/uv-smoke/
+            asset-library/paint-inputs/smoke/
