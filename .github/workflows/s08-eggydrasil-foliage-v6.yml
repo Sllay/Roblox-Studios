@@ -1,0 +1,75 @@
+name: S08 Eggydrasil Foliage V6
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/asset_factory/eggydrasil_foliage_v6.py'
+      - 'tools/asset_factory/eggydrasil_branch_paths.py'
+      - 'tools/asset_factory/eggydrasil_leaf_atlas_v6.py'
+      - '.github/workflows/s08-eggydrasil-foliage-v6.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: eggydrasil-v4
+          run-id: 43518488123
+          github-token: ${{ github.token }}
+          path: /tmp/eggydrasil-v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
+      - name: Author original transparent atlas
+        run: /usr/bin/python3 tools/asset_factory/eggydrasil_leaf_atlas_v6.py /tmp/eggydrasil-v6
+      - name: Create canopy and render
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/eggydrasil_foliage_v6.py -- /tmp/eggydrasil-v4 /tmp/eggydrasil-v6
+      - name: Verify exported leaf cards and alpha
+        run: |
+          /usr/bin/python3 - <<'PY'
+          import json,struct
+          from pathlib import Path
+          from PIL import Image
+          p=Path('/tmp/eggydrasil-v6')
+          for n,count in [(0,6400),(1,3200),(2,1600)]:
+              b=(p/f'canopy-lod{n}.glb').read_bytes()
+              length,kind=struct.unpack_from('<II',b,12);assert kind==0x4e4f534a
+              d=json.loads(b[20:20+length]);assert len(d['meshes'])==1
+              m=d['materials'][0];assert m['alphaMode']=='MASK' and m['doubleSided']
+              prim=d['meshes'][0]['primitives'][0]
+              assert d['accessors'][prim['indices']]['count']==count*3
+              assert 'TEXCOORD_0' in prim['attributes']
+          im=Image.open(p/'leaves-atlas.png');assert im.mode=='RGBA' and im.size==(1024,1024)
+          assert im.getchannel('A').getextrema()==(0,255)
+          for name in ('front','quarter','side','top'):
+              im=Image.open(p/(name+'.png'));assert im.size==(960,960) and im.mode=='RGBA';im.verify()
+          report=json.loads((p/'report.json').read_text())
+          assert report['cards']==3200 and report['woodTriangles']==14460
+          assert report['distribution']=={'major':1120,'fork':1000,'twig':480,'upper':600}
+          assert len(report['majorCoverage'])==10 and all(v==[0,1,2] for v in report['majorCoverage'].values())
+          # Count disconnected alpha islands using a flood fill at the actual clip threshold.
+          import numpy as np
+          a=np.array(im.getchannel('A'))>=108
+          islands=0
+          for yy,xx in zip(*np.nonzero(a)):
+              if not a[yy,xx]:continue
+              todo=[(int(yy),int(xx))];a[yy,xx]=False;area=0
+              while todo:
+                  y,x=todo.pop();area+=1
+                  for dy,dx in ((1,0),(-1,0),(0,1),(0,-1)):
+                      j,k=y+dy,x+dx
+                      if 0<=j<1024 and 0<=k<1024 and a[j,k]:
+                          a[j,k]=False;todo.append((j,k))
+              if area>100:islands+=1
+          assert islands>=75,islands
+          print('Disconnected leaf islands:',islands)
+          print('All three LODs, alpha mask, UV and four renders verified')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eggydrasil-v6-foliage
+          path: /tmp/eggydrasil-v6/
