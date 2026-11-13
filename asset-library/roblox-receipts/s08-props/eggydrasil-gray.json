@@ -3,7 +3,7 @@
   "sha256": "2007e0cd1ac1712ab45687fa0afa1fb6f2a2e82a19e3b4f458b9c980c14e23ec",
   "bytes": 62106,
   "source": "asset-library/approved/eggydrasil/v8/leaves-gray.png",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "9dbbec83-0cdf-4e3d-8d3f-5a96c6853432",
     "done": false
   },
-  "operationPath": "operations/9dbbec83-0cdf-4e3d-8d3f-5a96c6853432"
+  "operationPath": "operations/9dbbec83-0cdf-4e3d-8d3f-5a96c6853432",
+  "operation": {
+    "path": "operations/9dbbec83-0cdf-4e3d-8d3f-5a96c6853432",
+    "operationId": "9dbbec83-0cdf-4e3d-8d3f-5a96c6853432",
+    "done": true,
+    "response": {
+      "path": "assets/109528136250293",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:45:20.161Z",
+      "assetId": "109528136250293",
+      "displayName": "Black Islands eggydrasil-gray",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Image",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Reviewing"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "109528136250293"
 }
