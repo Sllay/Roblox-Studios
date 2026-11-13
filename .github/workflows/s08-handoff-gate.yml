@@ -1,0 +1,19 @@
+name: S08 Handoff Gate
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/s08-handoff-gate.yml'
+      - 'tools/asset_factory/s08_release_gate.py'
+      - 'games/maps/mapa-principal/game/assets/prop-registry-s08-candidates.json'
+      - 'asset-library/approved/**'
+      - 'asset-library/roblox-receipts/**'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/asset_factory/s08_release_gate.py
