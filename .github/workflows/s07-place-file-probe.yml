@@ -1,0 +1,66 @@
+name: S07 immutable place-file delivery probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/s07-place-file-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Read immutable v18 and v19 place files
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, urllib.request, urllib.error, urllib.parse
+          from pathlib import Path
+          key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
+          place="93428341652658"
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+          opener=urllib.request.build_opener(NoRedirect())
+          out=Path("dist/s07-file-probe");out.mkdir(parents=True,exist_ok=True)
+          report=[]
+          for version in (18,19):
+              endpoint=f"https://apis.roblox.com/asset-delivery-api/v1/assetId/{place}/version/{version}"
+              req=urllib.request.Request(endpoint,headers={"x-api-key":key,"Accept":"application/json"})
+              try:
+                  with opener.open(req,timeout=60) as response:
+                      meta=json.load(response)
+                  location=meta.get("location")
+                  if not location:
+                      locations=meta.get("locations") or []
+                      location=locations[0].get("location") if locations else None
+                  parsed=urllib.parse.urlparse(location or "")
+                  if parsed.scheme!="https" or not parsed.hostname or not (parsed.hostname.endswith(".rbxcdn.com") or parsed.hostname=="rbxcdn.com"):
+                      raise ValueError("Unexpected CDN location; no download")
+                  with opener.open(urllib.request.Request(location),timeout=120) as response:
+                      data=response.read(256*1024*1024+1)
+                  if len(data)>256*1024*1024: raise ValueError("Place exceeds bounded probe size")
+                  if not data.startswith(b"<roblox"): raise ValueError("Not a Roblox place file")
+                  report.append({"version":version,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),"format":"rbxl" if data.startswith(b"<roblox!") else "rbxlx"})
+              except urllib.error.HTTPError as exc:
+                  report.append({"version":version,"httpStatus":exc.code})
+              except (ValueError, OSError) as exc:
+                  report.append({"version":version,"errorType":type(exc).__name__})
+          (out/"report.json").write_text(json.dumps(report,indent=2))
+          print("S07_PLACE_FILE_PROBE",json.dumps(report))
+          assert all("sha256" in x for x in report), "Immutable place delivery unavailable; no write attempted"
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s07-place-file-probe
+          path: dist/s07-file-probe/report.json
