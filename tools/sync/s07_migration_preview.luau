@@ -207,11 +207,15 @@ for i,r in restored do assert(r.digest==before[i].digest,"Terrain inverse") end
 local restoredFingerprint,restoredRecords=fingerprint()
 if restoredFingerprint~=beforeFingerprint then
     local differences={}
-    for k,a in beforeRecords do
-        local b=restoredRecords[k]
-        if not b or a.digest~=b.digest then
-            local fields={};if b then for f,v in a.row do if Http:JSONEncode(v)~=Http:JSONEncode(b.row[f]) then table.insert(fields,f) end end end
-            table.insert(differences,{path=k,fields=fields,before=a.row,after=b and b.row})
+    local remaining={}
+    for _,b in restoredRecords do remaining[b.digest]=(remaining[b.digest] or 0)+1 end
+    for _,a in beforeRecords do
+        if (remaining[a.digest] or 0)>0 then remaining[a.digest]-=1
+        else table.insert(differences,{path=a.key,before=a.row}) end
+    end
+    for _,b in restoredRecords do
+        if (remaining[b.digest] or 0)>0 then
+            table.insert(differences,{path=b.key,after=b.row});remaining[b.digest]-=1
         end
     end
     return syncResult({preview=false,noPlaceWrites=true,inverseMismatch=true,differenceCount=#differences,differences={table.unpack(differences,1,math.min(5,#differences))}})
