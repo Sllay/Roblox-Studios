@@ -31,3 +31,15 @@ diff=[k for k in sorted(set(p["audit"])|set(r["audit"])) if p["audit"].get(k)!=r
 write(out/"property-audit.json",{"differences":diff,"expected":p["audit"],"actual":r["audit"]})
 print("S07_PROPERTY_DIFFERENCES",json.dumps(diff),flush=True)
 require(latest(target,key)==19,"Head changed")
+
+# Identify exact changed controller paths, without excluding any from the gate.
+players={}
+for v in (18,19):
+    a=task(target,key,dispatch,read_version=v,compile_source=True,rows=[0]*2000,mode="playerAudit")
+    require(a["loadedVersion"]==v and a["noPlaceWrites"],"Player audit read-only")
+    players[v]=a["playerRecords"]
+a,b=players[18],players[19]
+changes=[{"path":k,"before":a.get(k),"after":b.get(k)} for k in sorted(set(a)|set(b)) if a.get(k)!=b.get(k)]
+write(out/"player-audit.json",{"changes":changes})
+print("S07_PLAYER_PATHS",json.dumps([{"path":x["path"],"added":x["before"] is None,"removed":x["after"] is None} for x in changes]),flush=True)
+require(latest(target,key)==19,"Head changed")
