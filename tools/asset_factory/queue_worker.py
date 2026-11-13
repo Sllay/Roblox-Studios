@@ -31,6 +31,9 @@ for request in sorted(queue.glob("*.json")):
         if d.get("schema")!=1 or d.get("backend") not in backends: raise ValueError("Unsupported backend; arbitrary text/image generation not implemented")
         with tempfile.TemporaryDirectory() as tmp:
             out=Path(tmp)/"output";out.mkdir()
+            if d["backend"] in ("axe","pickaxe"):
+                dep=Path(tmp)/"p2-handle";dep.mkdir()
+                subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/"p2_handle_probe.py"),"--",str(dep)],check=True,timeout=600)
             subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/backends[d["backend"]]),"--",str(out)],check=True,timeout=600)
             dest=library/"candidates"/key
             subprocess.run([sys.executable,str(factory/"persist_candidates.py"),str(out),str(dest)],check=True)
