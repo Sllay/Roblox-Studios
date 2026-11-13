@@ -1,0 +1,9 @@
+{
+  "triangles": 200,
+  "meshObjects": 2,
+  "views": 6,
+  "uv": true,
+  "published": false,
+  "mode": "authored_smoke",
+  "blender": "4.0.2"
+}
