@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "status": "candidate-only",
+  "target": {
+    "universeId": "10769712441",
+    "placeId": "93428341652658",
+    "environment": "staging"
+  },
+  "writeAuthorized": false,
+  "sourceRegistry": "games/maps/mapa-principal/game/assets/prop-registry-s07.json",
+  "placement": {
+    "baselineRequired": "fresh verified live scene",
+    "preserveExistingResourceIds": true,
+    "preserveExistingResourceTransforms": true,
+    "preserveTerrain": true,
+    "noTreeBurialForResources": true,
+    "requireSupportProbe": true
+  },
+  "props": [
+    {
+      "id": "Stone",
+      "release": "stone/v1",
+      "assetId": "136422313125209",
+      "meshId": "120877868842825",
+      "atlasId": "106957063387208",
+      "triangles": 80,
+      "parts": 1,
+      "count": 1000,
+      "proof": "asset-library/roblox-receipts/s08-runtime-proof.json",
+      "state": "native-verified"
+    },
+    {
+      "id": "Branch",
+      "release": "stick/v1",
+      "assetId": "94558539418999",
+      "meshId": "101820304976769",
+      "atlasId": "110578979081477",
+      "triangles": 120,
+      "parts": 1,
+      "count": 1000,
+      "proof": "asset-library/roblox-receipts/s08-runtime-proof.json",
+      "state": "native-verified"
+    },
+    {
+      "id": "Log",
+      "release": "log/v1",
+      "assetId": "72836155682285",
+      "meshId": "84426557612247",
+      "atlasId": "129687460952107",
+      "triangles": 636,
+      "parts": 1,
+      "count": null,
+      "proof": "asset-library/roblox-receipts/s08-runtime-proof.json",
+      "state": "atlas-preload-pending"
+    },
+    {
+      "id": "Eggydrasil",
+      "release": "eggydrasil/v8",
+      "assetId": "128938533912044",
+      "triangles": 21660,
+      "parts": 5,
+      "count": 1,
+      "foliage": {
+        "whiteUri": "rbxassetid://89626593244521",
+        "grayUri": "rbxassetid://109528136250293",
+        "alphaMode": "Transparency",
+        "independentTint": true
+      },
+      "proof": "asset-library/roblox-receipts/s08-eggydrasil-pbr-proof.json",
+      "state": "native-verified",
+      "placement": "site-and-scale-preview-required"
+    }
+  ],
+  "clientRenderVerified": false
+}
