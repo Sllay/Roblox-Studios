@@ -75,3 +75,37 @@ added=record_delta(players[19],players[18])
 write(out/"controller-record-delta.json",{"removed":removed,"added":added})
 print("S07_CONTROLLER_RECORD_DELTA",json.dumps({"removed":sum(x["count"] for x in removed),"added":sum(x["count"] for x in added),"starterScripts":[x for x in added if x["row"]["path"][0]["name"]=="StarterPlayerScripts"]}),flush=True)
 require(latest(target,key)==19,"Head changed")
+
+# Prove a minimal correction in a disposable historical session; never save.
+repair = """
+local sp=game:GetService("StarterPlayer")
+local roots={}
+for _,o in sp:GetChildren() do
+    if o.Name=="PlayerModule" and o:IsA("ModuleScript") then table.insert(roots,o) end
+end
+assert(#roots==19,"Unexpected PlayerModule count")
+local extra=roots[19]
+assert(#extra:GetDescendants()==161,"Unexpected extra root size")
+local sounds=sp.StarterPlayerScripts:FindFirstChild("RbxCharacterSounds")
+assert(sounds,"Missing sounds")
+local binding=sounds:FindFirstChild("AtomicBinding")
+assert(binding and binding:IsA("ModuleScript"),"Missing binding")
+local leaves={}
+for _,o in binding:GetChildren() do
+    if o.Name=="AtomicBinding" and o:IsA("ModuleScript") then table.insert(leaves,o) end
+end
+assert(#leaves==18,"Unexpected binding count")
+local leaf=leaves[18]
+assert(#leaf:GetChildren()==0 and leaf.Source==binding.Source,"Unexpected leaf")
+extra.Parent=nil;leaf.Parent=nil
+local corrected=fingerprint()
+assert(corrected==cfg.expectedAfter,"Correction does not reproduce reviewed fingerprint")
+return syncResult({noPlaceWrites=true,correctionPreview=true,afterFingerprint=corrected})
+"""
+require(sum(x["count"] for x in removed)==1 and sum(x["count"] for x in added)==164,"Unexpected controller delta")
+repair_src=src.replace('if cfg.mode=="playerAudit" then', 'if cfg.mode=="correctionPreview" then\n'+repair+'\nend\nif cfg.mode=="playerAudit" then',1)
+z=task(target,key,"do\n"+repair_src+"\nend",read_version=19,compile_source=True,rows=[0]*2000,mode="correctionPreview",expectedAfter=reviewed["afterFingerprint"])
+require(z["loadedVersion"]==19 and z["noPlaceWrites"] and z["correctionPreview"] and z["afterFingerprint"]==reviewed["afterFingerprint"],"Correction preview proof")
+write(out/"controller-correction-preview.json",z)
+print("S07_CONTROLLER_CORRECTION_PREVIEW",json.dumps(z),flush=True)
+require(latest(target,key)==19,"Head changed")
