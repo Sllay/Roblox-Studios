@@ -1,5 +1,18 @@
-import os,json
-from scene_sync import ROOT,read,write,require,task
+import os,json,time
+from scene_sync import ROOT,read,write,require,task as raw_task
+from workspace import WorkspaceError
+
+def task(*args, **kwargs):
+    # This module only opens disposable historical/read-only sessions.
+    # Pace requests and retry explicit rate-limit rejection, never a save.
+    require(kwargs.get('read_version') in (18,19), 'Explicit historical version required')
+    for attempt in range(5):
+        time.sleep(12 if attempt == 0 else min(120, 30 * 2**(attempt-1)))
+        try:
+            return raw_task(*args, **kwargs)
+        except WorkspaceError as exc:
+            if 'HTTP 429:' not in str(exc) or attempt == 4: raise
+
 from deploy import load_all,resolve
 from sharded_scene_sync import latest
 g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
