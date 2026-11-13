@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "id": "axe-organized-production-001",
+  "backend": "atlas-bake",
+  "source": "asset-library/approved/axe/v6/machado-v6.glb",
+  "sourceSha256": "6089929739d0a08983faa5d5f7ecaf26d6e42896880cd98a2c7aa2be470a7507"
+}
