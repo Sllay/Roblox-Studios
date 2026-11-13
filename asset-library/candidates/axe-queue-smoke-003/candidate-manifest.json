@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "a33da1275196bef5f80e02a8ab36eb1c51af90b4",
+  "runId": "43371385786",
+  "files": [
+    {
+      "path": "axe.glb",
+      "bytes": 60652,
+      "sha256": "2371f9a4b6f57e27a826fcf43b229c892afad474623a5485fd7188198cda1dfe"
+    },
+    {
+      "path": "blade-neutral.png",
+      "bytes": 7938,
+      "sha256": "e84e4ec2e3c70d0c7c3ae2f61d64b684c92844105d17ff62e7dc1fd4ce8ae712"
+    },
+    {
+      "path": "bronze.png",
+      "bytes": 158536,
+      "sha256": "72f920d9dd56fced3fb6fdad5b67869ca5929ca300898e20b8ac81a3de325855"
+    },
+    {
+      "path": "diamond.png",
+      "bytes": 159652,
+      "sha256": "66f29fc8da098774af6c5db4e63de998aee9bc63a015f1506a0fd7cc10efaefe"
+    },
+    {
+      "path": "front.png",
+      "bytes": 159403,
+      "sha256": "85473de8345718a4363f671b282d484efbde4f3451bb424604f854c6f22adc02"
+    },
+    {
+      "path": "gold.png",
+      "bytes": 158970,
+      "sha256": "6b08b4aca25e36f3c0e98323b3103a98d06f4bfe7897e9467356e5623c8521d4"
+    },
+    {
+      "path": "iron.png",
+      "bytes": 158715,
+      "sha256": "8a2764faf81a2d6f13817d82bb32ad7c8e43c817c474cea350486290627b3eab"
+    },
+    {
+      "path": "preview-bronze.png",
+      "bytes": 12753,
+      "sha256": "f7d5001b2932d62083a6ea4c1a47f905547035091ec88783c140d420c97834f6"
+    },
+    {
+      "path": "preview-diamond.png",
+      "bytes": 15051,
+      "sha256": "952f448d543c3b669161b868215c589b1ac0231bc4f2fd7a5c432a465de27b72"
+    },
+    {
+      "path": "preview-gold.png",
+      "bytes": 15081,
+      "sha256": "90b8684691c2513d3ada94976a3266e5faeec55e379526f2492ea19c26cdc381"
+    },
+    {
+      "path": "preview-iron.png",
+      "bytes": 16864,
+      "sha256": "5f3914685a03b3952a58434a07c503aa13ecad7d4970c66a7e912d286be354b6"
+    },
+    {
+      "path": "preview-stone.png",
+      "bytes": 13777,
+      "sha256": "0a97fce33c23f9d4255a27efa20577cae733de55b265f9aadf9d3df087bc6ba5"
+    },
+    {
+      "path": "quarter.png",
+      "bytes": 157265,
+      "sha256": "1df91d192bad75ee4895aca39f7a3102d477035c39b47f3e26141ac13c196ae4"
+    },
+    {
+      "path": "rear.png",
+      "bytes": 154525,
+      "sha256": "b0ef0dcc6dfef76132584c43fe8025fe3e20037c658bcd4252487851ab940d9e"
+    },
+    {
+      "path": "report.json",
+      "bytes": 408,
+      "sha256": "6ec9594a483686e6c40ef913a95cbc230331228591f2a2eed7195f0f263ea1c3"
+    },
+    {
+      "path": "right.png",
+      "bytes": 144895,
+      "sha256": "2e15d230e3b018cb1ebe2ef9cc89413335ad0e3556d8401dde3a4cc82fbb2e1e"
+    },
+    {
+      "path": "stone.png",
+      "bytes": 158207,
+      "sha256": "29ac64db9469d560015ef01cb7de47c7221c32618a1bb210a4f6d34d5cc9d280"
+    },
+    {
+      "path": "wood.png",
+      "bytes": 39059,
+      "sha256": "20cde45dce7abe91118cdb0d96359c6bbee61b542b8ff5a8db6a7f29f1ae9fe3"
+    }
+  ]
+}

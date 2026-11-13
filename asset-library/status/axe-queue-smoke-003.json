@@ -2,5 +2,6 @@
   "id": "axe-queue-smoke-003",
   "requestSha256": "53a128139dc2b6ea90e3cbdc5c225eb07f8df04a4c25aad5c6408d024f8b5894",
   "runId": "43371385786",
-  "state": "running"
+  "state": "review_ready",
+  "candidate": "axe-queue-smoke-003"
 }
