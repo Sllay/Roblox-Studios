@@ -27,7 +27,7 @@ for o in bpy.context.scene.objects:
     if o.type!="MESH":continue
     m=o.data;m.calc_loop_triangles()
     if not m.uv_layers.active:raise ValueError("Missing UV: "+o.name)
-    uv=m.uv_layers.active.data
+    uv=m.uv_layers[int(args[args.index("--uv-index")+1])].data if "--uv-index" in args else m.uv_layers.active.data
     for t in m.loop_triangles:
         p=[uv[i].uv.copy() for i in t.loops]
         v=[o.matrix_world@m.vertices[i].co for i in t.vertices]
