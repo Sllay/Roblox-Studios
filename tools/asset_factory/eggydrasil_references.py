@@ -20,6 +20,7 @@ def main():
             r=radii[i]+t*(radii[i+1]-radii[i])
             if flute:r=r*(1+flute*np.sin(5*np.arctan2(dy,dx)+Z*.24)+.06*np.cos(9*np.arctan2(dy,dx)-Z*.14))
             mask|=dx*dx+dy*dy+dz*dz<=r*r
+        if op=='union': mask &= Z>=0
         refs={}
         for k,m in [('front',mask.any(axis=1).T[::-1,:]),('right',mask.any(axis=0).T[::-1,:]),('top',mask.any(axis=2).T[::-1,:])]:
             if not m.any():raise ValueError(name)
