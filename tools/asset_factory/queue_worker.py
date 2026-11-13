@@ -6,7 +6,7 @@ root=Path(__file__).resolve().parents[2]
 factory=root/"tools/asset_factory"
 library=root/"asset-library"
 queue=library/"queue"
-backends={"axe":"p2_tint_probe.py","pickaxe":"p2_pickaxe_probe.py","sword":"p2_sword_probe.py","axe-paint-roundtrip":"real_paint_probe.py","axe-atlas-bake":"atlas_bake_organized.py","atlas-bake":"atlas_bake_organized.py"}
+backends={"axe":"p2_tint_probe.py","pickaxe":"p2_pickaxe_probe.py","sword":"p2_sword_probe.py","axe-paint-roundtrip":"real_paint_probe.py","axe-atlas-bake":"atlas_bake_organized.py","atlas-bake":"atlas_bake_organized.py","bind-paint":"bind_paint.py"}
 def save(path,data):
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(data,indent=2)+"\n")
@@ -50,6 +50,17 @@ for request in sorted(queue.glob("*.json")):
                 blender("real_paint_probe.py",source,prep)
                 blender("bind_paint.py",prep/"unpainted.glb",prep/"color.png",prep/"contract.json",out/"painted")
                 blender("uv_audit.py",out/"painted"/"asset.glb",out/"legacy-uv-audit.json")
+            elif d["backend"]=="bind-paint":
+                def checked(field,suffix):
+                    p=(root/d[field]).resolve()
+                    if not p.is_relative_to(library.resolve()) or p.suffix.lower()!=suffix:raise ValueError("Invalid paint input")
+                    if hashlib.sha256(p.read_bytes()).hexdigest()!=d[field+"Sha256"]:raise ValueError("Paint input hash mismatch: "+field)
+                    return p
+                source=checked("source",".glb");png=checked("png",".png");contract=checked("contract",".json")
+                def blender(script,*args):
+                    subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1","--python",str(factory/script),"--",*map(str,args)],check=True,timeout=1200)
+                blender("bind_paint.py",source,png,contract,out/"painted")
+                blender("visual_paint_probe.py",out/"painted"/"asset.glb",out/"review")
             elif d["backend"] in ("axe-atlas-bake","atlas-bake"):
                 source=library/"approved"/"axe"/"v6"/"machado-v6.glb"
                 if hashlib.sha256(source.read_bytes()).hexdigest()!="6089929739d0a08983faa5d5f7ecaf26d6e42896880cd98a2c7aa2be470a7507": raise ValueError("Approved source hash mismatch")
