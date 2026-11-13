@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "id": "axe-bind-paint-validation-001",
+  "backend": "bind-paint",
+  "source": "asset-library/candidates/axe-paint-roundtrip-001/prep/unpainted.glb",
+  "sourceSha256": "715b8006b4ec639893742142cce120862488fb0b842d549ea4bf2b0bd889992c",
+  "png": "asset-library/candidates/axe-paint-roundtrip-001/prep/color.png",
+  "pngSha256": "66871d396634cd869fdbe4cfcd3616e764df0ac28340d1eb6f10a49471766497",
+  "contract": "asset-library/candidates/axe-paint-roundtrip-001/prep/contract.json",
+  "contractSha256": "b1fac342a16b1399a16d7e8b36a8da2b1cbae967ba0a6cfa74e076a6bae8c2d9"
+}
