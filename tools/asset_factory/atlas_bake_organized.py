@@ -100,16 +100,18 @@ def coverage():
             area+=abs(sum(a.x*b.y-b.x*a.y for a,b in zip(pts,pts[1:]+pts[:1])))*0.5
     return area
 initial=snapshot();trials=[]
-for method in ("ANY","AXIS_ALIGNED","CARDINAL"):
+for method in ("BASELINE","ANY","AXIS_ALIGNED","CARDINAL"):
     restore(initial)
     bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.uv.pack_islands(rotate=True,rotate_method=method,margin_method="FRACTION",margin=0.02,shape_method="CONCAVE")
+    if method=="BASELINE":bpy.ops.uv.pack_islands(margin=0.02)
+    else:bpy.ops.uv.pack_islands(rotate=True,rotate_method=method,margin_method="FRACTION",margin=0.02,shape_method="CONCAVE")
     bpy.ops.object.mode_set(mode="OBJECT")
     trials.append((coverage(),method,snapshot()))
 # Prefer axis-aligned layout if coverage is within 2% of the best.
 best=max(trials,key=lambda t:t[0])
 aligned=next(t for t in trials if t[1]=="AXIS_ALIGNED")
-chosen=aligned if aligned[0]>=best[0]*0.98 else best
+baseline=trials[0]
+chosen=aligned if aligned[0]>=best[0]*0.98 and aligned[0]>=baseline[0] else best
 restore(chosen[2])
 (out/"packing-report.json").write_text(json.dumps({"trials":[{"method":t[1],"coverage":t[0]} for t in trials],"selected":chosen[1],"coverage":chosen[0],"marginFraction":0.02},indent=2))
 print("PACKING",chosen[1],chosen[0])
