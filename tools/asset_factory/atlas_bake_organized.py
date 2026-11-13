@@ -91,9 +91,13 @@ for o in objects:
     proxy.uv_layers.active=proxy.uv_layers["BakedUV"]
     bpy.context.scene.tool_settings.use_uv_select_sync=True
     bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT")
-    if fallback:bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=0.02)
-    else:bpy.ops.uv.unwrap(method="ANGLE_BASED",margin=0.02)
-    bpy.ops.object.mode_set(mode="OBJECT")
+    if o.name.lower().split(".")[0]=="wrap":
+        bpy.ops.object.mode_set(mode="OBJECT")
+        for a,b in zip(proxy.uv_layers["BakedUV"].data,proxy.uv_layers["SourceUV"].data):a.uv=b.uv
+    else:
+        if fallback:bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=0.02)
+        else:bpy.ops.uv.unwrap(method="ANGLE_BASED",margin=0.02)
+        bpy.ops.object.mode_set(mode="OBJECT")
     proxies.append((o,p))
     continue
 # Pack connected proxies, never the split source topology.
