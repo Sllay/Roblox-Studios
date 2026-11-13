@@ -3,7 +3,7 @@
   "sha256": "3b570d28a44d83c04b267c3017056b013fe2cdddc80a2216e2bf5d03dd5b0abf",
   "bytes": 49340,
   "source": "asset-library/approved/stick/v1/runtime/asset.glb",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "93c7a329-5ce8-4ff7-8a80-032c76f69d7e",
     "done": false
   },
-  "operationPath": "operations/93c7a329-5ce8-4ff7-8a80-032c76f69d7e"
+  "operationPath": "operations/93c7a329-5ce8-4ff7-8a80-032c76f69d7e",
+  "operation": {
+    "path": "operations/93c7a329-5ce8-4ff7-8a80-032c76f69d7e",
+    "operationId": "93c7a329-5ce8-4ff7-8a80-032c76f69d7e",
+    "done": true,
+    "response": {
+      "path": "assets/94558539418999",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-13T23:49:36.174Z",
+      "assetId": "94558539418999",
+      "displayName": "Black Islands stick-v1-runtime",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "94558539418999"
 }
