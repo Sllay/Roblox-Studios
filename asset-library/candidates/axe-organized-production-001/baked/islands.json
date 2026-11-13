@@ -1,0 +1,18 @@
+{
+  "RecoveredHandle": {
+    "islands": 3,
+    "facesPerIsland": [
+      160,
+      8,
+      8
+    ]
+  },
+  "AxeBlade": {
+    "islands": 3,
+    "facesPerIsland": [
+      32,
+      30,
+      30
+    ]
+  }
+}
