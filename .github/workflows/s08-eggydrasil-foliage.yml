@@ -1,0 +1,54 @@
+name: S08 Eggydrasil Foliage
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/asset_factory/eggydrasil_foliage.py'
+      - 'tools/asset_factory/eggydrasil_leaf_atlas.py'
+      - '.github/workflows/s08-eggydrasil-foliage.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: eggydrasil-v4
+          run-id: 43518488123
+          github-token: ${{ github.token }}
+          path: /tmp/eggydrasil-v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
+      - name: Author original transparent atlas
+        run: /usr/bin/python3 tools/asset_factory/eggydrasil_leaf_atlas.py /tmp/eggydrasil-v5
+      - name: Create canopy and render
+        run: blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/eggydrasil_foliage.py -- /tmp/eggydrasil-v4 /tmp/eggydrasil-v5
+      - name: Verify exported leaf cards and alpha
+        run: |
+          /usr/bin/python3 - <<'PY'
+          import json,struct
+          from pathlib import Path
+          from PIL import Image
+          p=Path('/tmp/eggydrasil-v5')
+          for n,count in [(0,4320),(1,2160),(2,1080)]:
+              b=(p/f'canopy-lod{n}.glb').read_bytes()
+              length,kind=struct.unpack_from('<II',b,12);assert kind==0x4e4f534a
+              d=json.loads(b[20:20+length]);assert len(d['meshes'])==1
+              m=d['materials'][0];assert m['alphaMode']=='MASK' and m['doubleSided']
+              prim=d['meshes'][0]['primitives'][0]
+              assert d['accessors'][prim['indices']]['count']==count*3
+              assert 'TEXCOORD_0' in prim['attributes']
+          im=Image.open(p/'leaves-atlas.png');assert im.mode=='RGBA' and im.size==(1024,1024)
+          assert im.getchannel('A').getextrema()==(0,255)
+          for name in ('front','quarter','side','top'):
+              im=Image.open(p/(name+'.png'));assert im.size==(960,960) and im.mode=='RGBA';im.verify()
+          print('All three LODs, alpha mask, UV and four renders verified')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eggydrasil-v5-foliage
+          path: /tmp/eggydrasil-v5/
