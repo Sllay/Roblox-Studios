@@ -1,0 +1,76 @@
+name: S08 Eggydrasil Preview
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/s08-eggydrasil-preview.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
+      - name: Generate leafless tree
+        run: |
+          mkdir -p /tmp/eggydrasil
+          cat > /tmp/tree.py <<'PY'
+          import bpy, math, random
+          from mathutils import Vector
+          random.seed(182)
+          bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
+          materials=[]
+          for name,c in [('Bark',(.24,.12,.065)),('Ridge',(.34,.19,.10)),('Shadow',(.15,.075,.04))]:
+              m=bpy.data.materials.new(name); m.diffuse_color=(*c,1); m.use_nodes=True
+              m.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value=(*c,1)
+              materials.append(m)
+          def limb(name, points, radii,n=10):
+              pts=[Vector(p) for p in points]; verts=[]; faces=[]
+              for i,p in enumerate(pts):
+                  t=(pts[min(i+1,len(pts)-1)]-pts[max(i-1,0)]).normalized()
+                  ref=Vector((0,0,1)) if abs(t.z)<.9 else Vector((1,0,0))
+                  a=t.cross(ref).normalized(); b=t.cross(a)
+                  for k in range(n):
+                      ang=2*math.pi*k/n
+                      r=radii[i]*(1+.12*math.cos(3*ang)+.06*math.sin(5*ang+i*.4))
+                      verts.append(p+r*(a*math.cos(ang)+b*math.sin(ang)))
+              for i in range(len(pts)-1):
+                  for k in range(n): faces.append((i*n+k,i*n+(k+1)%n,(i+1)*n+(k+1)%n,(i+1)*n+k))
+              faces.extend([tuple(reversed(range(n))),tuple(range((len(pts)-1)*n,len(pts)*n))])
+              mesh=bpy.data.meshes.new(name); mesh.from_pydata(verts,[],faces); mesh.update()
+              o=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(o)
+              for m in materials: mesh.materials.append(m)
+              for p in mesh.polygons: p.material_index=1 if p.index%n==2 else (2 if p.index%n==6 else 0)
+              bpy.context.view_layer.objects.active=o; o.select_set(True)
+              bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT'); bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.uv.smart_project(); bpy.ops.object.mode_set(mode='OBJECT'); o.select_set(False)
+          limb('Trunk',[(0,0,0),(.2,0,3),(-.3,.2,8),(.6,.1,14),(.1,-.4,20),(-.8,.2,26),(-.4,.3,32)],[4.4,3.5,2.8,2.4,1.8,1.05,.18],16)
+          for i in range(8):
+              a=i*math.tau/8+.15*math.sin(i); d=Vector((math.cos(a),math.sin(a),0))
+              limb('Root_%02d'%i,[(0,0,3.5),tuple(d*3+Vector((0,0,2.2))),tuple(d*6+Vector((0,0,.9))),tuple(d*(9+random.random()*3)+Vector((0,0,.12)))],[1.7,1.25,.65,.12],10)
+          for i in range(9):
+              a=i*2.39996; d=Vector((math.cos(a),math.sin(a),0)); z=12+i*1.65
+              base=Vector((0,0,z)); length=10+random.random()*6
+              p1=base+d*4+Vector((0,0,2)); p2=base+d*(length*.65)+Vector((0,0,4)); p3=base+d*length+Vector((0,0,7+random.random()*3))
+              limb('Crown_%02d'%i,[base,p1,p2,p3],[1.65-i*.09,1.15-i*.06,.65,.12],12)
+              for j in range(3):
+                  t=.42+j*.19; start=p1.lerp(p3,t); angle=a+(-1 if j%2 else 1)*(.65+j*.2)
+                  v=Vector((math.cos(angle),math.sin(angle),0))
+                  end=start+v*(4+random.random()*3)+Vector((0,0,4+random.random()*3))
+                  limb('Twig_%02d_%02d'%(i,j),[start,start.lerp(end,.55)+Vector((0,0,-.4)),end],[.48,.28,.055],8)
+          bpy.ops.export_scene.gltf(filepath='/tmp/eggydrasil/eggydrasil.glb',export_format='GLB')
+          PY
+          blender -b --factory-startup --python-exit-code 1 --python /tmp/tree.py
+      - name: Render and audit
+        run: |
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/eggydrasil/eggydrasil.glb /tmp/eggydrasil/original
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/atlas_bake_organized.py -- /tmp/eggydrasil/eggydrasil.glb /tmp/eggydrasil/baked
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_islands.py -- /tmp/eggydrasil/baked/asset.glb /tmp/eggydrasil/baked
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- /tmp/eggydrasil/baked/asset.glb /tmp/eggydrasil/baked/audit.json --shared --uv-index 1
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/visual_paint_probe.py -- /tmp/eggydrasil/baked/asset.glb /tmp/eggydrasil/candidate
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eggydrasil-preview
+          path: /tmp/eggydrasil/
