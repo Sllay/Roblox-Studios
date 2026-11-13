@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "status": "approved",
+  "approval": "User approved V6 artistic assets and supplied A1 archive",
+  "technicalValidation": "validate_approved.py",
+  "files": [
+    {
+      "path": "machado-v6.glb",
+      "sha256": "6089929739d0a08983faa5d5f7ecaf26d6e42896880cd98a2c7aa2be470a7507",
+      "bytes": 632032
+    }
+  ]
+}

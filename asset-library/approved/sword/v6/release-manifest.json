@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "status": "approved",
+  "approval": "User approved V6 artistic assets and supplied A1 archive",
+  "technicalValidation": "validate_approved.py",
+  "files": [
+    {
+      "path": "espada-v6-materials.glb",
+      "sha256": "cc30b01c0ff76c5c908c1a6bd29309508af6bb4c17c32ce27173a3cd7b97b714",
+      "bytes": 1954448
+    }
+  ]
+}

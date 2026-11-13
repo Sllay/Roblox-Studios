@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "status": "approved",
+  "approval": "User approved V6 artistic assets and supplied A1 archive",
+  "technicalValidation": "validate_approved.py",
+  "files": [
+    {
+      "path": "picareta-v6.glb",
+      "sha256": "4fa8a3ed0dc336802d987754693a9541e0ba2fc8996507f57bc181885797b1f1",
+      "bytes": 540648
+    }
+  ]
+}
