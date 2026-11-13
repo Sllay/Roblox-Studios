@@ -2,7 +2,7 @@ name: S07 read-only publication reconciliation
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/s07-publication.yml']
+    paths: ['.github/workflows/s07-publication.yml', 'tools/s07_reconcile.py']
 permissions:
   contents: read
   actions: read
