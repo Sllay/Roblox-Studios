@@ -1,0 +1,8 @@
+{
+  "triangles": 138,
+  "atlasSize": 384,
+  "fallbackFraction": 0.18358667346014493,
+  "uvLoops": 414,
+  "published": false,
+  "limitations": "normal weighted projection; no occlusion or unseen texture guarantee"
+}
