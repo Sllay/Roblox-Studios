@@ -8,9 +8,10 @@
   "placeId": "93428341652658",
   "passed": true,
   "final": 15,
-  "noPlaceWrites": true,
   "universeId": "10769712441",
+  "noPlaceWrites": true,
   "ok": true,
+  "serviceSpawned": 4,
   "clockMode": "synthetic_monotonic_seconds",
   "chunks": {
     "emerald_valley/chunk--1-0": 2,
@@ -24,6 +25,6 @@
     "emerald_valley/chunk-1-0": 1
   },
   "children": 15,
-  "attempts": 21,
+  "attempts": 22,
   "loadedVersion": 25
 }
