@@ -14,6 +14,9 @@ function F.claim(s:Store,key:string,owner:string,now:number):boolean
  if now<site.availableAt or (site.owner and site.owner~=owner and now<site.leaseUntil) then return false end
  site.owner=owner;site.leaseUntil=now+30;return true
 end
+function F.owns(s:Store,key:string,owner:string,now:number):boolean
+ local site=s.sites[key];return site~=nil and site.owner==owner and now<site.leaseUntil and now>=site.availableAt
+end
 function F.consume(s:Store,key:string,owner:string,now:number):boolean
  local site=s.sites[key]
  if not site or site.owner~=owner or now>=site.leaseUntil or now<site.availableAt then return false end

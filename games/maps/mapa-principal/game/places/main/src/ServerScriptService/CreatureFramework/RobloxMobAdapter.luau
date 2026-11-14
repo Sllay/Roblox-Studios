@@ -22,7 +22,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if not self.options.materials[hit.Material] then return nil end
   local p=hit.Position
   self.queries+=1
-  local parts=world:GetPartBoundsInBox(CFrame.new(p+Vector3.new(0,half+.15,0)),Vector3.new(mesh.Size.X+.2,mesh.Size.Y-.2,mesh.Size.Z+.2),overlap)
+  local parts=world:GetPartBoundsInBox(CFrame.new(p+Vector3.new(0,half+.15,0)),Vector3.new(math.max(mesh.Size.X,mesh.Size.Z)+.2,mesh.Size.Y-.2,math.max(mesh.Size.X,mesh.Size.Z)+.2),overlap)
   for _,part in parts do
    if part~=world.Terrain and part.CanQuery then return nil end
   end
@@ -145,7 +145,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local speed=if flee then self.stats.runSpeed else self.stats.walkSpeed
   local step=math.min(delta.Magnitude,speed*math.clamp(dt,0,.2))
   local q=p+delta.Unit*step;local g=self:ground(q.X,q.Z)
-  if not g or math.abs(g.Y-p.Y)>.6 then self.goal=nil;self.blocked=true;self:animate("Idle",1);return "Running" end
+  if not g or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then self.goal=nil;self.blocked=true;self:animate("Idle",1);return "Running" end
   local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+delta.Unit)
   self.moveDistance+=step;self.blocked=false;self:animate(if flee then "Run" else "Walk",1)
   return "Running"

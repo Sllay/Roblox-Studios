@@ -18,22 +18,39 @@ function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
  if s.budget.total>=p.maximum then return nil end
  local species=assert(d.registry.get(p.speciesId))
  local model=s.template:Clone()
- local options={contains=function(x:number,z:number)return d.biomes.regionAt(p.biomeId,x,z)~=nil end,materials={[Enum.Material.Grass]=true},random=function()return s.rng:NextNumber() end,threatProvider=d.threatProvider}
+ local materials:{[Enum.Material]:boolean}={}
+ for _,material in Enum.Material:GetEnumItems() do if p.allowedMaterials[material.Name] then materials[material]=true end end
+ local options={contains=function(x:number,z:number)return d.biomes.regionAt(p.biomeId,x,z)~=nil end,materials=materials,random=function()return s.rng:NextNumber() end,threatProvider=d.threatProvider}
  local adapter=d.adapter.new(workspace,model,species,d.escape,options)
  adapter.aiEnabled=aiEnabled~=false
  local id=game:GetService("HttpService"):GenerateGUID(false)
  local success=false
- for _=1,36 do
-  local region=s.regions[s.cursor];s.cursor=s.cursor%#s.regions+1;s.attempts+=1
-  local x=s.rng:NextNumber(region.minX+8,region.maxX-8);local z=s.rng:NextNumber(region.minZ+8,region.maxZ-8)
-  if adapter:ground(x,z) and (not d.spawnAllowed or d.spawnAllowed(Vector3.new(x,0,z))) then
-   if d.population.reserve(s.budget,id,p.speciesId,p.biomeId,region.id,true,now,10) then
-    if adapter:place(Vector3.new(x,0,z)) and d.population.commit(s.budget,id,now) then success=true;break end
-    d.population.release(s.budget,id)
+ local ranked=table.clone(s.regions)
+ table.sort(ranked,function(a:any,b:any)
+  local ac=s.budget.chunks[p.biomeId.."/"..a.id] or 0;local bc=s.budget.chunks[p.biomeId.."/"..b.id] or 0
+  if ac~=bc then return ac<bc end
+  return a.id<b.id
+ end)
+ -- Bounded 16 samples per region, favor underpopulated regions but never force invalid ground.
+ for _,region in ranked do
+  if (s.budget.chunks[p.biomeId.."/"..region.id] or 0)>=s.budget.caps.perChunk then continue end
+  for _=1,16 do
+   s.attempts+=1
+   local x=s.rng:NextNumber(region.minX+8,region.maxX-8);local z=s.rng:NextNumber(region.minZ+8,region.maxZ-8)
+   if adapter:ground(x,z) and (not d.spawnAllowed or d.spawnAllowed(Vector3.new(x,0,z))) then
+    if d.population.reserve(s.budget,id,p.speciesId,p.biomeId,region.id,true,now,10) then
+     if adapter:place(Vector3.new(x,0,z)) and d.population.commit(s.budget,id,now) then success=true;break end
+     d.population.release(s.budget,id)
+    end
    end
   end
+  if success then break end
  end
  if not success then adapter:destroy();return nil end
+ adapter.options.canMove=function(g:Vector3)
+  local region=d.biomes.regionAt(p.biomeId,g.X,g.Z)
+  return region~=nil and d.population.move(s.budget,id,p.biomeId,region.id)
+ end
  model.Name="Creature_"..id
  model:SetAttribute("CreatureInstanceId",id)
  model:SetAttribute("CreatureOrigin","Natural")
@@ -55,6 +72,7 @@ function D.step(s:any,dt:number,now:number)
  for id,r in pairs(s.agents) do
   local adapter=r.adapter
   if not adapter.alive then D.remove(s,id);continue end
+  if r.foodKey and not s.d.food.owns(s.food,r.foodKey,id,now) then r.foodKey=nil;adapter:setFood(nil) end
   if adapter.aiEnabled and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
    r.nextFood=now+3
    local pos=adapter:position()
@@ -80,12 +98,7 @@ function D.step(s:any,dt:number,now:number)
   elseif r.foodKey and not adapter.food then
    s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil
   end
-  local p=adapter:position();local region=s.d.biomes.regionAt(s.p.biomeId,p.X,p.Z)
-  if region then
-   -- Active walking must not silently bypass a per-chunk cap.
-   local rec=s.budget.records[id]
-   if rec and rec.chunk~=region.id and not s.d.population.move(s.budget,id,s.p.biomeId,region.id) then adapter.goal=nil;adapter.blocked=true end
-  end
+
  end
  if now-s.lastPrune>=10 then s.d.food.prune(s.food,now,64);s.lastPrune=now end
 end
