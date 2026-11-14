@@ -36,6 +36,7 @@ local function create(s:any,aiEnabled:boolean?):(any,any,Model,string)
 end
 local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin:string,now:number):string
  local d,p=s.d,s.p
+ adapter.home=adapter:position()
  adapter.options.canMove=function(g:Vector3)
   local region=d.biomes.regionAt(p.biomeId,g.X,g.Z)
   return region~=nil and (origin=="Developer" or d.population.move(s.budget,id,p.biomeId,region.id))
