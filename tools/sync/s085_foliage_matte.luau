@@ -88,7 +88,7 @@ local function attrs(o,skip)
  table.sort(a,function(x,y)return x[1]<y[1] end);return hash(Http:JSONEncode(a))
 end
 local function fingerprint()
- local rows={}
+ local rows={};local processed=0
  for _,name in cfg.services do
   local svc=game:GetService(name)
   for _,o in svc:GetDescendants() do
@@ -96,13 +96,14 @@ local function fingerprint()
    if o:IsA("SurfaceAppearance") and parts[o.Parent] then r.properties.RoughnessMapContent=nil end
    if o:IsA("MeshPart") then r.properties.doubleSided=o.DoubleSided;r.properties.meshSize=vec(o.MeshSize) end
    table.insert(rows,hash(canon(r)))
+   processed+=1;if processed%250==0 then task.wait() end
   end
  end
  table.sort(rows)
  return hash(table.concat(rows,";"))
 end
-local before=terrainState();assert(#before==49,"Terrain coverage")
-local fp=fingerprint()
+local before=terrainState();assert(#before==49,"Terrain coverage");task.wait()
+local fp=fingerprint();task.wait()
 local env=hash(canon({lightingState(),workspaceSettings()}))
 if cfg.mode~="preview" then
  assert(fp==cfg.expectedFingerprint and env==cfg.expectedEnvironment,"Scene baseline drift")
@@ -112,7 +113,7 @@ local function row(r)
  local p=r.p;local s=surface(p)
  return {mesh=p.MeshId,material=p.Material.Name,materialVariant=p.MaterialVariant,texture=p.TextureID,reflectance=p.Reflectance,tint=rgb(s.Color),colorMap=s.ColorMapContent.Uri,alpha=s.AlphaMode.Name,windRole=p:GetAttribute("RSWindRigRole") or "",windVersion=r.m:GetAttribute("RSWindRigVersion") or 0,doubleSided=p.DoubleSided,castShadow=p.CastShadow,roughness=s.RoughnessMapContent.Uri or ""}
 end
-local baseline={};local resultRows={};local samples={}
+local baseline={};local resultRows={};local samples={};local processed=0
 for id,r in targets do
  if not verify then
   baseline[id]=row(r)
@@ -134,11 +135,12 @@ for id,r in targets do
  resultRows[id]=hash(canon(actual))
  if cfg.mode~="preview" then assert(resultRows[id]==cfg.expectedAfter[id],"Reviewed appearance "..id) end
  if not verify then baseline[id]=hash(canon(baseline[id])) end
+ processed+=1;if processed%25==0 then task.wait() end
 end
 if matte then matte:Destroy() end
-assert(fingerprint()==fp,"Unrelated geometry or scene changed")
+assert(fingerprint()==fp,"Unrelated geometry or scene changed");task.wait()
 assert(hash(canon({lightingState(),workspaceSettings()}))==env,"Lighting or environment changed")
-local after=terrainState();for i,r in after do assert(r.digest==before[i].digest,"Terrain changed") end
+local after=terrainState();for i,r in after do assert(r.digest==before[i].digest,"Terrain changed") end;task.wait()
 local result={counts=counts,species=species,changed=250,texture=uri,roughnessUri=rough,material=material.Name,meshPartsAdded=0,geometryUnchanged=true,fingerprint=fp,environment=env,terrain=after,before=baseline,after=resultRows,samples=samples,clientRenderVerified=false,uvVisualVerified=false}
 if cfg.mode=="apply" then
  assert(cfg.confirmStaging and game.PlaceVersion==23,"Publish guard")
