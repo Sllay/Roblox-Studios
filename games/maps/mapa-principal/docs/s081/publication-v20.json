@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "release": "S08.1",
+  "environment": "staging",
+  "placeId": "93428341652658",
+  "universeId": "10769712441",
+  "sourceCommit": "b06f637396c8a71cf6cdd5212059a7c25feb34fb",
+  "runId": 43539025907,
+  "artifactId": 14090812924,
+  "clientRenderVerified": false,
+  "receipt": {
+    "status": "verified",
+    "beforeVersion": 19,
+    "retryAllowed": false,
+    "resourcePlanDigest": "qxE1oLCXi3QFzAsCwoU0kxdo32ACDp1hk8Vs+mvMuw0=",
+    "afterVersion": 20,
+    "controllerState": "unchanged",
+    "counts": {
+      "Stone": {
+        "v1": 250,
+        "legacy": 250
+      },
+      "Stick": {
+        "v1": 250,
+        "legacy": 250
+      }
+    }
+  },
+  "tree": {
+    "bounds": [
+      58.4947,
+      60,
+      52.7049
+    ],
+    "center": [
+      8,
+      53.9922,
+      -12
+    ],
+    "meshCount": 5,
+    "foliage": {
+      "Canopy_White": {
+        "uri": "rbxassetid://89626593244521",
+        "color": [
+          1,
+          0.3137255012989044,
+          0.5490196347236633
+        ]
+      },
+      "Canopy_Gray": {
+        "uri": "rbxassetid://109528136250293",
+        "color": [
+          0.47058823704719543,
+          0.1568627506494522,
+          0.7843137383460999
+        ]
+      }
+    },
+    "pivot": [
+      8,
+      53.9922,
+      -12,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1
+    ],
+    "digest": "FWiGVC/mH8JQ7H9xRq9R98DRhLdAKjE59CcVmVor4Ts="
+  },
+  "tiles": {
+    "chunk-1-1": {
+      "Stone": {
+        "v1": 18,
+        "legacy": 18
+      },
+      "Stick": {
+        "v1": 18,
+        "legacy": 17
+      }
+    },
+    "chunk--1-1": {
+      "Stone": {
+        "v1": 26,
+        "legacy": 25
+      },
+      "Stick": {
+        "v1": 26,
+        "legacy": 25
+      }
+    },
+    "chunk-0-0": {
+      "Stone": {
+        "v1": 27,
+        "legacy": 27
+      },
+      "Stick": {
+        "v1": 14,
+        "legacy": 15
+      }
+    },
+    "chunk-0--1": {
+      "Stone": {
+        "v1": 36,
+        "legacy": 36
+      },
+      "Stick": {
+        "v1": 45,
+        "legacy": 45
+      }
+    },
+    "chunk-1-0": {
+      "Stone": {
+        "v1": 25,
+        "legacy": 24
+      },
+      "Stick": {
+        "v1": 27,
+        "legacy": 27
+      }
+    },
+    "chunk-0-1": {
+      "Stone": {
+        "v1": 23,
+        "legacy": 23
+      },
+      "Stick": {
+        "v1": 20,
+        "legacy": 19
+      }
+    },
+    "chunk-1--1": {
+      "Stone": {
+        "v1": 31,
+        "legacy": 32
+      },
+      "Stick": {
+        "v1": 33,
+        "legacy": 34
+      }
+    },
+    "chunk--1-0": {
+      "Stone": {
+        "v1": 33,
+        "legacy": 33
+      },
+      "Stick": {
+        "v1": 34,
+        "legacy": 34
+      }
+    },
+    "chunk--1--1": {
+      "Stone": {
+        "v1": 31,
+        "legacy": 32
+      },
+      "Stick": {
+        "v1": 33,
+        "legacy": 34
+      }
+    }
+  }
+}
