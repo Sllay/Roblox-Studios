@@ -1,0 +1,11 @@
+{
+  "id": "chicken-v2-base-rig",
+  "sha256": "3d4c122b34e9fee090bb1ba53809b1d13a7dcde190e82bff627619fbee169723",
+  "bytes": 450428,
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/roblox-exports/chicken-v2-base.glb",
+  "state": "post_intent",
+  "retryAllowed": false,
+  "creatorId": "8136365379",
+  "creatorType": "User",
+  "noPlaceWrites": true
+}
