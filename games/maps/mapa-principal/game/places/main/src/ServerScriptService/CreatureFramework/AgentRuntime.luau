@@ -13,11 +13,12 @@ function A.new(brain:any,kernel:any,adapter:any):any
 end
 function A.decide(a:any,dt:number):any
  local sense=a.adapter:sense(dt)
- local intent=a.brain.step(a.memory,sense)
+ local intent=a.brain.step(a.memory,sense,a.kernel.canInterrupt)
  local changed=not a.intent or a.intent.state~=intent.state
  if changed then
   a.kernel.abort(a.tree,a.treeMemory,a.board)
-  a.kernel.transition(a.machine,if states[intent.state] then intent.state else intent.branch)
+  local leaf=states[intent.state]
+  a.kernel.transition(a.machine,if leaf and leaf.parent==intent.branch then intent.state else intent.branch)
   a.adapter:enter(intent)
  end
  a.intent=intent;a.board.intent=intent

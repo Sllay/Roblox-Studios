@@ -6,13 +6,19 @@ export type Memory={state:State,age:number,calm:number,fear:number,hunger:number
 export type Intent={state:State,branch:string,animation:string,action:string,reason:string}
 local M={}
 -- Priority policy: protected routine actions yield only to survival or lifecycle.
-M.Priority=table.freeze({Idle=10,Explore=20,Forage=20,Peck=40,Flap=40,Recover=60,Flee=80,Static=90,Dead=100})
+local priorities:{[string]:number}={Idle=10,Explore=20,Forage=20,Peck=40,Flap=40,Recover=60,Flee=80,Static=90,Dead=100}
+local protected:{[string]:boolean}={Peck=true,Flap=true}
+M.Priority=table.freeze(priorities)
 function M.new():Memory return {state="Idle",age=0,calm=0,fear=0,hunger=.2,reason="spawn",transitions=0} end
-local function change(m:Memory,s:State,reason:string)
+local function setState(m:Memory,s:State,reason:string)
  if m.state~=s then m.state=s;m.age=0;m.transitions+=1;m.reason=reason end
 end
-function M.step(m:Memory,s:Sense):Intent
+function M.step(m:Memory,s:Sense,gate:((string,string,boolean,{[string]:number},{[string]:boolean})->boolean)?):Intent
  local dt=math.clamp(s.dt,0,2);m.age+=dt
+ local function change(memory:Memory,target:State,reason:string)
+  local complete=s.actionComplete==true or (s.actionComplete==nil and memory.age>=1.25)
+  if not gate or gate(memory.state,target,complete,priorities,protected) then setState(memory,target,reason) end
+ end
  if not s.alive then change(m,"Dead","death")
  elseif not s.aiEnabled then change(m,"Static","ai disabled")
  else

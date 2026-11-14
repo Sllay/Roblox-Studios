@@ -47,12 +47,19 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  end
  function self:setThreat(t:any) self.threat=t end
  function self:setFood(p:Vector3?) self.food=p end
- function self:damage(attacker:any?) self.hit=true;if attacker then self.observedThreat=attacker;self.lastSeen=self.clock;self.damageThreat=attacker end end
+ function self:damage(attacker:any?)
+  self.hit=true
+  if attacker then self.observedThreat=attacker;self.lastSeen=self.clock;self.damageThreat=attacker;self.damageUntil=self.clock+5 end
+ end
  function self:sense(dt:number):any
   self.clock+=dt
   local p=self:position();local t=self.threat
   if self.options.threatProvider then t=self.options.threatProvider(p) end
-  if self.hit and self.damageThreat then t=self.damageThreat end
+  if self.damageThreat and self.clock<(self.damageUntil or 0) then
+   local a=self.damageThreat
+   if a.model and a.model.Parent then a.position=a.model:GetPivot().Position end
+   t={position=a.position,velocity=a.velocity,model=a.model,predator=true}
+  else self.damageThreat=nil end
   local dist=math.huge;local approach=0;local visible=false;local predator=false
   if t and finite(t.position) and finite(t.velocity) then
    local delta=t.position-(p+Vector3.new(0,half,0));dist=delta.Magnitude;predator=t.predator==true
@@ -68,7 +75,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if visible then self.observedThreat=t;self.lastSeen=self.clock elseif self.lastSeen and self.clock-self.lastSeen>4 then self.observedThreat=nil end
   local food=self.food
   local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
-  self.hit=false;self.damageThreat=nil;return s
+  self.hit=false;return s
  end
  function self:animate(name:string,speed:number)
   if name==self.lastClip then

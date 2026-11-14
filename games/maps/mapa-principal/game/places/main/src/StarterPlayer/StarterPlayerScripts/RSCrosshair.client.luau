@@ -4,9 +4,10 @@ local Players=game:GetService("Players")
 local RunService=game:GetService("RunService")
 local rs=game:GetService("ReplicatedStorage")
 local player=Players.LocalPlayer
+local playerGui=player:WaitForChild("PlayerGui")
 player.CameraMode=Enum.CameraMode.LockFirstPerson
 player:GetPropertyChangedSignal("CameraMode"):Connect(function()if player.CameraMode~=Enum.CameraMode.LockFirstPerson then player.CameraMode=Enum.CameraMode.LockFirstPerson end end)
-local gui=Instance.new("ScreenGui");gui.Name="RSCrosshair";gui.ResetOnSpawn=false;gui.IgnoreGuiInset=true;gui.ScreenInsets=Enum.ScreenInsets.None;gui.DisplayOrder=20;gui.Parent=player:WaitForChild("PlayerGui")
+local gui=Instance.new("ScreenGui");gui.Name="RSCrosshair";gui.ResetOnSpawn=false;gui.IgnoreGuiInset=true;gui.ScreenInsets=Enum.ScreenInsets.None;gui.DisplayOrder=20;gui.Parent=playerGui
 local aim=Instance.new("Frame");aim.Name="Aim";aim.AnchorPoint=Vector2.new(.5,.5);aim.Position=UDim2.fromScale(.5,.5);aim.Size=UDim2.fromOffset(24,24);aim.BackgroundTransparency=1;aim.Parent=gui
 local bars:{Frame}={}
 for _,v in {{10,0,3,8},{10,16,3,8},{0,10,8,3},{16,10,8,3}} do
@@ -17,7 +18,7 @@ local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclud
 local elapsed=0;local focusId:string?=nil;local focusAge=0;local submitted:{[string]:number}={};local pending=false
 RunService.RenderStepped:Connect(function(dt:number)
  elapsed+=dt;if elapsed<.05 then return end;local step=elapsed;elapsed=0
- local book=player.PlayerGui:FindFirstChild("RSBook")
+ local book=playerGui:FindFirstChild("RSBook")
  local open=book and book:FindFirstChild("BookPanel");local console=book and book:FindFirstChild("DeveloperConsole")
  local hidden=(open and open:IsA("GuiObject") and open.Visible) or (console and console:IsA("GuiObject") and console.Visible)
  gui.Enabled=not hidden
@@ -31,8 +32,8 @@ RunService.RenderStepped:Connect(function(dt:number)
   if hit then
    local m=hit.Instance:FindFirstAncestorOfClass("Model")
    while m do
-    local value=m:GetAttribute("CreatureInstanceId")
-    if type(value)=="string" and (m:GetAttribute("CreatureHealth") or 0)>0 then id=value;model=m;break end
+    local value=m:GetAttribute("CreatureInstanceId");local health=m:GetAttribute("CreatureHealth")
+    if type(value)=="string" and type(health)=="number" and health>0 then id=value :: string;model=m;break end
     local parent=m.Parent;m=if parent then parent:FindFirstAncestorOfClass("Model") else nil
    end
   end

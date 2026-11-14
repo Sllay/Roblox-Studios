@@ -65,6 +65,9 @@ local at=assert(S.parse({"mob",c.id,"2","1","2","3","true"},true,true,10));asser
 print("S09.5 core: registry, levels, Book, passive decisions, 10000-slot scheduler and summon policy passed")
 
 local K=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/AIKernel")
+assert(not K.canInterrupt("Peck","Explore",false,M.Priority,{Peck=true}))
+assert(K.canInterrupt("Peck","Flee",false,M.Priority,{Peck=true}))
+assert(K.canInterrupt("Peck","Explore",true,M.Priority,{Peck=true}))
 local E=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/EscapePlanner")
 local board:K.Blackboard={ticks=0,cancelled=0,log={}}
 local node:K.Node={id="root",kind="Sequence",children={

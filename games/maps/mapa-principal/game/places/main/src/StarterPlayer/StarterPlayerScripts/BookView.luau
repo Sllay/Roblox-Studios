@@ -76,7 +76,12 @@ function V.new(parent:Instance,callbacks:any):any
   if not snap or not snap.ready then progress.Text="Carregando descobertas...";return end
   progress.Text=string.format("REGISTROS  •  %d/%d descobertos  •  %.0f%%",snap.discovered,snap.total,snap.percent)
   if detailPage.Visible then
-   for _,row in snap.rows do if self.selected and row.key==self.selected.key then page(row);return end end
+   for _,row in snap.rows do
+    if self.selected and row.key==self.selected.key then
+     if row.id~=self.selected.id then page(row) end
+     return
+    end
+   end
    page(nil)
   end
   clear(list)
