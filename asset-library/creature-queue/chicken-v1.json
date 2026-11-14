@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "id": "chicken-v1",
+  "backend": "authored-chicken-v1",
+  "mode": "text",
+  "prompt": "Original galinha cartoon Black Islands: corpo arredondado, cabeça expressiva, asas e cauda estilizadas, bico e pés dourados, crista coral; marfim e creme, acabamento fosco; silhueta reconhecível e anatomia preparada para rig. Uma cena 3D, múltiplas vistas; sem realismo ou blocos.",
+  "style": "Black Islands stylized organic",
+  "references": {},
+  "triangle_budget": 6500
+}
