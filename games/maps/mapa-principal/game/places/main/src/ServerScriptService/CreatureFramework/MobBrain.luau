@@ -1,7 +1,7 @@
 --!strict
 -- Hierarchical passive-prey policy; pure decision layer, engine adapters intentionally separate.
 export type State="Idle"|"Explore"|"Forage"|"Peck"|"Flee"|"Recover"|"Flap"|"Static"|"Dead"
-export type Sense={dt:number,alive:boolean,aiEnabled:boolean,hit:boolean,threatVisible:boolean,threatDistance:number,approachSpeed:number,predator:boolean,foodAvailable:boolean,atFood:boolean,pathBlocked:boolean,escapeAvailable:boolean,stuck:boolean,random:number}
+export type Sense={dt:number,alive:boolean,aiEnabled:boolean,hit:boolean,threatVisible:boolean,threatDistance:number,approachSpeed:number,predator:boolean,foodConsumed:boolean?,foodAvailable:boolean,atFood:boolean,pathBlocked:boolean,escapeAvailable:boolean,stuck:boolean,random:number}
 export type Memory={state:State,age:number,calm:number,fear:number,hunger:number,reason:string,transitions:number}
 export type Intent={state:State,branch:string,animation:string,action:string,reason:string}
 local M={}
@@ -22,7 +22,7 @@ function M.step(m:Memory,s:Sense):Intent
    else change(m,"Flee",if s.hit then "hit" else "threat") end
   elseif m.state=="Flee" or m.state=="Recover" then change(m,"Idle","threat cleared")
   elseif m.state=="Peck" then
-   if m.age>=1.25 then m.hunger=math.max(0,m.hunger-.18);change(m,"Explore","peck completed") end
+   if m.age>=1.25 then if s.foodConsumed then m.hunger=math.max(0,m.hunger-.18) end;change(m,"Explore","peck completed") end
   elseif m.state=="Flap" then
    if m.age>=1.25 then change(m,"Idle","flap completed") end
   elseif m.state=="Static" or m.state=="Dead" then change(m,"Idle","reactivated")

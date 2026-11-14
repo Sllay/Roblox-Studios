@@ -8,7 +8,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local mesh=assert(model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
  local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
- local self:any={world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
+ local self:any={peckConsumed=false,peckAge=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
  mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={model};ray.IgnoreWater=false
  local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16
@@ -63,9 +63,9 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
     if approach~=approach then approach=0 end
    end
   end
-  self.observedThreat=if visible then t else self.observedThreat
+  if visible then self.observedThreat=t;self.lastSeen=self.clock elseif self.lastSeen and self.clock-self.lastSeen>4 then self.observedThreat=nil end
   local food=self.food
-  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,predator=predator,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
+  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,predator=predator,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
   self.hit=false;return s
  end
  function self:animate(name:string,speed:number)
@@ -86,13 +86,14 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  end
  function self:cancel() self.goal=nil;self.nextPlan=0 end
  function self:enter(intent:any)
-  self.goal=nil;self.nextPlan=0;self.blocked=false;self.stuck=false
+  self.goal=nil;self.nextPlan=0;self.blocked=false;self.stuck=false;self.peckAge=0;self.peckConsumed=false
   if intent.state=="Static" or intent.state=="Dead" then self:animate("",1) else self:animate(intent.animation,1) end
  end
  function self:plan(flee:boolean):Vector3?
   self.routePlans+=1;self.nextPlan=self.clock+1
   local p=self:position();local t=self.observedThreat or self.threat
-  local away=if t then horizontal(p-t.position) else Vector3.new(0,0,-1)
+  local angle0=self.options.random()*math.pi*2
+  local away=if flee and t then horizontal(p-t.position) else Vector3.new(math.cos(angle0),0,math.sin(angle0))
   if away.Magnitude<.01 then away=Vector3.new(0,0,-1) end
   away=away.Unit
   local choices={};local points={}
@@ -125,7 +126,10 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local action=intent.action
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
   if not moving then
-   if action=="Peck" and self.food and horizontal(self.food-self:position()).Magnitude<.8 and self.options.onPeck then self.options.onPeck(self.food,dt) end
+   if action=="Peck" then
+    self.peckAge+=dt
+    if not self.peckConsumed and self.peckAge>=.625 and self.food and horizontal(self.food-self:position()).Magnitude<.8 and self.options.onPeck then self.peckConsumed=self.options.onPeck(self.food,dt)==true end
+   end
    return "Running"
   end
   local flee=action=="ChooseSafeEscape" or action=="ReplanEscape"
