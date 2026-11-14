@@ -196,8 +196,17 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  end
  function self:beginDeath()
   self.alive=false;self:cancel();self:animate("",1);hitbox.CanQuery=false
-  mesh.Anchored=false;mesh.CanCollide=true;mesh.CanTouch=false;mesh.CanQuery=false
-  mesh:SetNetworkOwner(nil);mesh.AssemblyAngularVelocity=Vector3.new(0,0,3)
+  self.deathPose=mesh.CFrame;self.deathReleased=false
+  mesh.CanQuery=false
+ end
+ function self:deathStep(age:number)
+  if self.deathReleased then return end
+  if age<.35 then
+   mesh.CFrame=self.deathPose*CFrame.Angles(0,0,math.rad(65)*math.clamp(age/.35,0,1))
+  else
+   self.deathReleased=true;mesh.Anchored=false;mesh.CanCollide=true;mesh.CanTouch=false
+   mesh:SetNetworkOwner(nil);mesh.AssemblyAngularVelocity=Vector3.new(0,0,2)
+  end
  end
  function self:destroy()
   for _,track in pairs(self.tracks) do track:Stop(0);track:Destroy() end
