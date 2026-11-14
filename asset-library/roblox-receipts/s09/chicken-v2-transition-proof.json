@@ -1,0 +1,11 @@
+{
+  "ok": false,
+  "allPassed": false,
+  "error": "TaskScript:158: Failed to load Idle",
+  "universeId": "10769712441",
+  "speedTests": [],
+  "placeId": "93428341652658",
+  "transitions": [],
+  "noPlaceWrites": true,
+  "loadedVersion": 25
+}
