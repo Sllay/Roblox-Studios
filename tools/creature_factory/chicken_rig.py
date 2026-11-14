@@ -138,7 +138,7 @@ def pose(name,t):
     if name=="Idle":
         rot("Neck",.035*math.sin(p));rot("Head",-.055*math.sin(p),0,.035*math.sin(p*.5)**2);rot("Tail",.04*math.sin(p))
     elif name in ("Walk","Run"):
-        run=name=="Run";h=(-.07 if run else -.045)+(.018 if run else .01)*math.cos(2*p);body_height(h)
+        run=name=="Run";h=(-.09 if run else -.06)+(.018 if run else .01)*math.cos(2*p);body_height(h)
         for L,offset in [("L",0),("R",.5)]:
             a=(t+offset)%1;stance=.58;stride=.16 if run else .115;lift=.135 if run else .07
             if a<stance:y=-.055-stride+2*stride*a/stance;z=.075
