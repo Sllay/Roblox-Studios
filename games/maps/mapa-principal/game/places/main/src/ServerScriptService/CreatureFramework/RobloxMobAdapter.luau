@@ -11,20 +11,23 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local self:any={peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
  mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={model};ray.IgnoreWater=false
- local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16
+ local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16;overlap.RespectCanCollide=true
+ local groundRay=RaycastParams.new();groundRay.FilterType=Enum.RaycastFilterType.Include;groundRay.FilterDescendantsInstances={world.Terrain};groundRay.IgnoreWater=false
  self.ray=ray;self.overlap=overlap
  local half=mesh.Size.Y/2
  function self:ground(x:number,z:number):Vector3?
   if not self.options.contains(x,z) then return nil end
   self.queries+=1
-  local hit=world:Raycast(Vector3.new(x,112,z),Vector3.new(0,-160,0),ray)
+  local hit=world:Raycast(Vector3.new(x,112,z),Vector3.new(0,-160,0),groundRay)
   if not hit or hit.Instance~=world.Terrain or hit.Material==Enum.Material.Water or hit.Normal.Y<math.cos(math.rad(35)) then return nil end
   if not self.options.materials[hit.Material] then return nil end
   local p=hit.Position
   self.queries+=1
   local parts=world:GetPartBoundsInBox(CFrame.new(p+Vector3.new(0,half+.15,0)),Vector3.new(math.max(mesh.Size.X,mesh.Size.Z)+.2,mesh.Size.Y-.2,math.max(mesh.Size.X,mesh.Size.Z)+.2),overlap)
   for _,part in parts do
-   if part~=world.Terrain and part.CanQuery then return nil end
+   local owner=part:FindFirstAncestorOfClass("Model")
+   local character=owner and owner:FindFirstChildWhichIsA("Humanoid")
+   if part~=world.Terrain and part.CanCollide and not character then return nil end
   end
   return p
  end
