@@ -149,3 +149,8 @@ assert(BE.damage(event,dm,"one",15,4,4,105) and removals==1)
 assert(not BE.damage(event,dm,"one",1,4,5,106) and book.sessions[4].ledger.mobs["210080"].reason=="Kill")
 assert(BE.damage(event,dm,"dev",20,5,6,107) and (not book.sessions[5] or not book.sessions[5].ledger.mobs["210080"]))
 print("S09.5-D: safe persistence merge, load/write failure, reload, unknown schema, verified discovery/death passed")
+
+local DP=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/DeveloperPolicy")
+assert(DP.authorized(8136365379,8136365379,"User",{}) and not DP.authorized(10,8136365379,"User",{}) and not DP.authorized(8136365379,8136365379,"Group",{}))
+assert(DP.tokens("/summon mob 210080 2 here false")[2]=="210080" and DP.tokens("/other mob")==nil and DP.tokens(string.rep("x",161))==nil)
+print("S09.5-E developer authorization and command tokenization passed")

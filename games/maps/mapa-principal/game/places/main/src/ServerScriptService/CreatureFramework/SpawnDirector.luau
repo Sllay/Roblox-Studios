@@ -4,7 +4,7 @@ local D={}
 function D.new(deps:any,policy:any,template:Model,parent:Instance,seed:number):any
  local regions=deps.biomes.regions(policy.biomeId);assert(#regions>0)
  local caps={global=policy.maximum,active=policy.maximum,perChunk=3,perBiome={[policy.biomeId]=policy.maximum},perSpecies={[policy.speciesId]=policy.maximum}}
- return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,closed=false}
+ return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,closed=false}
 end
 function D.count(s:any):number return s.budget.total end
 function D.remove(s:any,id:string,now:number?):boolean
@@ -12,12 +12,14 @@ function D.remove(s:any,id:string,now:number?):boolean
  if r.foodKey then s.d.food.release(s.food,r.foodKey,id) end
  s.d.agent.destroy(r.agent);s.agents[id]=nil
  local released=s.d.population.release(s.budget,id)
- if released and not s.closed then s.d.spawn.next(s.clock,s.p,s.budget.total,now or s.now) end
+ if released and r.origin=="Natural" then
+  s.naturalCount-=1
+  if not s.closed then s.d.spawn.next(s.clock,s.p,s.naturalCount,now or s.now) end
+ end
  return released
 end
-function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
+local function create(s:any,aiEnabled:boolean?):(any,any,Model,string)
  local d,p=s.d,s.p
- if s.budget.total>=p.maximum then return nil end
  local species=assert(d.registry.get(p.speciesId))
  local model=s.template:Clone()
  local materials:{[Enum.Material]:boolean}={}
@@ -25,48 +27,83 @@ function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
  local options={contains=function(x:number,z:number)return d.biomes.regionAt(p.biomeId,x,z)~=nil end,materials=materials,random=function()return s.rng:NextNumber() end,threatProvider=d.threatProvider}
  local adapter=d.adapter.new(workspace,model,species,d.escape,options)
  adapter.aiEnabled=aiEnabled~=false
- local id=game:GetService("HttpService"):GenerateGUID(false)
- local success=false
+ return species,adapter,model,game:GetService("HttpService"):GenerateGUID(false)
+end
+local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin:string,now:number):string
+ local d,p=s.d,s.p
+ adapter.options.canMove=function(g:Vector3)
+  local region=d.biomes.regionAt(p.biomeId,g.X,g.Z)
+  return region~=nil and d.population.move(s.budget,id,p.biomeId,region.id)
+ end
+ model.Name="Creature_"..id
+ model:SetAttribute("CreatureInstanceId",id);model:SetAttribute("CreatureOrigin",origin)
+ model:SetAttribute("CreatureHealth",species.base.health);model:SetAttribute("CreatureAIEnabled",adapter.aiEnabled)
+ model.Parent=s.parent
+ local a=d.agent.new(d.brain,d.kernel,adapter)
+ local record={agent=a,adapter=adapter,origin=origin,speciesId=p.speciesId,health=species.base.health,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
+ s.agents[id]=record
+ if origin=="Natural" then s.naturalCount+=1 end
+ if d.onSpawn then d.onSpawn(id,record) end
+ return id
+end
+local function place(s:any,adapter:any,id:string,region:any,x:number,z:number,now:number,y:number?):boolean
+ local d,p=s.d,s.p
+ local g=adapter:ground(x,z)
+ if not g or (y and math.abs(g.Y-y)>6) then return false end
+ if not d.population.reserve(s.budget,id,p.speciesId,p.biomeId,region.id,true,now,10) then return false end
+ if adapter:place(g) and d.population.commit(s.budget,id,now) then return true end
+ d.population.release(s.budget,id);return false
+end
+function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
+ local d,p=s.d,s.p
+ if s.closed or s.budget.total>=p.maximum then return nil end
+ local species,adapter,model,id=create(s,aiEnabled)
  local ranked=table.clone(s.regions)
  table.sort(ranked,function(a:any,b:any)
   local ac=s.budget.chunks[p.biomeId.."/"..a.id] or 0;local bc=s.budget.chunks[p.biomeId.."/"..b.id] or 0
   if ac~=bc then return ac<bc end
   return a.id<b.id
  end)
- -- Bounded 16 samples per region, favor underpopulated regions but never force invalid ground.
  for _,region in ranked do
   if (s.budget.chunks[p.biomeId.."/"..region.id] or 0)>=s.budget.caps.perChunk then continue end
   for _=1,16 do
    s.attempts+=1
    local x=s.rng:NextNumber(region.minX+8,region.maxX-8);local z=s.rng:NextNumber(region.minZ+8,region.maxZ-8)
-   if adapter:ground(x,z) and (not d.spawnAllowed or d.spawnAllowed(Vector3.new(x,0,z))) then
-    if d.population.reserve(s.budget,id,p.speciesId,p.biomeId,region.id,true,now,10) then
-     if adapter:place(Vector3.new(x,0,z)) and d.population.commit(s.budget,id,now) then success=true;break end
-     d.population.release(s.budget,id)
-    end
+   if (not d.spawnAllowed or d.spawnAllowed(Vector3.new(x,0,z))) and place(s,adapter,id,region,x,z,now,nil) then
+    return finish(s,species,adapter,model,id,"Natural",now)
    end
   end
-  if success then break end
  end
- if not success then adapter:destroy();return nil end
- adapter.options.canMove=function(g:Vector3)
-  local region=d.biomes.regionAt(p.biomeId,g.X,g.Z)
-  return region~=nil and d.population.move(s.budget,id,p.biomeId,region.id)
+ adapter:destroy();return nil
+end
+function D.spawnDeveloper(s:any,plan:any,position:Vector3,now:number):({string},string?)
+ local ids:{string}={}
+ if s.closed or plan.speciesId~=s.p.speciesId or plan.count<1 or plan.count%1~=0 or plan.count>s.p.maximum-s.budget.total then return ids,"population limit" end
+ for i=1,plan.count do
+  local species,adapter,model,id=create(s,plan.aiEnabled)
+  local done=false
+  -- Exact requested center first; additional positions nearby, never an unrelated random chunk.
+  for k=0,24 do
+   local radius=if k==0 and i==1 then 0 else 3.5*math.ceil((k+1)/8)
+   local angle=(k+i-1)*math.pi/4
+   local x,z=position.X+radius*math.cos(angle),position.Z+radius*math.sin(angle)
+   local region=s.d.biomes.regionAt(s.p.biomeId,x,z)
+   if region and place(s,adapter,id,region,x,z,now,position.Y) then
+    table.insert(ids,finish(s,species,adapter,model,id,"Developer",now));done=true;break
+   end
+  end
+  if not done then
+   adapter:destroy();for _,created in ids do D.remove(s,created,now) end
+   return {},"no safe placement for entire request"
+  end
  end
- model.Name="Creature_"..id
- model:SetAttribute("CreatureInstanceId",id)
- model:SetAttribute("CreatureOrigin","Natural")
- model:SetAttribute("CreatureHealth",species.base.health)
- model.Parent=s.parent
- local a=d.agent.new(d.brain,d.kernel,adapter)
- s.agents[id]={agent=a,adapter=adapter,origin="Natural",speciesId=p.speciesId,health=species.base.health,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
- return id
+ return ids,nil
 end
 function D.tickSpawn(s:any,now:number):string?
  s.now=now
- if not s.d.spawn.next(s.clock,s.p,s.budget.total,now) then return nil end
+ if not s.d.spawn.next(s.clock,s.p,s.naturalCount,now) then return nil end
  local id=D.spawnOne(s,now,true)
- s.d.spawn.result(s.clock,s.p,s.budget.total,now,id~=nil)
+ s.d.spawn.result(s.clock,s.p,s.naturalCount,now,id~=nil)
  return id
 end
 local intervals:{[string]:number}={Near=.1,Mid=.5,Far=2,Abstract=10}
