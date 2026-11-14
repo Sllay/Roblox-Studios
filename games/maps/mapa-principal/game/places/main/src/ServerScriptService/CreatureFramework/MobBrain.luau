@@ -18,9 +18,7 @@ function M.step(m:Memory,s:Sense):Intent
   if danger then m.fear=1;m.calm=0 else m.fear=math.max(0,m.fear-dt*.25);m.calm+=dt end
   m.hunger=math.min(1,m.hunger+dt*.012)
   if danger or (m.state=="Flee" and m.calm<3) or (m.state=="Recover" and m.fear>.3) then
-   if m.state=="Flap" and m.age<1.25 and not s.hit then
-    -- Noninterruptible recovery only until hit; no perpetual restart.
-   elseif (s.stuck or s.pathBlocked) and not s.escapeAvailable then change(m,"Recover","escape blocked")
+   if (s.stuck or s.pathBlocked) and not s.escapeAvailable then change(m,"Recover","escape blocked")
    else change(m,"Flee",if s.hit then "hit" else "threat") end
   elseif m.state=="Flee" or m.state=="Recover" then change(m,"Idle","threat cleared")
   elseif m.state=="Peck" then
@@ -36,7 +34,7 @@ function M.step(m:Memory,s:Sense):Intent
   elseif (m.state=="Explore" or m.state=="Forage") and m.age>=8 then change(m,"Idle","exploration complete")
   end
  end
- local state=m.state
+ local state:State=m.state :: State
  local branch=if state=="Dead" then "Lifecycle" elseif state=="Static" then "Disabled" elseif state=="Flee" or state=="Recover" then "Survival" else "Routine"
  local anim=if state=="Flee" then "Run" elseif state=="Explore" or state=="Forage" then "Walk" elseif state=="Peck" then "Peck" elseif state=="Flap" then "Flap" else "Idle"
  local action=if state=="Flee" then "ChooseSafeEscape" elseif state=="Recover" then "ReplanEscape" elseif state=="Forage" then "SeekFood" elseif state=="Explore" then "Wander" elseif state=="Peck" then "Peck" elseif state=="Flap" then "Flap" else "Stop"
