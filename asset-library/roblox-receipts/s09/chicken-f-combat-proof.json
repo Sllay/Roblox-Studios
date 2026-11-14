@@ -22,11 +22,14 @@
     "coverBlocked": true
   },
   "ok": true,
-  "queries": 33,
+  "queries": 34,
   "predator": {
-    "duplicateRejected": true,
-    "nonPreyHealth": 20,
+    "hunger": 0.19999999999999996,
     "preyHealth": 15,
+    "actualThreat": true,
+    "duplicateRejected": true,
+    "satiated": true,
+    "nonPreyHealth": 20,
     "allyHealth": 20
   },
   "loadedVersion": 25
