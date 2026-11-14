@@ -4,3 +4,6 @@ Local proof: 3120 triangles, 41 watertight named components, GLB reimport preser
 
 ## Cloud checkpoint
 Workflow 43576824276 completed successfully at source ffb08a7a15769e50d32766959c628781e6d8fe0c; candidate archive `asset-library/candidates/chicken-v2-43576824276-1`. Cloud GLB SHA-256 matches local exactly: 4c96eb027d4954e1c2fdc1b8a9a8ee4329f0e8c4c4185211a652b9e86d46d0d1. 3120 triangles / 41 components / 76304 bytes; four real mesh renders. General CI 43576824324 passed. First cloud run 43576726695 failed on missing NetworkX during normal repair; dependency pinned, no geometry change. V1 workflow trigger narrowed to V1 inputs to prevent unnecessary rebuilds. No Roblox import or staging write.
+
+## User visual review
+User positively reviewed Chicken V2: improved appearance and reduced geometry complexity. Accept V2 as the visual baseline for UV/material consolidation and rig development; preserve its silhouette and style. This is visual feedback on the rendered candidate, not approval of runtime performance, final atlas, rig, animations, Roblox import, or Place publication. No geometry or map changes in this checkpoint.
