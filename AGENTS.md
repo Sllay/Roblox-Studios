@@ -69,3 +69,7 @@ For a terrain geometry edit, use the shared `tools/sync/prop_support.luau` conta
 ## Roteiro ativo / handoff de agentes
 
 Para o trabalho P4.5/P5, leia `docs/NEXT_STEPS.md` antes de escolher tarefas; `docs/ROADMAP.md` é histórico. Consulte `tools/capabilities.json`, `docs/ROBLOX_API_RESEARCH.md` e os probes reais para separar API documentada de capacidade comprovada. Reuse ferramentas e evidências por versão/hash; não declare visual/física mobile a partir de compilação ou headless. Atualize o checkpoint do roteiro com commit, versão/digest, testes, bloqueios e próxima ação; não repita save ambíguo. O roteiro não concede autorização para produção ou para novas permissões.
+
+## Original 3D asset concept images
+
+Before generating concept references for any original 3D asset, use `docs/ASSET_CONCEPT_PROMPT_TEMPLATE.md` (single hero or consistent multi-view). Default Black Islands style is intentional stylized low-poly, full asset on true transparent background, no UI/text/floor. Show actual images in chat for visual review; archive reviewed references and distinguish generated concepts from rendered mesh evidence. Follow the documented checkpoints before modeling/import. This is a visual format standard, not automatic approval.
