@@ -1,17 +1,10 @@
 {
-  "sequenceDuration": 2,
-  "universeId": "10769712441",
-  "maxPoseError": 0.05497227278840594,
-  "placeId": "93428341652658",
-  "ok": true,
-  "bonesCompared": 14,
-  "motion": 0,
-  "assetId": "123461134632415",
-  "keyframes": 49,
+  "ok": false,
   "noPlaceWrites": true,
-  "playing": true,
-  "length": 2,
-  "sampleTime": 0.5,
+  "assetId": "123461134632415",
+  "universeId": "10769712441",
+  "placeId": "93428341652658",
+  "error": "Animation failed to load, assetId: %s",
   "playbackVerified": false,
   "loadedVersion": 25
 }
