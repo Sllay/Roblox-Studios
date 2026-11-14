@@ -1,0 +1,37 @@
+name: S09 Chicken single-clip exports
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/creature_factory/chicken_variants.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: s09-chicken-exports
+  cancel-in-progress: false
+jobs:
+  exports:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: |
+          python tools/creature_factory/chicken_variants.py asset-library/candidates/chicken-rig-43578265487-1/chicken-v2-rig.glb asset-library/candidates/chicken-rig-43578265487-1/roblox-exports
+          git config user.name "asset-factory[bot]"
+          git config user.email "asset-factory[bot]@users.noreply.github.com"
+          git add asset-library/candidates/chicken-rig-43578265487-1/roblox-exports
+          if ! git diff --cached --quiet; then
+            git commit -m "assets(s09): verified static rig and five single-clip exports"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chicken-v2-roblox-exports
+          path: asset-library/candidates/chicken-rig-43578265487-1/roblox-exports/
