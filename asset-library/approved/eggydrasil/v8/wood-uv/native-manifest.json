@@ -1,0 +1,54 @@
+{
+  "sha256": "fa46eb373b3e82e73ffb665dc6d0ea1a4fd8615613b8635811ec37835d58130b",
+  "sourceGeometry": "4296202c6334c543f87007e390a669fb27e821ce02c6cf0b0c691a4057d805ea",
+  "barkUri": "rbxassetid://84113697924292",
+  "parts": {
+    "Wood_V43": {
+      "oldMeshId": "rbxassetid://72921288790767",
+      "collisionFidelity": "Default",
+      "meshId": "rbxassetid://93303906887797",
+      "meshSize": [
+        43.706443786621094,
+        48.29509353637695,
+        36.70964050292969
+      ],
+      "size": [
+        43.706443786621094,
+        48.29509353637695,
+        36.70964050292969
+      ]
+    },
+    "Wood_V42": {
+      "oldMeshId": "rbxassetid://115832734263570",
+      "collisionFidelity": "Default",
+      "meshId": "rbxassetid://82462393358236",
+      "meshSize": [
+        43.71914291381836,
+        48.53534698486328,
+        36.8404655456543
+      ],
+      "size": [
+        43.71914291381836,
+        48.53534698486328,
+        36.8404655456543
+      ]
+    },
+    "Wood_V4": {
+      "oldMeshId": "rbxassetid://130112209862755",
+      "collisionFidelity": "Default",
+      "meshId": "rbxassetid://82126585144057",
+      "meshSize": [
+        43.75764465332031,
+        48.53534698486328,
+        36.8404655456543
+      ],
+      "size": [
+        43.75764465332031,
+        48.53534698486328,
+        36.8404655456543
+      ]
+    }
+  },
+  "alphaMode": "TintMask",
+  "noPlaceWrites": true
+}
