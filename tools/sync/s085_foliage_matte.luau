@@ -34,9 +34,19 @@ local roughLoaded=false;CP:PreloadAsync({rough},function(_,s)if s==Enum.AssetFet
 assert(roughLoaded,"Roughness preload")
 local matte=nil
 if not verify then
- matte=A:CreateSurfaceAppearanceAsync({ColorMap=Content.fromUri(uri),RoughnessMap=Content.fromUri(rough)})
- assert(matte and matte:IsA("SurfaceAppearance") and matte.ColorMapContent.Uri==uri and matte.RoughnessMapContent.Uri==rough,"Native authored surface")
- matte.AlphaMode=Enum.AlphaMode.Transparency
+ local Serial=game:GetService("SerializationService")
+ local decoded=Serial:DeserializeInstancesAsync(Encoding:Base64Decode(buffer.fromstring(cfg.surfaceBlob)))
+ assert(#decoded==1 and decoded[1]:IsA("Model") and decoded[1].Parent==nil,"Native material template")
+ local part=decoded[1]:FindFirstChild("TemplateOnly");assert(part and part:IsA("MeshPart"))
+ local s=part:FindFirstChild("MatteSurface");assert(s and s:IsA("SurfaceAppearance"))
+ assert(s.ColorMapContent.Uri==uri and s.RoughnessMapContent.Uri==rough and s.AlphaMode==Enum.AlphaMode.Transparency,"Native authored surface")
+ -- Roundtrip through engine serialization before using the template.
+ local bytes=Serial:SerializeInstancesAsync({decoded[1]})
+ local check=Serial:DeserializeInstancesAsync(bytes)
+ assert(#check==1 and check[1]:IsA("Model"),"Native roundtrip")
+ local q=check[1]:FindFirstChild("MatteSurface",true)
+ assert(q and q:IsA("SurfaceAppearance") and q.ColorMapContent.Uri==uri and q.RoughnessMapContent.Uri==rough and q.AlphaMode==Enum.AlphaMode.Transparency,"Roundtrip map persistence")
+ matte=q:Clone();decoded[1]:Destroy();check[1]:Destroy()
 end
 local loaded=false;CP:PreloadAsync({uri},function(_,s)if s==Enum.AssetFetchStatus.Success then loaded=true end end)
 assert(loaded,"Eggy texture preload")

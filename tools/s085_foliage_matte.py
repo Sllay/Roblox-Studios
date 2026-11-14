@@ -1,5 +1,5 @@
 """S08.5: shared white roughness map, guarded native staging transaction."""
-import argparse,json,os,sys
+import argparse,base64,json,os,sys,subprocess
 from scene_sync import ROOT,task,write,require,read
 from deploy import load_all,resolve
 from sharded_scene_sync import latest
@@ -27,8 +27,13 @@ def main():
     require(receipt["state"]=="created","Image upload")
     uri="rbxassetid://"+receipt["assetId"]
     print("S085_TEXTURE",uri,flush=True)
+    out.mkdir(parents=True,exist_ok=True)
+    template=out/"matte-surface.rbxm"
+    subprocess.run(["cargo","run","--quiet","--manifest-path",str(ROOT/"tools/assets/rbx-author/Cargo.toml"),"--","--matte-template",str(template),"rbxassetid://89626593244521",uri],check=True,timeout=300)
+    blob=base64.b64encode(template.read_bytes()).decode()
+    require(len(blob)<16000,"Material-only template budget")
     def native(mode,version,**opts):
-        return task(target,key,source,read_version=version,compile_source=True,mode=mode,roughnessUri=uri,**opts)
+        return task(target,key,source,read_version=version,compile_source=True,mode=mode,roughnessUri=uri,surfaceBlob=blob,**opts)
     preview=retry(lambda:native("preview",23))
     write(out/"preview.json",preview)
     expected={"tree":250,"pine":16,"bush":200}
