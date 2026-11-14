@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "release": "S08.3",
+  "environment": "staging",
+  "placeId": "93428341652658",
+  "universeId": "10769712441",
+  "sourceCommit": "e78980470fbc7c192604109a16a80d3c30e48660",
+  "previewRunId": 43543767107,
+  "runId": 43544008026,
+  "artifactId": 14092504828,
+  "receipt": {
+    "status": "verified",
+    "beforeVersion": 21,
+    "retryAllowed": false,
+    "afterVersion": 22,
+    "counts": {
+      "rock": 150,
+      "tree": 250,
+      "pine": 16,
+      "bush": 200
+    },
+    "tiles": {
+      "chunk-1-1": {
+        "rock": 16,
+        "tree": 27,
+        "pine": 4,
+        "bush": 22
+      },
+      "chunk--1-1": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 4,
+        "bush": 22
+      },
+      "chunk-0-0": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 0,
+        "bush": 22
+      },
+      "chunk-0--1": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 0,
+        "bush": 22
+      },
+      "chunk-1-0": {
+        "rock": 16,
+        "tree": 27,
+        "pine": 0,
+        "bush": 22
+      },
+      "chunk--1--1": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 0,
+        "bush": 23
+      },
+      "chunk-1--1": {
+        "rock": 16,
+        "tree": 28,
+        "pine": 0,
+        "bush": 22
+      },
+      "chunk--1-0": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 1,
+        "bush": 23
+      },
+      "chunk-0-1": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 7,
+        "bush": 22
+      }
+    },
+    "digest": "kXYPuOe7GBkJSaFSdGbmUu5xEBdtDG1urMZDRUs6BNY=",
+    "newModels": 398,
+    "newColliders": 268
+  },
+  "previewProof": {
+    "universeId": "10769712441",
+    "placeId": "93428341652658",
+    "added": {
+      "rock": 144,
+      "pine": 4,
+      "tree": 130,
+      "bush": 120
+    },
+    "fineUsed": 0,
+    "clientRenderVerified": false,
+    "counts": {
+      "rock": 150,
+      "tree": 250,
+      "pine": 16,
+      "bush": 200
+    },
+    "newMeshParts": 652,
+    "tiles": {
+      "chunk-1-1": {
+        "rock": 16,
+        "tree": 27,
+        "pine": 4,
+        "bush": 22
+      },
+      "chunk--1-1": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 4,
+        "bush": 22
+      },
+      "chunk-0-0": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 0,
+        "bush": 22
+      },
+      "chunk-0--1": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 0,
+        "bush": 22
+      },
+      "chunk-1-0": {
+        "rock": 16,
+        "tree": 27,
+        "pine": 0,
+        "bush": 22
+      },
+      "chunk--1--1": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 0,
+        "bush": 23
+      },
+      "chunk-1--1": {
+        "rock": 16,
+        "tree": 28,
+        "pine": 0,
+        "bush": 22
+      },
+      "chunk--1-0": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 1,
+        "bush": 23
+      },
+      "chunk-0-1": {
+        "rock": 17,
+        "tree": 28,
+        "pine": 7,
+        "bush": 22
+      }
+    },
+    "controllerNormalized": true,
+    "newModels": 398,
+    "readyForStaging": true,
+    "rejected": {
+      "occupancy": 6818,
+      "boundary": 758,
+      "support": 313,
+      "used": 7586,
+      "altitude": 23381,
+      "canopy": 1275
+    },
+    "originalFingerprint": "qVTRlOM0ifkrnRUkRsJ+FvQPWj1CktNvaNl1bvCKntc=",
+    "candidates": 29356,
+    "noPlaceWrites": true,
+    "searchAttempts": 40529,
+    "fingerprint": "3GMpHrR9eBa6pGD+gtUkbxjaDwS0d75qW3/Q8aDqe8c=",
+    "newColliders": 268,
+    "newInstances": 1970,
+    "digest": "kXYPuOe7GBkJSaFSdGbmUu5xEBdtDG1urMZDRUs6BNY=",
+    "loadedVersion": 21
+  },
+  "playableCounts": {
+    "trees": 250,
+    "pines": 16,
+    "bushes": 200,
+    "largeRocks": 150,
+    "eggydrasil": 1,
+    "stone": 500,
+    "stick": 500,
+    "logs": 250
+  },
+  "externalScenery": {
+    "trees": 13,
+    "bushes": 11
+  },
+  "clientRenderVerified": false
+}
