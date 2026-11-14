@@ -84,7 +84,7 @@ local counts={Stone=0,Branch=0};local seen={};local saved={};local failures={};l
 local function fail(id,why)
  failCount+=1;if #failures<50 then table.insert(failures,{id=id,reason=why}) end
 end
-local maxShift=0;local maxGap=0
+local maxShift=0;local maxGap=0;local adjustments={};local planRows={}
 local resources=F:GetChildren();table.sort(resources,function(a,b)return a.Name<b.Name end)
 for _,m in resources do
  local id=m:GetAttribute("RSManagedId");assert(id==m.Name and not seen[id],"Resource identity");seen[id]=true
@@ -112,20 +112,35 @@ for _,m in resources do
  local newSize=src.Size*factor
  p:ApplyMesh(src);p.Size=newSize;p.CFrame=frame;p.Color=Color3.new(1,1,1);p.TextureID=src.TextureID
  assert(p.MeshId==src.MeshId and p.TextureID==src.TextureID and p.Anchored==original.Anchored and p.CanCollide==original.CanCollide and p.CollisionGroup==original.CollisionGroup,"Replacement contract")
- local low,high=math.huge,-math.huge
- for _,a in {{0,0},{-.42,0},{.42,0},{0,-.42},{0,.42},{-.42,-.42},{.42,-.42},{-.42,.42},{.42,.42}} do
-  local q=frame:PointToWorldSpace(Vector3.new(a[1]*newSize.X,-newSize.Y/2,a[2]*newSize.Z))
-  local h=ground(q.X,q.Z)
-  if not h then low=math.huge;break end
-  local gap=q.Y-h.Position.Y;low=math.min(low,gap);high=math.max(high,gap)
+ local function support(testSize)
+  local low,high=math.huge,-math.huge
+  for _,a in {{0,0},{-.42,0},{.42,0},{0,-.42},{0,.42},{-.42,-.42},{.42,-.42},{-.42,.42},{.42,.42}} do
+   local q=frame:PointToWorldSpace(Vector3.new(a[1]*testSize.X,-testSize.Y/2,a[2]*testSize.Z))
+   local h=ground(q.X,q.Z)
+   if not h then return nil,nil end
+   local gap=q.Y-h.Position.Y;low=math.min(low,gap);high=math.max(high,gap)
+  end
+  return .01-low,high-low+.01
  end
- if low==math.huge then fail(id,"terrain-ray-miss")
+ local lift,gap=support(newSize)
+ local initialGap=gap;local multiplier=1
+ if kind=="Branch" and gap and (gap>.22 or math.abs(lift)>2) then
+  -- Only adjust exceptional branches, preserving their length/width ratio and world heading.
+  for _,scale in {.95,.90,.85,.80,.75,.70} do
+   local l,g=support(newSize*scale)
+   if l and g<=.22 and math.abs(l)<=2 then
+    multiplier=scale;lift=l;gap=g;break
+   end
+  end
+ end
+ if not lift then fail(id,"terrain-ray-miss")
  else
-  local lift=.01-low;local gap=high-low+.01
-  p.CFrame=frame+Vector3.yAxis*lift
+  p.Size=newSize*multiplier;p.CFrame=frame+Vector3.yAxis*lift
   maxShift=math.max(maxShift,math.abs(lift));maxGap=math.max(maxGap,gap)
+  if multiplier<1 then table.insert(adjustments,{id=id,multiplier=multiplier,initialGap=initialGap,finalGap=gap,size=vec(p.Size)}) end
   if gap>.22 or math.abs(lift)>2 then fail(id,"support-gap-or-height") end
  end
+ table.insert(planRows,Http:JSONEncode({id=id,mesh=p.MeshId,texture=p.TextureID,size=vec(p.Size),frame={p.CFrame:GetComponents()}}))
  assert(p.CFrame.X==cf.X and p.CFrame.Z==cf.Z and math.abs(p.CFrame.RightVector:Dot(heading))>.95,"XZ/heading changed")
  table.insert(saved,{model=m,p=p,original=original,pivot=oldPivot,cf=cf,size=size})
 end
@@ -193,4 +208,4 @@ for _,m in templates do m:Destroy() end
 local after=terrainState();assert(#before==49 and #after==49,"Terrain coverage")
 for i,r in after do assert(r.digest==before[i].digest,"Terrain changed") end
 assert(fingerprint()==fp,"Non-resource scene changed")
-return syncResult({noPlaceWrites=true,terrainRehydratedBlocks=rehydrated,counts=counts,loadedAssets=loaded,resourceFailures=failCount,failures=failures,maxVerticalShift=maxShift,maxSupportGap=maxGap,terrain=after,nonResourceFingerprint=fp,treeSite=site,treeSitesTried=tried,tint=tint,clientRenderVerified=false,readyForVisualReview=failCount==0 and site~=nil})
+return syncResult({noPlaceWrites=true,terrainRehydratedBlocks=rehydrated,counts=counts,loadedAssets=loaded,resourceFailures=failCount,failures=failures,scaleAdjustments=adjustments,resourcePlanDigest=hash(table.concat(planRows,";")),maxVerticalShift=maxShift,maxSupportGap=maxGap,terrain=after,nonResourceFingerprint=fp,treeSite=site,treeSitesTried=tried,tint=tint,clientRenderVerified=false,readyForVisualReview=failCount==0 and site~=nil})
