@@ -39,7 +39,7 @@ function M.step(m:Memory,s:Sense,gate:((string,string,boolean,{[string]:number},
    change(m,if s.atFood then "Peck" else "Forage","food")
   elseif m.state=="Idle" and m.age>=2 then
    change(m,if s.random<.12 then "Flap" else "Explore","idle complete")
-  elseif (m.state=="Explore" or m.state=="Forage") and m.age>=8 then change(m,"Idle","exploration complete")
+  elseif (m.state=="Explore" or m.state=="Forage") and m.age>=24 then change(m,"Idle","exploration complete")
   end
  end
  local state:State=m.state :: State
