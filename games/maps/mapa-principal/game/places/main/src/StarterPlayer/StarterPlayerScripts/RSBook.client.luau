@@ -15,10 +15,11 @@ end
 local function command(text:string)
  if commandBusy then return end;commandBusy=true
  task.spawn(function()
-  local ok,result=pcall(function()return remote:InvokeServer("command",text)end)
+  local ok,result=pcall(function()return remote:InvokeServer("command",{text=text,direction=if workspace.CurrentCamera then workspace.CurrentCamera.CFrame.LookVector else Vector3.zero})end)
   commandBusy=false
-  view.cstatus.Text=if ok and result and result.ok then ("Criados: "..tostring(result.count)) else ("Falha: "..tostring(if ok and result then result.error else "serviço indisponível"))
+  view.cstatus.Text=if ok and result and result.ok then (result.message or ("Criados: "..tostring(result.count))) else ("Falha: "..tostring(if ok and result then result.error else "serviço indisponível"))
  end)
 end
 view=View.new(players.LocalPlayer:WaitForChild("PlayerGui"),{refresh=refresh,command=command})
-while view.gui.Parent do task.wait(3);if view.box.Visible then refresh(view.order) end end
+refresh(view.order)
+while view.gui.Parent do task.wait(3);if view.box.Visible or not view.snapshot or not view.snapshot.ready then refresh(view.order) end end
