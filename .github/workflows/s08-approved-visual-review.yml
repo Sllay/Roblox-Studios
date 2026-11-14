@@ -1,0 +1,35 @@
+name: S08 approved asset visual review
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/s08-approved-visual-review.yml'
+      - 'tools/asset_factory/s08_approved_visual_review.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-pil fonts-dejavu-core
+      - run: |
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/s08_approved_visual_review.py -- dist/s08-visual
+          python3 tools/asset_factory/s08_approved_visual_sheet.py dist/s08-visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s08-approved-visual-review
+          path: dist/s08-visual/
+      - name: Archive visual proof only
+        run: |
+          mkdir -p games/maps/mapa-principal/docs/s08/visual
+          cp dist/s08-visual/contact-sheet.png dist/s08-visual/report.json games/maps/mapa-principal/docs/s08/visual/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games/maps/mapa-principal/docs/s08/visual
+          git commit -m "evidence(s08): approved runtime asset visual contact sheet"
+          git pull --rebase origin main
+          git push origin HEAD:main
