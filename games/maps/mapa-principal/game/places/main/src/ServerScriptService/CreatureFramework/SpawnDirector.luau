@@ -191,8 +191,8 @@ function D.step(s:any,dt:number,now:number)
   local distance=if s.d.distanceProvider then s.d.distanceProvider(adapter:position()) else 0
   local tier=if s.d.scheduler then s.d.scheduler.tier(distance,r.tier) else "Near"
   local previous=r.tier;r.tier=tier
-  local moving=tier=="Near" or tier=="Mid"
-  if previous~=tier then r.nextDecision=now;r.lastMotion=now;r.agent.adapter:cancel() end
+  local moving=tier~="Abstract"
+  if previous~=tier then r.nextDecision=now end
   if r.foodKey and not s.d.food.owns(s.food,r.foodKey,id,now) then r.foodKey=nil;adapter:setFood(nil) end
   if r.profile=="PassivePrey" and moving and adapter.aiEnabled and r.agent.memory.state~="Peck" and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
    r.nextFood=now+3
@@ -217,10 +217,10 @@ function D.step(s:any,dt:number,now:number)
    s.d.agent.decide(r.agent,math.max(dt,now-r.lastDecision));r.lastDecision=now;r.nextDecision=now+intervals[tier]
   end
   local intent=r.agent.intent
-  if moving and previous~=tier and intent and adapter.aiEnabled and adapter.alive then adapter:animate(intent.animation,1) end
-  if moving and intent and now-r.lastMotion>=(if tier=="Near" then 0 else .19) then
+  if moving and previous=="Abstract" and intent and adapter.aiEnabled and adapter.alive then adapter:animate(intent.animation,1) end
+  if moving and intent and now-r.lastMotion>=(if tier=="Near" then 0 else if tier=="Mid" then 1/30 else 1/15) then
    s.d.agent.act(r.agent,math.min(.2,now-r.lastMotion));r.lastMotion=now
-  elseif not moving then adapter:animate("",1) end
+  elseif not moving then r.lastMotion=now;adapter:animate("",1) end
   if not moving or (intent and (intent.state=="Flee" or intent.state=="Recover" or intent.state=="Static")) then
    if r.foodKey then s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil;adapter:setFood(nil) end
   elseif r.foodKey and not adapter.food then
