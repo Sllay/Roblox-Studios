@@ -1,0 +1,32 @@
+name: S08.2 native audit and placement preview
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/s082-preview.yml'
+      - 'tools/s082_preview.py'
+      - 'tools/sync/s082_preview.luau'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: bash tools/install-luau.sh
+      - env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s082_preview.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s082-preview
+          path: dist/s082/
