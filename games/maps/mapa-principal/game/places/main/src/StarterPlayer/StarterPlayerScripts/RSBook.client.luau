@@ -2,7 +2,7 @@
 local players=game:GetService("Players");local rs=game:GetService("ReplicatedStorage")
 local transport=rs:WaitForChild("RSBookTransport",20);if not transport then return end
 local remote=transport:WaitForChild("Request",10);if not remote or not remote:IsA("RemoteFunction") then return end
-local View=require(script.Parent:WaitForChild("BookView") :: ModuleScript)
+local View=require(assert(script.Parent):WaitForChild("BookView") :: ModuleScript)
 local view:any=nil;local busy=false;local commandBusy=false
 local function refresh(order:string)
  if busy then return end;busy=true

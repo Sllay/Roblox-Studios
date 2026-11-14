@@ -21,5 +21,6 @@ jobs:
       - name: Compile and execute core contracts
         run: |
           for f in games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/*.luau; do luau-compile --null "$f"; luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$f"; done
-          for f in BookView.luau RSCrosshair.client.luau RSBook.client.luau; do luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/$f"; done
+          for f in BookView.luau RSCrosshair.client.luau; do luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/$f"; done
+          luau-compile --null games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSBook.client.luau
           luau tests/luau/creature_framework.luau

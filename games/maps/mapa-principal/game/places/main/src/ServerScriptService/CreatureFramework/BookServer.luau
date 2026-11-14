@@ -35,17 +35,30 @@ local function kill(s:any,player:Player,selector:string?,direction:any):any
   dm.cancelDeveloperNear(director,center,RADIUS,if selector=="@e" or selector=="@a" then nil else selector)
  else return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
  local count=0
- for _,id in ids do if dm.remove(director,id,s.fauna.clock) then count+=1 end end
+ for i,id in ids do
+  if dm.remove(director,id,s.fauna.clock) then count+=1 end
+  if i%64==0 then task.wait() end
+ end
  if selector=="@a" then
   local world=director.d.combatState
   if world then
    for id,a in pairs(world.actors) do
     if a.alive and (a.getPosition()-center).Magnitude<=RADIUS and not director.agents[id] then
-     local h=a.model:FindFirstChildWhichIsA("Humanoid");if h and h.Health>0 then h.Health=0;count+=1 end
+     local h=a.model:FindFirstChildWhichIsA("Humanoid")
+     if h and h.Health>0 then h.Health=0;count+=1 elseif not h then a.applyDamage(1e9,"developer:"..tostring(player.UserId));count+=1 end
     end
    end
   end
   for _,p in Players:GetPlayers() do local c=p.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil;local pr=characterRoot(p);if h and pr and (pr.Position-center).Magnitude<=RADIUS then h.Health=0;count+=1 end end
+  local seen:{[Model]:boolean}={}
+  local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.MaxParts=0
+  for _,part in workspace:GetPartBoundsInRadius(center,RADIUS,overlap) do
+   local m=part:FindFirstAncestorOfClass("Model")
+   if m and not seen[m] then
+    seen[m]=true;local h=m:FindFirstChildWhichIsA("Humanoid")
+    if h and h.Health>0 and (m:GetPivot().Position-center).Magnitude<=RADIUS then h.Health=0;count+=1 end
+   end
+  end
  end
  return {ok=true,count=count,message="Eliminados: "..tostring(count)}
 end

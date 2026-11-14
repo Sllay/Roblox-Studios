@@ -138,11 +138,26 @@ local registry=get("CreatureRegistry");local species=assert(registry.get("210080
 local spawn=get("SpawnPolicy");assert(spawn.chicken.maximum==15 and spawn.chicken.respawnSeconds==300 and spawn.chicken.allowedMaterials.Grass)
 assert(#get("BiomeRegions").regions("emerald_valley")==9 and registry.bookRow("210080",true).id=="210080")
 assert(not workspace:FindFirstChild("RSCreatures") and not game:GetService("ReplicatedStorage"):FindFirstChild("RSBookTransport"),"Runtime objects not part of saved scene")
+-- Native instance-level GUI smoke; never persist the test GUI.
+local viewModule=require(client.BookView)
+local temp=Instance.new("Folder");local view=viewModule.new(temp,{refresh=function()end,command=function()end})
+local row=registry.bookRow("210080",true);row.key="entry_1"
+view:update({ready=true,developer=true,discovered=1,total=1,percent=100,unknown=0,rows={row}})
+assert(view.dev.Visible and view.box.CatalogPage.Visible and not view.box.CreaturePage.Visible,"catalog")
+view:select(row)
+assert(view.box.CreaturePage.Visible and not view.box.CatalogPage.Visible and view.box.CreaturePage.PreviewPanel.Preview.Image~="","detail")
+assert(view.detail:FindFirstChild("TechnicalId") and view.detail.TechnicalId.Text=="ID técnico: 210080","detail identity")
+view:back();assert(view.box.CatalogPage.Visible and not view.box.CreaturePage.Visible,"back")
+temp:Destroy()
+local brain=get("MobBrain");local kernel=get("AIKernel");local mem=brain.new();mem.state="Peck"
+local sense={dt=2,alive=true,aiEnabled=true,hit=false,threatVisible=false,threatDistance=100,approachSpeed=0,predator=false,foodAvailable=true,atFood=true,pathBlocked=false,escapeAvailable=true,stuck=false,random=.5,actionComplete=false}
+assert(brain.step(mem,sense,kernel.canInterrupt).state=="Peck","protected peck")
+sense.hit=true;assert(brain.step(mem,sense,kernel.canInterrupt).state=="Flee","damage preemption")
 assert(fingerprint()==beforeFP and environment()==env,"Unexpected scene changes")
 local endTerrain=terrainState();assert(#endTerrain==49)
 for _,r in endTerrain do assert(cfg.expectedTerrain[r.id]==r.digest,"Terrain changed") end
 assert(#cfg.sources==34,"Reviewed V27 script scope")
-local result={noPlaceWrites=cfg.mode~="apply",fingerprint=beforeFP,environment=env,terrainRegions=#endTerrain,counts=counts,installedScripts=#cfg.sources,sourceHashes=hashes,bones=bones,enabled=true,maximum=15,respawnSeconds=300,biomes=9,template=true,clientRenderVerified=false,defaultClonePairNormalized=true}
+local result={noPlaceWrites=cfg.mode~="apply",fingerprint=beforeFP,environment=env,terrainRegions=#endTerrain,counts=counts,installedScripts=#cfg.sources,sourceHashes=hashes,bones=bones,enabled=true,maximum=15,respawnSeconds=300,biomes=9,template=true,clientRenderVerified=false,nativeBookSmoke=true,protectedStateSmoke=true,defaultClonePairNormalized=true}
 if cfg.mode=="apply" then
  assert(cfg.confirmStaging and game.PlaceVersion==26,"Explicit save guard")
  game:GetService("AssetService"):SavePlaceAsync({SaveWithoutPublish=false});result.saved=true
