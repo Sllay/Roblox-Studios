@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "id": "chicken-v1",
+  "state": "review_ready",
+  "mode": "authored_text_pilot",
+  "triangles": 5008,
+  "triangleBudget": 6500,
+  "meshObjects": 36,
+  "materials": 7,
+  "uv": true,
+  "bounds": {
+    "min": [
+      -0.6564698219299316,
+      -1.2353689670562744,
+      0.0
+    ],
+    "max": [
+      0.6564698219299316,
+      1.0172640085220337,
+      2.25
+    ]
+  },
+  "views": [
+    "front",
+    "back",
+    "left",
+    "right",
+    "top",
+    "three-quarter"
+  ],
+  "roundtrip": true,
+  "rigged": false,
+  "texturedAtlas": false,
+  "robloxPublished": false,
+  "artisticApproval": false,
+  "requestSha256": "567b4aa7419b752867dc2cda02f3c315a4d9008c9f7252d6836a981f25766d3c"
+}
