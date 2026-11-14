@@ -1,7 +1,7 @@
 {
   "id": "chicken-v2-peck-animation",
   "sha256": "b4b7bca82f9d1a2db73f8255ba3b1c383197da6364532da192e1df0e9ae2fe91",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "noPlaceWrites": true,
   "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/peck.rbxmx",
@@ -11,5 +11,31 @@
     "operationId": "3ab60e96-6724-44a6-8451-2f20b94473bc",
     "done": false
   },
-  "operationPath": "operations/3ab60e96-6724-44a6-8451-2f20b94473bc"
+  "operationPath": "operations/3ab60e96-6724-44a6-8451-2f20b94473bc",
+  "operation": {
+    "path": "operations/3ab60e96-6724-44a6-8451-2f20b94473bc",
+    "operationId": "3ab60e96-6724-44a6-8451-2f20b94473bc",
+    "done": true,
+    "response": {
+      "path": "assets/136236973921119",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T09:23:24.053Z",
+      "assetId": "136236973921119",
+      "displayName": "Black Islands Chicken V2 Peck",
+      "description": "Original Chicken V2 Peck, rig asset 76960331636475",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "136236973921119"
 }
