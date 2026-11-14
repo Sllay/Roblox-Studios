@@ -1,7 +1,7 @@
 {
   "id": "chicken-v2-run-animation",
   "sha256": "0d170e0c8108772a302557a87cb858e764e64e30a2e6b9697a78f5d02d8d3984",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "noPlaceWrites": true,
   "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/run.rbxmx",
@@ -11,5 +11,31 @@
     "operationId": "01f3c363-ef66-4d41-a036-3a2c625c6484",
     "done": false
   },
-  "operationPath": "operations/01f3c363-ef66-4d41-a036-3a2c625c6484"
+  "operationPath": "operations/01f3c363-ef66-4d41-a036-3a2c625c6484",
+  "operation": {
+    "path": "operations/01f3c363-ef66-4d41-a036-3a2c625c6484",
+    "operationId": "01f3c363-ef66-4d41-a036-3a2c625c6484",
+    "done": true,
+    "response": {
+      "path": "assets/128056941885930",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T09:23:13.327Z",
+      "assetId": "128056941885930",
+      "displayName": "Black Islands Chicken V2 Run",
+      "description": "Original Chicken V2 Run, rig asset 76960331636475",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "128056941885930"
 }
