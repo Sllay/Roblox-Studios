@@ -43,10 +43,13 @@ local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin
  local record:any={agent=nil,adapter=adapter,origin=origin,speciesId=p.speciesId,profile=species.profile,health=species.base.health,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
  if d.factory then
   local actor:any={id=id,model=model,faction=species.faction,prey=species.prey,profile=species.profile,alive=true,damage=species.base.damage,hunger=1,getPosition=function()return adapter.mesh.Position end,getVelocity=function()return adapter.mesh.AssemblyLinearVelocity end,healthRatio=function()return record.health/species.base.health end}
-  actor.applyDamage=function(amount:number)
+  actor.applyDamage=function(amount:number,attackerId:string?)
    if not actor.alive or amount<=0 then return end
    record.health=math.max(0,record.health-amount);model:SetAttribute("CreatureHealth",record.health)
-   if record.health==0 then actor.alive=false;adapter.alive=false else adapter:damage() end
+   if record.health==0 then actor.alive=false;adapter.alive=false else
+    local attacker=if attackerId and d.combatState then d.combatState.actors[attackerId] else nil
+    adapter:damage(if attacker then {position=attacker.getPosition(),velocity=attacker.getVelocity(),model=attacker.model,predator=attacker.profile=="Predator"} else nil)
+   end
   end
   record.actor=actor
   record.agent=d.factory.new(d,species,adapter,actor,d.combatState)
@@ -152,7 +155,7 @@ function D.step(s:any,dt:number,now:number)
   end
   local intent=r.agent.intent
   if moving and previous~=tier and intent and adapter.aiEnabled and adapter.alive then adapter:animate(intent.animation,1) end
-  if moving and intent and now-r.lastMotion>=(if tier=="Near" then .09 else .19) then
+  if moving and intent and now-r.lastMotion>=(if tier=="Near" then .03 else .19) then
    s.d.agent.act(r.agent,math.min(.2,now-r.lastMotion));r.lastMotion=now
   elseif not moving then adapter:animate("",1) end
   if not moving or (intent and (intent.state=="Flee" or intent.state=="Recover" or intent.state=="Static")) then

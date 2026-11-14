@@ -1,7 +1,7 @@
 --!strict
 -- Shared action execution: perception/locomotion are injected, no per-agent heartbeat.
 local A={}
-local states={Alive={},Routine={parent="Alive"},Survival={parent="Alive"},Combat={parent="Alive"},Lifecycle={},Disabled={}}
+local states={Alive={},Routine={parent="Alive"},Survival={parent="Alive"},Combat={parent="Alive"},Lifecycle={},Disabled={},Idle={parent="Routine"},Explore={parent="Routine"},Forage={parent="Routine"},Peck={parent="Routine"},Flap={parent="Routine"},Flee={parent="Survival"},Recover={parent="Survival"},Dead={parent="Lifecycle"},Static={parent="Disabled"}}
 function A.new(brain:any,kernel:any,adapter:any):any
  local board:any={adapter=adapter,intent=nil}
  local mem=kernel.memory()
@@ -17,7 +17,7 @@ function A.decide(a:any,dt:number):any
  local changed=not a.intent or a.intent.state~=intent.state
  if changed then
   a.kernel.abort(a.tree,a.treeMemory,a.board)
-  a.kernel.transition(a.machine,intent.branch)
+  a.kernel.transition(a.machine,if states[intent.state] then intent.state else intent.branch)
   a.adapter:enter(intent)
  end
  a.intent=intent;a.board.intent=intent
