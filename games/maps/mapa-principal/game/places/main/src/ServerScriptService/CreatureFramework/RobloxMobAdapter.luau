@@ -122,6 +122,15 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   local best=escape.choose(choices,distance,8);return if best then points[best.id] else nil
  end
+ function self:moveToward(goal:Vector3,speed:number,dt:number):boolean
+  local p=self:position();local delta=horizontal(goal-p)
+  if delta.Magnitude<.01 then return true end
+  local step=math.min(delta.Magnitude,speed*math.clamp(dt,0,.2))
+  local q=p+delta.Unit*step;local g=self:ground(q.X,q.Z)
+  if not g or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
+  local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+delta.Unit);self.moveDistance+=step
+  return true
+ end
  function self:execute(intent:any,dt:number):string
   local action=intent.action
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
@@ -141,13 +150,9 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   local goal=self.goal
   if not goal then self:animate("Idle",1);return "Running" end
-  local delta=horizontal(goal-p);if delta.Magnitude<.01 then self.goal=nil;return "Running" end
   local speed=if flee then self.stats.runSpeed else self.stats.walkSpeed
-  local step=math.min(delta.Magnitude,speed*math.clamp(dt,0,.2))
-  local q=p+delta.Unit*step;local g=self:ground(q.X,q.Z)
-  if not g or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then self.goal=nil;self.blocked=true;self:animate("Idle",1);return "Running" end
-  local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+delta.Unit)
-  self.moveDistance+=step;self.blocked=false;self:animate(if flee then "Run" else "Walk",1)
+  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.blocked=true;self:animate("Idle",1);return "Running" end
+  self.blocked=false;self:animate(if flee then "Run" else "Walk",1)
   return "Running"
  end
  function self:destroy()

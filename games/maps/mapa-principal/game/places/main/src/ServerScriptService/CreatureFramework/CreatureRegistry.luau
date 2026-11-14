@@ -27,6 +27,8 @@ function R.validate(s:Species):boolean
  assert(#s.name>0 and #s.description>0 and #s.preview.source>0 and #s.biomes>0,"missing Book metadata")
  assert(s.disposition=="Passive" or s.disposition=="Neutral" or s.disposition=="Aggressive","invalid disposition")
  for _,biome in s.biomes do assert(biomeNames[biome]~=nil,"unknown biome") end
+ assert(s.profile=="PassivePrey" or s.profile=="Predator" or s.profile=="Melee" or s.profile=="Ranged","unknown profile")
+ if s.profile~="PassivePrey" then assert(tonumber(s.animations.Attack)~=nil,"combat profile needs Attack clip") end
  assert(#s.category>0 and #s.profile>0 and tonumber(s.modelAssetId)~=nil,"invalid species contract")
  assert(s.levelCap>=1 and s.levelCap%1==0 and s.levelCap<=100,"invalid level cap")
  for key,value in pairs(s.base) do assert(value>=0 and value<math.huge and value==value,"invalid base "..key) end

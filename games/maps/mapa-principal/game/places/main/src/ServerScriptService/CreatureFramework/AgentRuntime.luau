@@ -1,7 +1,7 @@
 --!strict
 -- Shared action execution: perception/locomotion are injected, no per-agent heartbeat.
 local A={}
-local states={Alive={},Routine={parent="Alive"},Survival={parent="Alive"},Lifecycle={},Disabled={}}
+local states={Alive={},Routine={parent="Alive"},Survival={parent="Alive"},Combat={parent="Alive"},Lifecycle={},Disabled={}}
 function A.new(brain:any,kernel:any,adapter:any):any
  local board:any={adapter=adapter,intent=nil}
  local mem=kernel.memory()

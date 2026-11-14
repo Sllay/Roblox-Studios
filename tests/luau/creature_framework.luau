@@ -154,3 +154,41 @@ local DP=require("../../games/maps/mapa-principal/game/places/main/src/ServerScr
 assert(DP.authorized(8136365379,8136365379,"User",{}) and not DP.authorized(10,8136365379,"User",{}) and not DP.authorized(8136365379,8136365379,"Group",{}))
 assert(DP.tokens("/summon mob 210080 2 here false")[2]=="210080" and DP.tokens("/other mob")==nil and DP.tokens(string.rep("x",161))==nil)
 print("S09.5-E developer authorization and command tokenization passed")
+
+local CP=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CombatProfiles")
+local CB=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CombatBrain")
+local CT=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CombatTargets")
+local CG=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CombatSpatialIndex")
+local CR=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CombatRules")
+local melee=assert(CP.get("Melee"));local ranged=assert(CP.get("Ranged"));local predator=assert(CP.get("Predator"))
+local mb=CB.withProfile(melee);local mem=mb.new()
+local cs:CB.Sense={dt=.1,alive=true,aiEnabled=true,healthRatio=1,hunger=1,targetId="target",targetAlive=true,targetVisible=true,targetDistance=10,pathBlocked=false,atGoal=false}
+assert(mb.step(mem,cs).state=="Chase")
+cs.targetDistance=2;assert(mb.step(mem,cs).state=="Windup")
+cs.targetVisible=false;assert(mb.step(mem,cs).state=="Search" and mem.attackToken==0)
+cs.targetVisible=true;assert(mb.step(mem,cs).state=="Windup")
+cs.dt=.5;local strike=mb.step(mem,cs);assert(strike.state=="Attack" and strike.attackToken==1)
+assert(mb.step(mem,cs).state=="Recover")
+cs.healthRatio=.1;assert(mb.step(mem,cs).state=="Retreat")
+cs.aiEnabled=false;assert(mb.step(mem,cs).state=="Static")
+cs.alive=false;assert(mb.step(mem,cs).state=="Dead")
+local rb=CB.withProfile(ranged);local rm=rb.new()
+cs={dt=.1,alive=true,aiEnabled=true,healthRatio=1,hunger=1,targetId="target",targetAlive=true,targetVisible=true,targetDistance=3,pathBlocked=false,atGoal=false}
+assert(rb.step(rm,cs).state=="Retreat")
+cs.targetDistance=16;assert(rb.step(rm,cs).state=="Windup")
+cs.dt=.7;assert(rb.step(rm,cs).action=="AttackRanged")
+local pb=CB.withProfile(predator);local pmem=pb.new();cs.targetDistance=15;cs.hunger=.2
+assert(pb.step(pmem,cs).state=="Idle");cs.hunger=.9;assert(pb.step(pmem,cs).state=="Stalk")
+local candidates: {CT.Candidate}={{id="ally",faction="wolf",alive=true,prey=true,visible=true,distance=1,threat=0},{id="notprey",faction="npc",alive=true,prey=false,visible=true,distance=2,threat=0},{id="chicken",faction="bird",alive=true,prey=true,visible=true,distance=8,threat=0}}
+assert(CT.choose(candidates,"wolf",predator,nil,3).id=="chicken")
+local index=CG.new(32);for i=1,10000 do CG.upsert(index,tostring(i),i*4,0) end
+local nearby,checks=CG.query(index,100,0,20,64,24);assert(#nearby==11 and checks<=64)
+assert(CG.remove(index,"25"));local after=CG.query(index,100,0,20,64,24);assert(#after==10)
+local attack=CR.new();local aa={id="a",faction="x",alive=true,damage=5};local tt={id="b",faction="y",alive=true,damage=0}
+assert(not CR.authorize(attack,melee,aa,tt,1,0,2,false))
+assert(CR.authorize(attack,melee,aa,tt,1,0,2,true))
+assert(not CR.authorize(attack,melee,aa,tt,1,2,2,true))
+assert(not CR.authorize(attack,melee,aa,tt,2,.5,2,true))
+assert(CR.authorize(attack,melee,aa,tt,2,2,2,true))
+assert(not CR.authorize(CR.new(),ranged,aa,tt,1,0,3,true))
+print("S09.5-F: predator prey filter, melee/ranged states, windup interruption, cooldown, spatial index and attack dedup passed")
