@@ -56,4 +56,13 @@ function R.previewStats(s:Species):{level1:Stats,level10:Stats,levelHigh:number}
  local high=math.min(10,s.levelCap)
  return {level1=R.stats(s,1,true),level10=R.stats(s,high,true),levelHigh=high}
 end
+-- The only public metadata projection: all fields are derived from the registry.
+function R.bookRow(id:string,developer:boolean):{[string]:any}?
+ local s=R.get(id);if not s or not s.discoverable then return nil end
+ local labels:{string}={}
+ for _,biome in s.biomes do table.insert(labels,assert(R.biomeName(biome))) end
+ local row:{[string]:any}={name=s.name,description=s.description,category=s.category,disposition=s.disposition,biomes=labels,previewAssetId=s.preview.assetId,stats=R.previewStats(s)}
+ if developer then row.id=s.id end
+ return row
+end
 return table.freeze(R)

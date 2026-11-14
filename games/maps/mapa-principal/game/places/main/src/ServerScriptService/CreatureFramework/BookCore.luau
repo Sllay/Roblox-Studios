@@ -4,14 +4,12 @@ export type Entry={firstAt:number,reason:string}
 export type Ledger={schema:number,mobs:{[string]:Entry}}
 export type Event={speciesId:string,reason:string,at:number,verified:boolean,origin:string}
 export type Species={id:string,name:string,description:string,category:string,disposition:string,discoverable:boolean,biomes:{string},preview:{source:string,assetId:string?}}
-export type Stats={health:number,damage:number,walkSpeed:number,runSpeed:number}
-export type StatsPreview={level1:Stats,level10:Stats,levelHigh:number}
 local B={}
 local reasons:{[string]:boolean}={Kill=true,Interaction=true,Observation=true}
 function B.new():Ledger return {schema=1,mobs={}} end
-function B.discover(ledger:Ledger,event:Event,known:boolean):boolean
+function B.discover(ledger:Ledger,event:Event,species:Species?):boolean
  -- verified is set ONLY by server gameplay services after validation; not a remote payload.
- if not known or not event.verified or event.origin~="Natural" or not reasons[event.reason] then return false end
+ if not species or not species.discoverable or species.id~=event.speciesId or not event.verified or event.origin~="Natural" or not reasons[event.reason] then return false end
  if event.at<0 or event.at~=event.at or event.at==math.huge then return false end
  if not string.match(event.speciesId,"^[1-9]%d%d%d%d%d$") then return false end
  if ledger.mobs[event.speciesId] then return false end
@@ -50,11 +48,5 @@ function B.ordered(ledger:Ledger,species:{Species},order:string):{Species}
   return a.id<b.id
  end)
  return rows
-end
-function B.publicRow(s:Species,developer:boolean,stats:StatsPreview,biomeLabels:{string}):{[string]:any}
- -- developer flag must come from server authorization. No technical ID in ordinary projection.
- local row:{[string]:any}={name=s.name,description=s.description,category=s.category,disposition=s.disposition,biomes=table.clone(biomeLabels),previewAssetId=s.preview.assetId,stats=stats}
- if developer then row.id=s.id end
- return row
 end
 return table.freeze(B)
