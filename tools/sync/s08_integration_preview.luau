@@ -133,11 +133,41 @@ for _,m in resources do
    end
   end
  end
+ local fitted=false
+ if kind=="Branch" and gap and (gap>.22 or math.abs(lift)>2) then
+  -- Fit the local support plane to the actual footprint, retaining horizontal heading.
+  local horizontal=Vector3.new(heading.X,0,heading.Z).Unit
+  local back=horizontal:Cross(Vector3.yAxis)
+  local function fittedFrame(testSize)
+   local a=horizontal*testSize.X*.42;local b=back*testSize.Z*.42
+   local pos=cf.Position
+   local l,r=ground(pos.X-a.X,pos.Z-a.Z),ground(pos.X+a.X,pos.Z+a.Z)
+   local f,k=ground(pos.X-b.X,pos.Z-b.Z),ground(pos.X+b.X,pos.Z+b.Z)
+   if not (l and r and f and k) then return nil end
+   local right=(horizontal+Vector3.yAxis*((r.Position.Y-l.Position.Y)/(2*a.Magnitude))).Unit
+   local transverse=(back+Vector3.yAxis*((k.Position.Y-f.Position.Y)/(2*b.Magnitude))).Unit
+   local up=transverse:Cross(right).Unit
+   if up.Y<math.cos(math.rad(35)) or math.abs(right:Dot(heading))<.95 then return nil end
+   return CFrame.fromMatrix(pos,right,up,right:Cross(up))
+  end
+  local originalFrame=frame
+  for _,scale in {1,.95,.90,.85,.80,.75,.70} do
+   local candidate=fittedFrame(newSize*scale)
+   if candidate then
+    frame=candidate
+    local l,g=support(newSize*scale)
+    if l and g<=.22 and math.abs(l)<=2 then
+     multiplier=scale;lift=l;gap=g;fitted=true;break
+    end
+   end
+  end
+  if not fitted then frame=originalFrame end
+ end
  if not lift then fail(id,"terrain-ray-miss")
  else
   p.Size=newSize*multiplier;p.CFrame=frame+Vector3.yAxis*lift
   maxShift=math.max(maxShift,math.abs(lift));maxGap=math.max(maxGap,gap)
-  if multiplier<1 then table.insert(adjustments,{id=id,multiplier=multiplier,initialGap=initialGap,finalGap=gap,size=vec(p.Size)}) end
+  if multiplier<1 or fitted then table.insert(adjustments,{id=id,multiplier=multiplier,initialGap=initialGap,finalGap=gap,size=vec(p.Size),supportPlaneFitted=fitted}) end
   if gap>.22 or math.abs(lift)>2 then fail(id,"support-gap-or-height") end
  end
  table.insert(planRows,Http:JSONEncode({id=id,mesh=p.MeshId,texture=p.TextureID,size=vec(p.Size),frame={p.CFrame:GetComponents()}}))
