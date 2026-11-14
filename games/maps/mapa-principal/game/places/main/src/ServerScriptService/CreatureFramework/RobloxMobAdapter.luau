@@ -200,12 +200,41 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   mesh.CanQuery=false
  end
  function self:deathStep(age:number)
-  if self.deathReleased then return end
+  if self.deathReleased then
+   -- Pairwise constraints preserve character collision groups and world collision.
+   for _,player in game:GetService("Players"):GetPlayers() do
+    local character=player.Character
+    local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
+    if character and root and root:IsA("BasePart") then
+     for _,part in character:GetDescendants() do
+      if part:IsA("BasePart") and not self.corpseConstraints[part] then
+       local constraint=Instance.new("NoCollisionConstraint")
+       constraint.Part0=mesh;constraint.Part1=part;constraint.Parent=mesh
+       self.corpseConstraints[part]=constraint
+      end
+     end
+     local delta=horizontal(mesh.Position-root.Position)
+     local velocity=horizontal(root.AssemblyLinearVelocity)
+     if age>=self.nextCorpsePush and delta.Magnitude<mesh.Size.Magnitude*.5+2 and math.abs(mesh.Position.Y-root.Position.Y)<mesh.Size.Y*.5+3 and velocity.Magnitude>2 then
+      local direction=if delta.Magnitude>.01 then delta.Unit else velocity.Unit
+      local approach=velocity:Dot(direction)
+      if approach>1 then
+       mesh:ApplyImpulse(direction*mesh.AssemblyMass*math.min(approach,6))
+       self.nextCorpsePush=age+.2
+      end
+     end
+    end
+   end
+   return
+  end
   if age<.35 then
    mesh.CFrame=self.deathPose*CFrame.Angles(0,0,math.rad(65)*math.clamp(age/.35,0,1))
   else
    self.deathReleased=true;mesh.Anchored=false;mesh.CanCollide=true;mesh.CanTouch=false
+   self.corpseConstraints={}
+   self.nextCorpsePush=0
    mesh:SetNetworkOwner(nil);mesh.AssemblyAngularVelocity=Vector3.new(0,0,2)
+   self:deathStep(age)
   end
  end
  function self:destroy()
