@@ -1,7 +1,7 @@
 {
   "id": "chicken-v2-idle-animation",
   "sha256": "0040e6fc7021a64e1f4a1feab873ea14847c0a18ae3b8f23046c4a464c2a6c94",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "noPlaceWrites": true,
   "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/idle.rbxmx",
@@ -11,5 +11,31 @@
     "operationId": "0d4cf454-a4e7-4c8d-95f5-048a8fd00de4",
     "done": false
   },
-  "operationPath": "operations/0d4cf454-a4e7-4c8d-95f5-048a8fd00de4"
+  "operationPath": "operations/0d4cf454-a4e7-4c8d-95f5-048a8fd00de4",
+  "operation": {
+    "path": "operations/0d4cf454-a4e7-4c8d-95f5-048a8fd00de4",
+    "operationId": "0d4cf454-a4e7-4c8d-95f5-048a8fd00de4",
+    "done": true,
+    "response": {
+      "path": "assets/123461134632415",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T09:19:58.577Z",
+      "assetId": "123461134632415",
+      "displayName": "Black Islands Chicken V2 Idle",
+      "description": "Original Chicken V2 Idle, rig asset 76960331636475",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "123461134632415"
 }
