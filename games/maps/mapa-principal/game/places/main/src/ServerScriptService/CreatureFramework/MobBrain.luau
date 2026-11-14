@@ -19,7 +19,7 @@ function M.step(m:Memory,s:Sense):Intent
   local danger=s.hit or (s.threatVisible and ((s.predator and s.threatDistance<22) or (s.approachSpeed>4 and s.threatDistance<14) or (s.jumping==true and s.threatDistance<12)))
   if danger then m.fear=1;m.calm=0 else m.fear=math.max(0,m.fear-dt*.25);m.calm+=dt end
   m.hunger=math.min(1,m.hunger+dt*.012)
-  if danger or (m.state=="Flee" and m.calm<3) or (m.state=="Recover" and m.fear>.3) then
+  if danger or ((m.state=="Flee" or m.state=="Recover") and m.calm<3) then
    if (s.stuck or s.pathBlocked) and not s.escapeAvailable then change(m,"Recover","escape blocked")
    else change(m,"Flee",if s.hit then "hit" else "threat") end
   elseif m.state=="Flee" or m.state=="Recover" then change(m,"Idle","threat cleared")

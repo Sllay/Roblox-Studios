@@ -11,7 +11,7 @@ function F.new(deps:any,template:Model,parent:Instance,seed:number):any
    if root and root:IsA("BasePart") then
     local d=(root.Position-p).Magnitude
     if d<distance then
-     local humanoid=character:FindFirstChildWhichIsA("Humanoid")
+     local humanoid=if character then character:FindFirstChildWhichIsA("Humanoid") else nil
      if humanoid and humanoid.Health>0 then
       local state=humanoid:GetState();distance=d;best={position=root.Position,velocity=root.AssemblyLinearVelocity,model=character,predator=false,jumping=state==Enum.HumanoidStateType.Jumping or state==Enum.HumanoidStateType.Freefall}
      end
