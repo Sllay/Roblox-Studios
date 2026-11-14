@@ -1,0 +1,15 @@
+{
+  "source": "dist/s082-wood/wood-v4-uv.glb",
+  "sharedAtlas": true,
+  "triangles": 14460,
+  "degenerate": 0,
+  "outsideUnitSquare": 0,
+  "overlapPairs": 0,
+  "pairwiseOverlapArea": 0,
+  "stretchP50": 1.1885385321896174,
+  "stretchP95": 1.4884409313108096,
+  "stretchMax": 1.8198469271573448,
+  "densityP05": 0.0019779395369520785,
+  "densityP95": 0.002397836725652725,
+  "scope": "overlap per material unless shared atlas; distortion reported, not artistic approval"
+}

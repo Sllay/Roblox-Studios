@@ -1,0 +1,18 @@
+{
+  "sourceSha256": "07a48f91e350bcaea1bfb3300739eaacd4f9655e82eb7fb23675def9288aee66",
+  "geometryStreamSha256": "4296202c6334c543f87007e390a669fb27e821ce02c6cf0b0c691a4057d805ea",
+  "triangles": 14460,
+  "materialGroups": 3,
+  "geometryUnchanged": true,
+  "uv": "TEXCOORD_0",
+  "glbSha256": "2b2bdecdc56ca0cd1573c7c1adbdc1cba03da2fdf1961089fa1b0ecb043051d8",
+  "atlasSha256": "cee49a645115027dfd22c814c4fa5129e2bf2ae59dac6f70cddf7ae9193ee288",
+  "repairedUVFaces": 29,
+  "textureCoveredPixels": 106149,
+  "textureRange": [
+    68,
+    241
+  ],
+  "texturePolicy": "neutral bark plus separate RGBA tint-mask colormap; no transparency of wood",
+  "maskSha256": "46c8c2591542acc4bef19d300580e3f5ad7ad2f73a43497363a5ebe7e522be76"
+}
