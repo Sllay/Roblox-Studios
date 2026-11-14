@@ -1,5 +1,5 @@
 --!strict
--- Disabled source-only integration; staging publication must deliberately enable flag.
+-- Staging-only activation; the reviewed model is stored with the Place.
 local root=script.Parent:WaitForChild("CreatureFramework")
 local function get(name:string):any return require(root:WaitForChild(name) :: ModuleScript) end
 local flags=get("FeatureFlags")
@@ -13,8 +13,11 @@ local Remote=get("BookServer")
 local CombatWorld=get("CombatWorld")
 local combatState=CombatWorld.new(workspace,get("CombatSpatialIndex"),get("CombatRules"),64)
 local deps={factory=get("CreatureAgentFactory"),profiles=get("CombatProfiles"),combatBrain=get("CombatBrain"),combatWorld=CombatWorld,combatState=combatState,combatAdapter=get("CombatAdapter"),targetSelector=get("CombatTargets"),registry=Registry,brain=get("MobBrain"),kernel=get("AIKernel"),escape=get("EscapePlanner"),adapter=get("RobloxMobAdapter"),agent=get("AgentRuntime"),population=get("PopulationBudget"),spawn=get("SpawnPolicy"),biomes=get("BiomeRegions"),food=get("FoodSites"),scheduler=get("SimulationBudget"),director=Director}
-local template=game:GetService("AssetService"):LoadAssetAsync(tonumber(Registry.get("210080").modelAssetId) :: number)
-assert(template:IsA("Model") and template.Parent==nil)
+local assets=assert(game:GetService("ServerStorage"):WaitForChild("RSCreatureAssets",10),"Missing reviewed creature assets")
+local stored=assert(assets:WaitForChild("ChickenV2",10),"Missing ChickenV2 template")
+assert(stored:IsA("Model") and stored:GetAttribute("RSAssetId")==Registry.get("210080").modelAssetId,"Chicken template identity")
+local template=stored:Clone()
+assert(template.Parent==nil)
 local folder=Instance.new("Folder");folder.Name="RSCreatures";folder.Parent=workspace
 local fauna=Service.new(deps,template,folder,math.random(1,2147483646))
 local books=BookRuntime.new({persistence=get("BookPersistence"),core=get("BookCore"),registry=Registry,store=get("BookDataStore")})
