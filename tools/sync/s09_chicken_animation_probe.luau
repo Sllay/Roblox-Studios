@@ -26,9 +26,13 @@ local ok,err=pcall(function()
  for i=1,30 do if track.Length>0 then break end task.wait(.1) end
  result.length=track.Length
  result.playing=track.IsPlaying
+ result.simulationRunning=game:GetService("RunService"):IsRunning()
+ animator.PreferLodEnabled=false
+ track:AdjustSpeed(1)
+ track.TimePosition=0
+ animator:StepAnimations(cfg.expected.time)
  track:AdjustSpeed(0)
- track.TimePosition=cfg.expected.time
- task.wait(.2)
+ result.explicitStep=true
  local maxError=0
  local motion=0
  local count=0
