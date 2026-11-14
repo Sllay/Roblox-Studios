@@ -1,0 +1,11 @@
+{
+  "id": "chicken-v2-book-preview",
+  "sha256": "c13b57ace9503cafbf7dc557cd7d9cef6040c7e840b89406264dc7b4f0400bd8",
+  "bytes": 182106,
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/idle.png",
+  "state": "post_intent",
+  "retryAllowed": false,
+  "creatorId": "8136365379",
+  "creatorType": "User",
+  "noPlaceWrites": true
+}
