@@ -1,0 +1,97 @@
+{
+  "universeId": "10769712441",
+  "animations": [],
+  "textureURIs": [
+    "rbxassetid://72736310828855"
+  ],
+  "maxRestoreError": 0,
+  "assetId": "76960331636475",
+  "scripts": 0,
+  "textureLoaded": true,
+  "size": [
+    1.687999963760376,
+    2.6500000953674316,
+    2.534942626953125
+  ],
+  "meshes": 1,
+  "expectedBoneNames": true,
+  "meshId": "rbxassetid://136030103048719",
+  "boneNames": [
+    "Body",
+    "Foot_L",
+    "Foot_R",
+    "Head",
+    "Hip_L",
+    "Hip_R",
+    "Jaw",
+    "Neck",
+    "Root",
+    "Shin_L",
+    "Shin_R",
+    "Tail",
+    "Wing_L",
+    "Wing_R"
+  ],
+  "poseProbe": [
+    {
+      "transformChanged": true,
+      "restoreError": 0,
+      "name": "Head",
+      "worldDelta": 0.22495105862617493
+    },
+    {
+      "transformChanged": true,
+      "restoreError": 0,
+      "name": "Jaw",
+      "worldDelta": 0.22495105862617493
+    },
+    {
+      "transformChanged": true,
+      "restoreError": 0,
+      "name": "Wing_L",
+      "worldDelta": 0.22495105862617493
+    },
+    {
+      "transformChanged": true,
+      "restoreError": 0,
+      "name": "Wing_R",
+      "worldDelta": 0.22495105862617493
+    },
+    {
+      "transformChanged": true,
+      "restoreError": 0,
+      "name": "Hip_L",
+      "worldDelta": 0.22495105862617493
+    },
+    {
+      "transformChanged": true,
+      "restoreError": 0,
+      "name": "Hip_R",
+      "worldDelta": 0.22495105862617493
+    },
+    {
+      "transformChanged": true,
+      "restoreError": 0,
+      "name": "Tail",
+      "worldDelta": 0.22495105862617493
+    }
+  ],
+  "bones": 14,
+  "noPlaceWrites": true,
+  "meshLoaded": true,
+  "placeId": "93428341652658",
+  "poseRoundtrip": true,
+  "classes": {
+    "Folder": 1,
+    "Model": 1,
+    "AnimationController": 1,
+    "MeshPart": 1,
+    "CFrameValue": 51,
+    "Bone": 14
+  },
+  "loadedVersion": 25,
+  "sourceSha256": "3d4c122b34e9fee090bb1ba53809b1d13a7dcde190e82bff627619fbee169723",
+  "clientRenderVerified": false,
+  "animationPlaybackVerified": false,
+  "originalMultiClipReceiptUnchanged": true
+}
