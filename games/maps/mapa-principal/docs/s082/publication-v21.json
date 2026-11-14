@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "release": "S08.2",
+  "environment": "staging",
+  "placeId": "93428341652658",
+  "universeId": "10769712441",
+  "runId": 43542779037,
+  "artifactId": 14092796292,
+  "sourceCommit": "6a1a2d5b8bffe830394b601b8c1357492577e46b",
+  "receipt": {
+    "status": "verified",
+    "beforeVersion": 20,
+    "retryAllowed": false,
+    "afterVersion": 21,
+    "counts": {
+      "bushes": 91,
+      "trees": 133,
+      "logs": 250,
+      "eggydrasil": 1,
+      "stick": 500,
+      "pines": 12,
+      "stone": 500,
+      "largeRocks": 6
+    },
+    "tree": {
+      "wood": {
+        "Wood_V43": {
+          "size": [
+            103.3286,
+            114.1768,
+            86.7871
+          ],
+          "color": [
+            0.5799999833106995,
+            0.3400000035762787,
+            0.18000000715255737
+          ],
+          "meshId": "rbxassetid://93303906887797",
+          "pose": [
+            15.331,
+            83.9998,
+            -40.3635,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "texture": "rbxassetid://84113697924292"
+        },
+        "Wood_V42": {
+          "size": [
+            103.3586,
+            114.7448,
+            87.0964
+          ],
+          "color": [
+            0.5799999833106995,
+            0.3400000035762787,
+            0.18000000715255737
+          ],
+          "meshId": "rbxassetid://82462393358236",
+          "pose": [
+            15.437,
+            83.7866,
+            -40.2088,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "texture": "rbxassetid://84113697924292"
+        },
+        "Wood_V4": {
+          "size": [
+            103.4496,
+            114.7448,
+            87.0964
+          ],
+          "color": [
+            0.5799999833106995,
+            0.3400000035762787,
+            0.18000000715255737
+          ],
+          "meshId": "rbxassetid://82126585144057",
+          "pose": [
+            15.3915,
+            83.7866,
+            -40.2088,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "texture": "rbxassetid://84113697924292"
+        }
+      },
+      "center": [
+        16,
+        86.4156,
+        -36
+      ],
+      "burial": 0.35,
+      "height": 120.00000762939453,
+      "pivot": [
+        16,
+        86.4156,
+        -36,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+      ],
+      "meshCount": 5
+    },
+    "logTiles": {
+      "chunk-1-1": 27,
+      "chunk--1-1": 28,
+      "chunk-0-0": 28,
+      "chunk-0--1": 28,
+      "chunk-1-0": 27,
+      "chunk-0-1": 28,
+      "chunk-1--1": 28,
+      "chunk--1-0": 28,
+      "chunk--1--1": 28
+    }
+  },
+  "previewProof": {
+    "universeId": "10769712441",
+    "placeId": "93428341652658",
+    "collisionRays": 768,
+    "tree": {
+      "wood": {
+        "Wood_V43": {
+          "size": [
+            103.3286,
+            114.1768,
+            86.7871
+          ],
+          "color": [
+            0.5799999833106995,
+            0.3400000035762787,
+            0.18000000715255737
+          ],
+          "meshId": "rbxassetid://93303906887797",
+          "pose": [
+            15.331,
+            83.9998,
+            -40.3635,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "texture": "rbxassetid://84113697924292"
+        },
+        "Wood_V42": {
+          "size": [
+            103.3586,
+            114.7448,
+            87.0964
+          ],
+          "color": [
+            0.5799999833106995,
+            0.3400000035762787,
+            0.18000000715255737
+          ],
+          "meshId": "rbxassetid://82462393358236",
+          "pose": [
+            15.437,
+            83.7866,
+            -40.2088,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "texture": "rbxassetid://84113697924292"
+        },
+        "Wood_V4": {
+          "size": [
+            103.4496,
+            114.7448,
+            87.0964
+          ],
+          "color": [
+            0.5799999833106995,
+            0.3400000035762787,
+            0.18000000715255737
+          ],
+          "meshId": "rbxassetid://82126585144057",
+          "pose": [
+            15.3915,
+            83.7866,
+            -40.2088,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "texture": "rbxassetid://84113697924292"
+        }
+      },
+      "center": [
+        16,
+        86.4156,
+        -36
+      ],
+      "burial": 0.35,
+      "height": 120.00000762939453,
+      "pivot": [
+        16,
+        86.4156,
+        -36,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+      ],
+      "meshCount": 5
+    },
+    "noPlaceWrites": true,
+    "spawnChecked": 24,
+    "readyForStaging": true,
+    "collisionHits": 261,
+    "nonResourceFingerprint": "2WkVSLFE8eQ+a/js8jB0zmvGQW0h6tPn4u0tuRLe40E=",
+    "maxLogSupportGap": 0.19947195053100586,
+    "logTiles": {
+      "chunk-1-1": 27,
+      "chunk--1-1": 28,
+      "chunk-0-0": 28,
+      "chunk-0--1": 28,
+      "chunk-1-0": 27,
+      "chunk-0-1": 28,
+      "chunk-1--1": 28,
+      "chunk--1-0": 28,
+      "chunk--1--1": 28
+    },
+    "clientRenderVerified": false,
+    "counts": {
+      "bushes": 91,
+      "trees": 133,
+      "logs": 250,
+      "eggydrasil": 1,
+      "stick": 500,
+      "pines": 12,
+      "stone": 500,
+      "largeRocks": 6
+    },
+    "maxCollisionDelta": 0.001232147216796875,
+    "loadedVersion": 20
+  },
+  "playableCounts": {
+    "trees": 120,
+    "pines": 12,
+    "eggydrasil": 1,
+    "bushes": 80,
+    "largeRocks": 6,
+    "stone": 500,
+    "stick": 500,
+    "logs": 250
+  },
+  "externalScenery": {
+    "trees": 13,
+    "bushes": 11
+  },
+  "clientRenderVerified": false
+}

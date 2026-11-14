@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 2,
+  "release": "S08.2",
+  "status": "staging-published-verified",
+  "placeVersion": 21,
+  "placeId": "93428341652658",
+  "selectionPolicy": "deterministic tile quotas and alternating visual variants within each canonical resource type",
+  "resourceTypeAttribute": "RSResourceType",
+  "variantAttribute": "RSResourceVariant",
+  "assetAttribute": "RSResourceAssetId",
+  "resources": [
+    {
+      "id": "Stone",
+      "count": 500,
+      "collectionKey": "Stone",
+      "variants": [
+        {
+          "id": "legacy",
+          "count": 250,
+          "assetId": "80215326989711",
+          "meshId": "122505516420043"
+        },
+        {
+          "id": "v1",
+          "count": 250,
+          "assetId": "136422313125209",
+          "meshId": "120877868842825",
+          "atlasId": "106957063387208"
+        }
+      ]
+    },
+    {
+      "id": "Stick",
+      "count": 500,
+      "collectionKey": "Stick",
+      "variants": [
+        {
+          "id": "legacy",
+          "count": 250,
+          "assetId": "9204066145",
+          "meshId": "123968188"
+        },
+        {
+          "id": "v1",
+          "count": 250,
+          "assetId": "94558539418999",
+          "meshId": "101820304976769",
+          "atlasId": "110578979081477"
+        }
+      ]
+    }
+  ],
+  "landmark": {
+    "id": "Eggydrasil",
+    "count": 1,
+    "assetId": "128938533912044",
+    "managedId": "s08:Eggydrasil:central",
+    "tile": "chunk-0-0",
+    "groundPosition": [
+      16,
+      26.765625,
+      -36
+    ],
+    "height": 120,
+    "foliage": {
+      "white": [
+        255,
+        80,
+        140
+      ],
+      "gray": [
+        120,
+        40,
+        200
+      ]
+    },
+    "basePosition": [
+      16,
+      26.415625,
+      -36
+    ],
+    "burial": 0.35,
+    "wood": {
+      "templateAssetId": "93123395116604",
+      "alphaMode": "TintMask",
+      "colorMap": "rbxassetid://84113697924292",
+      "color": [
+        0.58,
+        0.34,
+        0.18
+      ],
+      "parts": {
+        "Wood_V43": {
+          "oldMeshId": "rbxassetid://72921288790767",
+          "collisionFidelity": "Default",
+          "meshId": "rbxassetid://93303906887797",
+          "meshSize": [
+            43.706443786621094,
+            48.29509353637695,
+            36.70964050292969
+          ],
+          "size": [
+            43.706443786621094,
+            48.29509353637695,
+            36.70964050292969
+          ]
+        },
+        "Wood_V42": {
+          "oldMeshId": "rbxassetid://115832734263570",
+          "collisionFidelity": "Default",
+          "meshId": "rbxassetid://82462393358236",
+          "meshSize": [
+            43.71914291381836,
+            48.53534698486328,
+            36.8404655456543
+          ],
+          "size": [
+            43.71914291381836,
+            48.53534698486328,
+            36.8404655456543
+          ]
+        },
+        "Wood_V4": {
+          "oldMeshId": "rbxassetid://130112209862755",
+          "collisionFidelity": "Default",
+          "meshId": "rbxassetid://82126585144057",
+          "meshSize": [
+            43.75764465332031,
+            48.53534698486328,
+            36.8404655456543
+          ],
+          "size": [
+            43.75764465332031,
+            48.53534698486328,
+            36.8404655456543
+          ]
+        }
+      },
+      "geometryUnchanged": true
+    }
+  },
+  "tiles": {
+    "chunk-1-1": {
+      "Stone": {
+        "v1": 18,
+        "legacy": 18
+      },
+      "Stick": {
+        "v1": 18,
+        "legacy": 17
+      }
+    },
+    "chunk--1-1": {
+      "Stone": {
+        "v1": 26,
+        "legacy": 25
+      },
+      "Stick": {
+        "v1": 26,
+        "legacy": 25
+      }
+    },
+    "chunk-0-0": {
+      "Stone": {
+        "v1": 27,
+        "legacy": 27
+      },
+      "Stick": {
+        "v1": 14,
+        "legacy": 15
+      }
+    },
+    "chunk-0--1": {
+      "Stone": {
+        "v1": 36,
+        "legacy": 36
+      },
+      "Stick": {
+        "v1": 45,
+        "legacy": 45
+      }
+    },
+    "chunk-1-0": {
+      "Stone": {
+        "v1": 25,
+        "legacy": 24
+      },
+      "Stick": {
+        "v1": 27,
+        "legacy": 27
+      }
+    },
+    "chunk-0-1": {
+      "Stone": {
+        "v1": 23,
+        "legacy": 23
+      },
+      "Stick": {
+        "v1": 20,
+        "legacy": 19
+      }
+    },
+    "chunk-1--1": {
+      "Stone": {
+        "v1": 31,
+        "legacy": 32
+      },
+      "Stick": {
+        "v1": 33,
+        "legacy": 34
+      }
+    },
+    "chunk--1-0": {
+      "Stone": {
+        "v1": 33,
+        "legacy": 33
+      },
+      "Stick": {
+        "v1": 34,
+        "legacy": 34
+      }
+    },
+    "chunk--1--1": {
+      "Stone": {
+        "v1": 31,
+        "legacy": 32
+      },
+      "Stick": {
+        "v1": 33,
+        "legacy": 34
+      }
+    }
+  },
+  "publicationProof": "games/maps/mapa-principal/docs/s082/publication-v21.json",
+  "fallenLogs": {
+    "id": "Log",
+    "count": 250,
+    "collectionKey": "Log",
+    "assetId": "72836155682285",
+    "meshId": "84426557612247",
+    "atlasId": "129687460952107",
+    "root": "RSFallenLogsS082",
+    "tiles": {
+      "chunk-1-1": 27,
+      "chunk--1-1": 28,
+      "chunk-0-0": 28,
+      "chunk-0--1": 28,
+      "chunk-1-0": 27,
+      "chunk-0-1": 28,
+      "chunk-1--1": 28,
+      "chunk--1-0": 28,
+      "chunk--1--1": 28
+    },
+    "resourceState": "decorative",
+    "burial": 0
+  },
+  "vegetationCounts": {
+    "trees": 120,
+    "pines": 12,
+    "eggydrasil": 1,
+    "bushes": 80,
+    "largeRocks": 6,
+    "stone": 500,
+    "stick": 500,
+    "logs": 250
+  },
+  "externalScenery": {
+    "trees": 13,
+    "bushes": 11
+  }
+}
