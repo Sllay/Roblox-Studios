@@ -3,7 +3,7 @@
   "sha256": "2b2bdecdc56ca0cd1573c7c1adbdc1cba03da2fdf1961089fa1b0ecb043051d8",
   "bytes": 1483844,
   "source": "asset-library/approved/eggydrasil/v8/wood-uv/wood-v4-uv.glb",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "83655351-62e8-40c4-985f-e50339a4c413",
     "done": false
   },
-  "operationPath": "operations/83655351-62e8-40c4-985f-e50339a4c413"
+  "operationPath": "operations/83655351-62e8-40c4-985f-e50339a4c413",
+  "operation": {
+    "path": "operations/83655351-62e8-40c4-985f-e50339a4c413",
+    "operationId": "83655351-62e8-40c4-985f-e50339a4c413",
+    "done": true,
+    "response": {
+      "path": "assets/132971587906136",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T01:47:07.473Z",
+      "assetId": "132971587906136",
+      "displayName": "Black Islands eggydrasil-wood-v4-uv",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "132971587906136"
 }
