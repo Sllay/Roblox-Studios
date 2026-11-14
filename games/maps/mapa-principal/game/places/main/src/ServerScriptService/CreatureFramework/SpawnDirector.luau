@@ -4,11 +4,14 @@ local D={}
 function D.new(deps:any,policy:any,template:Model,parent:Instance,seed:number):any
  local regions=deps.biomes.regions(policy.biomeId);assert(#regions>0)
  local caps={global=policy.maximum,active=policy.maximum,perChunk=3,perBiome={[policy.biomeId]=policy.maximum},perSpecies={[policy.speciesId]=policy.maximum}}
- return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},closed=false}
+ return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},developerIds={},developerIndex={},naturalIds={},naturalIndex={},developerCursor=1,closed=false}
 end
 function D.count(s:any):number return s.budget.total+s.developerCount end
 function D.remove(s:any,id:string,now:number?):boolean
  local r=s.agents[id];if not r then return false end
+ local list=if r.origin=="Natural" then s.naturalIds else s.developerIds
+ local index=if r.origin=="Natural" then s.naturalIndex else s.developerIndex
+ local slot=index[id];if slot then local last=list[#list];list[slot]=last;index[last]=slot;table.remove(list);index[id]=nil end
  if r.actor and s.d.combatWorld then r.actor.alive=false;s.d.combatWorld.remove(s.d.combatState,id) end
  if r.foodKey then s.d.food.release(s.food,r.foodKey,id) end
  s.d.agent.destroy(r.agent);s.agents[id]=nil
@@ -56,6 +59,9 @@ local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin
   record.agent=d.factory.new(d,species,adapter,actor,d.combatState)
  else record.agent=d.agent.new(d.brain,d.kernel,adapter) end
  s.agents[id]=record
+ local list=if origin=="Natural" then s.naturalIds else s.developerIds
+ local index=if origin=="Natural" then s.naturalIndex else s.developerIndex
+ table.insert(list,id);index[id]=#list
  if origin=="Natural" then s.naturalCount+=1 else s.developerCount+=1 end
  if d.onSpawn then d.onSpawn(id,record) end
  return id
@@ -160,7 +166,15 @@ end
 local intervals:{[string]:number}={Near=.1,Mid=.5,Far=2,Abstract=10}
 function D.step(s:any,dt:number,now:number)
  s.now=now
- for id,r in pairs(s.agents) do
+ local batch=table.clone(s.naturalIds)
+ local n=#s.developerIds
+ if n>0 then
+  local cursor=math.clamp(s.developerCursor,1,n)
+  for _=1,math.min(n,128) do table.insert(batch,s.developerIds[cursor]);cursor=cursor%n+1 end
+  s.developerCursor=cursor
+ end
+ for _,id in batch do
+  local r=s.agents[id];if not r then continue end
   local adapter=r.adapter
   if not adapter.alive or adapter.model.Parent~=s.parent then D.remove(s,id,now);continue end
   local distance=if s.d.distanceProvider then s.d.distanceProvider(adapter:position()) else 0

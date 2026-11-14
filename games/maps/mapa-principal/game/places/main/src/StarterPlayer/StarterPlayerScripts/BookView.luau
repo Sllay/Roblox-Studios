@@ -75,7 +75,10 @@ function V.new(parent:Instance,callbacks:any):any
   if snap then dev.Visible=snap.developer==true;if not dev.Visible then console.Visible=false end end
   if not snap or not snap.ready then progress.Text="Carregando descobertas...";return end
   progress.Text=string.format("REGISTROS  •  %d/%d descobertos  •  %.0f%%",snap.discovered,snap.total,snap.percent)
-  if detailPage.Visible then return end
+  if detailPage.Visible then
+   for _,row in snap.rows do if self.selected and row.key==self.selected.key then page(row);return end end
+   page(nil)
+  end
   clear(list)
   if self.tab~="Criaturas" then line(list,"Unavailable","Esta categoria ainda está em desenvolvimento.",52,15);return end
   for _,row in snap.rows do
@@ -84,13 +87,15 @@ function V.new(parent:Instance,callbacks:any):any
   end
   if snap.unknown>0 then line(list,"Unknown",string.format("?  %d espécies desconhecidas",snap.unknown),54,15) end
  end
+ function self:select(row:any)page(row)end
+ function self:back()page(nil);self:render()end
  function self:update(snap:any)self.snapshot=snap;self:render()end
  function self:setStatus(value:string)status.Text=value end
  function self:show()console.Visible=false;box.Visible=true;toolbar.Visible=false;page(nil);callbacks.refresh(self.order)end
  function self:hide()box.Visible=false;console.Visible=false;toolbar.Visible=true;page(nil)end
  open.Activated:Connect(function()self:show()end)
  close.Activated:Connect(function()self:hide()end)
- back.Activated:Connect(function()page(nil);self:render()end)
+ back.Activated:Connect(function()self:back()end)
  sort.Activated:Connect(function()self.order=if self.order=="Discovery" then "Alphabetical" else "Discovery";sort.Text=if self.order=="Discovery" then "Descoberta" else "A–Z";callbacks.refresh(self.order)end)
  local filters={"Todos","Passive","Neutral","Aggressive"};local labels={Todos="Todos",Passive="Passivos",Neutral="Neutros",Aggressive="Agressivos"};local fi=1
  filter.Activated:Connect(function()fi=fi%#filters+1;self.filter=filters[fi];filter.Text=labels[self.filter];self:render()end)

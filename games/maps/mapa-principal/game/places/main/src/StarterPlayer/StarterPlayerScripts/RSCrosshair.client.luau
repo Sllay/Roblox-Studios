@@ -6,7 +6,7 @@ local rs=game:GetService("ReplicatedStorage")
 local player=Players.LocalPlayer
 player.CameraMode=Enum.CameraMode.LockFirstPerson
 player:GetPropertyChangedSignal("CameraMode"):Connect(function()if player.CameraMode~=Enum.CameraMode.LockFirstPerson then player.CameraMode=Enum.CameraMode.LockFirstPerson end end)
-local gui=Instance.new("ScreenGui");gui.Name="RSCrosshair";gui.ResetOnSpawn=false;gui.IgnoreGuiInset=true;gui.DisplayOrder=20;gui.Parent=player:WaitForChild("PlayerGui")
+local gui=Instance.new("ScreenGui");gui.Name="RSCrosshair";gui.ResetOnSpawn=false;gui.IgnoreGuiInset=true;gui.ScreenInsets=Enum.ScreenInsets.None;gui.DisplayOrder=20;gui.Parent=player:WaitForChild("PlayerGui")
 local aim=Instance.new("Frame");aim.Name="Aim";aim.AnchorPoint=Vector2.new(.5,.5);aim.Position=UDim2.fromScale(.5,.5);aim.Size=UDim2.fromOffset(24,24);aim.BackgroundTransparency=1;aim.Parent=gui
 local bars:{Frame}={}
 for _,v in {{10,0,3,8},{10,16,3,8},{0,10,8,3},{16,10,8,3}} do

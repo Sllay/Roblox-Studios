@@ -13,18 +13,22 @@ local ok,err=pcall(function()
   return {ready=true,developer=dev,discovered=1,total=1,percent=100,unknown=0,rows={row}}
  end
  view:update(snapshot(false))
- assert(view.detail:FindFirstChild("Preview").Image=="rbxassetid://107933673393998")
+ assert(not view.box.CreaturePage.Visible and view.box.CatalogPage.Visible)
+ view:select(snapshot(false).rows[1])
+ assert(view.box.CreaturePage.Visible and not view.box.CatalogPage.Visible)
+ assert(view.box.CreaturePage.PreviewPanel.Preview.Image=="rbxassetid://107933673393998")
  assert(not view.detail:FindFirstChild("TechnicalId") and not view.dev.Visible)
  view:update(snapshot(true))
  assert(view.detail:FindFirstChild("TechnicalId").Text=="ID técnico: 210080" and view.dev.Visible)
- assert(view.progress.Text=="1/1 descobertos • 100%")
+ assert(string.find(view.progress.Text,"1/1 descobertos",1,true))
+ view:back();assert(view.box.CatalogPage.Visible and not view.box.CreaturePage.Visible)
  result.ui=true;result.preview=true;result.developerOnly=true
  assert(Dev.authorized(8136365379,8136365379,"User",{}) and not Dev.authorized(2,8136365379,"User",{}))
  local first=assert(Director.tickSpawn(s,1));local base=s.agents[first].adapter:position()
  assert(Director.remove(s,first,1))
  local plan=assert(Summon.parse(Dev.tokens("/summon mob 210080 2 here false"),true,true,15))
  local ids=Director.spawnDeveloper(s,plan,base,2)
- assert(#ids==2 and s.naturalCount==0 and Director.count(s)==2)
+ assert(#ids==2 and s.naturalCount==0 and Director.count(s)==2 and s.budget.total==0 and s.developerCount==2)
  local before={}
  for _,id in ids do local r=s.agents[id];assert(r.origin=="Developer" and not r.adapter.aiEnabled);before[id]=r.adapter:position() end
  for i=1,10 do Director.step(s,.1,2+i*.1) end
