@@ -1,8 +1,15 @@
 {
   "id": "chicken-v2-peck-animation",
   "sha256": "b4b7bca82f9d1a2db73f8255ba3b1c383197da6364532da192e1df0e9ae2fe91",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "noPlaceWrites": true,
-  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/peck.rbxmx"
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/peck.rbxmx",
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/3ab60e96-6724-44a6-8451-2f20b94473bc",
+    "operationId": "3ab60e96-6724-44a6-8451-2f20b94473bc",
+    "done": false
+  },
+  "operationPath": "operations/3ab60e96-6724-44a6-8451-2f20b94473bc"
 }
