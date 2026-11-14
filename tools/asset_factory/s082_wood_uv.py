@@ -93,11 +93,59 @@ for n,idx in enumerate(sorted(bad)):
     for j,p in zip(loops,pts):uv[j].uv=(cx+.003+(p.x-lo[0])*.018/span,cy+.003+(p.y-lo[1])*.018/span)
 remaining,remaining_pairs=audit_uv()
 assert not remaining,(len(remaining),remaining_pairs)
-scene=bpy.context.scene;scene.render.engine="CYCLES";scene.cycles.samples=8
-scene.render.bake.margin=6;scene.render.bake.use_clear=True
-bpy.ops.object.bake(type="EMIT")
-img.filepath_raw=str(out/"bark-neutral.png");img.file_format="PNG";img.save()
+# Rasterize the procedural wood grain in object space into the approved UV
+# charts. This avoids the distro Cycles bake path that returned a flat PNG.
+# Positions and normals are untouched; only texels are authored.
+import numpy as np
+from PIL import Image
+N=2048
+pixels=np.full((N,N),127,dtype=np.uint8)
+covered=np.zeros((N,N),dtype=bool)
+def grain(points,material):
+    x,y,z=points[...,0],points[...,1],points[...,2]
+    # Long, irregular fibers; low-frequency warping and finer ridges.
+    w=.75*np.sin(.31*z+.43*y)+.48*np.sin(.19*z-.57*x)
+    g1=np.sin(3.4*x+2.1*y+w)
+    g2=np.sin(7.2*x-5.1*y+.42*z+1.5*np.sin(.2*z+.7*x))
+    g3=np.sin(13.7*x+9.3*y+.77*z+.8*np.sin(.29*z))
+    ridge=np.maximum(0,np.sin(4.1*x-2.6*y+.21*z+w))**9
+    variation=24*g1+14*g2+7*g3-30*ridge+8*np.sin(.75*x+.66*y+.13*z)
+    return np.clip([172,194,143][material]+variation,68,241).astype(np.uint8)
+for f in mesh.polygons:
+    loops=list(f.loop_indices)
+    tex=np.array([(uv[k].uv.x*N,(1-uv[k].uv.y)*N) for k in loops],dtype=np.float64)
+    pos=np.array([tuple(mesh.vertices[k].co) for k in f.vertices],dtype=np.float64)
+    x0=max(0,int(np.floor(tex[:,0].min())));x1=min(N-1,int(np.ceil(tex[:,0].max())))
+    y0=max(0,int(np.floor(tex[:,1].min())));y1=min(N-1,int(np.ceil(tex[:,1].max())))
+    yy,xx=np.mgrid[y0:y1+1,x0:x1+1];xx=xx+.5;yy=yy+.5
+    a,b,c=tex;den=(b[1]-c[1])*(a[0]-c[0])+(c[0]-b[0])*(a[1]-c[1])
+    assert abs(den)>1e-12
+    u=((b[1]-c[1])*(xx-c[0])+(c[0]-b[0])*(yy-c[1]))/den
+    v=((c[1]-a[1])*(xx-c[0])+(a[0]-c[0])*(yy-c[1]))/den
+    w=1-u-v
+    inside=(u>=-1e-8)&(v>=-1e-8)&(w>=-1e-8)
+    if inside.any():
+        xyz=u[inside,None]*pos[0]+v[inside,None]*pos[1]+w[inside,None]*pos[2]
+        sub=pixels[y0:y1+1,x0:x1+1];sub[inside]=grain(xyz,f.material_index)
+        covered[y0:y1+1,x0:x1+1][inside]=True
+    else:
+        cxy=tex.mean(axis=0);ix=min(N-1,max(0,int(cxy[0])));iy=min(N-1,max(0,int(cxy[1])))
+        if not covered[iy,ix]:
+            pixels[iy,ix]=grain(pos.mean(axis=0),f.material_index);covered[iy,ix]=True
+painted=int(covered.sum());min_value=int(pixels[covered].min());max_value=int(pixels[covered].max())
+assert painted>100000 and max_value-min_value>80,(painted,min_value,max_value)
+# Six-pixel nearest-neighbor gutter extension for bilinear/mipmap sampling.
+# Never overwrite texels from a different occupied island.
+for _ in range(6):
+    old=covered.copy()
+    for dy,dx in ((0,1),(0,-1),(1,0),(-1,0)):
+        sy=slice(max(0,-dy),min(N,N-dy));sx=slice(max(0,-dx),min(N,N-dx))
+        ty=slice(max(0,dy),min(N,N+dy));tx=slice(max(0,dx),min(N,N+dx))
+        take=old[sy,sx]&~covered[ty,tx]
+        pixels[ty,tx][take]=pixels[sy,sx][take];covered[ty,tx][take]=True
+Image.fromarray(pixels,"L").convert("RGB").save(out/"bark-neutral.png")
 png=(out/"bark-neutral.png").read_bytes()
+print("S082_BARK_PIXELS",painted,min_value,max_value,flush=True)
 # Add per-corner UV to the exact source streams, retaining primitive order.
 buf=bytearray();views=[];access=[]
 def view(data,target=None):
@@ -138,4 +186,4 @@ for p in dd["meshes"][0]["primitives"]:
     for i in indices(dd,bb,p["indices"]):h.update(pos[i]);h.update(norm[i])
 assert h.digest()==source_hash.digest()
 (out/"wood-v4-uv.glb").write_bytes(result)
-(out/"manifest.json").write_text(json.dumps({"sourceSha256":sha(original),"geometryStreamSha256":h.hexdigest(),"triangles":14460,"materialGroups":3,"geometryUnchanged":True,"uv":"TEXCOORD_0","glbSha256":sha(result),"atlasSha256":sha(png),"repairedUVFaces":len(bad),"texturePolicy":"neutral bark plus separate RGBA tint-mask colormap; no transparency of wood"},indent=2))
+(out/"manifest.json").write_text(json.dumps({"sourceSha256":sha(original),"geometryStreamSha256":h.hexdigest(),"triangles":14460,"materialGroups":3,"geometryUnchanged":True,"uv":"TEXCOORD_0","glbSha256":sha(result),"atlasSha256":sha(png),"repairedUVFaces":len(bad),"textureCoveredPixels":painted,"textureRange":[min_value,max_value],"texturePolicy":"neutral bark plus separate RGBA tint-mask colormap; no transparency of wood"},indent=2))
