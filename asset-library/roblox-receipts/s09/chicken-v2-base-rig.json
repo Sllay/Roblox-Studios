@@ -3,7 +3,7 @@
   "sha256": "3d4c122b34e9fee090bb1ba53809b1d13a7dcde190e82bff627619fbee169723",
   "bytes": 450428,
   "source": "asset-library/candidates/chicken-rig-43578265487-1/roblox-exports/chicken-v2-base.glb",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "4679dba4-f136-464e-963d-ead0c3a49e66",
     "done": false
   },
-  "operationPath": "operations/4679dba4-f136-464e-963d-ead0c3a49e66"
+  "operationPath": "operations/4679dba4-f136-464e-963d-ead0c3a49e66",
+  "operation": {
+    "path": "operations/4679dba4-f136-464e-963d-ead0c3a49e66",
+    "operationId": "4679dba4-f136-464e-963d-ead0c3a49e66",
+    "done": true,
+    "response": {
+      "path": "assets/76960331636475",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T09:11:29.910Z",
+      "assetId": "76960331636475",
+      "displayName": "Black Islands chicken-v2-base-rig",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "76960331636475"
 }
