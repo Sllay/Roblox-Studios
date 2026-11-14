@@ -9,22 +9,25 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
  local self:any={peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
- mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false
+ mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=true
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={model};ray.IgnoreWater=false
- local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16
+ local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16;overlap.RespectCanCollide=true
+ local groundRay=RaycastParams.new();groundRay.FilterType=Enum.RaycastFilterType.Include;groundRay.FilterDescendantsInstances={world.Terrain};groundRay.IgnoreWater=false
  self.ray=ray;self.overlap=overlap
  local half=mesh.Size.Y/2
  function self:ground(x:number,z:number):Vector3?
   if not self.options.contains(x,z) then return nil end
   self.queries+=1
-  local hit=world:Raycast(Vector3.new(x,112,z),Vector3.new(0,-160,0),ray)
+  local hit=world:Raycast(Vector3.new(x,112,z),Vector3.new(0,-160,0),groundRay)
   if not hit or hit.Instance~=world.Terrain or hit.Material==Enum.Material.Water or hit.Normal.Y<math.cos(math.rad(35)) then return nil end
   if not self.options.materials[hit.Material] then return nil end
   local p=hit.Position
   self.queries+=1
   local parts=world:GetPartBoundsInBox(CFrame.new(p+Vector3.new(0,half+.15,0)),Vector3.new(math.max(mesh.Size.X,mesh.Size.Z)+.2,mesh.Size.Y-.2,math.max(mesh.Size.X,mesh.Size.Z)+.2),overlap)
   for _,part in parts do
-   if part~=world.Terrain and part.CanQuery then return nil end
+   local owner=part:FindFirstAncestorOfClass("Model")
+   local character=owner and owner:FindFirstChildWhichIsA("Humanoid")
+   if part~=world.Terrain and part.CanCollide and not character then return nil end
   end
   return p
  end
@@ -67,6 +70,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
     self.queries+=1
     local hit=world:Raycast(p+Vector3.new(0,half,0),delta,ray)
     visible=not hit or (t.model and hit.Instance:IsDescendantOf(t.model)) or (hit.Position-t.position).Magnitude<.3
+    if horizontal(delta).Magnitude<2 and math.abs(delta.Y)<8 then visible=true end
     local flat=horizontal(delta)
     approach=if flat.Magnitude>.01 then -horizontal(t.velocity):Dot(flat.Unit) else 0
     if approach~=approach then approach=0 end
@@ -74,7 +78,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   if visible then self.observedThreat=t;self.lastSeen=self.clock elseif self.lastSeen and self.clock-self.lastSeen>4 then self.observedThreat=nil end
   local food=self.food
-  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
+  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,approachThreshold=if t and t.normalSpeed then math.max(1,t.normalSpeed*.6) else 4,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
   self.hit=false;return s
  end
  function self:animate(name:string,speed:number)
@@ -102,6 +106,14 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   self.routePlans+=1;self.nextPlan=self.clock+1
   local p=self:position();local t=self.observedThreat or self.threat
   local angle0=self.options.random()*math.pi*2
+  if not flee and self.home then
+   if not self.exploreTarget or horizontal(self.exploreTarget-p).Magnitude<5 then
+    local radius=25+self.options.random()*70
+    self.exploreTarget=self.home+Vector3.new(math.cos(angle0)*radius,0,math.sin(angle0)*radius)
+   end
+   local toward=horizontal(self.exploreTarget-p)
+   if toward.Magnitude>1 then angle0=math.atan2(toward.Z,toward.X) end
+  end
   local away=if flee and t then horizontal(p-t.position) else Vector3.new(math.cos(angle0),0,math.sin(angle0))
   if away.Magnitude<.01 then away=Vector3.new(0,0,-1) end
   away=away.Unit
@@ -110,7 +122,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   for i=0,7 do
    local angle=math.rad(i*45)
    local dir=Vector3.new(away.X*math.cos(angle)-away.Z*math.sin(angle),0,away.X*math.sin(angle)+away.Z*math.cos(angle))
-   local dest=p+dir*6;local g=self:ground(dest.X,dest.Z)
+   local dest=p+dir*6;local g=if self.home and horizontal(dest-self.home).Magnitude>100 then nil else self:ground(dest.X,dest.Z)
    if g and self:route(p,g) then
     if not flee then return g end
     local exits=0
@@ -144,7 +156,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
   local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
   local q=p+facing*step;local g=self:ground(q.X,q.Z)
-  if not g or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
+  if not g or (self.home and horizontal(g-self.home).Magnitude>100) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
   local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);self.moveDistance+=step
   return true
  end
@@ -171,11 +183,12 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if not self.goal and self.clock>=self.nextPlan then
    if action=="SeekFood" and self.food and self:route(p,self.food) then self.goal=self.food else self.goal=self:plan(flee) end
    self.blocked=self.goal==nil
+   if self.blocked and not flee then self.exploreTarget=nil end
   end
   local goal=self.goal
   if not goal then self:animate("Idle",1);return "Running" end
-  local speed=if flee then self.stats.runSpeed else self.stats.walkSpeed
-  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.blocked=true;self:animate("Idle",1);return "Running" end
+  local speed=if flee then math.max(12,self.stats.runSpeed) else self.stats.walkSpeed
+  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate("Idle",1);return "Running" end
   self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"
  end

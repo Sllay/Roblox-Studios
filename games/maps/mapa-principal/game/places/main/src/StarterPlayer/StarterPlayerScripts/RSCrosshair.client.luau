@@ -28,7 +28,8 @@ RunService.RenderStepped:Connect(function(dt:number)
   params.FilterDescendantsInstances={character}
   local ray=camera:ViewportPointToRay(camera.ViewportSize.X*.5,camera.ViewportSize.Y*.5)
   direction=ray.Direction.Unit
-  local hit=workspace:Raycast(ray.Origin,direction*8,params)
+  local hit=workspace:Raycast(ray.Origin,direction*12,params)
+  if not hit then hit=workspace:Spherecast(ray.Origin,.35,direction*12,params) end
   if hit then
    local m=hit.Instance:FindFirstAncestorOfClass("Model")
    while m do

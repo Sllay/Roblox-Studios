@@ -29,7 +29,7 @@ function W.syncPlayers(s:any,players:{Player})
    if not old or old.model~=character then
     if old then W.remove(s,id) end
     local part:BasePart=root;local h:Humanoid=humanoid
-    W.register(s,{id=id,model=character,faction="players",prey=false,profile="Player",alive=true,damage=0,getPosition=function()return part.Position end,getVelocity=function()return part.AssemblyLinearVelocity end,healthRatio=function()return h.Health/math.max(1,h.MaxHealth) end,applyDamage=function(amount:number)if h.Health>0 then h:TakeDamage(amount) end end})
+    W.register(s,{id=id,model=character,faction="players",prey=false,profile="Player",alive=true,damage=0,getPosition=function()return part.Position end,getVelocity=function()return part.AssemblyLinearVelocity end,healthRatio=function()return h.Health/math.max(1,h.MaxHealth) end,applyDamage=function(amount:number)if h.Health>0 and character:GetAttribute("RSDevGold")~=true then h:TakeDamage(amount) end end})
    else W.update(s,id) end
   end
  end

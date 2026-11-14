@@ -3,8 +3,33 @@
 local S={}
 local Players=game:GetService("Players")
 local RADIUS=500
-local AIM_RANGE=8
-local function characterRoot(player:Player):BasePart?
+local AIM_RANGE=12
+local collisionSaved:{[Model]:{[BasePart]:boolean}}={}
+local function protectedCharacter(c:Model):boolean
+ return c:GetAttribute("RSDevGold")==true
+end
+local characterRoot:(Player)->BasePart?
+local function mode(player:Player,name:string):any
+ local c=player.Character;local root=characterRoot(player)
+ if not c or not root then return {ok=false,error="no character"} end
+ local old=c:GetAttribute("RSDevMode") or "normal"
+ local nextMode=if old==name then "normal" else name
+ c:SetAttribute("RSDevMode",nextMode)
+ if nextMode~="ghost" then local saved=collisionSaved[c];if saved then for part,v in pairs(saved) do if part.Parent then part.CanCollide=v end end;collisionSaved[c]=nil end end
+ return {ok=true,message="Modo: "..nextMode}
+end
+local function gold(player:Player):any
+ local c=player.Character
+ if not c then return {ok=false,error="no character"} end
+ local enabled=not protectedCharacter(c);c:SetAttribute("RSDevGold",enabled)
+ local h=c:FindFirstChildWhichIsA("Humanoid")
+ if enabled and h then h.Health=h.MaxHealth end
+ local shield=c:FindFirstChild("RSDevShield")
+ if enabled and not shield then local f=Instance.new("ForceField");f.Name="RSDevShield";f.Visible=false;f.Parent=c
+ elseif not enabled and shield then shield:Destroy() end
+ return {ok=true,message=if enabled then "Gold ativo" else "Gold desativado"}
+end
+characterRoot=function(player:Player):BasePart?
  local c=player.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil
  local root=if c then c:FindFirstChild("HumanoidRootPart") else nil
  return if h and h.Health>0 and root and root:IsA("BasePart") then root else nil
@@ -15,6 +40,7 @@ local function aimedRecord(s:any,player:Player,direction:any):string?
  local head=c:FindFirstChild("Head");if not head or not head:IsA("BasePart") then return nil end
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={c};ray.IgnoreWater=false
  local hit=workspace:Raycast(head.Position,direction.Unit*AIM_RANGE,ray)
+ if not hit then hit=workspace:Spherecast(head.Position,.35,direction.Unit*AIM_RANGE,ray) end
  if not hit then return nil end
  local m=hit.Instance:FindFirstAncestorOfClass("Model")
  while m do
@@ -45,18 +71,18 @@ local function kill(s:any,player:Player,selector:string?,direction:any):any
    for id,a in pairs(world.actors) do
     if a.alive and (a.getPosition()-center).Magnitude<=RADIUS and not director.agents[id] then
      local h=a.model:FindFirstChildWhichIsA("Humanoid")
-     if h and h.Health>0 then h.Health=0;count+=1 elseif not h then a.applyDamage(1e9,"developer:"..tostring(player.UserId));count+=1 end
+     if h and h.Health>0 and not protectedCharacter(a.model) then h.Health=0;count+=1 elseif not h then a.applyDamage(1e9,"developer:"..tostring(player.UserId));count+=1 end
     end
    end
   end
-  for _,p in Players:GetPlayers() do local c=p.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil;local pr=characterRoot(p);if h and pr and (pr.Position-center).Magnitude<=RADIUS then h.Health=0;count+=1 end end
+  for _,p in Players:GetPlayers() do local c=p.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil;local pr=characterRoot(p);if h and pr and c and not protectedCharacter(c) and (pr.Position-center).Magnitude<=RADIUS then h.Health=0;count+=1 end end
   local seen:{[Model]:boolean}={}
   local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.MaxParts=0
   for _,part in workspace:GetPartBoundsInRadius(center,RADIUS,overlap) do
    local m=part:FindFirstAncestorOfClass("Model")
    if m and not seen[m] then
     seen[m]=true;local h=m:FindFirstChildWhichIsA("Humanoid")
-    if h and h.Health>0 and (m:GetPivot().Position-center).Magnitude<=RADIUS then h.Health=0;count+=1 end
+    if h and h.Health>0 and not protectedCharacter(m) and (m:GetPivot().Position-center).Magnitude<=RADIUS then h.Health=0;count+=1 end
    end
   end
  end
@@ -91,7 +117,9 @@ function S.request(s:any,player:Player,op:any,value:any):any
   if type(value)=="table" then direction=value.direction;value=value.text end
   if type(value)~="string" or #value>160 then return {ok=false,error="invalid command"} end
   local words={};for word in string.gmatch(value,"%S+") do table.insert(words,word) end
-  if words[1]=="/kill" then
+  if #words==1 and (words[1]=="/fly" or words[1]=="/ghost") then return mode(player,string.sub(words[1],2))
+  elseif #words==1 and words[1]=="/gold" then return gold(player)
+  elseif words[1]=="/kill" then
    if #words>2 then return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
    return kill(s,player,words[2],direction)
   elseif words[1]=="/summon" and words[2]=="status" and #words==2 then
@@ -128,6 +156,24 @@ function S.start(s:any)
  assert(not rs:FindFirstChild("RSBookTransport"),"duplicate Book service")
  local folder=Instance.new("Folder");folder.Name="RSBookTransport"
  local remote=Instance.new("RemoteFunction");remote.Name="Request";remote.OnServerInvoke=function(player,op,value)return S.request(s,player,op,value) end;remote.Parent=folder;folder.Parent=rs;s.folder=folder
+ table.insert(s.connections,game:GetService("RunService").Heartbeat:Connect(function()
+  for c in pairs(collisionSaved) do if not c.Parent then collisionSaved[c]=nil end end
+  for _,p in Players:GetPlayers() do
+   local c=p.Character;local root=characterRoot(p)
+   if c and c:GetAttribute("RSDevMode")=="ghost" then
+    local saved=collisionSaved[c] or {};collisionSaved[c]=saved
+    for _,part in c:GetDescendants() do if part:IsA("BasePart") then if saved[part]==nil then saved[part]=part.CanCollide end;part.CanCollide=false end end
+   end
+   if c and root and protectedCharacter(c) then
+    local h=c:FindFirstChildWhichIsA("Humanoid")
+    if h then h.Health=h.MaxHealth end
+    if root.Position.Y<workspace.FallenPartsDestroyHeight+40 then
+     local spawn=workspace:FindFirstChildWhichIsA("SpawnLocation",true)
+     c:PivotTo(if spawn then spawn.CFrame+Vector3.new(0,8,0) else CFrame.new(0,120,0));root.AssemblyLinearVelocity=Vector3.zero
+    end
+   end
+  end
+ end))
  table.insert(s.connections,game:GetService("Players").PlayerRemoving:Connect(function(p)s.limits[p.UserId]=nil;s.deps.gameplay.forgetActor(s.events,p.UserId)end))
 end
 function S.stop(s:any)

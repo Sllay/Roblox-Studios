@@ -13,7 +13,7 @@ function F.new(deps:any,template:Model,parent:Instance,seed:number):any
     if d<distance then
      local humanoid=if character then character:FindFirstChildWhichIsA("Humanoid") else nil
      if humanoid and humanoid.Health>0 then
-      local state=humanoid:GetState();distance=d;best={position=root.Position,velocity=root.AssemblyLinearVelocity,model=character,predator=false,jumping=state==Enum.HumanoidStateType.Jumping or state==Enum.HumanoidStateType.Freefall}
+      local state=humanoid:GetState();distance=d;best={position=root.Position,velocity=root.AssemblyLinearVelocity,model=character,predator=false,normalSpeed=humanoid.WalkSpeed,jumping=state==Enum.HumanoidStateType.Jumping or state==Enum.HumanoidStateType.Freefall}
      end
     end
    end

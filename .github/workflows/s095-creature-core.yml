@@ -8,6 +8,8 @@ on:
       - 'games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSCrosshair.client.luau'
       - 'games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/RSBook.client.luau'
       - '.github/workflows/s095-creature-core.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
