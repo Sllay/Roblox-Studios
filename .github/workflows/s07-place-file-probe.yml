@@ -18,12 +18,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - run: python -m pip install lz4==4.4.4 zstandard==0.23.0
       - name: Read immutable v18 and v19 place files
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           python - <<'PY'
-          import hashlib, json, os, urllib.request, urllib.error, urllib.parse
+          import hashlib, json, os, struct, urllib.request, urllib.error, urllib.parse
+          import lz4.block, zstandard
+          from collections import Counter
           from pathlib import Path
           key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
           place="93428341652658"
@@ -32,6 +35,30 @@ jobs:
                   return None
           opener=urllib.request.build_opener(NoRedirect())
           out=Path("dist/s07-file-probe");out.mkdir(parents=True,exist_ok=True)
+          def inspect(data):
+              if not data.startswith(b"<roblox!"): raise ValueError("Expected binary place")
+              pos=32; classes={}; counts=Counter(); chunks=Counter(); ended=False
+              while pos+16<=len(data):
+                  tag, compressed, size, reserved=struct.unpack_from("<4sIII",data,pos); pos+=16
+                  length=compressed or size
+                  if size>128*1024*1024 or pos+length>len(data): raise ValueError("Invalid chunk bounds")
+                  raw=data[pos:pos+length]; pos+=length
+                  if compressed:
+                      raw=zstandard.ZstdDecompressor().decompress(raw,max_output_size=size) if raw.startswith(b"\x28\xb5\x2f\xfd") else lz4.block.decompress(raw,uncompressed_size=size)
+                  if len(raw)!=size: raise ValueError("Chunk size mismatch")
+                  chunks[tag.decode("ascii")]+=1
+                  if tag==b"INST":
+                      cid,n=struct.unpack_from("<II",raw)
+                      if n>len(raw)-13: raise ValueError("Invalid class name")
+                      name=raw[8:8+n].decode("utf-8")
+                      count=struct.unpack_from("<I",raw,9+n)[0]
+                      if cid in classes: raise ValueError("Duplicate class id")
+                      classes[cid]=name; counts[name]+=count
+                  if tag==b"END\x00": ended=True; break
+              if not ended or pos!=len(data): raise ValueError("Invalid binary termination")
+              expected_classes,expected_instances=struct.unpack_from("<II",data,16)
+              if len(classes)!=expected_classes or sum(counts.values())!=expected_instances: raise ValueError("Header count mismatch")
+              return {"classes":dict(sorted(counts.items())),"chunks":dict(sorted(chunks.items())),"instances":expected_instances}
           report=[]
           for version in (18,19):
               endpoint=f"https://apis.roblox.com/asset-delivery-api/v1/assetId/{place}/version/{version}"
@@ -42,6 +69,7 @@ jobs:
                   if raw.startswith(b"<roblox"):
                       if len(raw)>256*1024*1024: raise ValueError("Place exceeds bounded probe size")
                       report.append({"version":version,"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"format":"rbxl" if raw.startswith(b"<roblox!") else "rbxlx"})
+                      report[-1]["binaryAudit"]=inspect(raw)
                       continue
                   meta=json.loads(raw)
                   if not isinstance(meta,dict): raise ValueError("Metadata is not an object")
@@ -58,13 +86,17 @@ jobs:
                   if len(data)>256*1024*1024: raise ValueError("Place exceeds bounded probe size")
                   if not data.startswith(b"<roblox"): raise ValueError("Not a Roblox place file")
                   report.append({"version":version,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),"format":"rbxl" if data.startswith(b"<roblox!") else "rbxlx"})
+                  report[-1]["binaryAudit"]=inspect(data)
               except urllib.error.HTTPError as exc:
                   report.append({"version":version,"httpStatus":exc.code})
               except (ValueError, OSError) as exc:
                   report.append({"version":version,"errorType":type(exc).__name__,"stage":str(exc) if type(exc) is ValueError else "decode-or-transport"})
           (out/"report.json").write_text(json.dumps(report,indent=2))
           print("S07_PLACE_FILE_PROBE",json.dumps(report))
-          assert all("sha256" in x for x in report), "Immutable place delivery unavailable; no write attempted"
+          if len(report)==2 and all("binaryAudit" in x for x in report):
+              a,b=(x["binaryAudit"]["classes"] for x in report)
+              print("S07_PERSISTED_CLASS_DELTA",json.dumps({k:b.get(k,0)-a.get(k,0) for k in sorted(a.keys()|b.keys()) if a.get(k,0)!=b.get(k,0)}))
+          assert len(report)==2 and all("sha256" in x and "binaryAudit" in x for x in report), "Immutable place delivery unavailable; no write attempted"
           PY
       - uses: actions/upload-artifact@v4
         if: always()
