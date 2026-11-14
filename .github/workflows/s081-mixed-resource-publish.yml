@@ -1,0 +1,40 @@
+name: S08.1 publish reviewed mixed map to staging
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/s081-mixed-resource-publish.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: python tools/asset_factory/s08_release_gate.py
+      - uses: actions/download-artifact@v4
+        with:
+          name: s081-mixed-preview
+          run-id: 43538475097
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s081-reviewed
+      - name: Publish reviewed staging version and verify persisted map
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s081_mixed_resources.py --publish --reviewed dist/s081-reviewed/preview.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s081-publication-proof
+          path: dist/s081/
