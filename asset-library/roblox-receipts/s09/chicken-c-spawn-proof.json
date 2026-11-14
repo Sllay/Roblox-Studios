@@ -1,0 +1,20 @@
+{
+  "initial": 15,
+  "chunks": {
+    "emerald_valley/chunk--1-0": 2,
+    "emerald_valley/chunk-1--1": 2,
+    "emerald_valley/chunk-1-1": 1,
+    "emerald_valley/chunk--1-1": 2,
+    "emerald_valley/chunk--1--1": 2,
+    "emerald_valley/chunk-0-1": 2,
+    "emerald_valley/chunk-0-0": 2,
+    "emerald_valley/chunk-0--1": 2
+  },
+  "ok": false,
+  "universeId": "10769712441",
+  "error": "TaskScript:818: not distributed across nine chunks",
+  "placeId": "93428341652658",
+  "passed": false,
+  "noPlaceWrites": true,
+  "loadedVersion": 25
+}
