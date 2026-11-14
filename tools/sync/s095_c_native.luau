@@ -15,7 +15,7 @@ local ok,err=pcall(function()
   table.insert(ids,id)
   local p=r.adapter:position();assert(r.adapter:ground(p.X,p.Z),"invalid ground after spawn")
  end
- for i=1,3 do assert(Director.remove(s,ids[i])) end
+ for i=1,3 do assert(Director.remove(s,ids[i],20)) end
  assert(Director.count(s)==12)
  assert(Director.tickSpawn(s,20)==nil and s.clock.due==320)
  assert(Director.tickSpawn(s,319.99)==nil)
@@ -28,6 +28,14 @@ local ok,err=pcall(function()
  result.respawnTimes={320,620,920};result.clockMode="synthetic_monotonic_seconds"
  -- Central service uses the same director, no per-creature heartbeat; exercise stopped-session time manually.
  Director.destroy(s);assert(#folder:GetChildren()==0)
+ -- One real chicken consumes a claimed grass site via movement and its Peck action.
+ local forage=Director.new(d,Spawn.chicken,template,folder,210082)
+ local fid=assert(Director.tickSpawn(forage,1));local fr=forage.agents[fid]
+ fr.agent.memory.hunger=.8
+ for i=1,180 do Director.step(forage,.1,1+i*.1);if forage.foodConsumed>0 and fr.agent.memory.state~="Peck" then break end end
+ result.foodConsumed=forage.foodConsumed;result.hungerAfter=fr.agent.memory.hunger
+ assert(result.foodConsumed>=1 and result.hungerAfter<.85,"forage action did not consume")
+ Director.destroy(forage);assert(#folder:GetChildren()==0)
  local service=Service.new(d,template,folder,210081)
  for _=1,4 do Service.advance(service,.25) end
  result.serviceSpawned=Director.count(service.director)

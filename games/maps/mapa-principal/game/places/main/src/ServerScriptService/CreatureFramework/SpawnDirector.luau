@@ -4,14 +4,16 @@ local D={}
 function D.new(deps:any,policy:any,template:Model,parent:Instance,seed:number):any
  local regions=deps.biomes.regions(policy.biomeId);assert(#regions>0)
  local caps={global=policy.maximum,active=policy.maximum,perChunk=3,perBiome={[policy.biomeId]=policy.maximum},perSpecies={[policy.speciesId]=policy.maximum}}
- return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0}
+ return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,closed=false}
 end
 function D.count(s:any):number return s.budget.total end
-function D.remove(s:any,id:string):boolean
+function D.remove(s:any,id:string,now:number?):boolean
  local r=s.agents[id];if not r then return false end
  if r.foodKey then s.d.food.release(s.food,r.foodKey,id) end
  s.d.agent.destroy(r.agent);s.agents[id]=nil
- return s.d.population.release(s.budget,id)
+ local released=s.d.population.release(s.budget,id)
+ if released and not s.closed then s.d.spawn.next(s.clock,s.p,s.budget.total,now or s.now) end
+ return released
 end
 function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
  local d,p=s.d,s.p
@@ -72,14 +74,14 @@ function D.step(s:any,dt:number,now:number)
  s.now=now
  for id,r in pairs(s.agents) do
   local adapter=r.adapter
-  if not adapter.alive then D.remove(s,id);continue end
+  if not adapter.alive or adapter.model.Parent~=s.parent then D.remove(s,id,now);continue end
   local distance=if s.d.distanceProvider then s.d.distanceProvider(adapter:position()) else 0
   local tier=if s.d.scheduler then s.d.scheduler.tier(distance,r.tier) else "Near"
   local previous=r.tier;r.tier=tier
   local moving=tier=="Near" or tier=="Mid"
   if previous~=tier then r.nextDecision=now;r.lastMotion=now;adapter:cancel() end
   if r.foodKey and not s.d.food.owns(s.food,r.foodKey,id,now) then r.foodKey=nil;adapter:setFood(nil) end
-  if moving and adapter.aiEnabled and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
+  if moving and adapter.aiEnabled and r.agent.memory.state~="Peck" and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
    r.nextFood=now+3
    local pos=adapter:position()
    for i=1,4 do
@@ -90,7 +92,7 @@ function D.step(s:any,dt:number,now:number)
      if s.d.food.claim(s.food,key,id,now) then
       r.foodKey=key;adapter:setFood(g)
       adapter.options.onPeck=function()
-       if s.d.food.consume(s.food,key,id,s.now) then r.foodKey=nil;adapter:setFood(nil);return true end
+       if s.d.food.consume(s.food,key,id,s.now) then s.foodConsumed+=1;r.foodKey=nil;adapter:setFood(nil);return true end
        return false
       end
       break
@@ -116,6 +118,7 @@ function D.step(s:any,dt:number,now:number)
  if now-s.lastPrune>=10 then s.d.food.prune(s.food,now,64);s.lastPrune=now end
 end
 function D.destroy(s:any)
+ s.closed=true
  local ids={};for id in pairs(s.agents) do table.insert(ids,id) end
  for _,id in ids do D.remove(s,id) end
 end
