@@ -1,8 +1,15 @@
 {
   "id": "chicken-v2-idle-animation",
   "sha256": "0040e6fc7021a64e1f4a1feab873ea14847c0a18ae3b8f23046c4a464c2a6c94",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "noPlaceWrites": true,
-  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/idle.rbxmx"
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/idle.rbxmx",
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/0d4cf454-a4e7-4c8d-95f5-048a8fd00de4",
+    "operationId": "0d4cf454-a4e7-4c8d-95f5-048a8fd00de4",
+    "done": false
+  },
+  "operationPath": "operations/0d4cf454-a4e7-4c8d-95f5-048a8fd00de4"
 }
