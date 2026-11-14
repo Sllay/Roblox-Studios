@@ -1,0 +1,47 @@
+name: S09 Chicken rig and animations
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/creature_factory/chicken_rig.py'
+      - '.github/workflows/s09-chicken-rig.yml'
+permissions:
+  contents: write
+concurrency:
+  group: s09-chicken-rig
+  cancel-in-progress: false
+jobs:
+  rig:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: sudo apt-get update && sudo apt-get install -y blender xvfb python3-numpy python3-scipy python3-pil libgl1-mesa-dri
+      - name: Atlas, rig, animation and roundtrip
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/creature_factory/chicken_rig.py -- "$PWD/asset-library/candidates/chicken-v2-43576824276-1/chicken-v2.glb" "$PWD/dist/chicken-rig"
+      - name: Archive validated candidate
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          revision="asset-library/candidates/chicken-rig-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python3 tools/asset_factory/persist_candidates.py dist/chicken-rig "$revision"
+          git config user.name "asset-factory[bot]"
+          git config user.email "asset-factory[bot]@users.noreply.github.com"
+          git add "$revision"
+          git commit -m "assets: archive S09 chicken rig ${GITHUB_RUN_ID}"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s09-chicken-rig
+          path: dist/chicken-rig/
