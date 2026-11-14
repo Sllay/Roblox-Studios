@@ -5,6 +5,13 @@ local Players=game:GetService("Players")
 local RADIUS=500
 local AIM_RANGE=12
 local collisionSaved:{[Model]:{[BasePart]:boolean}}={}
+local groupsSaved:{[BasePart]:string}={}
+local physics=game:GetService("PhysicsService")
+local GHOST="RSDeveloperGhost"
+local function configureGhost()
+ if not physics:IsCollisionGroupRegistered(GHOST) then physics:RegisterCollisionGroup(GHOST) end
+ for _,g in physics:GetRegisteredCollisionGroups() do physics:CollisionGroupSetCollidable(GHOST,g.name,false) end
+end
 local function protectedCharacter(c:Model):boolean
  return c:GetAttribute("RSDevGold")==true
 end
@@ -15,7 +22,7 @@ local function mode(player:Player,name:string):any
  local old=c:GetAttribute("RSDevMode") or "normal"
  local nextMode=if old==name then "normal" else name
  c:SetAttribute("RSDevMode",nextMode)
- if nextMode~="ghost" then local saved=collisionSaved[c];if saved then for part,v in pairs(saved) do if part.Parent then part.CanCollide=v end end;collisionSaved[c]=nil end end
+ if nextMode~="ghost" then local saved=collisionSaved[c];if saved then for part,v in pairs(saved) do if part.Parent then part.CanCollide=v;if groupsSaved[part] then part.CollisionGroup=groupsSaved[part];groupsSaved[part]=nil end end end;collisionSaved[c]=nil end end
  return {ok=true,message="Modo: "..nextMode}
 end
 local function gold(player:Player):any
@@ -27,20 +34,22 @@ local function gold(player:Player):any
  local shield=c:FindFirstChild("RSDevShield")
  if enabled and not shield then local f=Instance.new("ForceField");f.Name="RSDevShield";f.Visible=false;f.Parent=c
  elseif not enabled and shield then shield:Destroy() end
- return {ok=true,message=if enabled then "Gold ativo" else "Gold desativado"}
+ return {ok=true,message=if enabled then "God ativo" else "God desativado"}
 end
 characterRoot=function(player:Player):BasePart?
  local c=player.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil
  local root=if c then c:FindFirstChild("HumanoidRootPart") else nil
  return if h and h.Health>0 and root and root:IsA("BasePart") then root else nil
 end
-local function aimedRecord(s:any,player:Player,direction:any):string?
+local function aimedRecord(s:any,player:Player,direction:any,origin:any?):string?
  local root=characterRoot(player);local c=player.Character
  if not root or not c or typeof(direction)~="Vector3" or direction.Magnitude~=direction.Magnitude or math.abs(direction.Magnitude-1)>.05 then return nil end
  local head=c:FindFirstChild("Head");if not head or not head:IsA("BasePart") then return nil end
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={c};ray.IgnoreWater=false
- local hit=workspace:Raycast(head.Position,direction.Unit*AIM_RANGE,ray)
- if not hit then hit=workspace:Spherecast(head.Position,.35,direction.Unit*AIM_RANGE,ray) end
+ local start=head.Position
+ if typeof(origin)=="Vector3" and (origin-head.Position).Magnitude<=3 then start=origin end
+ local hit=workspace:Raycast(start,direction.Unit*AIM_RANGE,ray)
+ if not hit then hit=workspace:Spherecast(start,.35,direction.Unit*AIM_RANGE,ray) end
  if not hit then return nil end
  local m=hit.Instance:FindFirstAncestorOfClass("Model")
  while m do
@@ -50,10 +59,10 @@ local function aimedRecord(s:any,player:Player,direction:any):string?
  end
  return nil
 end
-local function kill(s:any,player:Player,selector:string?,direction:any):any
+local function kill(s:any,player:Player,selector:string?,direction:any,origin:any?):any
  local root=characterRoot(player);if not root then return {ok=false,error="no character"} end
  local director=s.fauna.director;local dm=s.deps.director;local ids={};local center=root.Position
- if not selector then local id=aimedRecord(s,player,direction);if not id then return {ok=false,error="no mob in crosshair"} end;table.insert(ids,id)
+ if not selector then local id=aimedRecord(s,player,direction,origin);if not id then return {ok=false,error="no mob in crosshair"} end;table.insert(ids,id)
  elseif selector=="@e" or selector=="@a" or s.deps.registry.get(selector) then
   for id,r in pairs(director.agents) do
    if r.adapter.alive and (r.adapter.mesh.Position-center).Magnitude<=RADIUS and (selector=="@e" or selector=="@a" or r.speciesId==selector) then table.insert(ids,id) end
@@ -107,21 +116,21 @@ function S.request(s:any,player:Player,op:any,value:any):any
  elseif op=="discover" then
   if now-(row.discover or -math.huge)<.5 then return {ok=false,error="rate limited"} end;row.discover=now
   if type(value)~="table" or type(value.id)~="string" then return {ok=false,error="invalid target"} end
-  local id=aimedRecord(s,player,value.direction)
+  local id=aimedRecord(s,player,value.direction,value.origin)
   if not id or id~=value.id then return {ok=false,error="invalid aim"} end
   return {ok=s.deps.gameplay.interact(s.events,player,id,now,os.time())}
  elseif op=="command" then
   if not developer then return {ok=false,error="forbidden"} end
   if now-row.command<1 then return {ok=false,error="rate limited"} end;row.command=now
-  local direction=nil
-  if type(value)=="table" then direction=value.direction;value=value.text end
+  local direction=nil;local origin=nil
+  if type(value)=="table" then direction=value.direction;origin=value.origin;value=value.text end
   if type(value)~="string" or #value>160 then return {ok=false,error="invalid command"} end
   local words={};for word in string.gmatch(value,"%S+") do table.insert(words,word) end
   if #words==1 and (words[1]=="/fly" or words[1]=="/ghost") then return mode(player,string.sub(words[1],2))
-  elseif #words==1 and words[1]=="/gold" then return gold(player)
+  elseif #words==1 and words[1]=="/god" then return gold(player)
   elseif words[1]=="/kill" then
    if #words>2 then return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
-   return kill(s,player,words[2],direction)
+   return kill(s,player,words[2],direction,origin)
   elseif words[1]=="/summon" and words[2]=="status" and #words==2 then
    local j=s.deps.director.developerStatus(s.fauna.director,uid)
    if not j then return {ok=false,error="no summon job"} end
@@ -161,8 +170,9 @@ function S.start(s:any)
   for _,p in Players:GetPlayers() do
    local c=p.Character;local root=characterRoot(p)
    if c and c:GetAttribute("RSDevMode")=="ghost" then
+    configureGhost()
     local saved=collisionSaved[c] or {};collisionSaved[c]=saved
-    for _,part in c:GetDescendants() do if part:IsA("BasePart") then if saved[part]==nil then saved[part]=part.CanCollide end;part.CanCollide=false end end
+    for _,part in c:GetDescendants() do if part:IsA("BasePart") then if saved[part]==nil then saved[part]=part.CanCollide end;if not groupsSaved[part] then groupsSaved[part]=part.CollisionGroup end;part.CollisionGroup=GHOST;part.CanCollide=false end end
    end
    if c and root and protectedCharacter(c) then
     local h=c:FindFirstChildWhichIsA("Humanoid")

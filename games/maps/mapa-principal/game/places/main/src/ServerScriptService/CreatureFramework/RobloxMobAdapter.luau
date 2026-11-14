@@ -103,7 +103,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if intent.state=="Static" or intent.state=="Dead" then self:animate("",1) else self:animate(intent.animation,1) end
  end
  function self:plan(flee:boolean):Vector3?
-  self.routePlans+=1;self.nextPlan=self.clock+1
+  self.routePlans+=1;self.nextPlan=self.clock+.15
   local p=self:position();local t=self.observedThreat or self.threat
   local angle0=self.options.random()*math.pi*2
   if not flee and self.home then
@@ -179,16 +179,16 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   local flee=action=="ChooseSafeEscape" or action=="ReplanEscape"
   local p=self:position()
-  if self.goal and horizontal(self.goal-p).Magnitude<.2 then self.goal=nil end
+  if self.goal and horizontal(self.goal-p).Magnitude<.2 then self.goal=nil;self.nextPlan=self.clock end
   if not self.goal and self.clock>=self.nextPlan then
    if action=="SeekFood" and self.food and self:route(p,self.food) then self.goal=self.food else self.goal=self:plan(flee) end
    self.blocked=self.goal==nil
    if self.blocked and not flee then self.exploreTarget=nil end
   end
   local goal=self.goal
-  if not goal then self:animate("Idle",1);return "Running" end
+  if not goal then self:animate(if flee then "Run" else "Idle",1);return "Running" end
   local speed=if flee then math.max(12,self.stats.runSpeed) else self.stats.walkSpeed
-  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate("Idle",1);return "Running" end
+  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if flee then "Run" else "Idle",1);return "Running" end
   self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"
  end
