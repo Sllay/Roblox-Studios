@@ -1,0 +1,8 @@
+{
+  "id": "chicken-v2-idle-animation",
+  "sha256": "0040e6fc7021a64e1f4a1feab873ea14847c0a18ae3b8f23046c4a464c2a6c94",
+  "state": "post_intent",
+  "retryAllowed": false,
+  "noPlaceWrites": true,
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/idle.rbxmx"
+}
