@@ -3,9 +3,16 @@
   "sha256": "fa46eb373b3e82e73ffb665dc6d0ea1a4fd8615613b8635811ec37835d58130b",
   "bytes": 57057,
   "source": "asset-library/approved/eggydrasil/v8/wood-uv/wood-v4-pbr.rbxm",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/03b4f557-56d2-4c70-ad39-e2ccd8af5812",
+    "operationId": "03b4f557-56d2-4c70-ad39-e2ccd8af5812",
+    "done": false
+  },
+  "operationPath": "operations/03b4f557-56d2-4c70-ad39-e2ccd8af5812"
 }
