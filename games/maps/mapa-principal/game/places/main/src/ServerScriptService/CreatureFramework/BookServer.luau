@@ -5,6 +5,13 @@ local Players=game:GetService("Players")
 local RADIUS=500
 local AIM_RANGE=12
 local collisionSaved:{[Model]:{[BasePart]:boolean}}={}
+local groupsSaved:{[BasePart]:string}={}
+local physics=game:GetService("PhysicsService")
+local GHOST="RSDeveloperGhost"
+local function configureGhost()
+ if not physics:IsCollisionGroupRegistered(GHOST) then physics:RegisterCollisionGroup(GHOST) end
+ for _,g in physics:GetRegisteredCollisionGroups() do physics:CollisionGroupSetCollidable(GHOST,g.name,false) end
+end
 local function protectedCharacter(c:Model):boolean
  return c:GetAttribute("RSDevGold")==true
 end
@@ -15,7 +22,7 @@ local function mode(player:Player,name:string):any
  local old=c:GetAttribute("RSDevMode") or "normal"
  local nextMode=if old==name then "normal" else name
  c:SetAttribute("RSDevMode",nextMode)
- if nextMode~="ghost" then local saved=collisionSaved[c];if saved then for part,v in pairs(saved) do if part.Parent then part.CanCollide=v end end;collisionSaved[c]=nil end end
+ if nextMode~="ghost" then local saved=collisionSaved[c];if saved then for part,v in pairs(saved) do if part.Parent then part.CanCollide=v;if groupsSaved[part] then part.CollisionGroup=groupsSaved[part];groupsSaved[part]=nil end end end;collisionSaved[c]=nil end end
  return {ok=true,message="Modo: "..nextMode}
 end
 local function gold(player:Player):any
@@ -27,7 +34,7 @@ local function gold(player:Player):any
  local shield=c:FindFirstChild("RSDevShield")
  if enabled and not shield then local f=Instance.new("ForceField");f.Name="RSDevShield";f.Visible=false;f.Parent=c
  elseif not enabled and shield then shield:Destroy() end
- return {ok=true,message=if enabled then "Gold ativo" else "Gold desativado"}
+ return {ok=true,message=if enabled then "God ativo" else "God desativado"}
 end
 characterRoot=function(player:Player):BasePart?
  local c=player.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil
@@ -118,7 +125,7 @@ function S.request(s:any,player:Player,op:any,value:any):any
   if type(value)~="string" or #value>160 then return {ok=false,error="invalid command"} end
   local words={};for word in string.gmatch(value,"%S+") do table.insert(words,word) end
   if #words==1 and (words[1]=="/fly" or words[1]=="/ghost") then return mode(player,string.sub(words[1],2))
-  elseif #words==1 and words[1]=="/gold" then return gold(player)
+  elseif #words==1 and words[1]=="/god" then return gold(player)
   elseif words[1]=="/kill" then
    if #words>2 then return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
    return kill(s,player,words[2],direction)
@@ -161,8 +168,9 @@ function S.start(s:any)
   for _,p in Players:GetPlayers() do
    local c=p.Character;local root=characterRoot(p)
    if c and c:GetAttribute("RSDevMode")=="ghost" then
+    configureGhost()
     local saved=collisionSaved[c] or {};collisionSaved[c]=saved
-    for _,part in c:GetDescendants() do if part:IsA("BasePart") then if saved[part]==nil then saved[part]=part.CanCollide end;part.CanCollide=false end end
+    for _,part in c:GetDescendants() do if part:IsA("BasePart") then if saved[part]==nil then saved[part]=part.CanCollide end;if not groupsSaved[part] then groupsSaved[part]=part.CollisionGroup end;part.CollisionGroup=GHOST;part.CanCollide=false end end
    end
    if c and root and protectedCharacter(c) then
     local h=c:FindFirstChildWhichIsA("Humanoid")
