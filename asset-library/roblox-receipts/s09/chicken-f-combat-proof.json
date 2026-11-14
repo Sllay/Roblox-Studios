@@ -1,15 +1,33 @@
 {
-  "queries": 44,
+  "chicken": {
+    "state": "Flee",
+    "groundError": 0,
+    "escapeGain": 1.0752153396606445,
+    "moved": 1.1049846410751343
+  },
   "universeId": "10769712441",
-  "meleeBlocked": true,
-  "preySelected": "prey",
-  "passed": true,
-  "rangedBlocked": true,
-  "noPlaceWrites": true,
-  "rangedDamage": 7,
-  "predatorSensed": true,
-  "meleeDamage": 5,
+  "melee": {
+    "recovery": true,
+    "windup": "Windup",
+    "interrupted": "Search",
+    "health": 16
+  },
   "placeId": "93428341652658",
+  "passed": true,
+  "noPlaceWrites": true,
+  "ranged": {
+    "projectileCount": 0,
+    "closeState": "Retreat",
+    "health": 14,
+    "coverBlocked": true
+  },
   "ok": true,
+  "queries": 33,
+  "predator": {
+    "duplicateRejected": true,
+    "nonPreyHealth": 20,
+    "preyHealth": 15,
+    "allyHealth": 20
+  },
   "loadedVersion": 25
 }
