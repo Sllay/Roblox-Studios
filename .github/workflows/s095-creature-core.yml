@@ -1,0 +1,21 @@
+name: S09.5 Creature framework core
+on:
+  push:
+    paths:
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/**'
+      - 'tests/luau/creature_framework.luau'
+      - '.github/workflows/s095-creature-core.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tools/install-luau.sh
+      - run: bash tools/install-luau-lsp.sh
+      - name: Compile and execute core contracts
+        run: |
+          for f in games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/*.luau; do luau-compile --null "$f"; luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$f"; done
+          luau tests/luau/creature_framework.luau
