@@ -1,8 +1,15 @@
 {
   "id": "chicken-v2-walk-animation",
   "sha256": "1c9946ef5cfb4df315d58df2a1feb71e8db140219750a20363843d611f448a29",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "noPlaceWrites": true,
-  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/walk.rbxmx"
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/walk.rbxmx",
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/2f1c7b97-025d-4bcd-a4cc-56d5df372122",
+    "operationId": "2f1c7b97-025d-4bcd-a4cc-56d5df372122",
+    "done": false
+  },
+  "operationPath": "operations/2f1c7b97-025d-4bcd-a4cc-56d5df372122"
 }
