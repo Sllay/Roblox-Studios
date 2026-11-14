@@ -2,8 +2,8 @@
   "chicken": {
     "state": "Flee",
     "groundError": 0,
-    "escapeGain": 1.0752153396606445,
-    "moved": 1.1049846410751343
+    "escapeGain": 11.284284114837646,
+    "moved": 11.427953720092773
   },
   "universeId": "10769712441",
   "melee": {
