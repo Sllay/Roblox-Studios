@@ -13,12 +13,35 @@ local ok,err=pcall(function()
  animator.PreferLodEnabled=false
  local tracks={}
  local assets={}
- for name,id in pairs(cfg.ids) do
-  local a=Instance.new("Animation");a.AnimationId="rbxassetid://"..id
-  local t=animator:LoadAnimation(a)
-  t:Play(0,1,1)
-  for i=1,30 do if t.Length>0 then break end task.wait(.1) end
-  assert(t.Length>0,"Failed to load "..name)
+ result.loadChecks={}
+ local provider=game:GetService("AnimationClipProvider")
+ for _,name in {"Idle","Walk","Run","Peck","Flap"} do
+  local id=cfg.ids[name]
+  local uri="rbxassetid://"..id
+  local loaded=nil
+  local errors={}
+  for attempt=1,3 do
+   local fetched,clip=pcall(function() return provider:GetAnimationClipAsync(uri) end)
+   if fetched and clip then loaded=clip;break end
+   table.insert(errors,tostring(clip):sub(1,200));task.wait(.5)
+  end
+  result.loadChecks[name]={clipFetched=loaded~=nil,errors=errors}
+  assert(loaded,"Failed to fetch "..name)
+  loaded:Destroy()
+  local a=Instance.new("Animation");a.AnimationId=uri
+  local t=nil
+  for attempt=1,3 do
+   local success,candidate=pcall(function() return animator:LoadAnimation(a) end)
+   if success and candidate then
+    candidate:Play(0,1,1)
+    for i=1,30 do if candidate.Length>0 then break end task.wait(.1) end
+    if candidate.Length>0 then t=candidate;break end
+    candidate:Stop(0);candidate:Destroy()
+   end
+   task.wait(.5)
+  end
+  assert(t,"Failed to load "..name)
+  result.loadChecks[name].duration=t.Length
   t:Stop(0)
   tracks[name]=t;assets[name]=a
  end
