@@ -1,0 +1,8 @@
+{
+  "id": "chicken-v2-walk-animation",
+  "sha256": "1c9946ef5cfb4df315d58df2a1feb71e8db140219750a20363843d611f448a29",
+  "state": "post_intent",
+  "retryAllowed": false,
+  "noPlaceWrites": true,
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/walk.rbxmx"
+}
