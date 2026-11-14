@@ -1,0 +1,21 @@
+{
+  "universeId": "10769712441",
+  "maxPoseError": 8.760379266035956e-05,
+  "placeId": "93428341652658",
+  "assetId": "78561104554317",
+  "length": 1.25,
+  "simulationRunning": false,
+  "playbackVerified": true,
+  "keyframes": 31,
+  "fetchErrors": [],
+  "bonesCompared": 14,
+  "sequenceDuration": 1.25,
+  "noPlaceWrites": true,
+  "ok": true,
+  "motion": 0.8931904435157776,
+  "playing": true,
+  "sampleTime": 0.5416666865348816,
+  "stage": "compare_pose",
+  "explicitStep": true,
+  "loadedVersion": 25
+}
