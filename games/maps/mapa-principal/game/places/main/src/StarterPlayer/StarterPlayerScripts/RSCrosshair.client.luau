@@ -56,3 +56,33 @@ RunService.RenderStepped:Connect(function(dt:number)
   end
  end
 end)
+
+-- Presentation only: authoritative query hitbox remains untouched.
+local visualStates:{[MeshPart]:CFrame}={}
+local visualElapsed=0
+local visualModels:{Model}={}
+RunService.RenderStepped:Connect(function(dt:number)
+ visualElapsed+=dt
+ if visualElapsed>=.25 then
+  visualElapsed=0;table.clear(visualModels)
+  local camera=workspace.CurrentCamera
+  if camera then
+   local overlap=OverlapParams.new();overlap.MaxParts=0
+   for _,part in workspace:GetPartBoundsInRadius(camera.CFrame.Position,55,overlap) do
+    if part.Name=="CreatureHitbox" and part.Parent and part.Parent:IsA("Model") then table.insert(visualModels,part.Parent) end
+   end
+  end
+ end
+ local active:{[MeshPart]:boolean}={}
+ for _,model in visualModels do
+  local hitbox=model:FindFirstChild("CreatureHitbox")
+  local mesh=model:FindFirstChildWhichIsA("MeshPart",true)
+  if hitbox and hitbox:IsA("BasePart") and mesh and mesh.Anchored and hitbox.CanQuery then
+   active[mesh]=true
+   local goal=hitbox.CFrame;local previous=visualStates[mesh] or goal
+   local nextFrame=if (previous.Position-goal.Position).Magnitude>8 then goal else previous:Lerp(goal,1-math.exp(-22*dt))
+   visualStates[mesh]=nextFrame;mesh.CFrame=nextFrame
+  end
+ end
+ for mesh in pairs(visualStates) do if not active[mesh] then visualStates[mesh]=nil end end
+end)
