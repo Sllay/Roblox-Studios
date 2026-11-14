@@ -5,7 +5,17 @@ local model=A:LoadAssetAsync(76960331636475)
 assert(model.Parent==nil)
 local result={assetId=cfg.assetId,playbackVerified=false,noPlaceWrites=true}
 local ok,err=pcall(function()
- local seq=K:GetKeyframeSequenceAsync("rbxassetid://"..cfg.assetId)
+ result.stage="fetch_sequence"
+ local seq=nil
+ local errors={}
+ for attempt=1,3 do
+  local fetched,value=pcall(function() return K:GetKeyframeSequenceAsync("rbxassetid://"..cfg.assetId) end)
+  if fetched and value then seq=value;break end
+  table.insert(errors,tostring(value):sub(1,250));task.wait(1)
+ end
+ result.fetchErrors=errors
+ assert(seq,"Published sequence unavailable after read-only retries")
+ result.stage="load_track"
  local keyframes=seq:GetKeyframes()
  result.keyframes=#keyframes
  local maxTime=0
@@ -30,7 +40,9 @@ local ok,err=pcall(function()
  animator.PreferLodEnabled=false
  track:AdjustSpeed(1)
  track.TimePosition=0
+ result.stage="step_animator"
  animator:StepAnimations(cfg.expected.time)
+ result.stage="compare_pose"
  track:AdjustSpeed(0)
  result.explicitStep=true
  local maxError=0
