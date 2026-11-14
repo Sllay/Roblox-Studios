@@ -1,0 +1,47 @@
+name: S08.2 native wood proof and reviewed staging publication
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/s082-publication.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - name: Configure durable asset receipts
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Verify native wood surface and same geometry
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/asset_factory/s082_native_wood.py
+      - uses: actions/download-artifact@v4
+        with:
+          name: s082-preview
+          run-id: 43542217864
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/s082-reviewed
+      - name: Verify collision parity, publish once and reopen v21
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s082_publish.py --reviewed dist/s082-reviewed/preview.json --publish
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s082-publication-proof
+          path: dist/s082-publish/
