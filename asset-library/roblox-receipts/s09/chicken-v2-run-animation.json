@@ -1,0 +1,8 @@
+{
+  "id": "chicken-v2-run-animation",
+  "sha256": "0d170e0c8108772a302557a87cb858e764e64e30a2e6b9697a78f5d02d8d3984",
+  "state": "post_intent",
+  "retryAllowed": false,
+  "noPlaceWrites": true,
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/run.rbxmx"
+}
