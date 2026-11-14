@@ -1,0 +1,33 @@
+{
+  "clips": {
+    "Idle": {
+      "assetId": "123461134632415",
+      "duration": 2.0,
+      "proof": "asset-library/roblox-receipts/s09/chicken-v2-idle-playback.json"
+    },
+    "Walk": {
+      "assetId": "128847740648973",
+      "duration": 1.0,
+      "proof": "asset-library/roblox-receipts/s09/chicken-v2-walk-playback.json"
+    },
+    "Run": {
+      "assetId": "128056941885930",
+      "duration": 0.75,
+      "proof": "asset-library/roblox-receipts/s09/chicken-v2-run-playback.json"
+    },
+    "Peck": {
+      "assetId": "136236973921119",
+      "duration": 1.25,
+      "proof": "asset-library/roblox-receipts/s09/chicken-v2-peck-playback.json"
+    },
+    "Flap": {
+      "assetId": "78561104554317",
+      "duration": 1.25,
+      "proof": "asset-library/roblox-receipts/s09/chicken-v2-flap-playback.json"
+    }
+  },
+  "allPlaybackVerified": true,
+  "rigAssetId": "76960331636475",
+  "loadedVersion": 25,
+  "noPlaceWrites": true
+}
