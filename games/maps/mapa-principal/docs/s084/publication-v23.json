@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "release": "S08.4",
+  "environment": "staging",
+  "placeId": "93428341652658",
+  "universeId": "10769712441",
+  "sourceCommit": "a8807d3a3f195a4b1701e6d96a056a70b1dc0137",
+  "runId": 43545991867,
+  "receipt": {
+    "status": "verified",
+    "beforeVersion": 22,
+    "afterVersion": 23,
+    "counts": {
+      "tree": 250,
+      "pine": 16,
+      "bush": 200
+    },
+    "changed": 250,
+    "meshPartsAdded": 0,
+    "clientRenderVerified": false
+  },
+  "foliage": {
+    "whiteTexture": "89626593244521",
+    "material": "Plastic",
+    "geometryUnchanged": true,
+    "graySplit": "pending_permission_and_geometry_review"
+  },
+  "species": {
+    "Tree_01": 126,
+    "Tree_03": 20,
+    "Tree_08": 84,
+    "Tree_12": 20
+  }
+}

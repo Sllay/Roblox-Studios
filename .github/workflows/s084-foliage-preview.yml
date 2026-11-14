@@ -1,11 +1,5 @@
 name: S08.4 foliage material staging
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/s084-foliage-preview.yml'
-      - 'tools/s084_foliage_preview.py'
-      - 'tools/sync/s084_foliage_preview.luau'
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,7 +20,7 @@ jobs:
       - name: Guarded native preview and staging publication
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-        run: python tools/s084_foliage_preview.py --publish
+        run: python tools/s084_foliage_preview.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
