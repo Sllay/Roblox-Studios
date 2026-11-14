@@ -45,8 +45,8 @@ RunService.RenderStepped:Connect(function(dt:number)
  if id and model and model:GetAttribute("CreatureOrigin")=="Natural" and focusAge>=.4 and not pending and os.clock()-(submitted[id] or -math.huge)>5 then
   local transport=rs:FindFirstChild("RSBookTransport");local remote=transport and transport:FindFirstChild("Request")
   if remote and remote:IsA("RemoteFunction") then
-   pending=true;submitted[id]=os.clock();local requested=id;local aimDirection=direction
-   task.spawn(function()pcall(function()remote:InvokeServer("discover",{id=requested,direction=aimDirection})end);pending=false end)
+   pending=true;submitted[id]=os.clock();local requested=id;local aimDirection=direction;local aimOrigin=if camera then camera.CFrame.Position else nil
+   task.spawn(function()pcall(function()remote:InvokeServer("discover",{id=requested,direction=aimDirection,origin=aimOrigin})end);pending=false end)
   end
  end
 end)
