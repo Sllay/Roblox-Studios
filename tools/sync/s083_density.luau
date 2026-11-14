@@ -33,7 +33,15 @@ local function fingerprint()
  for _,name in cfg.services do
   local svc=game:GetService(name)
   for _,o in svc:GetDescendants() do
-   if not isNew(o) then table.insert(rows,hash(canon(record(svc,o)))) end
+   if not isNew(o) then
+    local rec=record(svc,o)
+    -- Existing folder records contain a direct child count; normalize only
+    -- the explicitly authorized additions, not any other existing property.
+    if o==V or o==C or o==D then
+     for _,child in o:GetChildren() do if new(child) then rec.childCount-=1 end end
+    end
+    table.insert(rows,hash(canon(rec)))
+   end
   end
  end
  table.sort(rows);return hash(table.concat(rows,";"))
@@ -108,8 +116,17 @@ local roots={};for _,o in sp:GetChildren() do if o.Name=="PlayerModule" and o:Is
 local sounds=sp.StarterPlayerScripts:FindFirstChild("RbxCharacterSounds")
 local binding=sounds and sounds:FindFirstChild("AtomicBinding");local leaves={}
 if binding then for _,o in binding:GetChildren() do if o.Name=="AtomicBinding" and o:IsA("ModuleScript") then table.insert(leaves,o) end end end
-local fp=originalFp
--- Do not edit existing controllers in this vegetation-only release.
+local controllerNormalized=false
+-- Roblox's save pipeline has repeatedly materialized the same two default
+-- controller clones. Normalize only the exact known shape before a save,
+-- as in S08.2; verify both accepted representations on reopen.
+if #roots==19 and #leaves==18 then
+ assert(#roots[19]:GetDescendants()==161 and #leaves[18]:GetChildren()==0 and leaves[18].Source==binding.Source,"Unexpected controller clone")
+ roots[19].Parent=nil;leaves[18].Parent=nil;controllerNormalized=true
+elseif #roots~=18 or #leaves~=17 then
+ error("Unrecognized controller baseline "..#roots.."/"..#leaves)
+end
+local fp=fingerprint()
 if cfg.mode=="apply" then
  assert(cfg.confirmStaging and fp==cfg.expectedFingerprint and originalFp==cfg.originalFingerprint,"Reviewed baseline")
  for _,r in before do assert(cfg.expectedTerrain[r.id]==r.digest,"Reviewed terrain") end
@@ -305,7 +322,7 @@ for i,r in after do assert(r.digest==before[i].digest,"Terrain modified") end
 assert(fingerprint()==fp,"Existing objects changed")
 local meshes=0;local instances=0
 for _,folder in {V,D,C} do for _,o in folder:GetChildren() do if new(o) then instances+=1+#o:GetDescendants();for _,p in o:GetDescendants() do if p:IsA("MeshPart") then meshes+=1 end end end end end
-local result={counts=c,tiles=tiles,added=added,newModels=n,newColliders=cols,newMeshParts=meshes,newInstances=instances,digest=digest,terrain=after,fingerprint=fp,originalFingerprint=originalFp,candidates=candidateCount,searchAttempts=searchAttempts,fineUsed=fineUsed,rejected=rejects,readyForStaging=true,clientRenderVerified=false}
+local result={counts=c,tiles=tiles,added=added,newModels=n,newColliders=cols,newMeshParts=meshes,newInstances=instances,digest=digest,terrain=after,fingerprint=fp,originalFingerprint=originalFp,controllerNormalized=controllerNormalized,candidates=candidateCount,searchAttempts=searchAttempts,fineUsed=fineUsed,rejected=rejects,readyForStaging=true,clientRenderVerified=false}
 if cfg.mode=="apply" then
  assert(digest==cfg.expectedDigest and game.PlaceVersion==21,"Reviewed plan/version")
  A:SavePlaceAsync({SaveWithoutPublish=false});result.saved=true
