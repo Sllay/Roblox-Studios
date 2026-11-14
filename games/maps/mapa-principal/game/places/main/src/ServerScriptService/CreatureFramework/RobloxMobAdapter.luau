@@ -8,7 +8,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local mesh=assert(model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
  local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
- local self:any={peckConsumed=false,peckAge=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
+ local self:any={peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
  mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={model};ray.IgnoreWater=false
  local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16
@@ -47,11 +47,19 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  end
  function self:setThreat(t:any) self.threat=t end
  function self:setFood(p:Vector3?) self.food=p end
- function self:damage() self.hit=true end
+ function self:damage(attacker:any?)
+  self.hit=true
+  if attacker then self.observedThreat=attacker;self.lastSeen=self.clock;self.damageThreat=attacker;self.damageUntil=self.clock+5 end
+ end
  function self:sense(dt:number):any
   self.clock+=dt
   local p=self:position();local t=self.threat
   if self.options.threatProvider then t=self.options.threatProvider(p) end
+  if self.damageThreat and self.clock<(self.damageUntil or 0) then
+   local a=self.damageThreat
+   if a.model and a.model.Parent then a.position=a.model:GetPivot().Position end
+   t={position=a.position,velocity=a.velocity,model=a.model,predator=true}
+  else self.damageThreat=nil end
   local dist=math.huge;local approach=0;local visible=false;local predator=false
   if t and finite(t.position) and finite(t.velocity) then
    local delta=t.position-(p+Vector3.new(0,half,0));dist=delta.Magnitude;predator=t.predator==true
@@ -59,13 +67,14 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
     self.queries+=1
     local hit=world:Raycast(p+Vector3.new(0,half,0),delta,ray)
     visible=not hit or (t.model and hit.Instance:IsDescendantOf(t.model)) or (hit.Position-t.position).Magnitude<.3
-    approach=-horizontal(t.velocity):Dot(horizontal(delta).Unit)
+    local flat=horizontal(delta)
+    approach=if flat.Magnitude>.01 then -horizontal(t.velocity):Dot(flat.Unit) else 0
     if approach~=approach then approach=0 end
    end
   end
   if visible then self.observedThreat=t;self.lastSeen=self.clock elseif self.lastSeen and self.clock-self.lastSeen>4 then self.observedThreat=nil end
   local food=self.food
-  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,predator=predator,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
+  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
   self.hit=false;return s
  end
  function self:animate(name:string,speed:number)
@@ -82,11 +91,11 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
    track=animator:LoadAnimation(anim);self.tracks[name]=track
    track.Looped=name=="Idle" or name=="Walk" or name=="Run"
   end
-  track:Play(.2,1,speed)
+  track:Play(.18,1,speed)
  end
  function self:cancel() self.goal=nil;self.nextPlan=0 end
  function self:enter(intent:any)
-  self.goal=nil;self.nextPlan=0;self.blocked=false;self.stuck=false;self.peckAge=0;self.peckConsumed=false
+  self.goal=nil;self.nextPlan=0;self.blocked=false;self.stuck=false;self.peckAge=0;self.peckConsumed=false;self.actionAge=0;self.actionComplete=false;self.motionSpeed=0
   if intent.state=="Static" or intent.state=="Dead" then self:animate("",1) else self:animate(intent.animation,1) end
  end
  function self:plan(flee:boolean):Vector3?
@@ -125,19 +134,34 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  function self:moveToward(goal:Vector3,speed:number,dt:number):boolean
   local p=self:position();local delta=horizontal(goal-p)
   if delta.Magnitude<.01 then return true end
-  local step=math.min(delta.Magnitude,speed*math.clamp(dt,0,.2))
-  local q=p+delta.Unit*step;local g=self:ground(q.X,q.Z)
+  local elapsed=math.clamp(dt,0,.2)
+  local forward=horizontal(mesh.CFrame.LookVector).Unit
+  local target=delta.Unit
+  local angle=math.atan2(forward:Cross(target).Y,forward:Dot(target))
+  local turn=math.clamp(angle,-math.rad(240)*elapsed,math.rad(240)*elapsed)
+  local facing=CFrame.fromAxisAngle(Vector3.yAxis,turn):VectorToWorldSpace(forward)
+  local alignment=math.max(0,facing:Dot(target))
+  self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
+  local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
+  local q=p+facing*step;local g=self:ground(q.X,q.Z)
   if not g or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
-  local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+delta.Unit);self.moveDistance+=step
+  local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);self.moveDistance+=step
   return true
  end
  function self:execute(intent:any,dt:number):string
   local action=intent.action
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
   if not moving then
-   if action=="Peck" then
+   if action=="Peck" or action=="Flap" then
+    self.actionAge+=dt
+    local track=self.tracks[intent.animation]
+    local length=if track and track.Length>0 then track.Length else 0
+    -- Never leave a loaded one-shot before it reaches its authored end.
+    self.actionComplete=if length>0 then (self.actionAge>=length and (not track.IsPlaying or track.TimePosition>=length-.03)) else self.actionAge>=4
+    if action=="Peck" then
     self.peckAge+=dt
-    if not self.peckConsumed and self.peckAge>=.625 and self.food and horizontal(self.food-self:position()).Magnitude<.8 and self.options.onPeck then self.peckConsumed=self.options.onPeck(self.food,dt)==true end
+    if not self.peckConsumed and self.peckAge>= (if length>0 then length*.5 else .625) and self.food and horizontal(self.food-self:position()).Magnitude<.8 and self.options.onPeck then self.peckConsumed=self.options.onPeck(self.food,dt)==true end
+    end
    end
    return "Running"
   end
@@ -152,7 +176,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if not goal then self:animate("Idle",1);return "Running" end
   local speed=if flee then self.stats.runSpeed else self.stats.walkSpeed
   if not self:moveToward(goal,speed,dt) then self.goal=nil;self.blocked=true;self:animate("Idle",1);return "Running" end
-  self.blocked=false;self:animate(if flee then "Run" else "Walk",1)
+  self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"
  end
  function self:destroy()

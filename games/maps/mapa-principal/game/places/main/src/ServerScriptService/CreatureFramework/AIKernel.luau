@@ -79,4 +79,9 @@ function K.transition(m:Machine,target:string):boolean
  for i=common+1,#new do local f=m.states[new[i]].enter;if f then f(m.board) end end
  return true
 end
+-- Protected actions are only preempted by higher-priority requests or completion.
+function K.canInterrupt(current:string,target:string,completed:boolean,priority:{[string]:number},protected:{[string]:boolean}):boolean
+ if current==target or completed or not protected[current] then return true end
+ return (priority[target] or 0)>(priority[current] or 0)
+end
 return table.freeze(K)

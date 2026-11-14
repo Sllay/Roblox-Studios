@@ -10,7 +10,12 @@ function F.new(deps:any,template:Model,parent:Instance,seed:number):any
    local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
    if root and root:IsA("BasePart") then
     local d=(root.Position-p).Magnitude
-    if d<distance then distance=d;best={position=root.Position,velocity=root.AssemblyLinearVelocity,model=character,predator=false} end
+    if d<distance then
+     local humanoid=if character then character:FindFirstChildWhichIsA("Humanoid") else nil
+     if humanoid and humanoid.Health>0 then
+      local state=humanoid:GetState();distance=d;best={position=root.Position,velocity=root.AssemblyLinearVelocity,model=character,predator=false,jumping=state==Enum.HumanoidStateType.Jumping or state==Enum.HumanoidStateType.Freefall}
+     end
+    end
    end
   end
   return best,distance
@@ -41,11 +46,12 @@ function F.advance(s:any,dt:number)
  assert(not s.closed,"service closed")
  if dt<=0 or dt~=dt or dt==math.huge then return end
  s.clock+=dt;s.accumulator=math.min(.5,s.accumulator+dt)
+ s.deps.director.tickDeveloper(s.director,s.clock)
  if s.clock>=s.nextSpawn then
   s.deps.director.tickSpawn(s.director,s.clock)
   s.nextSpawn=s.clock+.25
  end
- if s.accumulator>=.1 then
+ if s.accumulator>=1/30 then
   local elapsed=s.accumulator;s.accumulator=0
   if s.deps.combatWorld and s.deps.combatState then s.deps.combatWorld.syncPlayers(s.deps.combatState,game:GetService("Players"):GetPlayers()) end
   s.deps.director.step(s.director,math.min(.2,elapsed),s.clock)

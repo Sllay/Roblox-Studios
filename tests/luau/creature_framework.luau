@@ -36,6 +36,16 @@ sense.pathBlocked=true;sense.escapeAvailable=false;assert(M.step(m,sense).state=
 sense.pathBlocked=false;sense.escapeAvailable=true;sense.hit=true;assert(M.step(m,sense).state=="Flee")
 sense.hit=false;sense.threatVisible=false;sense.dt=1
 assert(M.step(m,sense).state=="Flee");assert(M.step(m,sense).state=="Flee");assert(M.step(m,sense).state=="Idle")
+local cautious=M.new();sense.threatVisible=true;sense.threatDistance=3;sense.approachSpeed=1;sense.dt=.1;sense.jumping=false
+assert(M.step(cautious,sense).state=="Idle")
+sense.jumping=true;assert(M.step(cautious,sense).state=="Flee")
+sense.jumping=false;sense.threatVisible=false
+local eating=M.new();eating.state="Peck";sense.actionComplete=false;sense.dt=2;sense.foodAvailable=true;sense.atFood=true
+assert(M.step(eating,sense).state=="Peck")
+assert(M.step(eating,sense).state=="Peck")
+sense.actionComplete=true;assert(M.step(eating,sense).state=="Explore")
+eating.state="Peck";sense.actionComplete=false;sense.hit=true;assert(M.step(eating,sense).state=="Flee")
+sense.hit=false;sense.actionComplete=nil
 sense.aiEnabled=false;assert(M.step(m,sense).state=="Static")
 sense.alive=false;assert(M.step(m,sense).state=="Dead")
 local slots:{Q.Slot}={};for i=1,10000 do slots[i]={id=tostring(i),tier="Near",due=0} end
@@ -47,12 +57,17 @@ for i=1,100 do
 end
 assert(cursor==1 and Q.tier(54,"Near")=="Near" and Q.tier(56,"Near")=="Mid")
 assert(S.parse({"mob",c.id,"3","here","true"},false,true,10)==nil)
-assert(S.parse({"mob",c.id,"21","here","true"},true,true,100)==nil)
+assert(S.parse({"mob",c.id,"21","here","true"},true,true,0)~=nil)
+assert(S.parse({"mob",c.id,"10000","here","false"},true,true,0)~=nil)
+assert(S.parse({"mob",c.id,"10001","here","false"},true,true,0)==nil)
 local plan=assert(S.parse({"mob",c.id,"3","here","false"},true,true,10));assert(plan.count==3 and not plan.aiEnabled and plan.origin=="Developer")
 local at=assert(S.parse({"mob",c.id,"2","1","2","3","true"},true,true,10));assert(at.position and at.position[2]==2)
 print("S09.5 core: registry, levels, Book, passive decisions, 10000-slot scheduler and summon policy passed")
 
 local K=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/AIKernel")
+assert(not K.canInterrupt("Peck","Explore",false,M.Priority,{Peck=true}))
+assert(K.canInterrupt("Peck","Flee",false,M.Priority,{Peck=true}))
+assert(K.canInterrupt("Peck","Explore",true,M.Priority,{Peck=true}))
 local E=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/EscapePlanner")
 local board:K.Blackboard={ticks=0,cancelled=0,log={}}
 local node:K.Node={id="root",kind="Sequence",children={

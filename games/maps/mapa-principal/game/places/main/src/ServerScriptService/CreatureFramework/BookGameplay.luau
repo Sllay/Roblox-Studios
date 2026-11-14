@@ -20,7 +20,11 @@ function E.damage(s:any,directorModule:any,mobId:string,amount:number,attackerUs
  local r=s.director.agents[mobId]
  if not r or not r.adapter.alive or amount<=0 or amount~=amount or amount>10000 then return false end
  r.health=math.max(0,r.health-amount);r.adapter.model:SetAttribute("CreatureHealth",r.health)
- if r.health>0 then r.adapter:damage();return true end
+ if r.health>0 then
+  local world=s.director.d and s.director.d.combatState
+  local attacker=if attackerUserId and world then world.actors["player:"..tostring(attackerUserId)] else nil
+  r.adapter:damage(if attacker then {position=attacker.getPosition(),velocity=attacker.getVelocity(),model=attacker.model,predator=false} else nil);return true
+ end
  r.adapter.alive=false;if r.actor then r.actor.alive=false end
  if attackerUserId and attackerUserId>0 and attackerUserId%1==0 then s.persistence.discover(s.book,attackerUserId,r.speciesId,"Kill",r.origin,unix) end
  directorModule.remove(s.director,mobId,now)
