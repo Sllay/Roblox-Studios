@@ -1,11 +1,180 @@
 {
-  "ok": false,
-  "allPassed": false,
-  "error": "TaskScript:158: Failed to load Idle",
-  "universeId": "10769712441",
-  "speedTests": [],
-  "placeId": "93428341652658",
-  "transitions": [],
+  "ok": true,
+  "allPassed": true,
   "noPlaceWrites": true,
+  "universeId": "10769712441",
+  "speedTests": [
+    {
+      "passed": true,
+      "expectedTime": 0.15000000000000002,
+      "speed": 0.75,
+      "actualTime": 0.15000000596046448,
+      "clip": "Walk",
+      "motion": 0.9422909617424011
+    },
+    {
+      "passed": true,
+      "expectedTime": 0.2,
+      "speed": 1,
+      "actualTime": 0.20000000298023224,
+      "clip": "Walk",
+      "motion": 0.9809691309928894
+    },
+    {
+      "passed": true,
+      "expectedTime": 0.30000000000000004,
+      "speed": 1.5,
+      "actualTime": 0.30000001192092896,
+      "clip": "Walk",
+      "motion": 0.9826937317848206
+    },
+    {
+      "passed": true,
+      "expectedTime": 0.15000000000000002,
+      "speed": 0.75,
+      "actualTime": 0.15000000596046448,
+      "clip": "Run",
+      "motion": 1.3102194666862488
+    },
+    {
+      "passed": true,
+      "expectedTime": 0.2,
+      "speed": 1,
+      "actualTime": 0.20000000298023224,
+      "clip": "Run",
+      "motion": 1.4025368094444275
+    },
+    {
+      "passed": true,
+      "expectedTime": 0.30000000000000004,
+      "speed": 1.5,
+      "actualTime": 0.30000001192092896,
+      "clip": "Run",
+      "motion": 0.9800663590431213
+    }
+  ],
+  "placeId": "93428341652658",
+  "transitions": [
+    {
+      "endMotion": 0.9906017780303955,
+      "to": "Walk",
+      "midOldWeight": 0.5,
+      "beforeMotion": 0.020973803475499153,
+      "passed": true,
+      "midMotion": 0.4831289052963257,
+      "time": 0.25,
+      "from": "Idle",
+      "endOldWeight": 0,
+      "endNewWeight": 1,
+      "midNewWeight": 0.5
+    },
+    {
+      "endMotion": 1.2329695224761963,
+      "to": "Run",
+      "midOldWeight": 0.5,
+      "beforeMotion": 0.9058659076690674,
+      "passed": true,
+      "midMotion": 0.9943775534629822,
+      "time": 0.25,
+      "from": "Walk",
+      "endOldWeight": 0,
+      "endNewWeight": 1,
+      "midNewWeight": 0.5
+    },
+    {
+      "endMotion": 0.03883698582649231,
+      "to": "Idle",
+      "midOldWeight": 0.5,
+      "beforeMotion": 1.181910216808319,
+      "passed": true,
+      "midMotion": 0.8177987933158875,
+      "time": 0.25,
+      "from": "Run",
+      "endOldWeight": 0,
+      "endNewWeight": 1,
+      "midNewWeight": 0.5
+    },
+    {
+      "endMotion": 0.322909951210022,
+      "to": "Peck",
+      "midOldWeight": 0.5,
+      "beforeMotion": 0.020973803475499153,
+      "passed": true,
+      "midMotion": 0.01722901314496994,
+      "time": 0.25,
+      "from": "Idle",
+      "endOldWeight": 0,
+      "endNewWeight": 1,
+      "midNewWeight": 0.5
+    },
+    {
+      "endMotion": 0.03883698582649231,
+      "to": "Idle",
+      "midOldWeight": 0.5,
+      "beforeMotion": 0.04470137879252434,
+      "passed": true,
+      "midMotion": 0.13004541397094727,
+      "time": 0.25,
+      "from": "Peck",
+      "endOldWeight": 0,
+      "endNewWeight": 1,
+      "midNewWeight": 0.5
+    },
+    {
+      "endMotion": 0.2266511470079422,
+      "to": "Flap",
+      "midOldWeight": 0.5,
+      "beforeMotion": 0.020973803475499153,
+      "passed": true,
+      "midMotion": 0.03697242587804794,
+      "time": 0.25,
+      "from": "Idle",
+      "endOldWeight": 0,
+      "endNewWeight": 1,
+      "midNewWeight": 0.5
+    },
+    {
+      "endMotion": 0.03883698582649231,
+      "to": "Idle",
+      "midOldWeight": 0.5,
+      "beforeMotion": 0.10997511446475983,
+      "passed": true,
+      "midMotion": 0.10925404727458954,
+      "time": 0.25,
+      "from": "Flap",
+      "endOldWeight": 0,
+      "endNewWeight": 1,
+      "midNewWeight": 0.5
+    }
+  ],
+  "loadChecks": {
+    "Idle": {
+      "duration": 2,
+      "errors": [],
+      "clipFetched": true
+    },
+    "Flap": {
+      "duration": 1.25,
+      "errors": [],
+      "clipFetched": true
+    },
+    "Peck": {
+      "duration": 1.25,
+      "errors": [
+        "Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=136236973921119&serverplaceid=93428341652658"
+      ],
+      "clipFetched": true
+    },
+    "Run": {
+      "duration": 0.75,
+      "errors": [],
+      "clipFetched": true
+    },
+    "Walk": {
+      "duration": 1,
+      "errors": [],
+      "clipFetched": true
+    }
+  },
   "loadedVersion": 25
 }
