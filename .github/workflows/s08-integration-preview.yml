@@ -1,0 +1,35 @@
+name: S08 staging integration preview
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/s08-integration-preview.yml'
+      - 'tools/s08_integration_preview.py'
+      - 'tools/sync/s08_integration_preview.luau'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: python tools/asset_factory/s08_release_gate.py
+      - name: Disposable native preview
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s08_integration_preview.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s08-integration-preview
+          path: dist/s08-integration/
