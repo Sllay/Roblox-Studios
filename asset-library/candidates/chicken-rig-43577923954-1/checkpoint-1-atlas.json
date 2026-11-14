@@ -1,0 +1,14 @@
+{
+  "triangles": 3120,
+  "size": [
+    1024,
+    1024
+  ],
+  "coveredPixels": 504968,
+  "overlapInteriorPixels": 0,
+  "emptySubpixelTriangles": 45,
+  "colorSampleErrors": 0,
+  "sourceMaterials": 11,
+  "finalMaterials": 1,
+  "method": "Blender Smart UV + pack islands; rasterized linear-to-sRGB colors and nearest-texel padding"
+}

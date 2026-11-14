@@ -1,0 +1,51 @@
+{
+  "sourceSha256": "4c96eb027d4954e1c2fdc1b8a9a8ee4329f0e8c4c4185211a652b9e86d46d0d1",
+  "glbSha256": "87b7f9f0c812fb6424290ac225f164899582cec5674192e73711663867102c58",
+  "triangles": 3120,
+  "renderMeshes": 1,
+  "renderPrimitives": 1,
+  "materials": 1,
+  "verticesExported": 7620,
+  "bones": 14,
+  "weightMaxError": 0.0,
+  "stanceAnchorMaxError": 1.3113021850308382e-07,
+  "clips": [
+    "Idle",
+    "Walk",
+    "Run",
+    "Peck",
+    "Flap"
+  ],
+  "clipFrames": {
+    "Idle": 48,
+    "Walk": 24,
+    "Run": 18,
+    "Peck": 30,
+    "Flap": 30
+  },
+  "fps": 24,
+  "restTriangleParity": true,
+  "atlas": {
+    "triangles": 3120,
+    "size": [
+      1024,
+      1024
+    ],
+    "coveredPixels": 504968,
+    "overlapInteriorPixels": 0,
+    "emptySubpixelTriangles": 45,
+    "colorSampleErrors": 0,
+    "sourceMaterials": 11,
+    "finalMaterials": 1,
+    "method": "Blender Smart UV + pack islands; rasterized linear-to-sRGB colors and nearest-texel padding"
+  },
+  "robloxImported": false,
+  "independentBlenderReimport": true,
+  "renderedPoses": [
+    "Idle",
+    "Walk",
+    "Run",
+    "Peck",
+    "Flap"
+  ]
+}
