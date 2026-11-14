@@ -1,5 +1,5 @@
 """Native crossfade and speed probe on the five approved animation assets."""
-import os,sys,json
+import os,sys,json,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/"tools"),str(ROOT/"tools/asset_factory")]
@@ -12,7 +12,15 @@ def main():
     assert a["allPlaybackVerified"] and a["rigAssetId"]=="76960331636475"
     g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
     code=(ROOT/"tools/sync/s09_chicken_transitions.luau").read_text()
-    p=task(target,os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],code,read_version=25,compile_source=True,ids={k:v["assetId"] for k,v in a["clips"].items()})
+    for attempt in range(4):
+        try:
+            p=task(target,os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],code,read_version=25,compile_source=True,ids={k:v["assetId"] for k,v in a["clips"].items()})
+            break
+        except Exception as e:
+            if "HTTP 503" not in str(e) or attempt==3:raise
+            print("Transient read-only Luau session failure; retry",attempt+1,flush=True)
+            time.sleep(3*(2**attempt))
+    
     dest=d/"chicken-v2-transition-proof.json";write(dest,p);commit([dest],"evidence(s09): native chicken crossfade and speed tests")
     print(json.dumps(p,indent=2));assert p["allPassed"] and len(p["transitions"])==7 and len(p["speedTests"])==6,p
 if __name__=="__main__":main()
