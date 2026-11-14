@@ -40,6 +40,11 @@ local cautious=M.new();sense.threatVisible=true;sense.threatDistance=3;sense.app
 assert(M.step(cautious,sense).state=="Idle")
 sense.jumping=true;assert(M.step(cautious,sense).state=="Flee")
 sense.jumping=false;sense.threatVisible=false
+local calibrated=M.new();sense.threatVisible=true;sense.threatDistance=8;sense.approachThreshold=9.6;sense.approachSpeed=2
+assert(M.step(calibrated,sense).state=="Idle")
+sense.approachSpeed=10;assert(M.step(calibrated,sense).state=="Flee")
+local jumper=M.new();sense.approachSpeed=0;sense.jumping=true;assert(M.step(jumper,sense).state=="Flee")
+sense.jumping=false;sense.threatVisible=false;sense.approachThreshold=nil
 local eating=M.new();eating.state="Peck";sense.actionComplete=false;sense.dt=2;sense.foodAvailable=true;sense.atFood=true
 assert(M.step(eating,sense).state=="Peck")
 assert(M.step(eating,sense).state=="Peck")
