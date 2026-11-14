@@ -49,6 +49,50 @@ bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.006)
 bpy.ops.object.mode_set(mode="OBJECT")
 uv=mesh.uv_layers.active.data
 assert len(uv)==14460*3
+# Smart projection occasionally overlaps a few tiny faces. Detect the exact
+# intersecting faces and give them padded charts in a reserved atlas strip.
+# No tolerance relaxation, topology change, or face deletion.
+def cross(a,b,c):return (b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
+def polygon_area(p):return abs(sum(a[0]*b[1]-a[1]*b[0] for a,b in zip(p,p[1:]+p[:1])))/2 if len(p)>2 else 0
+def intersection(p,q):
+    if cross(*q)<0:q=q[::-1]
+    for a,b in zip(q,q[1:]+q[:1]):
+        result=[]
+        for s,e in zip(p,p[1:]+p[:1]):
+            ds,de=cross(a,b,s),cross(a,b,e)
+            if (ds>=0)!=(de>=0):result.append(tuple(s[i]+(e[i]-s[i])*(ds/(ds-de)) for i in range(2)))
+            if de>=0:result.append(e)
+        p=result
+        if not p:return 0
+    return polygon_area(p)
+def f32(x):return struct.unpack("<f",struct.pack("<f",x))[0]
+def audit_uv():
+    items=[]
+    for f in mesh.polygons:
+        pts=[(f32(uv[j].uv.x),f32(1-f32(1-uv[j].uv.y))) for j in f.loop_indices]
+        items.append((f.index,pts,min(p[0] for p in pts),max(p[0] for p in pts),min(p[1] for p in pts),max(p[1] for p in pts)))
+    items.sort(key=lambda a:a[2]);bad=set();pairs=0
+    for i,(idx,p,x0,x1,y0,y1) in enumerate(items):
+        for j in range(i+1,len(items)):
+            k,q,a,b,c,d=items[j]
+            if a>=x1:break
+            if c>=y1 or d<=y0:continue
+            if intersection(p,q)>1e-10:bad.update((idx,k));pairs+=1
+    return bad,pairs
+# Reserve rightmost 16% and leave a full bake margin around both regions.
+for u in uv:u.uv=(.004+.824*u.uv.x,.004+.824*u.uv.y)
+bad,pairs=audit_uv()
+print("S082_UV_REPAIR",len(bad),pairs,flush=True)
+assert len(bad)<=180,"Unexpected UV chart repair budget"
+for n,idx in enumerate(sorted(bad)):
+    f=mesh.polygons[idx];loops=list(f.loop_indices);pts=[uv[j].uv.copy() for j in loops]
+    lo=(min(p.x for p in pts),min(p.y for p in pts));hi=(max(p.x for p in pts),max(p.y for p in pts))
+    span=max(hi[0]-lo[0],hi[1]-lo[1]);assert span>1e-10
+    # 6 columns * 40 rows, each 0.026 x 0.024, with 5 px gutters.
+    cx=.842+(n%6)*.026;cy=.006+(n//6)*.024
+    for j,p in zip(loops,pts):uv[j].uv=(cx+.003+(p.x-lo[0])*.018/span,cy+.003+(p.y-lo[1])*.018/span)
+remaining,remaining_pairs=audit_uv()
+assert not remaining,(len(remaining),remaining_pairs)
 scene=bpy.context.scene;scene.render.engine="CYCLES";scene.cycles.samples=8
 scene.render.bake.margin=6;scene.render.bake.use_clear=True
 bpy.ops.object.bake(type="EMIT")
@@ -94,4 +138,4 @@ for p in dd["meshes"][0]["primitives"]:
     for i in indices(dd,bb,p["indices"]):h.update(pos[i]);h.update(norm[i])
 assert h.digest()==source_hash.digest()
 (out/"wood-v4-uv.glb").write_bytes(result)
-(out/"manifest.json").write_text(json.dumps({"sourceSha256":sha(original),"geometryStreamSha256":h.hexdigest(),"triangles":14460,"materialGroups":3,"geometryUnchanged":True,"uv":"TEXCOORD_0","glbSha256":sha(result),"atlasSha256":sha(png),"texturePolicy":"opaque neutral bark; tint applied by MeshPart.Color; separate optional alpha overlay"},indent=2))
+(out/"manifest.json").write_text(json.dumps({"sourceSha256":sha(original),"geometryStreamSha256":h.hexdigest(),"triangles":14460,"materialGroups":3,"geometryUnchanged":True,"uv":"TEXCOORD_0","glbSha256":sha(result),"atlasSha256":sha(png),"repairedUVFaces":len(bad),"texturePolicy":"neutral bark plus separate RGBA tint-mask colormap; no transparency of wood"},indent=2))

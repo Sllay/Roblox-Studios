@@ -13,7 +13,10 @@ def main():
         shutil.copyfile(src/name,dest/name)
     im=Image.open(dest/"bark-neutral.png").convert("L")
     assert im.getextrema()[1]-im.getextrema()[0]>20
-    mask=Image.new("RGBA",im.size,(255,255,255,255));mask.putalpha(ImageOps.invert(im));mask.save(dest/"bark-alpha-mask.png")
+    mask=Image.open(dest/"bark-neutral.png").convert("RGBA")
+    # Keep the actual RGB bark artwork even in lower-alpha pixels; alpha controls tint, not opacity.
+    mask.putalpha(im.point(lambda x: 180+round(75*x/255)))
+    mask.save(dest/"bark-alpha-mask.png")
     report["maskSha256"]=sha((dest/"bark-alpha-mask.png").read_bytes());write(dest/"manifest.json",report)
     commit([dest],"assets(s082): exact Wood V4 geometry with neutral bark UV and separate alpha mask")
     key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
