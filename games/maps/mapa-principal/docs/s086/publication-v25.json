@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "release": "S08.6",
+  "environment": "staging",
+  "placeId": "93428341652658",
+  "universeId": "10769712441",
+  "sourceCommit": "e0d4a5bba3e110633a3fe3fbc166620765d9d796",
+  "rootProbeRunId": 43559140128,
+  "spawnSweepRunId": 43559333110,
+  "runId": 43559640720,
+  "receipt": {
+    "status": "verified",
+    "beforeVersion": 24,
+    "afterVersion": 25,
+    "delta": 8,
+    "counts": {
+      "tree": 250,
+      "pine": 16,
+      "bush": 200
+    },
+    "oldTint": [
+      93,
+      107,
+      28
+    ],
+    "newTint": [
+      76,
+      96,
+      24
+    ],
+    "pivot": [
+      16,
+      78.41560363769531,
+      -36,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1
+    ],
+    "height": 120.00000762939453,
+    "spawnChecked": 53,
+    "spawn": {
+      "name": "Valley_17",
+      "before": [
+        24,
+        26.375205993652344,
+        -24,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+      ],
+      "after": [
+        16,
+        26.0546875,
+        8,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+      ],
+      "method": "native_ray"
+    },
+    "terrainRegions": 49,
+    "clientRenderVerified": false
+  },
+  "scope": {
+    "landmarkRigidTranslation": true,
+    "landmarkGeometryUnchanged": true,
+    "landmarkFoliageUnchanged": true,
+    "commonCanopyTintOnly": true,
+    "roughnessMap": "rbxassetid://91633090510389",
+    "otherSceneUnchanged": true,
+    "spawnRelocationCount": 1
+  },
+  "rootProbe": {
+    "samples": 94,
+    "delta8": {
+      "rootBuried": 35,
+      "rootNear": 27,
+      "rootExposed": 2
+    },
+    "method": "4-stud voxel solid occupancy approximate"
+  },
+  "limitation": "Client visual review of burial and tint pending; spawn native support and structural persistence verified."
+}
