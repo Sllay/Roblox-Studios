@@ -1,76 +1,127 @@
--- Detached material comparison. No scene mutation, no SavePlaceAsync.
-assert(game.PlaceId==93428341652658 and game.GameId==10769712441 and game.PlaceVersion==22,"Staging v22")
+-- S08.4: existing mesh/UV only; guarded staging material migration.
 local W=workspace
 local V=W.RSVegetationS06.Models
 local E=W.RSEggydrasilS08
+local A=game:GetService("AssetService")
 local CP=game:GetService("ContentProvider")
+local verify=cfg.mode=="verify"
+assert(cfg.mode=="preview" or cfg.mode=="apply" or verify,"Mode")
+assert(game.PlaceId==93428341652658 and game.GameId==10769712441 and game.PlaceVersion==(if verify then 23 else 22),"Staging version")
 local names={Tree_01="Canopy_01",Tree_03="Canopy_03",Tree_08="Canopy_08",Tree_12="Canopy_12"}
-local uris={white="rbxassetid://89626593244521",gray="rbxassetid://109528136250293"}
-local function rgb(c)return {c.R,c.G,c.B} end
+local uri="rbxassetid://89626593244521"
+local ref=E:FindFirstChild("Canopy_White",true)
+assert(ref and ref:IsA("MeshPart"),"Eggy reference")
 local function surface(p)
  local s=p:FindFirstChildWhichIsA("SurfaceAppearance")
  assert(s,"Missing surface "..p.Name)
+ local n=0;for _,o in p:GetChildren() do if o:IsA("SurfaceAppearance") then n+=1 end end
+ assert(n==1,"Single existing surface")
  return s
 end
-local function describe(p)
- local s=surface(p)
- return {mesh=p.MeshId,material=p.Material.Name,variant=p.MaterialVariant,texture=p.TextureID,doubleSided=p.DoubleSided,castShadow=p.CastShadow,reflectance=p.Reflectance,color=rgb(s.Color),alpha=s.AlphaMode.Name,colorMap=s.ColorMap,normal=s.NormalMap,roughness=s.RoughnessMap,metalness=s.MetalnessMap}
+local function noMaps(s)
+ for _,k in {"NormalMapContent","RoughnessMapContent","MetalnessMapContent","EmissiveMaskContent"} do
+  assert(s[k].SourceType.Name=="None" or s[k].Uri==nil or s[k].Uri=="","Unexpected map "..k)
+ end
 end
-local refs={}
-for k,uri in uris do
- local p=E:FindFirstChild(if k=="white" then "Canopy_White" else "Canopy_Gray",true)
- assert(p and p:IsA("MeshPart"),"Eggy reference")
- local s=surface(p)
- assert(s.ColorMapContent.Uri==uri and s.AlphaMode==Enum.AlphaMode.Transparency,"Eggy surface")
- refs[k]=p
-end
-local fetched={}
-for k,uri in uris do
- local ok=false
- CP:PreloadAsync({uri},function(_,status)if status==Enum.AssetFetchStatus.Success then ok=true end end)
- assert(ok,"Texture preload "..k);fetched[k]=true
-end
-local counts={tree=0,pine=0,bush=0};local species={};local examples={}
+local template=surface(ref)
+assert(template.ColorMapContent.Uri==uri and template.AlphaMode==Enum.AlphaMode.Transparency,"Eggy surface")
+noMaps(template)
+local material=if ref.Material==Enum.Material.SmoothPlastic then Enum.Material.SmoothPlastic else Enum.Material.Plastic
+local loaded=false;CP:PreloadAsync({uri},function(_,s)if s==Enum.AssetFetchStatus.Success then loaded=true end end)
+assert(loaded,"Eggy texture preload")
+local counts={tree=0,pine=0,bush=0};local targets={};local parts={};local models={};local species={}
 for _,m in V:GetChildren() do
  local s=m:GetAttribute("RSSpecies") or ""
  if string.sub(s,1,5)=="Tree_" then
-  assert(names[s] and m:IsA("Model"),"Unknown tree "..s)
+  assert(names[s] and m:IsA("Model") and m:GetAttribute("RSAssetId")=="79689531752352","Unknown tree "..s)
   local p=m:FindFirstChild(names[s])
   assert(p and p:IsA("MeshPart") and p.Anchored and not p.CanCollide and not p.CanTouch and not p.CanQuery,"Canopy policy")
-  assert(m:GetAttribute("RSAssetId")=="79689531752352","Tree source")
-  local row=species[s] or {count=0,variants={}}
-  row.count+=1;species[s]=row;counts.tree+=1
-  local signature=p.MeshId..":"..p.Material.Name..":"..surface(p).ColorMap
-  if not row.variants[signature] then
-   row.variants[signature]=describe(p)
-   table.insert(examples,{model=m,part=p,species=s})
-  end
+  local sa=surface(p)
+  assert(m:GetAttribute("RSWindRigVersion")==nil or m:GetAttribute("RSWindRigVersion")==1,"Wind version")
+  local id=m:GetAttribute("RSManagedId");assert(id==m.Name and not targets[id],"Identity")
+  targets[id]={m=m,p=p,sa=sa,species=s};parts[p]=true;models[m]=true
+  counts.tree+=1;species[s]=(species[s] or 0)+1
  elseif string.sub(s,1,5)=="Pine_" then counts.pine+=1
  elseif string.sub(s,1,5)=="Bush_" then counts.bush+=1 end
 end
 assert(counts.tree==250 and counts.pine==16 and counts.bush==200,"Population")
-local results={}
-for _,r in examples do
- for k,ref in refs do
-  local m=r.model:Clone();local p=m:FindFirstChild(r.part.Name)
-  local old=surface(p);local tint=old.Color
-  local mesh,size,pose=p.MeshId,p.Size,p.CFrame
-  local children=#p:GetDescendants()
-  old:Destroy()
-  local s=surface(ref):Clone()
-  s.Color=tint
-  assert(s.NormalMap=="" and s.RoughnessMap=="" and s.MetalnessMap=="","Unexpected Eggy extra PBR maps")
-  s.Parent=p
-  p.TextureID="";p.Material=Enum.Material.Plastic;p.MaterialVariant="";p.Reflectance=0
-  p.Color=Color3.new(1,1,1);p.DoubleSided=ref.DoubleSided;p.CastShadow=ref.CastShadow
-  -- Explicit existing wind contract, without editing the wind controller.
-  assert(m:GetAttribute("RSWindRigVersion")==nil or m:GetAttribute("RSWindRigVersion")==1,"Wind rig version")
-  m:SetAttribute("RSWindRigVersion",1);p:SetAttribute("RSWindRigRole","Canopy")
-  assert(p.MeshId==mesh and p.Size==size and p.CFrame==pose and #p:GetDescendants()==children,"Geometry or hierarchy changed")
-  assert(s.ColorMapContent.Uri==uris[k] and s.AlphaMode==Enum.AlphaMode.Transparency and p.MaterialVariant=="" and p.Reflectance==0,"Material contract")
-  assert(p.Anchored and not p.CanCollide and not p.CanTouch and not p.CanQuery,"Physics changed")
-  table.insert(results,{species=r.species,variant=k,before=describe(r.part),after=describe(p),windRole=p:GetAttribute("RSWindRigRole"),geometryUnchanged=true})
-  m:Destroy()
- end
+assert(#W.RSResourcesP45.Models:GetChildren()==1000 and #W.RSFallenLogsS082:GetChildren()==250,"Resources")
+-- Known save pipeline duplicates: normalize only the exact reviewed pair, in memory.
+local sp=game:GetService("StarterPlayer")
+local roots={};for _,o in sp:GetChildren() do if o.Name=="PlayerModule" and o:IsA("ModuleScript") then table.insert(roots,o) end end
+local sounds=sp.StarterPlayerScripts:FindFirstChild("RbxCharacterSounds")
+local binding=sounds and sounds:FindFirstChild("AtomicBinding");local leaves={}
+if binding then for _,o in binding:GetChildren() do if o.Name=="AtomicBinding" and o:IsA("ModuleScript") then table.insert(leaves,o) end end end
+if #roots==19 and #leaves==18 then
+ assert(#roots[19]:GetDescendants()==161 and #leaves[18]:GetChildren()==0 and leaves[18].Source==binding.Source,"Controller clone guard")
+ roots[19].Parent=nil;leaves[18].Parent=nil
+else assert(#roots==18 and #leaves==17,"Controller baseline") end
+local function canon(x)
+ if typeof(x)~="table" then return Http:JSONEncode(x) end
+ local keys={};for k in x do table.insert(keys,k) end;table.sort(keys,function(a,b)return tostring(a)<tostring(b)end)
+ local out={};for _,k in keys do table.insert(out,Http:JSONEncode(tostring(k))..":"..canon(x[k])) end
+ return "{"..table.concat(out,",").."}"
 end
-return syncResult({counts=counts,species=species,eggydrasil={white=describe(refs.white),gray=describe(refs.gray)},preloaded=fetched,samples=results,noPlaceWrites=true,clientRenderVerified=false,uvVisualVerified=false,readyForPublication=false})
+local function attrs(o,skip)
+ local a={};for k,v in o:GetAttributes() do if k~=skip then table.insert(a,{k,typeof(v),tostring(v)}) end end
+ table.sort(a,function(x,y)return x[1]<y[1] end);return hash(Http:JSONEncode(a))
+end
+local function fingerprint()
+ local rows={}
+ for _,name in cfg.services do
+  local svc=game:GetService(name)
+  for _,o in svc:GetDescendants() do
+   if o:IsA("SurfaceAppearance") and parts[o.Parent] then continue end
+   local r=record(svc,o)
+   if parts[o] then
+    for _,k in {"material","materialVariant","reflectance","color","textureId"} do r.properties[k]=nil end
+    r.attributesHash=attrs(o,"RSWindRigRole")
+    r.properties.doubleSided=o.DoubleSided;r.properties.meshSize=vec(o.MeshSize)
+   elseif models[o] then r.attributesHash=attrs(o,"RSWindRigVersion") end
+   table.insert(rows,hash(canon(r)))
+  end
+ end
+ table.sort(rows)
+ return hash(table.concat(rows,";"))
+end
+local before=terrainState();assert(#before==49,"Terrain coverage")
+local fp=fingerprint()
+local env=hash(canon({lightingState(),workspaceSettings()}))
+if cfg.mode~="preview" then
+ assert(fp==cfg.expectedFingerprint and env==cfg.expectedEnvironment,"Scene baseline drift")
+ for _,r in before do assert(cfg.expectedTerrain[r.id]==r.digest,"Terrain drift") end
+end
+local function row(r)
+ local p=r.p;local s=surface(p)
+ return {mesh=p.MeshId,material=p.Material.Name,materialVariant=p.MaterialVariant,texture=p.TextureID,reflectance=p.Reflectance,tint=rgb(s.Color),colorMap=s.ColorMapContent.Uri,alpha=s.AlphaMode.Name,windRole=p:GetAttribute("RSWindRigRole") or "",windVersion=r.m:GetAttribute("RSWindRigVersion") or 0,doubleSided=p.DoubleSided,castShadow=p.CastShadow}
+end
+local baseline={};local resultRows={}
+for id,r in targets do
+ if not verify then
+  baseline[id]=row(r)
+  if cfg.mode=="apply" then assert(canon(baseline[id])==canon(cfg.expectedBefore[id]),"Canopy baseline "..id) end
+  local old=r.sa;local tint=old.Color;local name=old.Name
+  local s=template:Clone();s.Name=name;s.Color=tint
+  old:Destroy();s.Parent=r.p
+  local p=r.p
+  p.TextureID="";p.Material=material;p.MaterialVariant="";p.Reflectance=0;p.Color=Color3.new(1,1,1)
+  -- Existing wind recognizer accepts this explicit role; preserve all geometry and bones.
+  r.m:SetAttribute("RSWindRigVersion",1);p:SetAttribute("RSWindRigRole","Canopy")
+ end
+ local p=r.p;local s=surface(p)
+ assert(s.ColorMapContent.Uri==uri and s.AlphaMode==Enum.AlphaMode.Transparency and p.Material==material and p.MaterialVariant=="" and p.TextureID=="" and p.Reflectance==0,"Material result "..id)
+ noMaps(s)
+ assert(r.m:GetAttribute("RSWindRigVersion")==1 and p:GetAttribute("RSWindRigRole")=="Canopy","Wind role")
+ resultRows[id]=row(r)
+ if cfg.mode~="preview" then assert(canon(resultRows[id])==canon(cfg.expectedAfter[id]),"Reviewed appearance "..id) end
+end
+assert(fingerprint()==fp,"Unrelated geometry or scene changed")
+assert(hash(canon({lightingState(),workspaceSettings()}))==env,"Lighting or environment changed")
+local after=terrainState();for i,r in after do assert(r.digest==before[i].digest,"Terrain changed") end
+local result={counts=counts,species=species,changed=250,texture=uri,material=material.Name,meshPartsAdded=0,geometryUnchanged=true,fingerprint=fp,environment=env,terrain=after,before=baseline,after=resultRows,clientRenderVerified=false,uvVisualVerified=false}
+if cfg.mode=="apply" then
+ assert(cfg.confirmStaging and game.PlaceVersion==22,"Publish guard")
+ A:SavePlaceAsync({SaveWithoutPublish=false});result.saved=true
+elseif verify then result.verified=true;result.noPlaceWrites=true
+else result.noPlaceWrites=true;result.readyForStaging=true end
+return syncResult(result)
