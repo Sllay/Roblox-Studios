@@ -3,9 +3,11 @@
   "sha256": "ea0ebd42c7ea7a6b7ec6bf7c976edb2a1e91e205f83a017b21c9e5bc48121466",
   "bytes": 520152,
   "source": "asset-library/candidates/chicken-rig-43578265487-1/chicken-v2-rig.glb",
-  "state": "post_intent",
+  "state": "rejected_or_uncertain",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 503,
+  "response": {}
 }
