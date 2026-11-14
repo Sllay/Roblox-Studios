@@ -15,3 +15,6 @@ Não existem sistemas de inventário, persistência, combate, economia, UI ou re
 
 ## Deploy
 `deploy.targets.json` tem os números fornecidos pelo usuário em `production` sem verificação cruzada. `staging` fica nulo até existir um Place de teste separado. Build é diferente de publicação.
+
+## S09.5 source-only creature foundation
+`ServerScriptService.CreatureFramework` contains pure typed modules CreatureRegistry, BookCore, MobBrain, SimulationBudget, SummonPlan, AIKernel, EscapePlanner. No auto-running scripts, no remotes or live DataStore mutations. Registry is server authoritative, Book projection comes from it, state and BT memory are per agent. Native chicken model/animations and static 2D preview are linked. See docs/s09/CREATURE_FRAMEWORK.md; integration and mobile validation pending. Staging V25 remains untouched.

@@ -6,7 +6,7 @@ local chicken:Species={
  id="210080",name="Galinha",description="Pequena ave terrestre que procura sementes e insetos. Curiosa, desconfiada de movimentos bruscos e rápida para fugir de ameaças.",
  category="Animal",disposition="Passive",profile="PassivePrey",biomes={"emerald_valley"},
  modelAssetId="76960331636475",
- preview={source="asset-library/candidates/chicken-rig-43578265487-1/idle.png",assetId=nil},
+ preview={source="asset-library/candidates/chicken-rig-43578265487-1/idle.png",assetId="107933673393998"},
  animations={Idle="123461134632415",Walk="128847740648973",Run="128056941885930",Peck="136236973921119",Flap="78561104554317"},
  -- Provisional balance. Speeds match measured source gait, not final gameplay tuning.
  base={health=20,damage=0,walkSpeed=0.397,runSpeed=0.736},
@@ -14,6 +14,9 @@ local chicken:Species={
  levelCap=10,discoverable=true,
 }
 local R={}
+R.levelsEnabled=false
+local biomeNames:{[string]:string}={emerald_valley="Vale Esmeralda"}
+function R.biomeName(id:string):string? return biomeNames[id] end
 local data:{[string]:Species}={}
 local function freezeSpecies(s:Species):Species
  table.freeze(s.biomes);table.freeze(s.preview);table.freeze(s.animations);table.freeze(s.base);table.freeze(s.growth)
@@ -23,6 +26,7 @@ function R.validate(s:Species):boolean
  assert(#s.id==6 and string.match(s.id,"^[1-9]%d%d%d%d%d$")~=nil,"invalid species ID")
  assert(#s.name>0 and #s.description>0 and #s.preview.source>0 and #s.biomes>0,"missing Book metadata")
  assert(s.disposition=="Passive" or s.disposition=="Neutral" or s.disposition=="Aggressive","invalid disposition")
+ for _,biome in s.biomes do assert(biomeNames[biome]~=nil,"unknown biome") end
  assert(#s.category>0 and #s.profile>0 and tonumber(s.modelAssetId)~=nil,"invalid species contract")
  assert(s.levelCap>=1 and s.levelCap%1==0 and s.levelCap<=100,"invalid level cap")
  for key,value in pairs(s.base) do assert(value>=0 and value<math.huge and value==value,"invalid base "..key) end

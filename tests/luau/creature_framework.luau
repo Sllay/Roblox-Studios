@@ -5,6 +5,7 @@ local M=require("../../games/maps/mapa-principal/game/places/main/src/ServerScri
 local Q=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/SimulationBudget")
 local S=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/SummonPlan")
 local c=assert(R.get("210080"));assert(R.validate(c) and #R.all()==1)
+assert(c.preview.assetId=="107933673393998" and R.biomeName("emerald_valley")=="Vale Esmeralda" and not R.levelsEnabled)
 assert(R.stats(c,10,false).health==20 and R.stats(c,10,true).health==34)
 assert(R.previewStats(c).level10.damage==0)
 assert(not pcall(function()R.stats(c,11,true)end))
@@ -16,7 +17,7 @@ assert(not B.discover(a,{speciesId=c.id,reason="Kill",at=21,verified=true,origin
 local b=B.new();assert(B.discover(b,{speciesId=c.id,reason="Kill",at=10,verified=true,origin="Natural"},true))
 local merged=B.merge(a,b);assert(merged.mobs[c.id].firstAt==10)
 local n,total,p=B.progress(merged,{c});assert(n==1 and total==1 and p==100)
-assert(B.publicRow(c,false).id==nil and B.publicRow(c,true).id==c.id)
+assert(B.publicRow(c,false,R.previewStats(c),{"Vale Esmeralda"}).id==nil and B.publicRow(c,true,R.previewStats(c),{"Vale Esmeralda"}).id==c.id)
 assert(#B.ordered(merged,{c},"Discovery")==1)
 local m=M.new()
 local sense:M.Sense={dt=.1,alive=true,aiEnabled=true,hit=false,threatVisible=true,threatDistance=6,approachSpeed=.1,predator=false,foodAvailable=false,atFood=false,pathBlocked=false,escapeAvailable=true,stuck=false,random=.5}
@@ -54,7 +55,7 @@ local mem=K.memory();local mem2=K.memory()
 assert(K.tick(node,mem,board,.1,10)=="Running")
 assert(K.tick(node,mem,board,.1,10)=="Success" and board.check==1)
 board.ticks=0;assert(K.tick(node,mem,board,.1,10)=="Running");K.abort(node,mem,board);assert(board.cancelled==1)
-assert(K.tick(node,mem2,board,.1,1)=="Running" and board.check==3)
+assert(K.tick(node,mem2,board,.1,1)=="Running" and board.check==2)
 local selector:K.Node={id="s",kind="Selector",children={{id="bad",kind="Action",tick=function()return "Failure" end},{id="good",kind="Action",tick=function()return "Success" end}}}
 assert(K.validate(selector) and K.tick(selector,K.memory(),board,0,10)=="Success")
 local states:{[string]:K.State}={
