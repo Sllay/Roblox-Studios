@@ -32,7 +32,12 @@ local m=M.new()
 local sense:M.Sense={dt=.1,alive=true,aiEnabled=true,hit=false,threatVisible=true,threatDistance=6,approachSpeed=.1,predator=false,foodAvailable=false,atFood=false,pathBlocked=false,escapeAvailable=true,stuck=false,random=.5}
 assert(M.step(m,sense).state=="Idle")
 sense.approachSpeed=5;assert(M.step(m,sense).state=="Flee")
-sense.pathBlocked=true;sense.escapeAvailable=false;assert(M.step(m,sense).state=="Recover")
+sense.pathBlocked=true;sense.escapeAvailable=false;assert(M.step(m,sense).state=="Flee")
+local transitions=m.transitions
+for i=1,20 do
+ sense.pathBlocked=i%2==0;sense.escapeAvailable=not sense.pathBlocked
+ assert(M.step(m,sense).state=="Flee" and m.transitions==transitions,"escape replanning must not restart flee")
+end
 sense.pathBlocked=false;sense.escapeAvailable=true;sense.hit=true;assert(M.step(m,sense).state=="Flee")
 sense.hit=false;sense.threatVisible=false;sense.dt=1
 assert(M.step(m,sense).state=="Flee");assert(M.step(m,sense).state=="Flee");assert(M.step(m,sense).state=="Idle")
