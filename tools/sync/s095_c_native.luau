@@ -27,6 +27,7 @@ local ok,err=pcall(function()
  result.final=Director.count(s);result.children=#folder:GetChildren();result.attempts=s.attempts
  result.respawnTimes={320,620,920};result.clockMode="synthetic_monotonic_seconds"
  -- Central service uses the same director, no per-creature heartbeat; exercise stopped-session time manually.
+ Director.destroy(s);assert(#folder:GetChildren()==0)
  local service=Service.new(d,template,folder,210081)
  for _=1,4 do Service.advance(service,.25) end
  result.serviceSpawned=Director.count(service.director)

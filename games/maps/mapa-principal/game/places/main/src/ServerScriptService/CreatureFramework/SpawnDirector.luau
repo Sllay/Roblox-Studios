@@ -102,6 +102,7 @@ function D.step(s:any,dt:number,now:number)
    s.d.agent.decide(r.agent,math.max(dt,now-r.lastDecision));r.lastDecision=now;r.nextDecision=now+intervals[tier]
   end
   local intent=r.agent.intent
+  if moving and previous~=tier and intent and adapter.aiEnabled and adapter.alive then adapter:animate(intent.animation,1) end
   if moving and intent and now-r.lastMotion>=(if tier=="Near" then .09 else .19) then
    s.d.agent.act(r.agent,math.min(.2,now-r.lastMotion));r.lastMotion=now
   elseif not moving then adapter:animate("",1) end
