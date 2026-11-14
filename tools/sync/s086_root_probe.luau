@@ -56,7 +56,7 @@ assert(meshCount==5,"Five meshes")
 local samples={};for _,r in bins do table.insert(samples,r) end
 table.sort(samples,function(a,b)return a.gap<b.gap end)
 local candidates={}
-for _,delta in {0,4,8,12,16,20,24} do
+for _,delta in {0,4,5,6,7,8,9,10,11,12,16,20,24} do
  local near,buried,exposed,rootNear,rootBuried,rootExposed=0,0,0,0,0,0
  for _,r in samples do
   local g=r.gap-delta
@@ -67,5 +67,21 @@ for _,delta in {0,4,8,12,16,20,24} do
  end
  table.insert(candidates,{delta=delta,near=near,buried=buried,exposed=exposed,rootNear=rootNear,rootBuried=rootBuried,rootExposed=rootExposed})
 end
+local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Include;ray.FilterDescendantsInstances={tree};ray.RespectCanCollide=true
+local spawns={}
+for _,s in workspace.RSCentralSpawns:GetDescendants() do if s:IsA("SpawnLocation") and s.Enabled then table.insert(spawns,s) end end
+for _,c in candidates do
+ tree:PivotTo(pivot-Vector3.new(0,c.delta,0))
+ local blocked={}
+ for _,s in spawns do
+  local p=s.Position
+  for _,d in {{0,0},{2,0},{-2,0},{0,2},{0,-2}} do
+   local hit=workspace:Raycast(Vector3.new(p.X+d[1],p.Y+8,p.Z+d[2]),Vector3.new(0,-10,0),ray)
+   if hit then blocked[s.Name]={part=hit.Instance.Name,hit=vec(hit.Position),spawn=vec(p)};break end
+  end
+ end
+ c.spawnBlocked=blocked;c.spawnChecked=#spawns;task.wait()
+end
+tree:PivotTo(pivot)
 local h,m=ground(center.X,center.Z)
 return syncResult({noPlaceWrites=true,clientRenderVerified=false,pivot={pivot:GetComponents()},bounds=vec(sz),centerGround=h,centerMaterial=m,boundsBottom=bc.Y-sz.Y/2,parts=parts,samples=samples,candidates=candidates,terrainMethod="4-stud solid occupancy approximate; not exact ray surface"})
