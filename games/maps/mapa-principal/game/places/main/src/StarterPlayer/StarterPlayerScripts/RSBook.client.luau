@@ -15,7 +15,7 @@ end
 local function command(text:string)
  if commandBusy then return end;commandBusy=true
  task.spawn(function()
-  local ok,result=pcall(function()return remote:InvokeServer("command",{text=text,direction=if workspace.CurrentCamera then workspace.CurrentCamera:ViewportPointToRay(workspace.CurrentCamera.ViewportSize.X*.5,workspace.CurrentCamera.ViewportSize.Y*.5).Direction.Unit else Vector3.zero})end)
+  local ok,result=pcall(function()return remote:InvokeServer("command",{text=text,origin=if workspace.CurrentCamera then workspace.CurrentCamera.CFrame.Position else nil,direction=if workspace.CurrentCamera then workspace.CurrentCamera:ViewportPointToRay(workspace.CurrentCamera.ViewportSize.X*.5,workspace.CurrentCamera.ViewportSize.Y*.5).Direction.Unit else Vector3.zero})end)
   commandBusy=false
   view.cstatus.Text=if ok and result and result.ok then (result.message or ("Criados: "..tostring(result.count))) else ("Falha: "..tostring(if ok and result then result.error else "serviço indisponível"))
  end)

@@ -26,8 +26,7 @@ function M.step(m:Memory,s:Sense,gate:((string,string,boolean,{[string]:number},
   if danger then m.fear=1;m.calm=0 else m.fear=math.max(0,m.fear-dt*.25);m.calm+=dt end
   m.hunger=math.min(1,m.hunger+dt*.012)
   if danger or ((m.state=="Flee" or m.state=="Recover") and m.calm<3) then
-   if (s.stuck or s.pathBlocked) and not s.escapeAvailable then change(m,"Recover","escape blocked")
-   else change(m,"Flee",if s.hit then "hit" else "threat") end
+   change(m,"Flee",if s.hit then "hit" else "threat")
   elseif m.state=="Flee" or m.state=="Recover" then change(m,"Idle","threat cleared")
   elseif m.state=="Peck" then
    if s.actionComplete==true or (s.actionComplete==nil and m.age>=1.25) then if s.foodConsumed then m.hunger=math.max(0,m.hunger-.18) end;change(m,"Explore","peck completed") end
