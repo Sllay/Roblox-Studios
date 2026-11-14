@@ -93,13 +93,28 @@ for _,m in resources do
  local p=part(m);local original=p:Clone();local cf=p.CFrame;local size=p.Size
  local oldPivot=m:GetPivot()
  local src=part(templates[kind])
+ -- Legacy stick was authored upright then rotated Z90. The new branch is authored horizontal along X.
+ -- Preserve the world-space long-axis heading, not an incompatible local-axis rotation.
+ local frame=cf
+ local heading=cf.RightVector
  local factor=math.max(size.X,size.Z)/math.max(src.Size.X,src.Size.Z)
+ if kind=="Branch" then
+  local length=math.max(size.X,size.Y,size.Z)
+  heading=if length==size.Y then cf.UpVector elseif length==size.Z then cf.LookVector else cf.RightVector
+  local center=ground(cf.X,cf.Z)
+  if center then
+   local up=center.Normal.Unit
+   local right=(heading-up*heading:Dot(up)).Unit
+   frame=CFrame.fromMatrix(cf.Position,right,up,right:Cross(up))
+  end
+  factor=length/src.Size.X
+ end
  local newSize=src.Size*factor
- p:ApplyMesh(src);p.Size=newSize;p.CFrame=cf;p.Color=Color3.new(1,1,1);p.TextureID=src.TextureID
+ p:ApplyMesh(src);p.Size=newSize;p.CFrame=frame;p.Color=Color3.new(1,1,1);p.TextureID=src.TextureID
  assert(p.MeshId==src.MeshId and p.TextureID==src.TextureID and p.Anchored==original.Anchored and p.CanCollide==original.CanCollide and p.CollisionGroup==original.CollisionGroup,"Replacement contract")
  local low,high=math.huge,-math.huge
  for _,a in {{0,0},{-.42,0},{.42,0},{0,-.42},{0,.42},{-.42,-.42},{.42,-.42},{-.42,.42},{.42,.42}} do
-  local q=cf:PointToWorldSpace(Vector3.new(a[1]*newSize.X,-newSize.Y/2,a[2]*newSize.Z))
+  local q=frame:PointToWorldSpace(Vector3.new(a[1]*newSize.X,-newSize.Y/2,a[2]*newSize.Z))
   local h=ground(q.X,q.Z)
   if not h then low=math.huge;break end
   local gap=q.Y-h.Position.Y;low=math.min(low,gap);high=math.max(high,gap)
@@ -107,11 +122,11 @@ for _,m in resources do
  if low==math.huge then fail(id,"terrain-ray-miss")
  else
   local lift=.01-low;local gap=high-low+.01
-  p.CFrame=cf+Vector3.yAxis*lift
+  p.CFrame=frame+Vector3.yAxis*lift
   maxShift=math.max(maxShift,math.abs(lift));maxGap=math.max(maxGap,gap)
   if gap>.22 or math.abs(lift)>2 then fail(id,"support-gap-or-height") end
  end
- assert(p.CFrame.X==cf.X and p.CFrame.Z==cf.Z and (p.CFrame.RightVector-cf.RightVector).Magnitude<.0001,"XZ/rotation changed")
+ assert(p.CFrame.X==cf.X and p.CFrame.Z==cf.Z and math.abs(p.CFrame.RightVector:Dot(heading))>.95,"XZ/heading changed")
  table.insert(saved,{model=m,p=p,original=original,pivot=oldPivot,cf=cf,size=size})
 end
 assert(counts.Stone==1000 and counts.Branch==1000)
@@ -128,6 +143,7 @@ local tc,ts=tree:GetBoundingBox()
 local treePivot=tree:GetPivot()
 local offset=tc.Position-treePivot.Position
 local site=nil;local tried=0
+local spawns={};for _,o in W:GetDescendants() do if o:IsA("SpawnLocation") then table.insert(spawns,o.Position) end end
 local wood=tree:FindFirstChild("Wood_V4",true);assert(wood and wood:IsA("MeshPart"))
 local siteParams=OverlapParams.new();siteParams.FilterType=Enum.RaycastFilterType.Include;siteParams.FilterDescendantsInstances={F,W.RSVegetationS06.Collisions};siteParams.MaxParts=1
 for _,region in cfg.regions do
@@ -139,7 +155,8 @@ for _,region in cfg.regions do
   for z=b[3]+24,b[6]-24,16 do
    tried+=1
    local h=ground(x,z)
-   if h and h.Normal.Y>.94 then
+   local far=true;for _,p in spawns do if (Vector3.new(x,p.Y,z)-p).Magnitude<80 then far=false;break end end
+   if h and h.Normal.Y>.94 and far then
     local clear=true;local radius=math.max(ts.X,ts.Z)*.5
     for _,a in {{0,0},{.3,0},{-.3,0},{0,.3},{0,-.3}} do
      local q=ground(x+a[1]*radius,z+a[2]*radius)
