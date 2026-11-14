@@ -1,7 +1,7 @@
 --!strict
 -- Hierarchical passive-prey policy; pure decision layer, engine adapters intentionally separate.
 export type State="Idle"|"Explore"|"Forage"|"Peck"|"Flee"|"Recover"|"Flap"|"Static"|"Dead"
-export type Sense={dt:number,alive:boolean,aiEnabled:boolean,hit:boolean,threatVisible:boolean,threatDistance:number,approachSpeed:number,predator:boolean,jumping:boolean?,actionComplete:boolean?,foodConsumed:boolean?,foodAvailable:boolean,atFood:boolean,pathBlocked:boolean,escapeAvailable:boolean,stuck:boolean,random:number}
+export type Sense={dt:number,alive:boolean,aiEnabled:boolean,hit:boolean,threatVisible:boolean,threatDistance:number,approachSpeed:number,approachThreshold:number?,predator:boolean,jumping:boolean?,actionComplete:boolean?,foodConsumed:boolean?,foodAvailable:boolean,atFood:boolean,pathBlocked:boolean,escapeAvailable:boolean,stuck:boolean,random:number}
 export type Memory={state:State,age:number,calm:number,fear:number,hunger:number,reason:string,transitions:number}
 export type Intent={state:State,branch:string,animation:string,action:string,reason:string}
 local M={}
@@ -22,7 +22,7 @@ function M.step(m:Memory,s:Sense,gate:((string,string,boolean,{[string]:number},
  if not s.alive then change(m,"Dead","death")
  elseif not s.aiEnabled then change(m,"Static","ai disabled")
  else
-  local danger=s.hit or (s.threatVisible and ((s.predator and s.threatDistance<22) or (s.approachSpeed>4 and s.threatDistance<14) or (s.jumping==true and s.threatDistance<12)))
+  local danger=s.hit or (s.threatVisible and ((s.predator and s.threatDistance<22) or (s.approachSpeed>=(s.approachThreshold or 4) and s.threatDistance<14) or (s.jumping==true and s.threatDistance<12)))
   if danger then m.fear=1;m.calm=0 else m.fear=math.max(0,m.fear-dt*.25);m.calm+=dt end
   m.hunger=math.min(1,m.hunger+dt*.012)
   if danger or ((m.state=="Flee" or m.state=="Recover") and m.calm<3) then
