@@ -57,7 +57,7 @@ function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
  model:SetAttribute("CreatureHealth",species.base.health)
  model.Parent=s.parent
  local a=d.agent.new(d.brain,d.kernel,adapter)
- s.agents[id]={agent=a,adapter=adapter,foodKey=nil,nextFood=0}
+ s.agents[id]={agent=a,adapter=adapter,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
  return id
 end
 function D.tickSpawn(s:any,now:number):string?
@@ -67,13 +67,19 @@ function D.tickSpawn(s:any,now:number):string?
  s.d.spawn.result(s.clock,s.p,s.budget.total,now,id~=nil)
  return id
 end
+local intervals:{[string]:number}={Near=.1,Mid=.5,Far=2,Abstract=10}
 function D.step(s:any,dt:number,now:number)
  s.now=now
  for id,r in pairs(s.agents) do
   local adapter=r.adapter
   if not adapter.alive then D.remove(s,id);continue end
+  local distance=if s.d.distanceProvider then s.d.distanceProvider(adapter:position()) else 0
+  local tier=if s.d.scheduler then s.d.scheduler.tier(distance,r.tier) else "Near"
+  local previous=r.tier;r.tier=tier
+  local moving=tier=="Near" or tier=="Mid"
+  if previous~=tier then r.nextDecision=now;r.lastMotion=now;adapter:cancel() end
   if r.foodKey and not s.d.food.owns(s.food,r.foodKey,id,now) then r.foodKey=nil;adapter:setFood(nil) end
-  if adapter.aiEnabled and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
+  if moving and adapter.aiEnabled and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
    r.nextFood=now+3
    local pos=adapter:position()
    for i=1,4 do
@@ -92,8 +98,14 @@ function D.step(s:any,dt:number,now:number)
     end
    end
   end
-  local result=s.d.agent.step(r.agent,dt)
-  if result.intent.state=="Flee" or result.intent.state=="Recover" or result.intent.state=="Static" then
+  if now>=r.nextDecision then
+   s.d.agent.decide(r.agent,math.max(dt,now-r.lastDecision));r.lastDecision=now;r.nextDecision=now+intervals[tier]
+  end
+  local intent=r.agent.intent
+  if moving and intent and now-r.lastMotion>=(if tier=="Near" then .09 else .19) then
+   s.d.agent.act(r.agent,math.min(.2,now-r.lastMotion));r.lastMotion=now
+  elseif not moving then adapter:animate("",1) end
+  if not moving or (intent and (intent.state=="Flee" or intent.state=="Recover" or intent.state=="Static")) then
    if r.foodKey then s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil;adapter:setFood(nil) end
   elseif r.foodKey and not adapter.food then
    s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil

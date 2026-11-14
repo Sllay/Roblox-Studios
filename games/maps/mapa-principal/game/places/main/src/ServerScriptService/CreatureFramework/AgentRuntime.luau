@@ -11,7 +11,7 @@ function A.new(brain:any,kernel:any,adapter:any):any
  kernel.validate(tree)
  return {brain=brain,kernel=kernel,adapter=adapter,board=board,memory=brain.new(),tree=tree,treeMemory=mem,machine=kernel.machine(states,board),intent=nil}
 end
-function A.step(a:any,dt:number):any
+function A.decide(a:any,dt:number):any
  local sense=a.adapter:sense(dt)
  local intent=a.brain.step(a.memory,sense)
  local changed=not a.intent or a.intent.state~=intent.state
@@ -21,8 +21,15 @@ function A.step(a:any,dt:number):any
   a.adapter:enter(intent)
  end
  a.intent=intent;a.board.intent=intent
+ return intent
+end
+function A.act(a:any,dt:number):any
+ if not a.intent then return nil end
  local status,visits=a.kernel.tick(a.tree,a.treeMemory,a.board,dt,1)
- return {intent=intent,status=status,visits=visits}
+ return {intent=a.intent,status=status,visits=visits}
+end
+function A.step(a:any,dt:number):any
+ A.decide(a,dt);return A.act(a,dt)
 end
 function A.destroy(a:any)
  a.kernel.abort(a.tree,a.treeMemory,a.board);a.adapter:destroy()

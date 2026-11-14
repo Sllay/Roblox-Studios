@@ -8,7 +8,7 @@ from deploy import load_all,resolve
 from s08_prop_intake import write,commit
 def main():
     folder=ROOT/"games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework"
-    files={"Registry":"CreatureRegistry","Brain":"MobBrain","Kernel":"AIKernel","Escape":"EscapePlanner","Agent":"AgentRuntime","Adapter":"RobloxMobAdapter","Population":"PopulationBudget","Spawn":"SpawnPolicy","Biomes":"BiomeRegions","Food":"FoodSites","Director":"SpawnDirector"}
+    files={"Registry":"CreatureRegistry","Brain":"MobBrain","Kernel":"AIKernel","Escape":"EscapePlanner","Agent":"AgentRuntime","Adapter":"RobloxMobAdapter","Population":"PopulationBudget","Spawn":"SpawnPolicy","Biomes":"BiomeRegions","Food":"FoodSites","Director":"SpawnDirector","Scheduler":"SimulationBudget","Service":"FaunaService"}
     dispatch="do\n"+"\n".join("local "+k+"=(function()\n"+(folder/(v+".luau")).read_text()+"\nend)()" for k,v in files.items())+"\n"+(ROOT/"tools/sync/s095_c_native.luau").read_text()+"\nend"
     g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
     for i in range(4):
