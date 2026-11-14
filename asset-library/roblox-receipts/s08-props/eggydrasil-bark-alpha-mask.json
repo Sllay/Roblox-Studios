@@ -3,7 +3,7 @@
   "sha256": "46c8c2591542acc4bef19d300580e3f5ad7ad2f73a43497363a5ebe7e522be76",
   "bytes": 764639,
   "source": "asset-library/approved/eggydrasil/v8/wood-uv/bark-alpha-mask.png",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "71d3bd87-563e-4112-b735-26ef9eefd928",
     "done": false
   },
-  "operationPath": "operations/71d3bd87-563e-4112-b735-26ef9eefd928"
+  "operationPath": "operations/71d3bd87-563e-4112-b735-26ef9eefd928",
+  "operation": {
+    "path": "operations/71d3bd87-563e-4112-b735-26ef9eefd928",
+    "operationId": "71d3bd87-563e-4112-b735-26ef9eefd928",
+    "done": true,
+    "response": {
+      "path": "assets/84113697924292",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T01:47:22.530Z",
+      "assetId": "84113697924292",
+      "displayName": "Black Islands eggydrasil-bark-alpha-mask",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Image",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Reviewing"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "84113697924292"
 }
