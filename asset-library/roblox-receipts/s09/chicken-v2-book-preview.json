@@ -3,7 +3,7 @@
   "sha256": "c13b57ace9503cafbf7dc557cd7d9cef6040c7e840b89406264dc7b4f0400bd8",
   "bytes": 182106,
   "source": "asset-library/candidates/chicken-rig-43578265487-1/idle.png",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "2980809f-2ead-41e5-9ba2-05150ba546dd",
     "done": false
   },
-  "operationPath": "operations/2980809f-2ead-41e5-9ba2-05150ba546dd"
+  "operationPath": "operations/2980809f-2ead-41e5-9ba2-05150ba546dd",
+  "operation": {
+    "path": "operations/2980809f-2ead-41e5-9ba2-05150ba546dd",
+    "operationId": "2980809f-2ead-41e5-9ba2-05150ba546dd",
+    "done": true,
+    "response": {
+      "path": "assets/107933673393998",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T10:05:49.069Z",
+      "assetId": "107933673393998",
+      "displayName": "Black Islands chicken-v2-book-preview",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Image",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Reviewing"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "107933673393998"
 }
