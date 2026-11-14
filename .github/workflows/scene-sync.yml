@@ -19,7 +19,7 @@ on:
         type: boolean
         default: true
   push:
-    paths: ['games/maps/mapa-principal/docs/valley-v10-sync-once.trigger']
+    paths: ['games/maps/mapa-principal/docs/valley-v10-sync-once.trigger', 'games/maps/mapa-principal/docs/s09/staging-sync.trigger']
 permissions:
   contents: write
 concurrency:
@@ -36,6 +36,7 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
       - name: Read published Place and reconcile
         env:
           GAME: ${{ inputs.game || 'mapa-principal' }}
@@ -51,13 +52,18 @@ jobs:
             [[ "$DESIRED" =~ ^[a-z0-9-]+\.json$ ]] || exit 1
             args+=(--desired "games/maps/$GAME/docs/sync/$PLACE/$DESIRED")
           fi
-          python tools/scene_sync.py --game "$GAME" --place "$PLACE" --environment "$ENVIRONMENT" "${args[@]}"
+          if [[ "$GAME/$PLACE/$ENVIRONMENT" == "mapa-principal/main/staging" ]]; then
+            python tools/s09_scene_sync.py "${args[@]}"
+          else
+            python tools/scene_sync.py --game "$GAME" --place "$PLACE" --environment "$ENVIRONMENT" "${args[@]}"
+          fi
           if [[ "$RECORD" == true ]]; then
             git config user.name "roblox-scene-sync[bot]"
             git config user.email "scene-sync@users.noreply.github.com"
             git add -- "games/maps/$GAME/docs/sync/$PLACE/$ENVIRONMENT.json" "games/maps/$GAME/docs/sync/$PLACE/$ENVIRONMENT.summary.json"
             if ! git diff --cached --quiet; then
               git commit -m "sync: $GAME/$PLACE/$ENVIRONMENT observed Roblox state"
+              git pull --rebase origin main
               git push origin HEAD:main
             fi
           fi
