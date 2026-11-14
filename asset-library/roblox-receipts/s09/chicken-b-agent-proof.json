@@ -1,8 +1,8 @@
 {
   "universeId": "10769712441",
-  "moved": 1.1049842834472656,
-  "routePlans": 2,
-  "escapeGain": 1.0748915672302246,
+  "moved": 11.427953720092773,
+  "routePlans": 6,
+  "escapeGain": 11.284284114837646,
   "fast": "Flee",
   "groundError": 0,
   "meshSize": [
@@ -22,7 +22,7 @@
     -96
   ],
   "placeId": "93428341652658",
-  "queries": 595,
+  "queries": 1349,
   "passed": true,
   "loadedVersion": 25
 }
