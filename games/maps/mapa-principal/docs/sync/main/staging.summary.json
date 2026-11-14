@@ -6,30 +6,148 @@
     "Clouds": 1,
     "Decal": 1,
     "DepthOfFieldEffect": 1,
-    "Folder": 48,
-    "InputAction": 540,
-    "InputBinding": 1260,
-    "InputContext": 72,
+    "Folder": 50,
+    "InputAction": 570,
+    "InputBinding": 1330,
+    "InputContext": 76,
     "LocalScript": 10,
-    "MeshPart": 712,
-    "Model": 464,
-    "ModuleScript": 979,
-    "Part": 270,
-    "Script": 80,
+    "MeshPart": 2403,
+    "Model": 2402,
+    "ModuleScript": 1033,
+    "Part": 538,
+    "Script": 84,
     "Sky": 1,
     "SpawnLocation": 63,
     "StarterCharacterScripts": 1,
     "StarterPlayerScripts": 1,
     "SunRaysEffect": 1,
-    "SurfaceAppearance": 496,
+    "SurfaceAppearance": 1153,
     "Terrain": 1,
     "Texture": 1
   },
-  "coverageNote": "Scoped inventory, not full backup. Sharded observed state.",
-  "loadedVersion": 18,
+  "coverageNote": "Complete scoped sharded inventory; not full backup",
+  "defaultForensics": {
+    "allIdentical": true,
+    "deletionAuthorized": false,
+    "identicalGroups": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ]
+    ],
+    "note": "Observed equality in scoped record coverage only; does not prove safe deletion or source of cloning.",
+    "rootCount": 19,
+    "subtreeSizes": {
+      "1": 162,
+      "10": 162,
+      "11": 162,
+      "12": 162,
+      "13": 162,
+      "14": 162,
+      "15": 162,
+      "16": 162,
+      "17": 162,
+      "18": 162,
+      "19": 162,
+      "2": 162,
+      "3": 162,
+      "4": 162,
+      "5": 162,
+      "6": 162,
+      "7": 162,
+      "8": 162,
+      "9": 162
+    }
+  },
+  "loadedVersion": 25,
+  "pages": [
+    {
+      "count": 6576,
+      "identityDigest": "MlVbg9eAoW/s+L2ad54Pp8ZxtFtVVdHidtpv0sVujnY=",
+      "pages": 17,
+      "service": "Workspace"
+    },
+    {
+      "count": 4,
+      "identityDigest": "rDkfvc09VL3+qyxNpcLxehz2Mtj1OOp1hRgaYWFueAc=",
+      "pages": 1,
+      "service": "ReplicatedStorage"
+    },
+    {
+      "count": 6,
+      "identityDigest": "g9LiMTQuCx+zSKwJVN+tZE0eGemTKcH/Zp5KqqMN23Y=",
+      "pages": 1,
+      "service": "ServerScriptService"
+    },
+    {
+      "count": 28,
+      "identityDigest": "JJ81T62bg3kgqgz9uIHEOrFCCaZ8aLkIwbmPuLnAsdI=",
+      "pages": 1,
+      "service": "ServerStorage"
+    },
+    {
+      "count": 3105,
+      "identityDigest": "gCZyIEAh9OSaxXCDSUqQ2qDN9M9M9fLksuyuHeaDDxA=",
+      "pages": 8,
+      "service": "StarterPlayer"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "StarterGui"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "StarterPack"
+    },
+    {
+      "count": 5,
+      "identityDigest": "kdWgiMYhmRKvXs3HGndX4O6NOaikNaN7zt6nWULQ8/I=",
+      "pages": 1,
+      "service": "Lighting"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "SoundService"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "Teams"
+    },
+    {
+      "count": 0,
+      "identityDigest": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "pages": 1,
+      "service": "ReplicatedFirst"
+    }
+  ],
   "placeId": "93428341652658",
   "schemaVersion": 1,
-  "stateDigest": "682da796308cc0851e5f57a3221948543c07a7306aa274b3a64e5a81ed80fccf",
+  "stateDigest": "cba2d30569d4d298c6cbb5667ec0a8fedaa8caef5462e85851e2e668a014b926",
   "terrain": {
     "terrain:chunk--1--1": {
       "bounds": [
@@ -40,7 +158,7 @@
         112,
         -128
       ],
-      "digest": "G2uEin0z/upp6UyyGCm6trS+X755zFyXCuXoozHchcw=",
+      "digest": "RRrW31fM227JhArqP8dHTFf2O1onEpKK9KPwel882DQ=",
       "id": "chunk--1--1",
       "solidVoxels": 54847,
       "waterVoxels": 0
@@ -82,7 +200,7 @@
         112,
         128
       ],
-      "digest": "ls3d8We4wMiJ8q9Sq0+cXEkleXu4yxROAwgxsCYWNTs=",
+      "digest": "AKMjEmxKObqGYj6Kb6ZWN6nGXk9WRDpuPfcRbK68ebk=",
       "id": "chunk--1-0",
       "solidVoxels": 55666,
       "waterVoxels": 0
@@ -96,7 +214,7 @@
         112,
         384
       ],
-      "digest": "L0Z0hulC1/zrDI5fqRdsO1632JZBqXfgA8KgAQUeRa0=",
+      "digest": "WVNdwKAa0W5ehRFcx2ejY+0zol/oZEOPWldVThoLhCY=",
       "id": "chunk--1-1",
       "solidVoxels": 62496,
       "waterVoxels": 0
@@ -334,7 +452,7 @@
         112,
         -128
       ],
-      "digest": "/I5+OD05yuWMwX3Cg2cM6ocWxz9cKUw8J7nSFE2wtMU=",
+      "digest": "cvhfLNLggnUr7ibkK3jSaa1sMuDdOlXP428AZbzbHCA=",
       "id": "chunk-0--1",
       "solidVoxels": 54823,
       "waterVoxels": 0
@@ -376,7 +494,7 @@
         112,
         128
       ],
-      "digest": "hs8RdEXljjX473trAYRUEOLrZMCAgmi+uaeBjVLnt3M=",
+      "digest": "2BvVQaVRC9PNRSJq+YHMpxEvBBd6/O5jiwIn0ojXTf0=",
       "id": "chunk-0-0",
       "solidVoxels": 52767,
       "waterVoxels": 0
@@ -390,7 +508,7 @@
         112,
         384
       ],
-      "digest": "Uf5LzopCedzixjiBxBIwmGHE5HMArCdovI18/3YnP1I=",
+      "digest": "ItnR8KETpFIr/bMZYyw9le/TqtTUPgnppfdizWbmtGk=",
       "id": "chunk-0-1",
       "solidVoxels": 62374,
       "waterVoxels": 0
@@ -432,7 +550,7 @@
         112,
         -128
       ],
-      "digest": "FTlaIGvHK6ZLZGU9/CX3reuiGYZ5W4a0tHBuV52fkbg=",
+      "digest": "dGNXdWYs12qni3K4LB5k3la2z3wfYx0vOHvM5John8w=",
       "id": "chunk-1--1",
       "solidVoxels": 52407,
       "waterVoxels": 0
@@ -474,7 +592,7 @@
         112,
         128
       ],
-      "digest": "Zdhbwt+WEYiLElis4TIHaTfd9gsCvglqMWQzcry8MX8=",
+      "digest": "5OhtKGN1lP2EECMpeUuBFtvFXmCBh5Z7hVTeTWbr5mQ=",
       "id": "chunk-1-0",
       "solidVoxels": 54323,
       "waterVoxels": 529
@@ -488,7 +606,7 @@
         112,
         384
       ],
-      "digest": "9akuno+c5ww0n46e66hpz3qxE0qobh8QPXyq6AoAQvU=",
+      "digest": "yqpbSP2bNy6uYbht2rhqyB+Jl2bQKQDYXqc+VZnrZf8=",
       "id": "chunk-1-1",
       "solidVoxels": 61498,
       "waterVoxels": 580
@@ -718,7 +836,7 @@
       "waterVoxels": 0
     }
   },
-  "total": 5006,
+  "total": 9724,
   "universeId": "10769712441",
   "workspaceRoots": [
     {
@@ -738,6 +856,12 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSCentralSpawns\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "RSCentralSpawns"
+    },
+    {
+      "class": "Model",
+      "key": "managed:s08:Eggydrasil:central",
+      "managedId": "s08:Eggydrasil:central",
+      "name": "RSEggydrasilS08"
     },
     {
       "class": "Folder",
@@ -762,6 +886,12 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSWorldBoundary\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "RSWorldBoundary"
+    },
+    {
+      "class": "Folder",
+      "key": "path:[\"Workspace\",[{\"class\":\"Folder\",\"name\":\"RSFallenLogsS082\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "RSFallenLogsS082"
     },
     {
       "class": "Folder",
