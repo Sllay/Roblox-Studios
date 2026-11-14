@@ -25,7 +25,8 @@ function K.abort(n:Node,m:TreeMemory,b:Blackboard)
  if n.kind=="Action" then
   if m.active[n.id] and n.cancel then n.cancel(b) end
  else
-  for _,c in n.children or {} do K.abort(c,m,b) end
+  local children=assert(n.children)
+  for _,c in children do K.abort(c,m,b) end
  end
  m.active[n.id]=nil;m.cursor[n.id]=nil
 end
@@ -38,7 +39,7 @@ function K.tick(root:Node,m:TreeMemory,b:Blackboard,dt:number,maxVisits:number):
   if n.kind=="Action" then
    local f=assert(n.tick);local s=f(b,dt)
    assert(s=="Success" or s=="Failure" or s=="Running","invalid action result")
-   m.active[n.id]=if s=="Running" then true else nil
+   m.active[n.id]=s=="Running"
    return s
   end
   local children=assert(n.children);local start=m.cursor[n.id] or 1
@@ -46,10 +47,11 @@ function K.tick(root:Node,m:TreeMemory,b:Blackboard,dt:number,maxVisits:number):
    local s=run(children[i])
    if s=="Running" then m.cursor[n.id]=i;return "Running" end
    local stop=(n.kind=="Sequence" and s=="Failure") or (n.kind=="Selector" and s=="Success")
-   if stop then m.cursor[n.id]=nil;return s end
+   if stop then m.cursor[n.id]=nil;return s :: Status end
   end
   m.cursor[n.id]=nil
-  return if n.kind=="Sequence" then "Success" else "Failure"
+  if n.kind=="Sequence" then return "Success" end
+  return "Failure"
  end
  return run(root),visits
 end
