@@ -1,0 +1,16 @@
+{
+  "state": "requires_reconciliation",
+  "originalHttpStatus": 503,
+  "pages": [
+    {
+      "page": 1,
+      "httpStatus": 403
+    }
+  ],
+  "inventoryComplete": false,
+  "matches": [],
+  "noNewPost": true,
+  "noPlaceWrites": true,
+  "retryAllowed": false,
+  "note": "Empty or unavailable listing cannot establish absence; do not repeat upload without owner review or positive provider evidence."
+}
