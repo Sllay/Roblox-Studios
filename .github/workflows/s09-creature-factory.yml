@@ -3,9 +3,8 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'tools/creature_factory/**'
+      - 'tools/creature_factory/chicken_v1.py'
       - 'asset-library/creature-queue/chicken-v1.json'
-      - '.github/workflows/s09-creature-factory.yml'
 permissions:
   contents: write
 concurrency:
