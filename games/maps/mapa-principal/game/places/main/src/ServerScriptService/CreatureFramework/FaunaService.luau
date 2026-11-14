@@ -17,7 +17,14 @@ function F.new(deps:any,template:Model,parent:Instance,seed:number):any
  end
  local d=table.clone(deps)
  d.distanceProvider=function(p:Vector3) local _,distance=nearest(p);return distance end
- d.threatProvider=function(p:Vector3) local best=nearest(p);return best end
+ d.threatProvider=function(p:Vector3)
+  local best,distance=nearest(p)
+  if d.combatWorld and d.combatState then
+   local predator,predDistance=d.combatWorld.predatorNear(d.combatState,p,22)
+   if predator and predDistance<distance then return predator end
+  end
+  return best
+ end
  d.spawnAllowed=function(p:Vector3)
   for _,player in players:GetPlayers() do
    local character=player.Character;local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
@@ -40,7 +47,9 @@ function F.advance(s:any,dt:number)
  end
  if s.accumulator>=.1 then
   local elapsed=s.accumulator;s.accumulator=0
+  if s.deps.combatWorld and s.deps.combatState then s.deps.combatWorld.syncPlayers(s.deps.combatState,game:GetService("Players"):GetPlayers()) end
   s.deps.director.step(s.director,math.min(.2,elapsed),s.clock)
+  if s.deps.combatWorld and s.deps.combatState then s.deps.combatWorld.step(s.deps.combatState,math.min(.2,elapsed)) end
  end
 end
 function F.start(s:any)

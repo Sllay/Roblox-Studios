@@ -1,6 +1,6 @@
 --!strict
 -- Reactive shared combat policy. State transitions never apply damage directly.
-export type Sense={dt:number,alive:boolean,aiEnabled:boolean,healthRatio:number,hunger:number,targetId:string?,targetAlive:boolean,targetVisible:boolean,targetDistance:number,pathBlocked:boolean,atGoal:boolean}
+export type Sense={dt:number,alive:boolean,aiEnabled:boolean,healthRatio:number,hunger:number,targetId:string?,targetAlive:boolean,targetVisible:boolean,targetDistance:number,pathBlocked:boolean,atGoal:boolean,attackAcknowledged:number?}
 export type Memory={state:string,age:number,cooldown:number,unseen:number,targetId:string?,attackToken:number,reason:string}
 local C={}
 function C.withProfile(p:any):any
@@ -24,7 +24,8 @@ function C.withProfile(p:any):any
   elseif not visible then
    if m.targetId and m.unseen<5 then change(m,"Search","lost line of sight")
    else m.targetId=nil;change(m,"Idle","no target") end
-  elseif m.state=="Attack" then change(m,"Recover","attack committed")
+  elseif m.state=="Attack" then
+   if s.attackAcknowledged==m.attackToken or m.age>=.5 then change(m,"Recover","attack committed or expired") end
   elseif m.state=="Recover" and m.age<p.recovery then
    -- Recovery is interruptible by death, disable, loss of target or low health above.
   elseif m.state=="Windup" then
@@ -40,8 +41,8 @@ function C.withProfile(p:any):any
   else change(m,"Guard","cooldown") end
   local state=m.state
   local branch=if state=="Dead" then "Lifecycle" elseif state=="Static" then "Disabled" elseif state=="Idle" then "Routine" elseif state=="Retreat" then "Survival" else "Combat"
-  local action=if state=="Attack" then (if p.kind=="Ranged" then "AttackRanged" else "AttackMelee") elseif state=="Chase" or state=="Stalk" then "Approach" elseif state=="Retreat" then "Retreat" elseif state=="Reposition" or state=="Guard" then "Position" elseif state=="Search" then "Search" else "Stop"
-  local animation=if state=="Windup" or state=="Attack" then "Attack" elseif state=="Chase" or state=="Retreat" then "Run" elseif state=="Stalk" or state=="Search" or state=="Reposition" then "Walk" else "Idle"
+  local action=if state=="Attack" then (if p.kind=="Ranged" then "AttackRanged" else "AttackMelee") elseif state=="Chase" or state=="Stalk" then "Approach" elseif state=="Retreat" then "Retreat" elseif state=="Reposition" or (state=="Guard" and p.kind=="Ranged") then "Position" elseif state=="Search" then "Search" else "Stop"
+  local animation=if state=="Windup" or state=="Attack" then "Attack" elseif state=="Chase" or state=="Retreat" then "Run" elseif state=="Stalk" or state=="Search" or state=="Reposition" or (state=="Guard" and p.kind=="Ranged") then "Walk" else "Idle"
   return {state=state,branch=branch,action=action,animation=animation,reason=m.reason,targetId=m.targetId,attackToken=m.attackToken}
  end
  return table.freeze(M)

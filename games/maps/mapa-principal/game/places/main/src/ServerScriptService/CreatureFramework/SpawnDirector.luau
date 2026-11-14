@@ -9,6 +9,7 @@ end
 function D.count(s:any):number return s.budget.total end
 function D.remove(s:any,id:string,now:number?):boolean
  local r=s.agents[id];if not r then return false end
+ if r.actor and s.d.combatWorld then r.actor.alive=false;s.d.combatWorld.remove(s.d.combatState,id) end
  if r.foodKey then s.d.food.release(s.food,r.foodKey,id) end
  s.d.agent.destroy(r.agent);s.agents[id]=nil
  local released=s.d.population.release(s.budget,id)
@@ -39,8 +40,17 @@ local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin
  model:SetAttribute("CreatureInstanceId",id);model:SetAttribute("CreatureOrigin",origin)
  model:SetAttribute("CreatureHealth",species.base.health);model:SetAttribute("CreatureAIEnabled",adapter.aiEnabled)
  model.Parent=s.parent
- local a=d.agent.new(d.brain,d.kernel,adapter)
- local record={agent=a,adapter=adapter,origin=origin,speciesId=p.speciesId,health=species.base.health,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
+ local record:any={agent=nil,adapter=adapter,origin=origin,speciesId=p.speciesId,profile=species.profile,health=species.base.health,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
+ if d.factory then
+  local actor:any={id=id,model=model,faction=species.faction,prey=species.prey,profile=species.profile,alive=true,damage=species.base.damage,hunger=1,getPosition=function()return adapter.mesh.Position end,getVelocity=function()return adapter.mesh.AssemblyLinearVelocity end,healthRatio=function()return record.health/species.base.health end}
+  actor.applyDamage=function(amount:number)
+   if not actor.alive or amount<=0 then return end
+   record.health=math.max(0,record.health-amount);model:SetAttribute("CreatureHealth",record.health)
+   if record.health==0 then actor.alive=false;adapter.alive=false else adapter:damage() end
+  end
+  record.actor=actor
+  record.agent=d.factory.new(d,species,adapter,actor,d.combatState)
+ else record.agent=d.agent.new(d.brain,d.kernel,adapter) end
  s.agents[id]=record
  if origin=="Natural" then s.naturalCount+=1 end
  if d.onSpawn then d.onSpawn(id,record) end
@@ -116,9 +126,9 @@ function D.step(s:any,dt:number,now:number)
   local tier=if s.d.scheduler then s.d.scheduler.tier(distance,r.tier) else "Near"
   local previous=r.tier;r.tier=tier
   local moving=tier=="Near" or tier=="Mid"
-  if previous~=tier then r.nextDecision=now;r.lastMotion=now;adapter:cancel() end
+  if previous~=tier then r.nextDecision=now;r.lastMotion=now;r.agent.adapter:cancel() end
   if r.foodKey and not s.d.food.owns(s.food,r.foodKey,id,now) then r.foodKey=nil;adapter:setFood(nil) end
-  if moving and adapter.aiEnabled and r.agent.memory.state~="Peck" and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
+  if r.profile=="PassivePrey" and moving and adapter.aiEnabled and r.agent.memory.state~="Peck" and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
    r.nextFood=now+3
    local pos=adapter:position()
    for i=1,4 do
@@ -150,6 +160,7 @@ function D.step(s:any,dt:number,now:number)
   elseif r.foodKey and not adapter.food then
    s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil
   end
+  if r.actor and s.d.combatWorld then s.d.combatWorld.update(s.d.combatState,id) end
 
  end
  if now-s.lastPrune>=10 then s.d.food.prune(s.food,now,64);s.lastPrune=now end

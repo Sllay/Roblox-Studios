@@ -2,14 +2,14 @@
 -- Combat agent shares the ground/animation adapter; target data comes from bounded CombatWorld.
 local C={}
 function C.new(base:any,actor:any,profile:any,world:any,worldModule:any,selector:any):any
- local self:any={base=base,actor=actor,profile=profile,world=world,current=nil,lastKnown=nil,clock=0,goal=nil,nextPlan=0,blocked=false}
+ local self:any={base=base,actor=actor,profile=profile,world=world,current=nil,lastKnown=nil,clock=0,goal=nil,nextPlan=0,blocked=false,lastAttackToken=0}
  function self:sense(dt:number):any
   self.clock+=dt;worldModule.update(world,actor.id)
   local candidates=worldModule.candidates(world,actor,profile)
   local best=selector.choose(candidates,actor.faction,profile,self.current,24)
   if best then self.current=best.id;self.lastKnown=world.actors[best.id].getPosition() end
   local target=if best then world.actors[best.id] else nil
-  return {dt=dt,alive=actor.alive,aiEnabled=base.aiEnabled,healthRatio=actor.healthRatio(),hunger=actor.hunger or 1,targetId=if best then best.id else nil,targetAlive=target~=nil and target.alive,targetVisible=best~=nil,targetDistance=if best then best.distance else math.huge,pathBlocked=self.blocked,atGoal=false}
+  return {dt=dt,alive=actor.alive,aiEnabled=base.aiEnabled,healthRatio=actor.healthRatio(),hunger=actor.hunger or 1,targetId=if best then best.id else nil,targetAlive=target~=nil and target.alive,targetVisible=best~=nil,targetDistance=if best then best.distance else math.huge,pathBlocked=self.blocked,atGoal=false,attackAcknowledged=self.lastAttackToken}
  end
  function self:cancel() self.goal=nil;self.nextPlan=0;base:cancel() end
  function self:enter(intent:any)
@@ -18,7 +18,7 @@ function C.new(base:any,actor:any,profile:any,world:any,worldModule:any,selector
  end
  function self:plan(intent:any):Vector3?
   local p=base:position();local t=world.actors[intent.targetId or ""]
-  local target=if t then t.getPosition() else self.lastKnown
+  local target=if intent.action=="Search" then self.lastKnown elseif t then t.getPosition() else self.lastKnown
   if not target then return nil end
   local delta=Vector3.new(target.X-p.X,0,target.Z-p.Z);if delta.Magnitude<.01 then return nil end
   if intent.action=="Retreat" then base.observedThreat={position=target};return base:plan(true) end
@@ -40,7 +40,10 @@ function C.new(base:any,actor:any,profile:any,world:any,worldModule:any,selector
  end
  function self:execute(intent:any,dt:number):string
   if intent.action=="AttackMelee" or intent.action=="AttackRanged" then
-   worldModule.attack(world,actor.id,intent.targetId,profile,intent.attackToken,self.clock)
+   if intent.attackToken>self.lastAttackToken then
+    self.lastAttackToken=intent.attackToken
+    worldModule.attack(world,actor.id,intent.targetId,profile,intent.attackToken,self.clock)
+   end
    return "Success"
   end
   if intent.action=="Approach" or intent.action=="Retreat" or intent.action=="Position" or intent.action=="Search" then

@@ -1,10 +1,10 @@
 --!strict
 -- Sole authoritative species catalog. Technical ID is permanent; instances have separate IDs.
 export type Stats={health:number,damage:number,walkSpeed:number,runSpeed:number}
-export type Species={id:string,name:string,description:string,category:string,disposition:string,profile:string,biomes:{string},modelAssetId:string,preview:{source:string,assetId:string?},animations:{[string]:string},base:Stats,growth:Stats,levelCap:number,discoverable:boolean}
+export type Species={id:string,name:string,description:string,category:string,disposition:string,profile:string,faction:string,prey:boolean,biomes:{string},modelAssetId:string,preview:{source:string,assetId:string?},animations:{[string]:string},base:Stats,growth:Stats,levelCap:number,discoverable:boolean}
 local chicken:Species={
  id="210080",name="Galinha",description="Pequena ave terrestre que procura sementes e insetos. Curiosa, desconfiada de movimentos bruscos e rápida para fugir de ameaças.",
- category="Animal",disposition="Passive",profile="PassivePrey",biomes={"emerald_valley"},
+ category="Animal",disposition="Passive",profile="PassivePrey",faction="animal_chicken",prey=true,biomes={"emerald_valley"},
  modelAssetId="76960331636475",
  preview={source="asset-library/candidates/chicken-rig-43578265487-1/idle.png",assetId="107933673393998"},
  animations={Idle="123461134632415",Walk="128847740648973",Run="128056941885930",Peck="136236973921119",Flap="78561104554317"},
@@ -29,6 +29,7 @@ function R.validate(s:Species):boolean
  for _,biome in s.biomes do assert(biomeNames[biome]~=nil,"unknown biome") end
  assert(s.profile=="PassivePrey" or s.profile=="Predator" or s.profile=="Melee" or s.profile=="Ranged","unknown profile")
  if s.profile~="PassivePrey" then assert(tonumber(s.animations.Attack)~=nil,"combat profile needs Attack clip") end
+ assert(#s.faction>0 and type(s.prey)=="boolean","invalid ecological identity")
  assert(#s.category>0 and #s.profile>0 and tonumber(s.modelAssetId)~=nil,"invalid species contract")
  assert(s.levelCap>=1 and s.levelCap%1==0 and s.levelCap<=100,"invalid level cap")
  for key,value in pairs(s.base) do assert(value>=0 and value<math.huge and value==value,"invalid base "..key) end

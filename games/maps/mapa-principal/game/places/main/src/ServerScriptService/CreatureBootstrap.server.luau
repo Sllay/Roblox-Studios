@@ -10,7 +10,9 @@ local Service=get("FaunaService")
 local BookRuntime=get("BookRuntime")
 local Gameplay=get("BookGameplay")
 local Remote=get("BookServer")
-local deps={registry=Registry,brain=get("MobBrain"),kernel=get("AIKernel"),escape=get("EscapePlanner"),adapter=get("RobloxMobAdapter"),agent=get("AgentRuntime"),population=get("PopulationBudget"),spawn=get("SpawnPolicy"),biomes=get("BiomeRegions"),food=get("FoodSites"),scheduler=get("SimulationBudget"),director=Director}
+local CombatWorld=get("CombatWorld")
+local combatState=CombatWorld.new(workspace,get("CombatSpatialIndex"),get("CombatRules"),64)
+local deps={factory=get("CreatureAgentFactory"),profiles=get("CombatProfiles"),combatBrain=get("CombatBrain"),combatWorld=CombatWorld,combatState=combatState,combatAdapter=get("CombatAdapter"),targetSelector=get("CombatTargets"),registry=Registry,brain=get("MobBrain"),kernel=get("AIKernel"),escape=get("EscapePlanner"),adapter=get("RobloxMobAdapter"),agent=get("AgentRuntime"),population=get("PopulationBudget"),spawn=get("SpawnPolicy"),biomes=get("BiomeRegions"),food=get("FoodSites"),scheduler=get("SimulationBudget"),director=Director}
 local template=game:GetService("AssetService"):LoadAssetAsync(tonumber(Registry.get("210080").modelAssetId) :: number)
 assert(template:IsA("Model") and template.Parent==nil)
 local folder=Instance.new("Folder");folder.Name="RSCreatures";folder.Parent=workspace
