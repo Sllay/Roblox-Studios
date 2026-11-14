@@ -6,8 +6,12 @@ assert(F and #F:GetChildren()==2000,"Expected live S07 population")
 local A=game:GetService("AssetService")
 local CP=game:GetService("ContentProvider")
 local function part(m)
- local p=m:FindFirstChildWhichIsA("MeshPart",true)
- assert(p and #m:GetDescendants()==1,"Expected one MeshPart")
+ local p=nil;local n=0
+ for _,o in m:GetDescendants() do
+  assert(not o:IsA("LuaSourceContainer"),"Unexpected script "..m.Name)
+  if o:IsA("BasePart") then n+=1;p=o end
+ end
+ assert(n==1 and p and p:IsA("MeshPart"),"Expected one MeshPart in "..m.Name.." parts="..n.." descendants="..#m:GetDescendants())
  return p
 end
 local function fingerprint()
