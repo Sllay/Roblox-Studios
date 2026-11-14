@@ -3,9 +3,16 @@
   "sha256": "46c8c2591542acc4bef19d300580e3f5ad7ad2f73a43497363a5ebe7e522be76",
   "bytes": 764639,
   "source": "asset-library/approved/eggydrasil/v8/wood-uv/bark-alpha-mask.png",
-  "state": "post_intent",
+  "state": "operation_created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
-  "noPlaceWrites": true
+  "noPlaceWrites": true,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/71d3bd87-563e-4112-b735-26ef9eefd928",
+    "operationId": "71d3bd87-563e-4112-b735-26ef9eefd928",
+    "done": false
+  },
+  "operationPath": "operations/71d3bd87-563e-4112-b735-26ef9eefd928"
 }
