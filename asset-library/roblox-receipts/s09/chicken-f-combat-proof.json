@@ -1,0 +1,15 @@
+{
+  "queries": 44,
+  "universeId": "10769712441",
+  "meleeBlocked": true,
+  "preySelected": "prey",
+  "passed": true,
+  "rangedBlocked": true,
+  "noPlaceWrites": true,
+  "rangedDamage": 7,
+  "predatorSensed": true,
+  "meleeDamage": 5,
+  "placeId": "93428341652658",
+  "ok": true,
+  "loadedVersion": 25
+}
