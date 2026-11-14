@@ -51,7 +51,7 @@ local function fingerprint()
   local svc=game:GetService(name)
   for _,o in svc:GetDescendants() do
    local r=record(svc,o)
-   if o==E then r.properties.pivot=nil end
+   if o==E or (o:IsDescendantOf(E) and o:IsA("Model")) then r.properties.pivot=nil end
    if o:IsDescendantOf(E) and o:IsA("BasePart") then r.properties.cframe=nil end
    if surfaces[o] then r.properties.color=nil end
    if o==affected then r.properties.cframe=nil end
@@ -63,10 +63,13 @@ local function fingerprint()
 end
 local function landmark()
  local pivot=E:GetPivot();local bc,sz=E:GetBoundingBox();assert(math.abs(sz.Y-120)<.02,"Height")
- local r={pivot={pivot:GetComponents()},bounds=vec(sz),bottom=bc.Y-sz.Y/2,scale=E:GetScale(),parts={}}
+ local r={pivot={pivot:GetComponents()},bounds=vec(sz),bottom=bc.Y-sz.Y/2,scale=E:GetScale(),parts={},models={}}
  local n=0
  for _,p in E:GetDescendants() do
-  if p:IsA("BasePart") then
+  if p:IsA("Model") then
+   local name=p:GetFullName();assert(not r.models[name],"Duplicate nested model")
+   local f=p:GetPivot();r.models[name]={pose={f:GetComponents()},relative={pivot:ToObjectSpace(f):GetComponents()},scale=p:GetScale()}
+  elseif p:IsA("BasePart") then
    assert(p:IsA("MeshPart") and not r.parts[p.Name] and p.Anchored,"Landmark mesh")
    r.parts[p.Name]={pose={p.CFrame:GetComponents()},relative={pivot:ToObjectSpace(p.CFrame):GetComponents()},mesh=p.MeshId,size=vec(p.Size),collision=p.CanCollide}
    n+=1
@@ -78,6 +81,10 @@ end
 local function translated(old,new)
  assert(math.abs(old.scale-new.scale)<.0001 and sameFrame(old.bounds,new.bounds),"Scale/bounds changed")
  local wanted=table.clone(old.pivot);wanted[2]-=delta;assert(sameFrame(new.pivot,wanted),"Pivot translation")
+ for name,a in old.models do
+  local b=new.models[name];local expected=table.clone(a.pose);expected[2]-=delta
+  assert(b and math.abs(a.scale-b.scale)<.0001 and sameFrame(a.relative,b.relative) and sameFrame(expected,b.pose),"Nested model translation "..name)
+ end
  for name,a in old.parts do
   local b=new.parts[name];local expected=table.clone(a.pose);expected[2]-=delta
   assert(b and a.mesh==b.mesh and a.collision==b.collision and sameFrame(a.size,b.size) and sameFrame(a.relative,b.relative) and sameFrame(expected,b.pose),"Part translation "..name)
@@ -85,6 +92,7 @@ local function translated(old,new)
 end
 local function sameLandmark(a,b)
  assert(sameFrame(a.pivot,b.pivot) and sameFrame(a.bounds,b.bounds) and math.abs(a.scale-b.scale)<.0001,"Landmark drift")
+ for n,p in a.models do local q=b.models[n];assert(q and math.abs(p.scale-q.scale)<.0001 and sameFrame(p.pose,q.pose) and sameFrame(p.relative,q.relative),"Nested model drift "..n) end
  for n,p in a.parts do local q=b.parts[n];assert(q and p.mesh==q.mesh and sameFrame(p.pose,q.pose) and sameFrame(p.size,q.size),"Landmark part drift "..n) end
 end
 local terrain=terrainState();assert(#terrain==49,"Terrain regions");task.wait()
