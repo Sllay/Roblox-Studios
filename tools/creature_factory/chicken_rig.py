@@ -39,12 +39,13 @@ tags=[]
 for v in me.vertices:
     names=[mesh.vertex_groups[g.group].name[4:] for g in v.groups if mesh.vertex_groups[g.group].name.startswith("src_")]
     assert len(names)==1;tags.append(names[0])
-# Original material values are linear glTF factors; convert to sRGB for PNG.
+# V2 approved software renders used the authored palette as display RGB.
+# Encode those exact palette bytes into sRGB PNG (corrects V2's legacy factor color-space mismatch).
 def srgb(x):return 12.92*x if x<=.0031308 else 1.055*x**(1/2.4)-.055
 palette=[]
 for m in me.materials:
     val=m.node_tree.nodes.get("Principled BSDF").inputs["Base Color"].default_value
-    palette.append(tuple(round(max(0,min(1,srgb(float(x))))*255) for x in val[:3]))
+    palette.append(tuple(round(max(0,min(1,float(x)))*255) for x in val[:3]))
 facecolors=[palette[p.material_index] for p in me.polygons]
 # Real UV unwrap and pack; no palette-only overlapping UV shortcut.
 while me.uv_layers:me.uv_layers.remove(me.uv_layers[0])
@@ -76,7 +77,7 @@ for q,col in checks:
     if tuple(tex[y,x])!=col:errors+=1
 assert errors==0,("atlas color sample mismatch",errors)
 Image.fromarray(tex).save(out/"chicken-albedo.png")
-atlas={"triangles":3120,"size":[N,N],"coveredPixels":int((owner>=0).sum()),"overlapInteriorPixels":overlaps,"emptySubpixelTriangles":empty,"colorSampleErrors":errors,"sourceMaterials":len(palette),"finalMaterials":1,"method":"Blender Smart UV + pack islands; rasterized linear-to-sRGB colors and nearest-texel padding"}
+atlas={"triangles":3120,"size":[N,N],"coveredPixels":int((owner>=0).sum()),"overlapInteriorPixels":overlaps,"emptySubpixelTriangles":empty,"colorSampleErrors":errors,"sourceMaterials":len(palette),"finalMaterials":1,"method":"Blender Smart UV + pack islands; rasterized approved V2 display RGB and nearest-texel padding"}
 (out/"checkpoint-1-atlas.json").write_text(json.dumps(atlas,indent=2))
 mat=bpy.data.materials.new("Chicken_Atlas");mat.use_nodes=True
 bs=mat.node_tree.nodes.get("Principled BSDF");bs.inputs["Roughness"].default_value=.85
@@ -127,12 +128,13 @@ H=np.array([.045,.52]);K=np.array([.03,.34]);A=np.array([-.055,.075])
 l1=np.linalg.norm(K-H);l2=np.linalg.norm(A-K)
 base1=math.atan2(*(K-H)[::-1]);base2=math.atan2(*(A-K)[::-1])
 sign=np.sign(np.cross(A-H,K-H))
-def leg(L,y,z,h):
-    target=np.array([y,z-h]);d=target-H;length=np.linalg.norm(d)
+def leg(L,y,z,h,pitch=0):
+    cp,sp=math.cos(pitch),math.sin(pitch);B=np.array([0.,.85])
+    target=B+np.array([[cp,sp],[-sp,cp]])@(np.array([y,z])-B-np.array([0,h]));d=target-H;length=np.linalg.norm(d)
     assert abs(l1-l2)+1e-6<length<l1+l2-1e-6,("IK unreachable",L,length)
     u=d/length;along=(l1*l1-l2*l2+length*length)/(2*length);k=H+along*u+sign*math.sqrt(max(0,l1*l1-along*along))*np.array([-u[1],u[0]])
     a1=math.atan2(*(k-H)[::-1])-base1;a2=math.atan2(*(target-k)[::-1])-base2
-    rot("Hip_"+L,a1);rot("Shin_"+L,a2-a1);rot("Foot_"+L,-a2)
+    rot("Hip_"+L,a1);rot("Shin_"+L,a2-a1);rot("Foot_"+L,-a2-pitch)
 def pose(name,t):
     reset();p=2*math.pi*t
     if name=="Idle":
@@ -147,17 +149,18 @@ def pose(name,t):
         rot("Neck",.10*math.sin(2*p));rot("Head",-.07*math.sin(2*p));rot("Tail",.07*math.sin(p))
         rot("Wing_L",0,0,-(.17 if run else .06)*math.sin(p));rot("Wing_R",0,0,(.17 if run else .06)*math.sin(p))
     elif name=="Peck":
-        bend=math.sin(math.pi*t)**4;body_height(-.12*bend)
-        # Keep feet planted while the torso lowers; neck and head reach forward.
+        bend=math.sin(math.pi*t)**4;h=-.2214*bend;pitch=.6941*bend
+        body_height(h);rot("Body",pitch)
+        # Measured against the immutable V2 vertices; inverse torso transform keeps the feet planted.
         for L in ("L","R"):
-            if bend>1e-4:leg(L,-.055,.075,-.12*bend)
-        rot("Neck",1.0*bend);rot("Head",.75*bend);rot("Jaw",-.16*bend);rot("Tail",-.14*bend)
+            if bend>1e-4:leg(L,-.055,.075,h,pitch)
+        rot("Neck",.8074*bend);rot("Head",.2379*bend);rot("Jaw",-.10*bend);rot("Tail",-.14*bend)
     elif name=="Flap":
         a=math.sin(math.pi*t)**2;f=a*(.85+.32*math.sin(6*math.pi*t))
         rot("Wing_L",0,0,-f);rot("Wing_R",0,0,f);rot("Neck",-.08*a);rot("Tail",.13*a)
     bpy.context.view_layer.update()
 # Five clips with identical start/end pose. Check foot world anchors during gait.
-dur={"Idle":48,"Walk":24,"Run":18,"Peck":30,"Flap":30};actions={};footerr=0.;maxjaw=0.
+dur={"Idle":48,"Walk":24,"Run":18,"Peck":30,"Flap":30};actions={};footerr=0.;floorMin=0.;peckBeak=None;peckFootError=0.
 for name,frames in dur.items():
     action=bpy.data.actions.new(name);action.use_fake_user=True;rig.animation_data_create();rig.animation_data.action=action
     start=None
@@ -166,6 +169,12 @@ for name,frames in dur.items():
         current=np.array([tuple(p.rotation_quaternion)+tuple(p.location) for p in rig.pose.bones])
         if frame==0:start=current
         if frame==frames:assert np.max(np.abs(start-current))<1e-5,(name,"loop")
+        # Measure evaluated skin, not just skeleton transforms.
+        ev=mesh.evaluated_get(bpy.context.evaluated_depsgraph_get());vv=np.array([tuple(ev.matrix_world@v.co) for v in ev.data.vertices])
+        floorMin=min(floorMin,float(vv[:,2].min()))
+        if name=="Peck":
+            for L in ("L","R"):peckFootError=max(peckFootError,abs(rig.pose.bones["Foot_"+L].head.z-.075))
+            if frame==frames//2:peckBeak=float(min(vv[i,2] for i,tag in enumerate(tags) if tag.startswith("Beak")))
         if name in ("Walk","Run"):
             for L,offset in [("L",0),("R",.5)]:
                 if (t+offset)%1<.58:
@@ -176,7 +185,8 @@ for name,frames in dur.items():
     for f in action.fcurves:
         for k in f.keyframe_points:k.interpolation="LINEAR"
     actions[name]=action;rig.animation_data.action=None
-assert footerr<.001,("stance foot anchor error",footerr)
+assert footerr<.001 and peckFootError<.001,("stance foot anchor error",footerr,peckFootError)
+assert floorMin>=-.025 and .0<=peckBeak<=.1,("ground penetration or peck reach",floorMin,peckBeak)
 for name,action in actions.items():
     tr=rig.animation_data.nla_tracks.new();tr.name=name;strip=tr.strips.new(name,0,action);strip.name=name
 reset();scene.frame_set(0);bpy.context.view_layer.update()
@@ -194,7 +204,7 @@ for a in j["animations"]:
     assert a["channels"] and all(c["target"]["node"] in j["skins"][0]["joints"] for c in a["channels"])
     for s in a["samplers"]:
         t=acc(j,b,s["input"]).ravel();assert len(t)>1 and np.all(np.diff(t)>0)
-report={"sourceSha256":hashlib.sha256(source.read_bytes()).hexdigest(),"glbSha256":hashlib.sha256(path.read_bytes()).hexdigest(),"triangles":3120,"renderMeshes":1,"renderPrimitives":1,"materials":1,"verticesExported":int(len(w)),"bones":len(j["skins"][0]["joints"]),"weightMaxError":float(np.max(np.abs(w.sum(1)-1))),"stanceAnchorMaxError":footerr,"clips":names,"clipFrames":dur,"fps":24,"restTriangleParity":True,"atlas":atlas,"robloxImported":False}
+report={"sourceSha256":hashlib.sha256(source.read_bytes()).hexdigest(),"glbSha256":hashlib.sha256(path.read_bytes()).hexdigest(),"triangles":3120,"renderMeshes":1,"renderPrimitives":1,"materials":1,"verticesExported":int(len(w)),"bones":len(j["skins"][0]["joints"]),"weightMaxError":float(np.max(np.abs(w.sum(1)-1))),"stanceAnchorMaxError":footerr,"peckFootAnchorMaxError":peckFootError,"minimumAnimatedVertexZ":floorMin,"peckBeakMinimumZ":peckBeak,"clips":names,"clipFrames":dur,"fps":24,"restTriangleParity":True,"atlas":atlas,"robloxImported":False}
 (out/"checkpoint-2-rig.json").write_text(json.dumps({k:v for k,v in report.items() if k!="atlas"},indent=2))
 # Independent Blender import of the exported asset verifies actual decoded skin/actions.
 bpy.ops.wm.save_as_mainfile(filepath=str(out/"chicken-v2-rig.blend"))
@@ -203,15 +213,16 @@ rig=next(o for o in bpy.context.scene.objects if o.type=="ARMATURE");mesh=next(o
 assert len(rig.data.bones)==report["bones"] and any(m.type=="ARMATURE" for m in mesh.modifiers)
 imported=list(bpy.data.actions);assert len(imported)==5,[a.name for a in imported]
 scene=bpy.context.scene;scene.render.fps=24;scene.render.engine="BLENDER_EEVEE";scene.render.resolution_x=480;scene.render.resolution_y=480;scene.render.resolution_percentage=100;scene.render.film_transparent=True
+scene.view_settings.view_transform="Standard";scene.view_settings.look="None";scene.view_settings.exposure=-.4
 scene.world=bpy.data.worlds.new("StudioWorld");scene.world.use_nodes=True;scene.world.node_tree.nodes["Background"].inputs[0].default_value=(.7,.7,.7,1);scene.world.node_tree.nodes["Background"].inputs[1].default_value=.45
 def light(name,loc,power,size):
     d=bpy.data.lights.new(name,"AREA");d.energy=power;d.shape="DISK";d.size=size;o=bpy.data.objects.new(name,d);scene.collection.objects.link(o);o.location=loc;o.rotation_euler=(Vector((0,0,1.2))-o.location).to_track_quat("-Z","Y").to_euler()
-light("Key",(3,-4,5),550,4);light("Fill",(-3,-2,3),350,4);light("Rim",(1,3,4),400,3)
+light("Key",(3,-4,5),400,4);light("Fill",(-3,-2,3),180,4);light("Rim",(1,3,4),280,3)
 camd=bpy.data.cameras.new("Review");cam=bpy.data.objects.new("Review",camd);scene.collection.objects.link(cam);scene.camera=cam;camd.type="ORTHO";camd.ortho_scale=3.6
 cam.location=(4,-6,3);cam.rotation_euler=(Vector((0,0,1.25))-cam.location).to_track_quat("-Z","Y").to_euler()
 if rig.animation_data:
     for track in rig.animation_data.nla_tracks:track.mute=True
-for name,frame in [("Idle",0),("Walk",6),("Run",5),("Peck",15),("Flap",12)]:
+for name,frame in [("Idle",0),("Walk",20),("Run",15),("Peck",15),("Flap",12)]:
     matches=[a for a in imported if a.name==name or a.name.startswith(name+" " ) or a.name.startswith(name+"_")];assert len(matches)==1,(name,[a.name for a in imported])
     rig.animation_data.action=matches[0];scene.frame_set(frame);bpy.context.view_layer.update()
     scene.render.filepath=str(out/(name.lower()+".png"));bpy.ops.render.render(write_still=True)
