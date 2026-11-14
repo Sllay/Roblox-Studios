@@ -177,7 +177,17 @@ function D.step(s:any,dt:number,now:number)
  for _,id in batch do
   local r=s.agents[id];if not r then continue end
   local adapter=r.adapter
-  if not adapter.alive or adapter.model.Parent~=s.parent then D.remove(s,id,now);continue end
+  if adapter.model.Parent~=s.parent then D.remove(s,id,now);continue end
+  if not adapter.alive then
+   if not r.deathAt then
+    r.deathAt=now;adapter:beginDeath()
+    if r.foodKey then s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil end
+   end
+   local age=now-r.deathAt
+   if age>=5 then D.remove(s,id,now)
+   elseif age>=4 then adapter.mesh.Transparency=math.clamp(age-4,0,1) end
+   continue
+  end
   local distance=if s.d.distanceProvider then s.d.distanceProvider(adapter:position()) else 0
   local tier=if s.d.scheduler then s.d.scheduler.tier(distance,r.tier) else "Near"
   local previous=r.tier;r.tier=tier
@@ -208,7 +218,7 @@ function D.step(s:any,dt:number,now:number)
   end
   local intent=r.agent.intent
   if moving and previous~=tier and intent and adapter.aiEnabled and adapter.alive then adapter:animate(intent.animation,1) end
-  if moving and intent and now-r.lastMotion>=(if tier=="Near" then .03 else .19) then
+  if moving and intent and now-r.lastMotion>=(if tier=="Near" then 0 else .19) then
    s.d.agent.act(r.agent,math.min(.2,now-r.lastMotion));r.lastMotion=now
   elseif not moving then adapter:animate("",1) end
   if not moving or (intent and (intent.state=="Flee" or intent.state=="Recover" or intent.state=="Static")) then
