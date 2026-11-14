@@ -3,7 +3,7 @@
   "sha256": "772b05e2e72c0b9bee0afbb1f243d53849cf8b481d50646c5d92f1d63dc65689",
   "bytes": 153,
   "source": "asset-library/approved/foliage-matte/v1/roughness-white.png",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "b92783f8-7c84-46ba-8c47-f4b12b916021",
     "done": false
   },
-  "operationPath": "operations/b92783f8-7c84-46ba-8c47-f4b12b916021"
+  "operationPath": "operations/b92783f8-7c84-46ba-8c47-f4b12b916021",
+  "operation": {
+    "path": "operations/b92783f8-7c84-46ba-8c47-f4b12b916021",
+    "operationId": "b92783f8-7c84-46ba-8c47-f4b12b916021",
+    "done": true,
+    "response": {
+      "path": "assets/91633090510389",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T03:02:23.392Z",
+      "assetId": "91633090510389",
+      "displayName": "Black Islands foliage-matte-roughness-v1",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Image",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "91633090510389"
 }
