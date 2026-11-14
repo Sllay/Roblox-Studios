@@ -3,7 +3,7 @@
 local S={}
 local Players=game:GetService("Players")
 local RADIUS=500
-local AIM_RANGE=12
+local AIM_RANGE=30
 local collisionSaved:{[Model]:{[BasePart]:boolean}}={}
 local groupsSaved:{[BasePart]:string}={}
 local physics=game:GetService("PhysicsService")
@@ -54,27 +54,29 @@ local function aimedRecord(s:any,player:Player,direction:any,origin:any?):string
  local m=hit.Instance:FindFirstAncestorOfClass("Model")
  while m do
   local id=m:GetAttribute("CreatureInstanceId");local r=if type(id)=="string" then s.fauna.director.agents[id] else nil
-  if r and r.adapter.model==m and r.adapter.alive and (r.adapter.mesh.Position-root.Position).Magnitude<=AIM_RANGE then return id :: string end
+  if r and r.adapter.model==m and hit.Instance==r.adapter.hitbox and r.adapter.alive and (r.adapter.mesh.Position-root.Position).Magnitude<=AIM_RANGE then return id :: string end
   local parent=m.Parent;m=if parent then parent:FindFirstAncestorOfClass("Model") else nil
  end
  return nil
 end
-local function kill(s:any,player:Player,selector:string?,direction:any,origin:any?):any
+local function kill(s:any,player:Player,selector:string?,direction:any,origin:any?,deleting:boolean,targetId:any):any
  local root=characterRoot(player);if not root then return {ok=false,error="no character"} end
  local director=s.fauna.director;local dm=s.deps.director;local ids={};local center=root.Position
- if not selector then local id=aimedRecord(s,player,direction,origin);if not id then return {ok=false,error="no mob in crosshair"} end;table.insert(ids,id)
+ if not selector then local id=aimedRecord(s,player,direction,origin);if not id or (targetId~=nil and id~=targetId) then return {ok=false,error="no mob in crosshair"} end;table.insert(ids,id)
  elseif selector=="@e" or selector=="@a" or s.deps.registry.get(selector) then
   for id,r in pairs(director.agents) do
    if r.adapter.alive and (r.adapter.mesh.Position-center).Magnitude<=RADIUS and (selector=="@e" or selector=="@a" or r.speciesId==selector) then table.insert(ids,id) end
   end
-  dm.cancelDeveloperNear(director,center,RADIUS,if selector=="@e" or selector=="@a" then nil else selector)
+  if deleting then dm.cancelDeveloperNear(director,center,RADIUS,if selector=="@e" or selector=="@a" then nil else selector) end
  else return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
  local count=0
  for i,id in ids do
-  if dm.remove(director,id,s.fauna.clock) then count+=1 end
+  local r=director.agents[id]
+  if deleting then if dm.remove(director,id,s.fauna.clock) then count+=1 end
+  elseif r and r.actor and r.actor.alive then r.actor.applyDamage(1e9,"developer:"..tostring(player.UserId));count+=1 end
   if i%64==0 then task.wait() end
  end
- if selector=="@a" then
+ if selector=="@a" and not deleting then
   local world=director.d.combatState
   if world then
    for id,a in pairs(world.actors) do
@@ -95,7 +97,7 @@ local function kill(s:any,player:Player,selector:string?,direction:any,origin:an
    end
   end
  end
- return {ok=true,count=count,message="Eliminados: "..tostring(count)}
+ return {ok=true,count=count,message=(if deleting then "Removidos: " else "Mortos: ")..tostring(count)}
 end
 function S.new(deps:any,fauna:any,book:any,events:any,flags:any):any
  return {deps=deps,fauna=fauna,book=book,events=events,flags=flags,limits={},connections={},folder=nil}
@@ -122,15 +124,15 @@ function S.request(s:any,player:Player,op:any,value:any):any
  elseif op=="command" then
   if not developer then return {ok=false,error="forbidden"} end
   if now-row.command<1 then return {ok=false,error="rate limited"} end;row.command=now
-  local direction=nil;local origin=nil
-  if type(value)=="table" then direction=value.direction;origin=value.origin;value=value.text end
+  local direction=nil;local origin=nil;local targetId=nil
+  if type(value)=="table" then direction=value.direction;origin=value.origin;targetId=value.targetId;value=value.text end
   if type(value)~="string" or #value>160 then return {ok=false,error="invalid command"} end
   local words={};for word in string.gmatch(value,"%S+") do table.insert(words,word) end
   if #words==1 and (words[1]=="/fly" or words[1]=="/ghost") then return mode(player,string.sub(words[1],2))
   elseif #words==1 and words[1]=="/god" then return gold(player)
-  elseif words[1]=="/kill" then
+  elseif words[1]=="/kill" or words[1]=="/delete" then
    if #words>2 then return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
-   return kill(s,player,words[2],direction,origin)
+   return kill(s,player,words[2],direction,origin,words[1]=="/delete",targetId)
   elseif words[1]=="/summon" and words[2]=="status" and #words==2 then
    local j=s.deps.director.developerStatus(s.fauna.director,uid)
    if not j then return {ok=false,error="no summon job"} end

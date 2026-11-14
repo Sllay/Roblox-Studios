@@ -15,6 +15,7 @@ for _,v in {{10,0,3,8},{10,16,3,8},{0,10,8,3},{16,10,8,3}} do
 end
 local target=Instance.new("TextLabel");target.Name="Target";target.AnchorPoint=Vector2.new(.5,0);target.Position=UDim2.new(.5,0,.5,22);target.Size=UDim2.fromOffset(160,26);target.BackgroundTransparency=.25;target.BackgroundColor3=Color3.fromRGB(22,35,29);target.TextColor3=Color3.new(1,1,1);target.TextSize=14;target.Font=Enum.Font.GothamMedium;target.Visible=false;target.Parent=gui
 local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.IgnoreWater=false
+local aimState=Instance.new("Folder");aimState.Name="RSAimState";aimState.Parent=playerGui
 local elapsed=0;local focusId:string?=nil;local focusAge=0;local submitted:{[string]:number}={};local pending=false
 RunService.RenderStepped:Connect(function(dt:number)
  elapsed+=dt;if elapsed<.05 then return end;local step=elapsed;elapsed=0
@@ -28,9 +29,9 @@ RunService.RenderStepped:Connect(function(dt:number)
   params.FilterDescendantsInstances={character}
   local ray=camera:ViewportPointToRay(camera.ViewportSize.X*.5,camera.ViewportSize.Y*.5)
   direction=ray.Direction.Unit
-  local hit=workspace:Raycast(ray.Origin,direction*12,params)
-  if not hit then hit=workspace:Spherecast(ray.Origin,.35,direction*12,params) end
-  if hit then
+  local hit=workspace:Raycast(ray.Origin,direction*30,params)
+  if not hit then hit=workspace:Spherecast(ray.Origin,.35,direction*30,params) end
+  if hit and hit.Instance.Name=="CreatureHitbox" then
    local m=hit.Instance:FindFirstAncestorOfClass("Model")
    while m do
     local value=m:GetAttribute("CreatureInstanceId");local health=m:GetAttribute("CreatureHealth")
@@ -38,6 +39,11 @@ RunService.RenderStepped:Connect(function(dt:number)
     local parent=m.Parent;m=if parent then parent:FindFirstAncestorOfClass("Model") else nil
    end
   end
+ end
+ if not hidden then
+  aimState:SetAttribute("TargetId",id)
+  aimState:SetAttribute("Origin",if camera then camera.CFrame.Position else nil)
+  aimState:SetAttribute("Direction",direction)
  end
  for _,b in bars do b.BackgroundColor3=if id then Color3.fromRGB(255,66,66) else Color3.new(1,1,1) end
  target.Visible=id~=nil;target.Text=if model then tostring(model:GetAttribute("CreatureDisplayName") or "Criatura") else ""
@@ -49,4 +55,34 @@ RunService.RenderStepped:Connect(function(dt:number)
    task.spawn(function()pcall(function()remote:InvokeServer("discover",{id=requested,direction=aimDirection,origin=aimOrigin})end);pending=false end)
   end
  end
+end)
+
+-- Presentation only: authoritative query hitbox remains untouched.
+local visualStates:{[MeshPart]:CFrame}={}
+local visualElapsed=0
+local visualModels:{Model}={}
+RunService.RenderStepped:Connect(function(dt:number)
+ visualElapsed+=dt
+ if visualElapsed>=.25 then
+  visualElapsed=0;table.clear(visualModels)
+  local camera=workspace.CurrentCamera
+  if camera then
+   local overlap=OverlapParams.new();overlap.MaxParts=0
+   for _,part in workspace:GetPartBoundsInRadius(camera.CFrame.Position,55,overlap) do
+    if part.Name=="CreatureHitbox" and part.Parent and part.Parent:IsA("Model") then table.insert(visualModels,part.Parent) end
+   end
+  end
+ end
+ local active:{[MeshPart]:boolean}={}
+ for _,model in visualModels do
+  local hitbox=model:FindFirstChild("CreatureHitbox")
+  local mesh=model:FindFirstChildWhichIsA("MeshPart",true)
+  if hitbox and hitbox:IsA("BasePart") and mesh and mesh.Anchored and hitbox.CanQuery then
+   active[mesh]=true
+   local goal=hitbox.CFrame;local previous=visualStates[mesh] or goal
+   local nextFrame=if (previous.Position-goal.Position).Magnitude>8 then goal else previous:Lerp(goal,1-math.exp(-22*dt))
+   visualStates[mesh]=nextFrame;mesh.CFrame=nextFrame
+  end
+ end
+ for mesh in pairs(visualStates) do if not active[mesh] then visualStates[mesh]=nil end end
 end)

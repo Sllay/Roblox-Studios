@@ -51,7 +51,7 @@ function F.advance(s:any,dt:number)
   s.deps.director.tickSpawn(s.director,s.clock)
   s.nextSpawn=s.clock+.25
  end
- if s.accumulator>=1/30 then
+ if s.accumulator>=1/60 then
   local elapsed=s.accumulator;s.accumulator=0
   if s.deps.combatWorld and s.deps.combatState then s.deps.combatWorld.syncPlayers(s.deps.combatState,game:GetService("Players"):GetPlayers()) end
   s.deps.director.step(s.director,math.min(.2,elapsed),s.clock)
