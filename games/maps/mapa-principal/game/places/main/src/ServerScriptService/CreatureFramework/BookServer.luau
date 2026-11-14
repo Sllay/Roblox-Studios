@@ -1,6 +1,54 @@
 --!strict
 -- Server-authoritative Book and command transport. No client damage/discovery remote.
 local S={}
+local Players=game:GetService("Players")
+local RADIUS=500
+local AIM_RANGE=8
+local function characterRoot(player:Player):BasePart?
+ local c=player.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil
+ local root=if c then c:FindFirstChild("HumanoidRootPart") else nil
+ return if h and h.Health>0 and root and root:IsA("BasePart") then root else nil
+end
+local function aimedRecord(s:any,player:Player,direction:any):string?
+ local root=characterRoot(player);local c=player.Character
+ if not root or not c or typeof(direction)~="Vector3" or direction.Magnitude~=direction.Magnitude or math.abs(direction.Magnitude-1)>.05 then return nil end
+ local head=c:FindFirstChild("Head");if not head or not head:IsA("BasePart") then return nil end
+ local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={c};ray.IgnoreWater=false
+ local hit=workspace:Raycast(head.Position,direction.Unit*AIM_RANGE,ray)
+ if not hit then return nil end
+ local m=hit.Instance:FindFirstAncestorOfClass("Model")
+ while m do
+  local id=m:GetAttribute("CreatureInstanceId");local r=if type(id)=="string" then s.fauna.director.agents[id] else nil
+  if r and r.adapter.model==m and r.adapter.alive and (r.adapter.mesh.Position-root.Position).Magnitude<=AIM_RANGE then return id end
+  local parent=m.Parent;m=if parent then parent:FindFirstAncestorOfClass("Model") else nil
+ end
+ return nil
+end
+local function kill(s:any,player:Player,selector:string?,direction:any):any
+ local root=characterRoot(player);if not root then return {ok=false,error="no character"} end
+ local director=s.fauna.director;local dm=s.deps.director;local ids={};local center=root.Position
+ if not selector then local id=aimedRecord(s,player,direction);if not id then return {ok=false,error="no mob in crosshair"} end;table.insert(ids,id)
+ elseif selector=="@e" or selector=="@a" or s.deps.registry.get(selector) then
+  for id,r in pairs(director.agents) do
+   if r.adapter.alive and (r.adapter.mesh.Position-center).Magnitude<=RADIUS and (selector=="@e" or selector=="@a" or r.speciesId==selector) then table.insert(ids,id) end
+  end
+  dm.cancelDeveloperNear(director,center,RADIUS,if selector=="@e" or selector=="@a" then nil else selector)
+ else return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
+ local count=0
+ for _,id in ids do if dm.remove(director,id,s.fauna.clock) then count+=1 end end
+ if selector=="@a" then
+  local world=director.d.combatState
+  if world then
+   for id,a in pairs(world.actors) do
+    if a.alive and (a.getPosition()-center).Magnitude<=RADIUS and not director.agents[id] then
+     local h=a.model:FindFirstChildWhichIsA("Humanoid");if h and h.Health>0 then h.Health=0;count+=1 end
+    end
+   end
+  end
+  for _,p in Players:GetPlayers() do local c=p.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil;local pr=characterRoot(p);if h and pr and (pr.Position-center).Magnitude<=RADIUS then h.Health=0;count+=1 end end
+ end
+ return {ok=true,count=count,message="Eliminados: "..tostring(count)}
+end
 function S.new(deps:any,fauna:any,book:any,events:any,flags:any):any
  return {deps=deps,fauna=fauna,book=book,events=events,flags=flags,limits={},connections={},folder=nil}
 end
@@ -10,21 +58,38 @@ end
 function S.request(s:any,player:Player,op:any,value:any):any
  if player.Parent~=game:GetService("Players") or type(op)~="string" then return {ok=false,error="invalid request"} end
  local now=os.clock();local uid=player.UserId
- local row=s.limits[uid] or {snapshot=-math.huge,command=-math.huge};s.limits[uid]=row
+ local row=s.limits[uid] or {snapshot=-math.huge,command=-math.huge,discover=-math.huge};s.limits[uid]=row
  local developer=S.isDeveloper(s,player)
  if op=="snapshot" then
   if now-row.snapshot<.35 then return {ok=false,error="rate limited"} end
   row.snapshot=now
   if value~="Discovery" and value~="Alphabetical" then return {ok=false,error="invalid sort"} end
   local result=s.deps.persistence.snapshot(s.book,uid,value,developer);result.ok=true;result.developer=developer;return result
+ elseif op=="discover" then
+  if now-(row.discover or -math.huge)<.5 then return {ok=false,error="rate limited"} end;row.discover=now
+  if type(value)~="table" or type(value.id)~="string" then return {ok=false,error="invalid target"} end
+  local id=aimedRecord(s,player,value.direction)
+  if not id or id~=value.id then return {ok=false,error="invalid aim"} end
+  return {ok=s.deps.gameplay.interact(s.events,player,id,now,os.time())}
  elseif op=="command" then
   if not developer then return {ok=false,error="forbidden"} end
   if now-row.command<1 then return {ok=false,error="rate limited"} end;row.command=now
-  if type(value)~="string" then return {ok=false,error="invalid command"} end
+  local direction=nil
+  if type(value)=="table" then direction=value.direction;value=value.text end
+  if type(value)~="string" or #value>160 then return {ok=false,error="invalid command"} end
+  local words={};for word in string.gmatch(value,"%S+") do table.insert(words,word) end
+  if words[1]=="/kill" then
+   if #words>2 then return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
+   return kill(s,player,words[2],direction)
+  elseif words[1]=="/summon" and words[2]=="status" and #words==2 then
+   local j=s.deps.director.developerStatus(s.fauna.director,uid)
+   if not j then return {ok=false,error="no summon job"} end
+   return {ok=true,count=j.created,message=string.format("Criados: %d/%d %s",j.created,j.count,j.done and (j.reason or "concluído") or "em andamento")}
+  end
   local args=s.deps.developer.tokens(value);if not args then return {ok=false,error="invalid command"} end
   local director=s.fauna.director
   local exists=#args>=2 and s.deps.registry.get(args[2])~=nil
-  local plan,err=s.deps.summon.parse(args,true,exists,director.p.maximum-director.budget.total)
+  local plan,err=s.deps.summon.parse(args,true,exists,math.huge)
   if not plan then return {ok=false,error=err} end
   local pos:Vector3
   if plan.here then
@@ -32,18 +97,18 @@ function S.request(s:any,player:Player,op:any,value:any):any
    if not root or not root:IsA("BasePart") then return {ok=false,error="no character"} end
    pos=root.Position+root.CFrame.LookVector*6
   else local p=plan.position;pos=Vector3.new(p[1],p[2],p[3]) end
+  if plan.count>20 then
+   if not s.deps.director.queueDeveloper(director,plan,pos,uid) then return {ok=false,error="summon job already running; /summon status"} end
+   return {ok=true,count=0,message="Solicitação de "..tostring(plan.count).." aceita. /summon status"}
+  end
   local ids,reason=s.deps.director.spawnDeveloper(director,plan,pos,s.fauna.clock)
   print("[CreatureCommand]",uid,plan.speciesId,plan.count,plan.aiEnabled,#ids,reason or "ok")
   return {ok=#ids==plan.count,count=#ids,error=reason}
  end
  return {ok=false,error="unknown operation"}
 end
-function S.attach(s:any,id:string,record:any)
- if record.origin~="Natural" then return end
- local prompt=Instance.new("ProximityPrompt");prompt.Name="BookDiscover";prompt.ActionText="Conhecer";prompt.ObjectText=assert(s.deps.registry.get(record.speciesId)).name;prompt.MaxActivationDistance=8;prompt.HoldDuration=.5;prompt.RequiresLineOfSight=true;prompt.Parent=record.adapter.mesh
- prompt.Triggered:Connect(function(player)
-  if prompt.Enabled and record.adapter.alive then s.deps.gameplay.interact(s.events,player,id,os.clock(),os.time()) end
- end)
+function S.attach(_s:any,_id:string,_record:any)
+ -- Discovery uses verified first-person aim; no world-space prompts.
 end
 function S.start(s:any)
  local rs=game:GetService("ReplicatedStorage")

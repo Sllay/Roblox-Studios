@@ -46,6 +46,7 @@ function F.advance(s:any,dt:number)
  assert(not s.closed,"service closed")
  if dt<=0 or dt~=dt or dt==math.huge then return end
  s.clock+=dt;s.accumulator=math.min(.5,s.accumulator+dt)
+ s.deps.director.tickDeveloper(s.director,s.clock)
  if s.clock>=s.nextSpawn then
   s.deps.director.tickSpawn(s.director,s.clock)
   s.nextSpawn=s.clock+.25

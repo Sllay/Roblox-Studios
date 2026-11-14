@@ -4,15 +4,16 @@ local D={}
 function D.new(deps:any,policy:any,template:Model,parent:Instance,seed:number):any
  local regions=deps.biomes.regions(policy.biomeId);assert(#regions>0)
  local caps={global=policy.maximum,active=policy.maximum,perChunk=3,perBiome={[policy.biomeId]=policy.maximum},perSpecies={[policy.speciesId]=policy.maximum}}
- return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,closed=false}
+ return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},closed=false}
 end
-function D.count(s:any):number return s.budget.total end
+function D.count(s:any):number return s.budget.total+s.developerCount end
 function D.remove(s:any,id:string,now:number?):boolean
  local r=s.agents[id];if not r then return false end
  if r.actor and s.d.combatWorld then r.actor.alive=false;s.d.combatWorld.remove(s.d.combatState,id) end
  if r.foodKey then s.d.food.release(s.food,r.foodKey,id) end
  s.d.agent.destroy(r.agent);s.agents[id]=nil
- local released=s.d.population.release(s.budget,id)
+ local released=if r.origin=="Natural" then s.d.population.release(s.budget,id) else true
+ if r.origin=="Developer" then s.developerCount-=1 end
  if released and r.origin=="Natural" then
   s.naturalCount-=1
   if not s.closed then s.d.spawn.next(s.clock,s.p,s.naturalCount,now or s.now) end
@@ -34,10 +35,10 @@ local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin
  local d,p=s.d,s.p
  adapter.options.canMove=function(g:Vector3)
   local region=d.biomes.regionAt(p.biomeId,g.X,g.Z)
-  return region~=nil and d.population.move(s.budget,id,p.biomeId,region.id)
+  return region~=nil and (origin=="Developer" or d.population.move(s.budget,id,p.biomeId,region.id))
  end
  model.Name="Creature_"..id
- model:SetAttribute("CreatureInstanceId",id);model:SetAttribute("CreatureOrigin",origin)
+ model:SetAttribute("CreatureInstanceId",id);model:SetAttribute("CreatureOrigin",origin);model:SetAttribute("CreatureSpeciesId",species.id);model:SetAttribute("CreatureDisplayName",species.name)
  model:SetAttribute("CreatureHealth",species.base.health);model:SetAttribute("CreatureAIEnabled",adapter.aiEnabled)
  model.Parent=s.parent
  local record:any={agent=nil,adapter=adapter,origin=origin,speciesId=p.speciesId,profile=species.profile,health=species.base.health,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
@@ -55,7 +56,7 @@ local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin
   record.agent=d.factory.new(d,species,adapter,actor,d.combatState)
  else record.agent=d.agent.new(d.brain,d.kernel,adapter) end
  s.agents[id]=record
- if origin=="Natural" then s.naturalCount+=1 end
+ if origin=="Natural" then s.naturalCount+=1 else s.developerCount+=1 end
  if d.onSpawn then d.onSpawn(id,record) end
  return id
 end
@@ -91,7 +92,7 @@ function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
 end
 function D.spawnDeveloper(s:any,plan:any,position:Vector3,now:number):({string},string?)
  local ids:{string}={}
- if s.closed or plan.speciesId~=s.p.speciesId or plan.count<1 or plan.count%1~=0 or plan.count>s.p.maximum-s.budget.total then return ids,"population limit" end
+ if s.closed or plan.speciesId~=s.p.speciesId or plan.count<1 or plan.count%1~=0 or plan.count>10000 then return ids,"invalid developer request" end
  for i=1,plan.count do
   local species,adapter,model,id=create(s,plan.aiEnabled)
   local done=false
@@ -101,7 +102,8 @@ function D.spawnDeveloper(s:any,plan:any,position:Vector3,now:number):({string},
    local angle=(k+i-1)*math.pi/4
    local x,z=position.X+radius*math.cos(angle),position.Z+radius*math.sin(angle)
    local region=s.d.biomes.regionAt(s.p.biomeId,x,z)
-   if region and place(s,adapter,id,region,x,z,now,position.Y) then
+   local g=if region then adapter:ground(x,z) else nil
+   if g and math.abs(g.Y-position.Y)<=6 and adapter:place(g) then
     table.insert(ids,finish(s,species,adapter,model,id,"Developer",now));done=true;break
    end
   end
@@ -111,6 +113,42 @@ function D.spawnDeveloper(s:any,plan:any,position:Vector3,now:number):({string},
   end
  end
  return ids,nil
+end
+-- Large requests are incremental, never reserve natural population slots.
+function D.queueDeveloper(s:any,plan:any,position:Vector3,uid:number):boolean
+ local old=s.developerJobs[uid]
+ if old and not old.done then return false end
+ s.developerJobs[uid]={plan=plan,position=position,created=0,attempts=0,done=false,reason=nil}
+ return true
+end
+function D.developerStatus(s:any,uid:number):any
+ local j=s.developerJobs[uid];if not j then return nil end
+ return {created=j.created,count=j.plan.count,done=j.done,reason=j.reason}
+end
+function D.tickDeveloper(s:any,now:number)
+ local deadline=os.clock()+.004
+ local work=0
+ for _,j in pairs(s.developerJobs) do
+  if j.done then continue end
+  while work<8 and os.clock()<deadline and j.created<j.plan.count and j.attempts<j.plan.count*12+256 do
+   work+=1;j.attempts+=1
+   local radius=3*math.sqrt(j.attempts-1);local angle=j.attempts*2.399963229728653
+   local x=j.position.X+radius*math.cos(angle);local z=j.position.Z+radius*math.sin(angle)
+   if s.d.biomes.regionAt(s.p.biomeId,x,z) then
+    local species,adapter,model,id=create(s,j.plan.aiEnabled)
+    local g=adapter:ground(x,z)
+    if g and adapter:place(g) then finish(s,species,adapter,model,id,"Developer",now);j.created+=1 else adapter:destroy() end
+   end
+  end
+  if j.created>=j.plan.count then j.done=true
+  elseif j.attempts>=j.plan.count*12+256 then j.done=true;j.reason="no more safe placement within search budget" end
+  if work>=8 or os.clock()>=deadline then break end
+ end
+end
+function D.cancelDeveloperNear(s:any,position:Vector3,radius:number,speciesId:string?)
+ for _,j in pairs(s.developerJobs) do
+  if not j.done and (not speciesId or j.plan.speciesId==speciesId) and (j.position-position).Magnitude<=radius then j.done=true;j.reason="cancelled by kill command" end
+ end
 end
 function D.tickSpawn(s:any,now:number):string?
  s.now=now
