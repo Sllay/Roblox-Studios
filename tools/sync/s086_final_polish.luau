@@ -46,7 +46,7 @@ local function sameFrame(a,b)
  for i,v in a do if math.abs(v-b[i])>.002 then return false end end;return true
 end
 local function fingerprint()
- local rows={};local processed=0
+ local rows={};local records={};local processed=0
  for _,name in cfg.services do
   local svc=game:GetService(name)
   for _,o in svc:GetDescendants() do
@@ -56,10 +56,10 @@ local function fingerprint()
    if surfaces[o] then r.properties.color=nil end
    if o==affected then r.properties.cframe=nil end
    if o:IsA("MeshPart") then r.properties.doubleSided=o.DoubleSided;r.properties.meshSize=vec(o.MeshSize) end
-   table.insert(rows,hash(canon(r)));processed+=1;if processed%250==0 then task.wait() end
+   local digest=hash(canon(r));table.insert(rows,digest);records[o]={digest=digest,row=r};processed+=1;if processed%250==0 then task.wait() end
   end
  end
- table.sort(rows);return hash(table.concat(rows,";"))
+ table.sort(rows);return hash(table.concat(rows,";")),records
 end
 local function landmark()
  local pivot=E:GetPivot();local bc,sz=E:GetBoundingBox();assert(math.abs(sz.Y-120)<.02,"Height")
@@ -88,7 +88,7 @@ local function sameLandmark(a,b)
  for n,p in a.parts do local q=b.parts[n];assert(q and p.mesh==q.mesh and sameFrame(p.pose,q.pose) and sameFrame(p.size,q.size),"Landmark part drift "..n) end
 end
 local terrain=terrainState();assert(#terrain==49,"Terrain regions");task.wait()
-local fp=fingerprint();task.wait()
+local fp,originalRecords=fingerprint();task.wait()
 local env=hash(canon({lightingState(),workspaceSettings()}))
 if cfg.mode~="preview" then
  assert(fp==cfg.expectedFingerprint and env==cfg.expectedEnvironment,"Baseline drift")
@@ -204,7 +204,21 @@ for id,s in targets do
 end
 assert(n==250,"Tint count")
 print("S086_CHECKPOINT_2: 250 common canopies tint verified")
-assert(fingerprint()==fp,"Unrelated scene changed");task.wait()
+local finalFP,finalRecords=fingerprint()
+if finalFP~=fp then
+ local differences={}
+ for o,a in originalRecords do
+  local b=finalRecords[o]
+  if not b or a.digest~=b.digest then
+   local keys={}
+   if b then for k,v in a.row.properties do if canon(v)~=canon(b.row.properties[k]) then table.insert(keys,k) end end end
+   table.insert(differences,{path=o:GetFullName(),class=o.ClassName,properties=keys,before=a.row,after=b and b.row or nil})
+   if #differences>=4 then break end
+  end
+ end
+ assert(false,"Unrelated scene changed "..Http:JSONEncode(differences):sub(1,4500))
+end
+task.wait()
 assert(hash(canon({lightingState(),workspaceSettings()}))==env,"Environment changed")
 local endTerrain=terrainState();for i,r in endTerrain do assert(r.digest==terrain[i].digest,"Terrain changed") end;task.wait()
 local result={counts=counts,delta=delta,oldTint={93,107,28},newTint={76,96,24},tinted=n,before=before,after=after,terrain=endTerrain,fingerprint=fp,environment=env,spawnChecked=spawnChecked,spawn={name=affected.Name,before=oldSpawn,after=newSpawn,method=method},geometryUnchanged=true,clientRenderVerified=false}
