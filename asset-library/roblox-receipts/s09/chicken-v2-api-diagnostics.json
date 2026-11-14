@@ -1,0 +1,53 @@
+{
+  "noNewPost": true,
+  "noPlaceWrites": true,
+  "knownAsset": "91515745821527",
+  "probes": {
+    "knownAssetMetadata": {
+      "status": 200,
+      "requestId": null,
+      "contentType": "application/json; charset=utf-8",
+      "displayName": "RS S06 Original Pine Canopy Prototype",
+      "assetType": "Model",
+      "state": "Active"
+    },
+    "cloudKnownOwnership": {
+      "status": 200,
+      "requestId": null,
+      "contentType": "application/json; charset=utf-8",
+      "count": 1
+    },
+    "creatorListing": {
+      "status": 403,
+      "requestId": null,
+      "contentType": "application/json",
+      "error": {
+        "errors": [
+          {
+            "code": 0,
+            "message": "Scope not authorized."
+          }
+        ]
+      },
+      "count": 0,
+      "hasNextPage": false
+    },
+    "publicModelInventory": {
+      "status": 200,
+      "requestId": null,
+      "contentType": "application/json; charset=utf-8",
+      "count": 38,
+      "hasNextPage": false
+    },
+    "cloudModelInventory": {
+      "status": 200,
+      "requestId": null,
+      "contentType": "application/json; charset=utf-8",
+      "count": 38,
+      "hasNextPage": false
+    }
+  },
+  "matches": [],
+  "absenceConfirmed": false,
+  "retryAllowed": false
+}
