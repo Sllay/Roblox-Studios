@@ -1,0 +1,26 @@
+{
+  "state": "review_ready",
+  "triangles": 3120,
+  "meshObjects": 41,
+  "watertightComponents": true,
+  "roundtripTriangleCount": true,
+  "roundtripMeshCount": true,
+  "uv": "per-component placeholder; final atlas pending",
+  "rigged": false,
+  "robloxPublished": false,
+  "heightAuthoringUnits": 2.65,
+  "glbBytes": 76304,
+  "sha256": "4c96eb027d4954e1c2fdc1b8a9a8ee4329f0e8c4c4185211a652b9e86d46d0d1",
+  "views": [
+    "three-quarter",
+    "front",
+    "left",
+    "back"
+  ],
+  "method": "authored silhouette lofts, sculpted swept feather sections and custom polygon plates; not image reconstruction",
+  "conceptApproval": "user-approved transparent hero + multi-view; artistic match pending",
+  "referenceSha256": {
+    "hero": "3fa375e57f1e179595af6c748641c792754ee3dcffe4167f4529daea86836c33",
+    "turnaround": "47fc384eb798fc88d33db69cce585e4124b23bbf71fd0bfb93e5c74c38e36b79"
+  }
+}

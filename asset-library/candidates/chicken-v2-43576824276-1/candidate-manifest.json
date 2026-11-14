@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "ffb08a7a15769e50d32766959c628781e6d8fe0c",
+  "runId": "43576824276",
+  "files": [
+    {
+      "path": "back.png",
+      "bytes": 52108,
+      "sha256": "f3a00e543ccf37c793541b80f369e27c395bff0c11bb99da0d5fc48ac947558c"
+    },
+    {
+      "path": "chicken-v2.glb",
+      "bytes": 76304,
+      "sha256": "4c96eb027d4954e1c2fdc1b8a9a8ee4329f0e8c4c4185211a652b9e86d46d0d1"
+    },
+    {
+      "path": "front.png",
+      "bytes": 87055,
+      "sha256": "ad367a1de065fc7b299d3df097aa07f18f1f77e259248df6157a10a4bf9e7ac3"
+    },
+    {
+      "path": "left.png",
+      "bytes": 93620,
+      "sha256": "296fad1662ee5ac49b470f72cebabcd9669f36f418a79a2a89ba843225399f9c"
+    },
+    {
+      "path": "report.json",
+      "bytes": 892,
+      "sha256": "b830a469da2c13fcef2bc7a8e3c2e03a8dfb89e02168c3d2856dabe33d88c98e"
+    },
+    {
+      "path": "three-quarter.png",
+      "bytes": 132038,
+      "sha256": "603938284c6dd89a7eac728610a99cee8419fa2712de1385b88aaacefe21dc5e"
+    }
+  ]
+}
