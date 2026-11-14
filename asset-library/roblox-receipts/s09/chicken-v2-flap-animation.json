@@ -1,0 +1,8 @@
+{
+  "id": "chicken-v2-flap-animation",
+  "sha256": "3c2a41cf20996d38d2611cc1ed9575c32db0f75c48c23afdbf7ba3ab978aa714",
+  "state": "post_intent",
+  "retryAllowed": false,
+  "noPlaceWrites": true,
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/flap.rbxmx"
+}
