@@ -1,20 +1,29 @@
 {
   "initial": 15,
+  "respawnTimes": [
+    320,
+    620,
+    920
+  ],
+  "placeId": "93428341652658",
+  "passed": true,
+  "final": 15,
+  "noPlaceWrites": true,
+  "universeId": "10769712441",
+  "ok": true,
+  "clockMode": "synthetic_monotonic_seconds",
   "chunks": {
     "emerald_valley/chunk--1-0": 2,
-    "emerald_valley/chunk-1--1": 2,
-    "emerald_valley/chunk-1-1": 1,
     "emerald_valley/chunk--1-1": 2,
+    "emerald_valley/chunk-0--1": 2,
+    "emerald_valley/chunk-0-0": 2,
+    "emerald_valley/chunk-1--1": 1,
+    "emerald_valley/chunk-1-1": 1,
     "emerald_valley/chunk--1--1": 2,
     "emerald_valley/chunk-0-1": 2,
-    "emerald_valley/chunk-0-0": 2,
-    "emerald_valley/chunk-0--1": 2
+    "emerald_valley/chunk-1-0": 1
   },
-  "ok": false,
-  "universeId": "10769712441",
-  "error": "TaskScript:818: not distributed across nine chunks",
-  "placeId": "93428341652658",
-  "passed": false,
-  "noPlaceWrites": true,
+  "children": 15,
+  "attempts": 21,
   "loadedVersion": 25
 }
