@@ -84,7 +84,7 @@ local function checkTemplate(m)
  assert(mesh and mesh.MeshId=="rbxassetid://136030103048719","Mesh identity")
  local sa=mesh:FindFirstChildWhichIsA("SurfaceAppearance")
  local tex=if sa then sa.ColorMap else mesh.TextureID
- assert(tex=="rbxassetid://72836310829855","Texture identity "..tostring(tex))
+ assert(tex=="rbxassetid://72736310828855","Texture identity "..tostring(tex))
  local bones={};local meshCount=0
  for _,o in m:GetDescendants() do
   assert(not o:IsA("LuaSourceContainer"),"Unexpected asset script")
