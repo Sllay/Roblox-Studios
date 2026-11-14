@@ -74,7 +74,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   if visible then self.observedThreat=t;self.lastSeen=self.clock elseif self.lastSeen and self.clock-self.lastSeen>4 then self.observedThreat=nil end
   local food=self.food
-  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
+  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,approachThreshold=if t and t.normalSpeed then math.max(1,t.normalSpeed*.6) else 4,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
   self.hit=false;return s
  end
  function self:animate(name:string,speed:number)
