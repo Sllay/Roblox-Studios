@@ -14,10 +14,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y blender python3-pil fonts-dejavu-core
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil fonts-dejavu-core
       - run: |
           blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/s08_approved_visual_review.py -- dist/s08-visual
-          python3 tools/asset_factory/s08_approved_visual_sheet.py dist/s08-visual
+          /usr/bin/python3 tools/asset_factory/s08_approved_visual_sheet.py dist/s08-visual
       - uses: actions/upload-artifact@v4
         if: always()
         with:

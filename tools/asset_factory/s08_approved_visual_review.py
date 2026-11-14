@@ -2,7 +2,7 @@
 import bpy,sys,json,hashlib
 from pathlib import Path
 from mathutils import Vector
-root=Path.cwd();out=Path(sys.argv[sys.argv.index("--")+1]);out.mkdir(parents=True,exist_ok=True)
+root=Path.cwd();out=Path(sys.argv[sys.argv.index("--")+1]).resolve();out.mkdir(parents=True,exist_ok=True)
 app=root/"asset-library/approved"
 assets=[("stone",app/"stone/v1/runtime/asset.glb"),("stick",app/"stick/v1/runtime/asset.glb"),("log",app/"log/v1/runtime/asset.glb"),("eggydrasil",app/"eggydrasil/v8/eggydrasil-v8-tintable.glb")]
 report={}
@@ -28,7 +28,7 @@ for name,src in assets:
     points=[o.matrix_world@Vector(v) for o in objs for v in o.bound_box]
     lo=Vector(tuple(min(p[i] for p in points) for i in range(3)));hi=Vector(tuple(max(p[i] for p in points) for i in range(3)))
     center=(lo+hi)/2;size=max(hi-lo)
-    sc=bpy.context.scene;sc.render.engine="CYCLES";sc.cycles.samples=20;sc.cycles.use_denoising=True;sc.cycles.transparent_max_bounces=32
+    sc=bpy.context.scene;sc.render.engine="CYCLES";sc.cycles.samples=20;sc.cycles.use_denoising=False;sc.cycles.transparent_max_bounces=32
     sc.render.resolution_x=640;sc.render.resolution_y=640;sc.render.resolution_percentage=100;sc.render.film_transparent=True;sc.render.image_settings.color_mode="RGBA"
     sc.world=bpy.data.worlds.new("Studio");sc.world.use_nodes=True;sc.world.node_tree.nodes["Background"].inputs[0].default_value=(.35,.35,.35,1);sc.world.node_tree.nodes["Background"].inputs[1].default_value=.65
     sc.view_settings.view_transform="Standard"
