@@ -1,7 +1,7 @@
 {
   "id": "chicken-v2-flap-animation",
   "sha256": "3c2a41cf20996d38d2611cc1ed9575c32db0f75c48c23afdbf7ba3ab978aa714",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "noPlaceWrites": true,
   "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/flap.rbxmx",
@@ -11,5 +11,31 @@
     "operationId": "42b23c39-a890-426c-914f-1bce49be6bf6",
     "done": false
   },
-  "operationPath": "operations/42b23c39-a890-426c-914f-1bce49be6bf6"
+  "operationPath": "operations/42b23c39-a890-426c-914f-1bce49be6bf6",
+  "operation": {
+    "path": "operations/42b23c39-a890-426c-914f-1bce49be6bf6",
+    "operationId": "42b23c39-a890-426c-914f-1bce49be6bf6",
+    "done": true,
+    "response": {
+      "path": "assets/78561104554317",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T09:23:34.593Z",
+      "assetId": "78561104554317",
+      "displayName": "Black Islands Chicken V2 Flap",
+      "description": "Original Chicken V2 Flap, rig asset 76960331636475",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "78561104554317"
 }
