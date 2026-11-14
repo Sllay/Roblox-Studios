@@ -91,35 +91,46 @@ def convert():
         manifest[name]={"file":str(path.relative_to(ROOT)),"sha256":hashlib.sha256(path.read_bytes()).hexdigest(),"keyframes":frames+1,"duration":float(times[-1]),"loop":loop,"priority":priority,"poseCount":15,"sourceMatrixMaxError":maxerr,"sample":sample,"start":samples[0],"end":samples[-1]}
     api.write(out/"manifest.json",manifest);api.commit([out],"assets(s09): native KeyframeSequences from verified source and imported bind")
     return manifest
-def main():
-    manifest=convert();key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
-    g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
-    c=task(target,key,'do\nreturn syncResult({creatorId=tostring(game.CreatorId),noPlaceWrites=true})\nend',read_version=25,compile_source=True)
-    assert c["creatorId"]=="8136365379" and c["loadedVersion"]==25
-    # Pilot only, remaining clips gated on observed native playback.
-    name="Idle";m=manifest[name];path=ROOT/m["file"]
-    receipt=DIR/"chicken-v2-idle-animation.json"
+def publish_and_verify(name,manifest,key,target,c):
+    m=manifest[name];path=ROOT/m["file"]
+    slug=name.lower()
+    receipt=DIR/f"chicken-v2-{slug}-animation.json"
     # API helper treats .rbxmx as glb, so implement exact documented animation MIME.
     if receipt.exists():
         r=json.loads(receipt.read_text());assert r["sha256"]==m["sha256"]
         if r.get("operationPath") and r["state"]!="created":api.poll(key,r,receipt)
         assert r["state"]=="created"
     else:
-        r={"id":"chicken-v2-idle-animation","sha256":m["sha256"],"state":"post_intent","retryAllowed":False,"noPlaceWrites":True,"source":m["file"]}
-        api.write(receipt,r);api.commit([receipt],"intent(s09): one-shot native Idle animation")
-        desc={"assetType":"Animation","displayName":"Black Islands Chicken V2 Idle","description":"Original Chicken V2 Idle, rig asset 76960331636475","creationContext":{"creator":{"userId":c["creatorId"]}}}
-        boundary="S09ChickenIdle"+m["sha256"][:20]
-        body=(f"--{boundary}\r\nContent-Disposition: form-data; name=\"request\"\r\nContent-Type: application/json\r\n\r\n"+json.dumps(desc)+f"\r\n--{boundary}\r\nContent-Disposition: form-data; name=\"fileContent\"; filename=\"idle.rbxmx\"\r\nContent-Type: model/x-rbxm\r\n\r\n").encode()+path.read_bytes()+f"\r\n--{boundary}--\r\n".encode()
+        r={"id":f"chicken-v2-{slug}-animation","sha256":m["sha256"],"state":"post_intent","retryAllowed":False,"noPlaceWrites":True,"source":m["file"]}
+        api.write(receipt,r);api.commit([receipt],f"intent(s09): one-shot native {name} animation")
+        desc={"assetType":"Animation","displayName":f"Black Islands Chicken V2 {name}","description":f"Original Chicken V2 {name}, rig asset 76960331636475","creationContext":{"creator":{"userId":c["creatorId"]}}}
+        boundary="S09Chicken"+name+m["sha256"][:20]
+        body=(f"--{boundary}\r\nContent-Disposition: form-data; name=\"request\"\r\nContent-Type: application/json\r\n\r\n"+json.dumps(desc)+f"\r\n--{boundary}\r\nContent-Disposition: form-data; name=\"fileContent\"; filename=\"{slug}.rbxmx\"\r\nContent-Type: model/x-rbxm\r\n\r\n").encode()+path.read_bytes()+f"\r\n--{boundary}--\r\n".encode()
         try:
             code,o=api.request("https://apis.roblox.com/assets/v1/assets",key,"POST",body,{"Content-Type":"multipart/form-data; boundary="+boundary})
             r.update(httpStatus=code,response=o,state="operation_created" if code<300 else "rejected_or_uncertain")
             if code<300:r["operationPath"]=o["path"]
         except Exception as e:r.update(state="requires_reconciliation",error=str(e)[:300])
-        api.write(receipt,r);api.commit([receipt],"evidence(s09): Idle animation upload response")
+        api.write(receipt,r);api.commit([receipt],f"evidence(s09): {name} animation upload response")
         if r.get("operationPath"):api.poll(key,r,receipt)
         assert r["state"]=="created",r
     code=(ROOT/"tools/sync/s09_chicken_animation_probe.luau").read_text()
     proof=task(target,key,code,read_version=25,compile_source=True,assetId=r["assetId"],expected=m["sample"],duration=m["duration"])
-    p=DIR/"chicken-v2-idle-playback.json";api.write(p,proof);api.commit([p],"evidence(s09): native Idle animation playback")
+    p=DIR/f"chicken-v2-{slug}-playback.json";api.write(p,proof);api.commit([p],f"evidence(s09): native {name} animation playback")
     print(json.dumps(proof,indent=2));assert proof["playbackVerified"],proof
+    return {"assetId":r["assetId"],"duration":m["duration"],"proof":str(p.relative_to(ROOT))}
+
+def main():
+    manifest=convert();key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
+    g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
+    c=task(target,key,'do\nreturn syncResult({creatorId=tostring(game.CreatorId),noPlaceWrites=true})\nend',read_version=25,compile_source=True)
+    assert c["creatorId"]=="8136365379" and c["loadedVersion"]==25
+    idle=json.loads((DIR/"chicken-v2-idle-playback.json").read_text())
+    assert idle["playbackVerified"] and idle["assetId"]=="123461134632415", "Idle pilot gate"
+    result={"Idle":{"assetId":idle["assetId"],"duration":manifest["Idle"]["duration"],"proof":"asset-library/roblox-receipts/s09/chicken-v2-idle-playback.json"}}
+    for name in ("Walk","Run","Peck","Flap"):
+        result[name]=publish_and_verify(name,manifest,key,target,c)
+    p=DIR/"chicken-v2-native-animation-set.json"
+    api.write(p,{"clips":result,"allPlaybackVerified":True,"rigAssetId":"76960331636475","loadedVersion":25,"noPlaceWrites":True})
+    api.commit([p],"evidence(s09): all five native chicken animations verified")
 if __name__=="__main__":main()
