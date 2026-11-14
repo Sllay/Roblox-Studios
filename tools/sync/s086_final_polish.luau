@@ -10,6 +10,8 @@ local delta=8
 local oldTint=Color3.fromRGB(93,107,28)
 local newTint=Color3.fromRGB(76,96,24)
 local names={Tree_01="Canopy_01",Tree_03="Canopy_03",Tree_08="Canopy_08",Tree_12="Canopy_12"}
+local spawnRoot=W.RSCentralSpawns
+local affected=spawnRoot:FindFirstChild("Valley_17");assert(affected and affected:IsA("SpawnLocation") and affected.Enabled and affected.Neutral,"Reviewed spawn")
 local counts={tree=0,pine=0,bush=0};local surfaces={};local targets={}
 for _,m in V:GetChildren() do
  local s=m:GetAttribute("RSSpecies") or ""
@@ -52,6 +54,7 @@ local function fingerprint()
    if o==E then r.properties.pivot=nil end
    if o:IsDescendantOf(E) and o:IsA("BasePart") then r.properties.cframe=nil end
    if surfaces[o] then r.properties.color=nil end
+   if o==affected then r.properties.cframe=nil end
    if o:IsA("MeshPart") then r.properties.doubleSided=o.DoubleSided;r.properties.meshSize=vec(o.MeshSize) end
    table.insert(rows,hash(canon(r)));processed+=1;if processed%250==0 then task.wait() end
   end
@@ -100,18 +103,95 @@ end
 local after=landmark()
 if not verify then translated(before,after) end
 if cfg.mode~="preview" then sameLandmark(after,cfg.expectedAfter) end
--- Check enabled spawn headroom against the translated landmark's actual collision.
+-- One reviewed spawn is obstructed at all visually useful depths. Relocate only
+-- this marker using the same radius, support, spacing and obstruction gates.
 local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Include;ray.FilterDescendantsInstances={E};ray.RespectCanCollide=true
-local spawnChecked=0
-for _,s in W.RSCentralSpawns:GetDescendants() do
- if s:IsA("SpawnLocation") and s.Enabled then
-  spawnChecked+=1;local p=s.Position
-  for _,d in {{0,0},{2,0},{-2,0},{0,2},{0,-2}} do
-   assert(not W:Raycast(Vector3.new(p.X+d[1],p.Y+8,p.Z+d[2]),Vector3.new(0,-10,0),ray),"Spawn blocked "..s.Name)
+local oldSpawn={affected.CFrame:GetComponents()}
+local function treeClear(p)
+ for _,d in {{0,0},{2,0},{-2,0},{0,2},{0,-2}} do
+  if W:Raycast(Vector3.new(p.X+d[1],p.Y+8,p.Z+d[2]),Vector3.new(0,-10,0),ray) then return false end
+ end
+ return true
+end
+local terrainRay=RaycastParams.new();terrainRay.FilterType=Enum.RaycastFilterType.Include;terrainRay.FilterDescendantsInstances={W.Terrain};terrainRay.IgnoreWater=false;terrainRay.RespectCanCollide=true
+local vox=W.Terrain:ReadVoxelChannels(Region3.new(Vector3.new(-116,-32,-116),Vector3.new(116,112,116)),4,{"SolidMaterial","SolidOccupancy","LiquidOccupancy"})
+local columns={}
+local function column(i,k)
+ if i<1 or i>58 or k<1 or k>58 then return nil end
+ local key=i..":"..k
+ if columns[key]~=nil then return columns[key] or nil end
+ local height=nil;local wet=false;local gap=false;local valid=true;local mat=nil
+ for j=1,36 do
+  local s=vox.SolidOccupancy[i][j][k]
+  if vox.LiquidOccupancy[i][j][k]>.02 then wet=true end
+  if s>.02 then
+   if gap then valid=false end
+   height=-32+(j-1+s)*4;mat=vox.SolidMaterial[i][j][k]
+  else gap=true end
+ end
+ if not height or wet or not valid or (mat~=Enum.Material.Grass and mat~=Enum.Material.Ground) then columns[key]=false;return nil end
+ columns[key]=height;return height
+end
+local function ground(x,z)
+ local h=W:Raycast(Vector3.new(x,112,z),Vector3.new(0,-144,0),terrainRay)
+ if h then
+  if (h.Material~=Enum.Material.Grass and h.Material~=Enum.Material.Ground) or h.Normal.Y<.88 then return nil end
+  return h.Position.Y,"native_ray"
+ end
+ local gx,gz=(x+116)/4-.5,(z+116)/4-.5
+ local i,k=math.floor(gx),math.floor(gz);local tx,tz=gx-i,gz-k;i+=1;k+=1
+ local a,b,c,d=column(i,k),column(i+1,k),column(i,k+1),column(i+1,k+1)
+ if not (a and b and c and d) then return nil end
+ return (a+(b-a)*tx)*(1-tz)+(c+(d-c)*tx)*tz,"voxel_estimate"
+end
+local op=OverlapParams.new();op.FilterType=Enum.RaycastFilterType.Exclude;op.FilterDescendantsInstances={W.Terrain,spawnRoot};op.RespectCanCollide=true;op.MaxParts=1
+local function safe(x,z)
+ if x*x+z*z>108*108 then return nil end
+ local h,method=ground(x,z);if not h then return nil end
+ for _,d in {{3,0},{-3,0},{0,3},{0,-3},{3,3},{-3,3},{3,-3},{-3,-3}} do
+  local y=ground(x+d[1],z+d[2]);if not y or math.abs(y-h)>2.5 then return nil end
+ end
+ local p=Vector3.new(x,h+2,z)
+ for _,s in spawnRoot:GetChildren() do
+  if s~=affected and s:IsA("SpawnLocation") and s.Enabled then
+   if (Vector2.new(x,z)-Vector2.new(s.Position.X,s.Position.Z)).Magnitude<10 then return nil end
   end
  end
+ if #W:GetPartBoundsInBox(CFrame.new(x,h+3.5,z),Vector3.new(4,6,4),op)>0 or not treeClear(p) then return nil end
+ return p,method
 end
-assert(spawnChecked>0,"Spawn coverage")
+local chosen,method
+if not verify then
+ assert(sameFrame(oldSpawn,{24,26.375205993652344,-24,1,0,0,0,1,0,0,0,1}),"Spawn baseline")
+ assert(not treeClear(affected.Position),"Reviewed obstruction absent")
+ local candidates={}
+ for x=-104,104,4 do for z=-104,104,4 do
+  local dd=(x-24)^2+(z+24)^2
+  if dd<=100^2 and x*x+z*z<=108^2 then table.insert(candidates,{x=x,z=z,d=dd}) end
+ end end
+ table.sort(candidates,function(a,b)if a.d~=b.d then return a.d<b.d end;if a.x~=b.x then return a.x<b.x end;return a.z<b.z end)
+ local tested=0
+ for _,c in candidates do
+  chosen,method=safe(c.x,c.z);if chosen then break end
+  tested+=1;if tested%50==0 then task.wait() end
+ end
+ assert(chosen,"No safe replacement spawn")
+ affected.CFrame=CFrame.new(chosen)*affected.CFrame.Rotation
+else
+ chosen,method=safe(affected.Position.X,affected.Position.Z)
+ assert(chosen and (chosen-affected.Position).Magnitude<.02,"Persisted spawn support")
+end
+local newSpawn={affected.CFrame:GetComponents()}
+if cfg.mode~="preview" then
+ assert(sameFrame(newSpawn,cfg.expectedSpawn),"Reviewed spawn drift")
+end
+local spawnChecked=0
+for _,s in spawnRoot:GetDescendants() do
+ if s:IsA("SpawnLocation") and s.Enabled then
+  spawnChecked+=1;assert(treeClear(s.Position),"Spawn blocked "..s.Name)
+ end
+end
+assert(spawnChecked==53,"Spawn coverage")
 print("S086_CHECKPOINT_1: landmark translation verified")
 local function sameColor(a,b)
  return math.abs(a.R-b.R)<.001 and math.abs(a.G-b.G)<.001 and math.abs(a.B-b.B)<.001
@@ -127,7 +207,7 @@ print("S086_CHECKPOINT_2: 250 common canopies tint verified")
 assert(fingerprint()==fp,"Unrelated scene changed");task.wait()
 assert(hash(canon({lightingState(),workspaceSettings()}))==env,"Environment changed")
 local endTerrain=terrainState();for i,r in endTerrain do assert(r.digest==terrain[i].digest,"Terrain changed") end;task.wait()
-local result={counts=counts,delta=delta,oldTint={93,107,28},newTint={76,96,24},tinted=n,before=before,after=after,terrain=endTerrain,fingerprint=fp,environment=env,spawnChecked=spawnChecked,geometryUnchanged=true,clientRenderVerified=false}
+local result={counts=counts,delta=delta,oldTint={93,107,28},newTint={76,96,24},tinted=n,before=before,after=after,terrain=endTerrain,fingerprint=fp,environment=env,spawnChecked=spawnChecked,spawn={name=affected.Name,before=oldSpawn,after=newSpawn,method=method},geometryUnchanged=true,clientRenderVerified=false}
 if cfg.mode=="apply" then
  assert(cfg.confirmStaging and game.PlaceVersion==24,"Save guard")
  game:GetService("AssetService"):SavePlaceAsync({SaveWithoutPublish=false});result.saved=true

@@ -13,12 +13,12 @@ def main():
     require(retry(lambda:latest(target,key))==24,"Expected staging v24")
     r=retry(lambda:native("preview",24));write(out/"preview.json",r)
     expected={"tree":250,"pine":16,"bush":200}
-    require(r["noPlaceWrites"] and r["readyForStaging"] and r["counts"]==expected and r["delta"]==8 and r["tinted"]==250 and r["geometryUnchanged"] and r["spawnChecked"]>0,"Preview")
-    print("S086_CHECKPOINT_1",json.dumps({"delta":r["delta"],"before":r["before"]["pivot"],"after":r["after"]["pivot"],"height":r["after"]["bounds"][1],"spawnChecked":r["spawnChecked"]}),flush=True)
+    require(r["noPlaceWrites"] and r["readyForStaging"] and r["counts"]==expected and r["delta"]==8 and r["tinted"]==250 and r["geometryUnchanged"] and r["spawnChecked"]==53,"Preview")
+    print("S086_CHECKPOINT_1",json.dumps({"delta":r["delta"],"before":r["before"]["pivot"],"after":r["after"]["pivot"],"height":r["after"]["bounds"][1],"spawnChecked":r["spawnChecked"],"spawn":r["spawn"]}),flush=True)
     print("S086_CHECKPOINT_2",json.dumps({"tinted":r["tinted"],"oldTint":r["oldTint"],"newTint":r["newTint"]}),flush=True)
     if not a.publish:return
     require(retry(lambda:latest(target,key))==24,"Head drift")
-    opts=dict(expectedFingerprint=r["fingerprint"],expectedEnvironment=r["environment"],expectedTerrain={x["id"]:x["digest"] for x in r["terrain"]},expectedBefore=r["before"],expectedAfter=r["after"])
+    opts=dict(expectedFingerprint=r["fingerprint"],expectedEnvironment=r["environment"],expectedTerrain={x["id"]:x["digest"] for x in r["terrain"]},expectedBefore=r["before"],expectedAfter=r["after"],expectedSpawn=r["spawn"]["after"])
     write(out/"receipt.json",{"status":"started","beforeVersion":24,"retryAllowed":False})
     try:
         saved=native("apply",None,confirmStaging=True,journal=out/"cloud-task.json",**opts)
@@ -26,7 +26,7 @@ def main():
         require(retry(lambda:latest(target,key))==25,"Expected v25")
         proof=retry(lambda:native("verify",25,**opts));write(out/"verification.json",proof)
         require(proof["verified"] and proof["counts"]==expected and proof["tinted"]==250 and proof["geometryUnchanged"],"Readback")
-        receipt={"status":"verified","beforeVersion":24,"afterVersion":25,"delta":8,"counts":expected,"oldTint":r["oldTint"],"newTint":r["newTint"],"pivot":proof["after"]["pivot"],"height":proof["after"]["bounds"][1],"spawnChecked":proof["spawnChecked"],"terrainRegions":len(proof["terrain"]),"clientRenderVerified":False}
+        receipt={"status":"verified","beforeVersion":24,"afterVersion":25,"delta":8,"counts":expected,"oldTint":r["oldTint"],"newTint":r["newTint"],"pivot":proof["after"]["pivot"],"height":proof["after"]["bounds"][1],"spawnChecked":proof["spawnChecked"],"spawn":r["spawn"],"terrainRegions":len(proof["terrain"]),"clientRenderVerified":False}
         write(out/"receipt.json",receipt);print("S086_PUBLISHED",json.dumps(receipt),flush=True)
     except Exception:
         write(out/"receipt.json",{"status":"requires_reconciliation","beforeVersion":24,"retryAllowed":False});raise
