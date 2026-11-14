@@ -5,7 +5,7 @@
     620,
     920
   ],
-  "hungerAfter": 0.676399999999999,
+  "hungerAfter": 0.7099999999999984,
   "universeId": "10769712441",
   "placeId": "93428341652658",
   "passed": true,
@@ -27,6 +27,6 @@
     "emerald_valley/chunk-1-0": 1
   },
   "children": 15,
-  "attempts": 23,
+  "attempts": 21,
   "loadedVersion": 25
 }
