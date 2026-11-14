@@ -1,0 +1,46 @@
+{
+  "assets": {
+    "stone": {
+      "source": "asset-library/approved/stone/v1/runtime/asset.glb",
+      "sha256": "a4b5433ceaf5d0ec01da574f4922aa6e3bac482cb272d3eca6c60db324eac248",
+      "objects": 1,
+      "bounds": [
+        1.3610808849334717,
+        0.9551143646240234,
+        0.7346290349960327
+      ]
+    },
+    "stick": {
+      "source": "asset-library/approved/stick/v1/runtime/asset.glb",
+      "sha256": "3b570d28a44d83c04b267c3017056b013fe2cdddc80a2216e2bf5d03dd5b0abf",
+      "objects": 1,
+      "bounds": [
+        2.424903392791748,
+        0.8135413527488708,
+        0.29480719566345215
+      ]
+    },
+    "log": {
+      "source": "asset-library/approved/log/v1/runtime/asset.glb",
+      "sha256": "0c055d44788bffc8b0318ac816b7edf847da30bb76a14dec4fa83ad8464b433d",
+      "objects": 1,
+      "bounds": [
+        3.121999979019165,
+        0.9819297790527344,
+        0.9615709781646729
+      ]
+    },
+    "eggydrasil": {
+      "source": "asset-library/approved/eggydrasil/v8/eggydrasil-v8-tintable.glb",
+      "sha256": "e8d0379acd6f9c0cf3ab22c478410d1e52806458121cf3b2ca94d51e926d8048",
+      "objects": 3,
+      "bounds": [
+        49.48659896850586,
+        44.58673858642578,
+        50.7588005065918
+      ]
+    }
+  },
+  "scope": "Blender source asset render; not client render",
+  "clientRenderVerified": false
+}
