@@ -59,7 +59,7 @@ function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
  model:SetAttribute("CreatureHealth",species.base.health)
  model.Parent=s.parent
  local a=d.agent.new(d.brain,d.kernel,adapter)
- s.agents[id]={agent=a,adapter=adapter,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
+ s.agents[id]={agent=a,adapter=adapter,origin="Natural",speciesId=p.speciesId,health=species.base.health,foodKey=nil,nextFood=0,nextDecision=0,lastDecision=now,lastMotion=now,tier=nil}
  return id
 end
 function D.tickSpawn(s:any,now:number):string?

@@ -117,3 +117,35 @@ local fs=FO.new(2);assert(FO.claim(fs,"a","one",0));assert(not FO.claim(fs,"a","
 assert(FO.consume(fs,"a","one",1) and not FO.consume(fs,"a","one",2));assert(not FO.claim(fs,"a","two",120));assert(FO.claim(fs,"a","two",121))
 FO.release(fs,"a","two");FO.prune(fs,122,10);assert(fs.count==0)
 print("S09.5-C: initial 15, serial 300s replenishment, retry/no burst, biome and food leases passed")
+
+local BP=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/BookPersistence")
+local BE=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/BookGameplay")
+local db:any={u_1={schema=1,mobs={["345678"]={firstAt=1,reason="Kill"}}}}
+local getFail=true;local writeFail=true;local writes=0
+local store={canRead=function()return true end,canWrite=function()return true end,get=function(k)if getFail then error("read fail")end;return db[k] end,update=function(k,f)if writeFail then error("write fail")end;writes+=1;db[k]=f(db[k]);return db[k] end}
+local book=BP.new(B,R,store);local session=BP.session(book,1)
+assert(BP.discover(book,1,"210080","Interaction","Natural",20))
+assert(not BP.load(book,session,0) and not session.ready and session.dirty)
+assert(not BP.flush(book,session,0) and writes==0)
+getFail=false;assert(BP.load(book,session,2) and session.ledger.mobs["345678"])
+assert(not BP.flush(book,session,2) and session.dirty)
+writeFail=false;assert(BP.flush(book,session,4) and db.u_1.mobs["210080"].firstAt==20 and db.u_1.mobs["345678"])
+local b2=BP.new(B,R,store);local p2=BP.session(b2,1);assert(BP.load(b2,p2,0))
+local snap=BP.snapshot(b2,1,"Alphabetical",false);assert(snap.ready and snap.discovered==1 and snap.percent==100 and snap.rows[1].id==nil)
+assert(BP.snapshot(b2,1,"Discovery",true).rows[1].id=="210080")
+-- Unknown schema is not overwritten.
+db.u_2={schema=2,mobs={}};local p3=BP.session(book,2);assert(BP.discover(book,2,"210080","Kill","Natural",1));assert(not BP.load(book,p3,0) and not BP.flush(book,p3,0))
+-- Discovery only via validated server event. Test hit/death once and no dev credit.
+local model={SetAttribute=function()end}
+local fakeDirector:any={agents={one={adapter={alive=true,model=model,damage=function()end},origin="Natural",speciesId="210080",health=20},dev={adapter={alive=true,model=model,damage=function()end},origin="Developer",speciesId="210080",health=20}}}
+local allowed=false
+local event=BE.new(book,BP,fakeDirector,function()return allowed end)
+assert(not BE.interact(event,{UserId=3},"one",0,100))
+allowed=true;assert(BE.interact(event,{UserId=3},"one",1,101));assert(not BE.interact(event,{UserId=3},"one",2,102))
+assert(not BE.interact(event,{UserId=4},"dev",3,103))
+local removals=0;local dm={remove=function(d,id,now)d.agents[id]=nil;removals+=1;return true end}
+assert(BE.damage(event,dm,"one",5,4,3,104) and fakeDirector.agents.one.health==15)
+assert(BE.damage(event,dm,"one",15,4,4,105) and removals==1)
+assert(not BE.damage(event,dm,"one",1,4,5,106) and book.sessions[4].ledger.mobs["210080"].reason=="Kill")
+assert(BE.damage(event,dm,"dev",20,5,6,107) and (not book.sessions[5] or not book.sessions[5].ledger.mobs["210080"]))
+print("S09.5-D: safe persistence merge, load/write failure, reload, unknown schema, verified discovery/death passed")
