@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "release": "S08.5",
+  "environment": "staging",
+  "placeId": "93428341652658",
+  "universeId": "10769712441",
+  "sourceCommit": "ebb02fe0ef5a5c49dd57581cbc884c25ed559029",
+  "runId": 43549769260,
+  "receipt": {
+    "status": "verified",
+    "beforeVersion": 23,
+    "afterVersion": 24,
+    "counts": {
+      "tree": 250,
+      "pine": 16,
+      "bush": 200
+    },
+    "roughnessUri": "rbxassetid://91633090510389",
+    "meshPartsAdded": 0,
+    "clientRenderVerified": false
+  },
+  "scope": {
+    "colorMapUnchanged": true,
+    "geometryUnchanged": true,
+    "lightingUnchanged": true,
+    "terrainRegionsVerified": 49,
+    "doubleSidedUnchanged": true,
+    "eggydrasilUnchanged": true
+  },
+  "limitation": "Native persistence and scene properties verified; actual client sunlight appearance and mobile FPS require visual testing."
+}
