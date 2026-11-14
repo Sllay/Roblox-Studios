@@ -33,7 +33,13 @@ local species={};local tiles={}
 local function tile(x,z)return "chunk-"..math.floor((x+128)/256).."-"..math.floor((z+128)/256) end
 local function countModel(m,kind)
  counts[kind]+=1
- local p=m:GetPivot().Position;local k=tile(p.X,p.Z)
+ local p=m:GetPivot().Position
+ if kind=="stone" or kind=="stick" then
+  local mesh=m:FindFirstChildWhichIsA("MeshPart",true);assert(mesh,"Resource geometry")
+  p=mesh.Position
+ end
+ local k=tile(p.X,p.Z)
+ if kind=="stone" or kind=="stick" then assert(m:GetAttribute("RSResourceChunk")==k,"Resource chunk drift "..m.Name) end
  tiles[k]=tiles[k] or {};tiles[k][kind]=(tiles[k][kind] or 0)+1
 end
 for _,m in V:GetChildren() do
@@ -96,15 +102,58 @@ local oldPivot=tree:GetPivot();local oldScale=tree:GetScale()
 local oldCf,oldSize=tree:GetBoundingBox()
 assert(math.abs(oldSize.Y-60)<.01)
 local x,z=oldCf.X,oldCf.Z
-local h=ground(x,z);assert(h,"Tree ground")
 local originalParts={}
 for _,p in tree:GetDescendants() do
  if p:IsA("MeshPart") then originalParts[p.Name]={id=p.MeshId,collide=p.CanCollide,query=p.CanQuery,size=p.Size,relative=oldPivot:ToObjectSpace(p.CFrame)} end
 end
 tree:ScaleTo(oldScale*2)
 local cf,sz=tree:GetBoundingBox();local depth=.35
-local delta=Vector3.new(x,h.Position.Y+sz.Y/2-depth,z)-cf.Position
-tree:PivotTo(tree:GetPivot()+delta)
+local tr=RaycastParams.new();tr.FilterType=Enum.RaycastFilterType.Include;tr.FilterDescendantsInstances={tree};tr.RespectCanCollide=true
+local obstaclesAtBase={F,W.RSVegetationS06.Collisions,W.RSEnvironmentP4Detail.Models}
+local baseOverlap=OverlapParams.new();baseOverlap.FilterType=Enum.RaycastFilterType.Include;baseOverlap.FilterDescendantsInstances=obstaclesAtBase;baseOverlap.MaxParts=0
+local spawns={};for _,p in W:GetDescendants() do if p:IsA("SpawnLocation") and p.Enabled then table.insert(spawns,p) end end
+local function safe(px,pz)
+ local g=ground(px,pz);if not g or g.Normal.Y<.94 then return nil end
+ local relief=0
+ for _,a in {{1,0},{-1,0},{0,1},{0,-1},{.707,.707},{-.707,.707},{.707,-.707},{-.707,-.707}} do
+  local h=ground(px+a[1]*16,pz+a[2]*16)
+  if not h then return nil end
+  relief=math.max(relief,math.abs(h.Position.Y-g.Position.Y))
+ end
+ if relief>2 then return nil end
+ local bb=tree:GetBoundingBox()
+ tree:PivotTo(tree:GetPivot()+Vector3.new(px,g.Position.Y+sz.Y/2-depth,pz)-bb.Position)
+ local checked=0
+ for _,spawn in spawns do
+  local p=spawn.Position
+  if math.abs(p.X-px)<sz.X/2+8 and math.abs(p.Z-pz)<sz.Z/2+8 then
+   checked+=1
+   for _,d in {{0,0},{2,0},{-2,0},{0,2},{0,-2}} do
+    if W:Raycast(Vector3.new(p.X+d[1],p.Y+8,p.Z+d[2]),Vector3.new(0,-10,0),tr) then return nil end
+   end
+  end
+ end
+ -- Only root/trunk collision near ground is relevant to small resources and spawns.
+ -- Canopy projection alone is not a collision.
+ local near=W:GetPartBoundsInBox(CFrame.new(px,g.Position.Y+4,pz),Vector3.new(64,12,64),baseOverlap)
+ for _,p in near do
+  local qpos=p.Position
+  local top=qpos.Y+math.min(p.Size.Y/2+1,8)
+  if W:Raycast(Vector3.new(qpos.X,top,qpos.Z),Vector3.new(0,-math.min(p.Size.Y+2,16),0),tr) then return nil end
+ end
+ return {h=g,checked=checked,relief=relief,near=#near}
+end
+local candidates={}
+for xx=-64,64,4 do for zz=-64,64,4 do table.insert(candidates,{x=xx,z=zz,d=(xx-x)^2+(zz-z)^2}) end end
+table.sort(candidates,function(a,b)if a.d~=b.d then return a.d<b.d end;if a.x~=b.x then return a.x<b.x end;return a.z<b.z end)
+local site=nil;local attempts=0
+for _,p in candidates do
+ attempts+=1
+ local a=safe(p.x,p.z)
+ if a then site=a;x=p.x;z=p.z;break end
+end
+assert(site,"No safe 120-stud tree site in central chunk")
+local h=site.h;local spawnChecked=site.checked;local spawnBlocked={}
 cf,sz=tree:GetBoundingBox()
 assert(math.abs(sz.Y-120)<.02 and math.abs(cf.Y-sz.Y/2-h.Position.Y+depth)<.01,"Scale/contact")
 for _,p in tree:GetDescendants() do
@@ -112,22 +161,6 @@ for _,p in tree:GetDescendants() do
   local a=originalParts[p.Name];assert(a and p.MeshId==a.id and p.CanCollide==a.collide and p.CanQuery==a.query and (p.Size-a.size*2).Magnitude<.01,"Geometry/collision changed")
   local relative=tree:GetPivot():ToObjectSpace(p.CFrame)
   assert((relative.Position-a.relative.Position*2).Magnitude<.02,"Proportion drift")
- end
-end
--- Detect actual wood collision at the player spawn envelope, not the entire canopy bounding box.
-local tr=RaycastParams.new();tr.FilterType=Enum.RaycastFilterType.Include;tr.FilterDescendantsInstances={tree};tr.RespectCanCollide=true
-local spawnBlocked={};local spawnChecked=0
-for _,s in W:GetDescendants() do
- if s:IsA("SpawnLocation") and s.Enabled then
-  local p=s.Position
-  if math.abs(p.X-x)<sz.X/2+8 and math.abs(p.Z-z)<sz.Z/2+8 then
-   spawnChecked+=1
-   for _,d in {{0,0},{2,0},{-2,0},{0,2},{0,-2}} do
-    local o=Vector3.new(p.X+d[1],p.Y+8,p.Z+d[2])
-    local hit=W:Raycast(o,Vector3.new(0,-10,0),tr)
-    if hit then table.insert(spawnBlocked,s.Name);break end
-   end
-  end
  end
 end
 -- Logs use the approved single-mesh asset, not a new model.
@@ -171,7 +204,7 @@ for i,r in regions do
   local id="s082:Log:"..r.id..":"..string.format("%03d",placed)
   local model=m:Clone();model.Name=id;model:SetAttribute("RSManagedId",id);model:SetAttribute("RSResourceType","Log");model:SetAttribute("RSResourceVariant","v1");model:SetAttribute("RSResourceState","decorative");model:SetAttribute("RSResourceChunk",r.id);model:SetAttribute("RSBuriedDepth",0)
   local mesh=model:FindFirstChildWhichIsA("MeshPart",true)
-  mesh.Size=size;mesh.CFrame=f;mesh.Anchored=true;mesh.CanCollide=true;mesh.CanQuery=true;mesh.CanTouch=false;mesh.CollisionGroup="Default"
+  mesh.Size=size;mesh.CFrame=f;model.PrimaryPart=mesh;mesh.Anchored=true;mesh.CanCollide=true;mesh.CanQuery=true;mesh.CanTouch=false;mesh.CollisionGroup="Default"
   model.Parent=root
   table.insert(rows,{id=id,tile=r.id,size=v(size),pose=frame(f),gap=q(high-low+.01)})
   maxGap=math.max(maxGap,high-low+.01)
@@ -182,4 +215,4 @@ assert(#rows==250 and #root:GetChildren()==250)
 local after=terrainState();assert(#after==49 and #before==49)
 for i,r in after do assert(r.digest==before[i].digest,"Terrain changed") end
 assert(fingerprint()==fp,"Unrelated scene changed")
-return syncResult({audit=audit,tree={height=sz.Y,scale=tree:GetScale(),oldScale=oldScale,groundY=h.Position.Y,burial=depth,center=v(cf.Position),pivot=frame(tree:GetPivot()),spawnChecked=spawnChecked,spawnBlocked=spawnBlocked,geometryPreserved=true},logs={count=#rows,rows=rows,maxSupportGap=maxGap,rejected=rejected,meshId=p.MeshId,textureId=p.TextureID},terrain=after,nonResourceFingerprint=fp,readyForStaging=#spawnBlocked==0,noPlaceWrites=true,clientRenderVerified=false})
+return syncResult({audit=audit,tree={height=sz.Y,scale=tree:GetScale(),oldScale=oldScale,groundY=h.Position.Y,burial=depth,center=v(cf.Position),pivot=frame(tree:GetPivot()),spawnChecked=spawnChecked,spawnBlocked=spawnBlocked,rootRelief=site.relief,nearGroundObstacles=site.near,siteAttempts=attempts,geometryPreserved=true},logs={count=#rows,rows=rows,maxSupportGap=maxGap,rejected=rejected,meshId=p.MeshId,textureId=p.TextureID},terrain=after,nonResourceFingerprint=fp,readyForStaging=#spawnBlocked==0,noPlaceWrites=true,clientRenderVerified=false})
