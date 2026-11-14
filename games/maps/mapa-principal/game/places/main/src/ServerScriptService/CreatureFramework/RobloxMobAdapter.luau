@@ -9,7 +9,9 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
  local self:any={peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
- mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=true
+ mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
+ local hitbox=Instance.new("Part");hitbox.Name="CreatureHitbox";hitbox.Size=mesh.Size+Vector3.new(.6,.6,.6);hitbox.Transparency=1;hitbox.Anchored=true;hitbox.CanCollide=false;hitbox.CanTouch=false;hitbox.CanQuery=true;hitbox.CFrame=mesh.CFrame;hitbox.Parent=model
+ self.hitbox=hitbox
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={model};ray.IgnoreWater=false
  local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16;overlap.RespectCanCollide=true
  local groundRay=RaycastParams.new();groundRay.FilterType=Enum.RaycastFilterType.Include;groundRay.FilterDescendantsInstances={world.Terrain};groundRay.IgnoreWater=false
@@ -46,7 +48,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  function self:position():Vector3 return mesh.Position-Vector3.new(0,half,0) end
  function self:place(p:Vector3):boolean
   local g=self:ground(p.X,p.Z);if not g then return false end
-  mesh.CFrame=CFrame.new(g+Vector3.new(0,half,0));return true
+  mesh.CFrame=CFrame.new(g+Vector3.new(0,half,0));hitbox.CFrame=mesh.CFrame;return true
  end
  function self:setThreat(t:any) self.threat=t end
  function self:setFood(p:Vector3?) self.food=p end
@@ -155,9 +157,9 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local alignment=math.max(0,facing:Dot(target))
   self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
   local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
-  local q=p+facing*step;local g=self:ground(q.X,q.Z)
+  local q=p+target*step;local g=self:ground(q.X,q.Z)
   if not g or (self.home and horizontal(g-self.home).Magnitude>100) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
-  local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);self.moveDistance+=step
+  local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);hitbox.CFrame=mesh.CFrame;self.moveDistance+=step
   return true
  end
  function self:execute(intent:any,dt:number):string
@@ -191,6 +193,11 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if flee then "Run" else "Idle",1);return "Running" end
   self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"
+ end
+ function self:beginDeath()
+  self.alive=false;self:cancel();self:animate("",1);hitbox.CanQuery=false
+  mesh.Anchored=false;mesh.CanCollide=true;mesh.CanTouch=false;mesh.CanQuery=false
+  mesh:SetNetworkOwner(nil);mesh.AssemblyAngularVelocity=Vector3.new(0,0,3)
  end
  function self:destroy()
   for _,track in pairs(self.tracks) do track:Stop(0);track:Destroy() end
