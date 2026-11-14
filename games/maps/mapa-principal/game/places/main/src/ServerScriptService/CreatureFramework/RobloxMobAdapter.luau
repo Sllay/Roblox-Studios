@@ -70,6 +70,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
     self.queries+=1
     local hit=world:Raycast(p+Vector3.new(0,half,0),delta,ray)
     visible=not hit or (t.model and hit.Instance:IsDescendantOf(t.model)) or (hit.Position-t.position).Magnitude<.3
+    if horizontal(delta).Magnitude<2 and math.abs(delta.Y)<8 then visible=true end
     local flat=horizontal(delta)
     approach=if flat.Magnitude>.01 then -horizontal(t.velocity):Dot(flat.Unit) else 0
     if approach~=approach then approach=0 end
@@ -182,6 +183,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if not self.goal and self.clock>=self.nextPlan then
    if action=="SeekFood" and self.food and self:route(p,self.food) then self.goal=self.food else self.goal=self:plan(flee) end
    self.blocked=self.goal==nil
+   if self.blocked and not flee then self.exploreTarget=nil end
   end
   local goal=self.goal
   if not goal then self:animate("Idle",1);return "Running" end
