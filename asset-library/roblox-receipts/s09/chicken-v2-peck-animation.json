@@ -1,0 +1,8 @@
+{
+  "id": "chicken-v2-peck-animation",
+  "sha256": "b4b7bca82f9d1a2db73f8255ba3b1c383197da6364532da192e1df0e9ae2fe91",
+  "state": "post_intent",
+  "retryAllowed": false,
+  "noPlaceWrites": true,
+  "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/peck.rbxmx"
+}
