@@ -4,6 +4,7 @@ local S={}
 local Players=game:GetService("Players")
 local RADIUS=500
 local AIM_RANGE=12
+local collisionSaved:{[Model]:{[BasePart]:boolean}}={}
 local function protectedCharacter(c:Model):boolean
  return c:GetAttribute("RSDevGold")==true
 end
@@ -14,6 +15,7 @@ local function mode(player:Player,name:string):any
  local old=c:GetAttribute("RSDevMode") or "normal"
  local nextMode=if old==name then "normal" else name
  c:SetAttribute("RSDevMode",nextMode)
+ if nextMode~="ghost" then local saved=collisionSaved[c];if saved then for part,v in pairs(saved) do if part.Parent then part.CanCollide=v end end;collisionSaved[c]=nil end end
  return {ok=true,message="Modo: "..nextMode}
 end
 local function gold(player:Player):any
@@ -155,8 +157,13 @@ function S.start(s:any)
  local folder=Instance.new("Folder");folder.Name="RSBookTransport"
  local remote=Instance.new("RemoteFunction");remote.Name="Request";remote.OnServerInvoke=function(player,op,value)return S.request(s,player,op,value) end;remote.Parent=folder;folder.Parent=rs;s.folder=folder
  table.insert(s.connections,game:GetService("RunService").Heartbeat:Connect(function()
+  for c in pairs(collisionSaved) do if not c.Parent then collisionSaved[c]=nil end end
   for _,p in Players:GetPlayers() do
    local c=p.Character;local root=characterRoot(p)
+   if c and c:GetAttribute("RSDevMode")=="ghost" then
+    local saved=collisionSaved[c] or {};collisionSaved[c]=saved
+    for _,part in c:GetDescendants() do if part:IsA("BasePart") then if saved[part]==nil then saved[part]=part.CanCollide end;part.CanCollide=false end end
+   end
    if c and root and protectedCharacter(c) then
     local h=c:FindFirstChildWhichIsA("Humanoid")
     if h then h.Health=h.MaxHealth end
