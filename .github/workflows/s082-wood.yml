@@ -1,0 +1,37 @@
+name: S08.2 Eggydrasil existing wood UV and neutral bark
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/s082-wood.yml'
+      - 'tools/asset_factory/s082_wood_uv.py'
+      - 'tools/asset_factory/s082_wood_upload.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: s082-wood-asset-upload
+  cancel-in-progress: false
+jobs:
+  wood:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y blender python3-numpy python3-pil
+      - name: Exact geometry UV and texture bake
+        run: |
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/s082_wood_uv.py -- dist/s082-wood
+          blender -b --factory-startup --python-exit-code 1 --python tools/asset_factory/uv_audit.py -- dist/s082-wood/wood-v4-uv.glb dist/s082-wood/uv-audit.json --shared
+      - name: Archive and upload once
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          /usr/bin/python3 tools/asset_factory/s082_wood_upload.py dist/s082-wood
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s082-wood
+          path: dist/s082-wood/
