@@ -41,8 +41,8 @@ def main():
     write(out/"receipt.json",{"status":"started","beforeVersion":22,"retryAllowed":False})
     try:
         # Never retry a write automatically. A lost receipt requires reconciliation.
-        applied=native("apply",22,confirmStaging=True,journal=out/"cloud-task.json",**opts)
-        require(applied["saved"] and applied["counts"]==expected,"Save receipt")
+        applied=native("apply",None,confirmStaging=True,journal=out/"cloud-task.json",**opts)
+        require(applied["saved"] and applied["loadedVersion"]==22 and applied["counts"]==expected,"Save receipt")
         require(retry(lambda:latest(target,key))==23,"Expected v23")
         proof=retry(lambda:native("verify",23,**opts))
         write(out/"verification.json",proof)

@@ -95,11 +95,11 @@ local function row(r)
  local p=r.p;local s=surface(p)
  return {mesh=p.MeshId,material=p.Material.Name,materialVariant=p.MaterialVariant,texture=p.TextureID,reflectance=p.Reflectance,tint=rgb(s.Color),colorMap=s.ColorMapContent.Uri,alpha=s.AlphaMode.Name,windRole=p:GetAttribute("RSWindRigRole") or "",windVersion=r.m:GetAttribute("RSWindRigVersion") or 0,doubleSided=p.DoubleSided,castShadow=p.CastShadow}
 end
-local baseline={};local resultRows={}
+local baseline={};local resultRows={};local samples={}
 for id,r in targets do
  if not verify then
   baseline[id]=row(r)
-  if cfg.mode=="apply" then assert(canon(baseline[id])==canon(cfg.expectedBefore[id]),"Canopy baseline "..id) end
+  if cfg.mode=="apply" then assert(hash(canon(baseline[id]))==cfg.expectedBefore[id],"Canopy baseline "..id) end
   local old=r.sa;local tint=old.Color;local name=old.Name
   local s=template:Clone();s.Name=name;s.Color=tint
   old:Destroy();s.Parent=r.p
@@ -112,13 +112,16 @@ for id,r in targets do
  assert(s.ColorMapContent.Uri==uri and s.AlphaMode==Enum.AlphaMode.Transparency and p.Material==material and p.MaterialVariant=="" and p.TextureID=="" and p.Reflectance==0,"Material result "..id)
  noMaps(s)
  assert(r.m:GetAttribute("RSWindRigVersion")==1 and p:GetAttribute("RSWindRigRole")=="Canopy","Wind role")
- resultRows[id]=row(r)
- if cfg.mode~="preview" then assert(canon(resultRows[id])==canon(cfg.expectedAfter[id]),"Reviewed appearance "..id) end
+ local actual=row(r)
+ if not samples[r.species] then samples[r.species]=actual end
+ resultRows[id]=hash(canon(actual))
+ if cfg.mode~="preview" then assert(resultRows[id]==cfg.expectedAfter[id],"Reviewed appearance "..id) end
+ if not verify then baseline[id]=hash(canon(baseline[id])) end
 end
 assert(fingerprint()==fp,"Unrelated geometry or scene changed")
 assert(hash(canon({lightingState(),workspaceSettings()}))==env,"Lighting or environment changed")
 local after=terrainState();for i,r in after do assert(r.digest==before[i].digest,"Terrain changed") end
-local result={counts=counts,species=species,changed=250,texture=uri,material=material.Name,meshPartsAdded=0,geometryUnchanged=true,fingerprint=fp,environment=env,terrain=after,before=baseline,after=resultRows,clientRenderVerified=false,uvVisualVerified=false}
+local result={counts=counts,species=species,changed=250,texture=uri,material=material.Name,meshPartsAdded=0,geometryUnchanged=true,fingerprint=fp,environment=env,terrain=after,before=baseline,after=resultRows,samples=samples,clientRenderVerified=false,uvVisualVerified=false}
 if cfg.mode=="apply" then
  assert(cfg.confirmStaging and game.PlaceVersion==22,"Publish guard")
  A:SavePlaceAsync({SaveWithoutPublish=false});result.saved=true
