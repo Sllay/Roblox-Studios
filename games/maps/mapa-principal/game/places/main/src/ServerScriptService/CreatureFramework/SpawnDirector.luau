@@ -183,7 +183,7 @@ function D.step(s:any,dt:number,now:number)
     r.deathAt=now;adapter:beginDeath()
     if r.foodKey then s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil end
    end
-   local age=now-r.deathAt
+   local age=now-r.deathAt;adapter:deathStep(age)
    if age>=5 then D.remove(s,id,now)
    elseif age>=4 then adapter.mesh.Transparency=math.clamp(age-4,0,1) end
    continue
