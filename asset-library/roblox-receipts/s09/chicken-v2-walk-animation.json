@@ -1,7 +1,7 @@
 {
   "id": "chicken-v2-walk-animation",
   "sha256": "1c9946ef5cfb4df315d58df2a1feb71e8db140219750a20363843d611f448a29",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "noPlaceWrites": true,
   "source": "asset-library/candidates/chicken-rig-43578265487-1/native-animations/walk.rbxmx",
@@ -11,5 +11,31 @@
     "operationId": "2f1c7b97-025d-4bcd-a4cc-56d5df372122",
     "done": false
   },
-  "operationPath": "operations/2f1c7b97-025d-4bcd-a4cc-56d5df372122"
+  "operationPath": "operations/2f1c7b97-025d-4bcd-a4cc-56d5df372122",
+  "operation": {
+    "path": "operations/2f1c7b97-025d-4bcd-a4cc-56d5df372122",
+    "operationId": "2f1c7b97-025d-4bcd-a4cc-56d5df372122",
+    "done": true,
+    "response": {
+      "path": "assets/128847740648973",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-14T09:23:02.465Z",
+      "assetId": "128847740648973",
+      "displayName": "Black Islands Chicken V2 Walk",
+      "description": "Original Chicken V2 Walk, rig asset 76960331636475",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "128847740648973"
 }
