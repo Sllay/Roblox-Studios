@@ -33,6 +33,7 @@ jobs:
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python tools/s081_mixed_resources.py --publish --reviewed dist/s081-reviewed/preview.json
+      # One write only; a timed-out read is safe to retry, but an ambiguous write is not.
       - uses: actions/upload-artifact@v4
         if: always()
         with:

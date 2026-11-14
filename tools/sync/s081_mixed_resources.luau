@@ -359,6 +359,7 @@ for i,r in after do assert(r.digest==before[i].digest,"Terrain modified "..r.id)
 assert(fingerprint(false)==fp,"Unrelated scene changed")
 local result={counts=c,tiles=tiles,selection=selectionReport,removed=removed,legacyMeshIds=legacyIds,resourcePlanDigest=digest,tree=treeInfo,treeSite=site,maxSupportGap=maxGap,maxVerticalShift=maxShift,scaleAdjusted=adjusted,rejectedCandidates=rejected,terrain=after,nonResourceFingerprint=fp,originalNonResource=originalFp,clientRenderVerified=false,readyForStaging=true}
 if cfg.mode=="apply" then
+ assert(game.PlaceVersion==19,"Staging version changed before save")
  assert(digest==cfg.expectedDigest and treeInfo.digest==cfg.expectedTreeDigest,"Reviewed plan differs")
  assert(q(site.x)==q(cfg.expectedSite.x) and q(site.z)==q(cfg.expectedSite.z),"Reviewed central site differs")
  A:SavePlaceAsync({SaveWithoutPublish=false})

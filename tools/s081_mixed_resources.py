@@ -17,32 +17,40 @@ def main():
             try:
                 return task(target,key,src,read_version=version,compile_source=True,mode=mode,assets=reg["props"],**extra)
             except WorkspaceError as e:
-                if "HTTP 429:" not in str(e) or delay is None or mode=="apply":raise
+                if delay is None or mode=="apply" or not any(x in str(e) for x in ("HTTP 429:","Cloud task timed out","HTTP 502:","HTTP 503:")):raise
                 time.sleep(delay)
-    version=latest(target,key);require(version==19,"Expected staging v19; reconcile if head changed")
-    preview=native("preview",version)
+    def head():
+        # Retrying a read-only session cannot duplicate a place save.
+        for delay in (10,20,None):
+            try:return latest(target,key)
+            except WorkspaceError as e:
+                if delay is None or not any(x in str(e) for x in ("Cloud task timed out","HTTP 429:","HTTP 503:","HTTP 502:")):raise
+                print(f"Read-only head probe interrupted; retry in {delay}s",flush=True);time.sleep(delay)
+    version=head();require(version==19,"Expected staging v19; reconcile if head changed")
+    # The live apply independently recomputes and checks every reviewed placement,
+    # terrain digest and unrelated-scene fingerprint. Avoid a second preview session
+    # immediately before the write; the reviewed artifact is already native-verified.
+    if a.publish:
+        require(a.reviewed is not None,"Reviewed preview required")
+        preview=read(a.reviewed)
+    else:preview=native("preview",version)
     write(out/"preview.json",preview)
     require(preview["loadedVersion"]==19 and preview["noPlaceWrites"] and preview["readyForStaging"] and preview["removed"]==1000,"Preview contract")
     require(preview["counts"]=={"Stone":{"legacy":250,"v1":250},"Stick":{"legacy":250,"v1":250}} and preview["maxSupportGap"]<=.22 and len(preview["terrain"])==49,"Preview validation")
     print("S081_PREVIEW",json.dumps({k:v for k,v in preview.items() if k!="terrain"}),flush=True)
     if not a.publish:return
-    require(a.reviewed is not None,"Reviewed preview required")
-    reviewed=read(a.reviewed)
-    for k in ("resourcePlanDigest","tree","treeSite","nonResourceFingerprint","originalNonResource","terrain","counts","legacyMeshIds"):
-        require(preview[k]==reviewed[k],"Reviewed preview mismatch "+k)
     opts=dict(expectedDigest=preview["resourcePlanDigest"],expectedTreeDigest=preview["tree"]["digest"],expectedSite=preview["treeSite"],expectedNonResource=preview["nonResourceFingerprint"],originalNonResource=preview["originalNonResource"],expectedTerrain={r["id"]:r["digest"] for r in preview["terrain"]},legacyMeshIds=preview["legacyMeshIds"])
-    require(latest(target,key)==19,"Head changed before save")
     receipt={"status":"started","beforeVersion":19,"retryAllowed":False,"resourcePlanDigest":opts["expectedDigest"]}
     atomic_json(out/"publication-receipt.json",receipt)
     try:
         saved=native("apply",confirmStaging=True,journal=out/"cloud-task.json",**opts)
         require(saved["saved"] and saved["loadedVersion"]==19,"Save receipt")
-        version=latest(target,key);require(version==20,"Expected staging v20")
+        version=head();require(version==20,"Expected staging v20")
         receipt.update(status="saved_pending_verification",afterVersion=version);atomic_json(out/"publication-receipt.json",receipt)
         proof=native("verify",version,**opts)
         write(out/"verification.json",proof)
         require(proof["verified"] and proof["loadedVersion"]==version and proof["noPlaceWrites"],"Persisted verification")
-        require(latest(target,key)==version,"Head changed after verification")
+        require(head()==version,"Head changed after verification")
         receipt.update(status="verified",controllerState=proof["controllerState"],counts=proof["counts"]);atomic_json(out/"publication-receipt.json",receipt)
         print("S081_PUBLISHED_VERIFIED",json.dumps({"receipt":receipt,"tree":proof["tree"],"tiles":proof["tiles"]}),flush=True)
     except Exception:
