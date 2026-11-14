@@ -5,13 +5,15 @@
     620,
     920
   ],
+  "hungerAfter": 0.676399999999999,
+  "universeId": "10769712441",
   "placeId": "93428341652658",
   "passed": true,
   "final": 15,
-  "universeId": "10769712441",
-  "noPlaceWrites": true,
   "ok": true,
+  "noPlaceWrites": true,
   "serviceSpawned": 4,
+  "foodConsumed": 1,
   "clockMode": "synthetic_monotonic_seconds",
   "chunks": {
     "emerald_valley/chunk--1-0": 2,
@@ -25,6 +27,6 @@
     "emerald_valley/chunk-1-0": 1
   },
   "children": 15,
-  "attempts": 21,
+  "attempts": 22,
   "loadedVersion": 25
 }
