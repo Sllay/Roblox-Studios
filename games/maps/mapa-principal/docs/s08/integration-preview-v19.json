@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "fd9b309cb948489458da73130e48e400c3c61f1d",
+  "runId": 43535447431,
+  "artifactId": 14089640171,
+  "workflowConclusion": "success",
+  "scope": "disposable historical staging session; no Place writes",
+  "terrainRegionCount": 49,
+  "terrainHashesUnchanged": true,
+  "registryStatus": "candidate-only",
+  "publicationAuthorized": false,
+  "universeId": "10769712441",
+  "tint": {
+    "Canopy_White": {
+      "uri": "rbxassetid://89626593244521",
+      "color": [
+        1,
+        0.3137255012989044,
+        0.5490196347236633
+      ]
+    },
+    "Canopy_Gray": {
+      "uri": "rbxassetid://109528136250293",
+      "color": [
+        0.47058823704719543,
+        0.1568627506494522,
+        0.7843137383460999
+      ]
+    }
+  },
+  "readyForVisualReview": true,
+  "loadedAssets": {
+    "Stone": true,
+    "Log": true,
+    "Eggydrasil": true,
+    "Branch": true
+  },
+  "nonResourceFingerprint": "Lfe+OZ71NorhdnZpgcBIFdZlrTNcRhR+/nXaRxDiiXE=",
+  "resourceFailures": 0,
+  "counts": {
+    "Stone": 1000,
+    "Branch": 1000
+  },
+  "scaleAdjustments": [
+    {
+      "finalGap": 0.21449256896972657,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-0--1:0072",
+      "size": [
+        2.6712019443511963,
+        0.3247508704662323,
+        0.8961731791496277
+      ],
+      "multiplier": 0.8,
+      "initialGap": 0.24150634765625
+    },
+    {
+      "finalGap": 0.20989967346191407,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-0--1:0156",
+      "size": [
+        4.311007022857666,
+        0.524109959602356,
+        1.4463186264038086
+      ],
+      "multiplier": 0.95,
+      "initialGap": 0.22044158935546876
+    },
+    {
+      "finalGap": 0.21776939392089845,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-0-0:0022",
+      "size": [
+        3.7654740810394287,
+        0.45778682827949524,
+        1.263295292854309
+      ],
+      "multiplier": 0.85,
+      "initialGap": 0.27959800720214845
+    },
+    {
+      "finalGap": 0.206502685546875,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-0-0:0038",
+      "size": [
+        2.807969570159912,
+        0.341378390789032,
+        0.9420579075813293
+      ],
+      "multiplier": 0.8,
+      "initialGap": 0.3153436279296875
+    },
+    {
+      "finalGap": 0.15328765869140626,
+      "supportPlaneFitted": true,
+      "id": "s07:Branch:chunk-0-0:0055",
+      "size": [
+        3.609528064727783,
+        0.4388277232646942,
+        1.210976243019104
+      ],
+      "multiplier": 1,
+      "initialGap": 0.30437637329101563
+    },
+    {
+      "finalGap": 0.2065775489807129,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1--1:0095",
+      "size": [
+        3.6293234825134277,
+        0.4412343502044678,
+        1.2176175117492676
+      ],
+      "multiplier": 0.85,
+      "initialGap": 0.2587964630126953
+    },
+    {
+      "finalGap": 0.2000310516357422,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1--1:0098",
+      "size": [
+        2.9300107955932617,
+        0.3562155067920685,
+        0.9830020070075989
+      ],
+      "multiplier": 0.85,
+      "initialGap": 0.26032806396484376
+    },
+    {
+      "finalGap": 0.20146347045898438,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-0:0002",
+      "size": [
+        3.415330171585083,
+        0.41521817445755005,
+        1.1458239555358887
+      ],
+      "multiplier": 0.9,
+      "initialGap": 0.27658058166503907
+    },
+    {
+      "finalGap": 0.19990039825439454,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-0:0010",
+      "size": [
+        2.8767383098602295,
+        0.3497389554977417,
+        0.9651294946670532
+      ],
+      "multiplier": 0.85,
+      "initialGap": 0.26949716567993165
+    },
+    {
+      "finalGap": 0.20930362701416017,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-0:0048",
+      "size": [
+        3.2355270385742188,
+        0.39335861802101135,
+        1.0855010747909546
+      ],
+      "multiplier": 0.95,
+      "initialGap": 0.22704673767089845
+    },
+    {
+      "finalGap": 0.19837738037109376,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-0:0058",
+      "size": [
+        3.137887716293335,
+        0.3814881145954132,
+        1.052743673324585
+      ],
+      "multiplier": 0.8,
+      "initialGap": 0.28811527252197267
+    },
+    {
+      "finalGap": 0.20286155700683595,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-0:0060",
+      "size": [
+        3.71789288520813,
+        0.4520021677017212,
+        1.2473320960998535
+      ],
+      "multiplier": 0.85,
+      "initialGap": 0.28709388732910157
+    },
+    {
+      "finalGap": 0.2162969207763672,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-0:0066",
+      "size": [
+        4.270571231842041,
+        0.5191939473152161,
+        1.4327526092529297
+      ],
+      "multiplier": 0.95,
+      "initialGap": 0.22529388427734376
+    },
+    {
+      "finalGap": 0.2187373733520508,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-0:0087",
+      "size": [
+        4.062221527099609,
+        0.49386388063430786,
+        1.3628524541854858
+      ],
+      "multiplier": 0.9,
+      "initialGap": 0.24476696014404298
+    },
+    {
+      "finalGap": 0.20781732559204102,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-0:0096",
+      "size": [
+        3.634813070297241,
+        0.4419017434120178,
+        1.2194592952728271
+      ],
+      "multiplier": 0.8,
+      "initialGap": 0.3075034713745117
+    },
+    {
+      "finalGap": 0.21692825317382813,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-1:0029",
+      "size": [
+        3.7595877647399902,
+        0.4570712149143219,
+        1.2613204717636108
+      ],
+      "multiplier": 0.95,
+      "initialGap": 0.24926925659179688
+    },
+    {
+      "finalGap": 0.21283126831054688,
+      "supportPlaneFitted": false,
+      "id": "s07:Branch:chunk-1-1:0063",
+      "size": [
+        3.0251824855804443,
+        0.3677860200405121,
+        1.0149316787719727
+      ],
+      "multiplier": 0.85,
+      "initialGap": 0.25985694885253907
+    }
+  ],
+  "maxSupportGap": 0.2188146209716797,
+  "treeSite": {
+    "bounds": [
+      58.494720458984375,
+      60,
+      52.704864501953125
+    ],
+    "position": [
+      -88,
+      35.08984375,
+      360
+    ],
+    "height": 60,
+    "pivot": [
+      -88,
+      65.08984375,
+      360,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1
+    ],
+    "scale": 1.1820749044418335
+  },
+  "terrainRehydratedBlocks": 144,
+  "noPlaceWrites": true,
+  "placeId": "93428341652658",
+  "clientRenderVerified": false,
+  "treeSitesTried": 1400,
+  "failures": [],
+  "maxVerticalShift": 0.24349998474121093,
+  "resourcePlanDigest": "zJdAWBO01ZyaCOdSlFzm7BCty3kWru9eMMrvuL4G7lw=",
+  "loadedVersion": 19
+}
