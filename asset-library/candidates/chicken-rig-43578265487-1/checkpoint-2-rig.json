@@ -1,0 +1,32 @@
+{
+  "sourceSha256": "4c96eb027d4954e1c2fdc1b8a9a8ee4329f0e8c4c4185211a652b9e86d46d0d1",
+  "glbSha256": "ea0ebd42c7ea7a6b7ec6bf7c976edb2a1e91e205f83a017b21c9e5bc48121466",
+  "triangles": 3120,
+  "renderMeshes": 1,
+  "renderPrimitives": 1,
+  "materials": 1,
+  "verticesExported": 7620,
+  "bones": 14,
+  "weightMaxError": 0.0,
+  "stanceAnchorMaxError": 1.3113021850308382e-07,
+  "peckFootAnchorMaxError": 1.6093254089077913e-07,
+  "minimumAnimatedVertexZ": -1.3135947085629596e-07,
+  "peckBeakMinimumZ": 0.05998122692108154,
+  "clips": [
+    "Idle",
+    "Walk",
+    "Run",
+    "Peck",
+    "Flap"
+  ],
+  "clipFrames": {
+    "Idle": 48,
+    "Walk": 24,
+    "Run": 18,
+    "Peck": 30,
+    "Flap": 30
+  },
+  "fps": 24,
+  "restTriangleParity": true,
+  "robloxImported": false
+}

@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "ddc15ff269704dc5cc80d014aa8d41d3c83ba0cc",
+  "runId": "43578265487",
+  "files": [
+    {
+      "path": "checkpoint-1-atlas.json",
+      "bytes": 331,
+      "sha256": "a6947d1ead9601531828197fe2ca13493a309e6e1220b3c0aaf14932d99fa7d8"
+    },
+    {
+      "path": "checkpoint-2-rig.json",
+      "bytes": 769,
+      "sha256": "1ce7b51132e1fc390950aa39f75751753545a70920f1e1d3dfdd846b0460abfb"
+    },
+    {
+      "path": "chicken-albedo.png",
+      "bytes": 31343,
+      "sha256": "1c079c2d01160aa0bdde06db72731a6dee0facbc64d3ac6f43171da2190bd233"
+    },
+    {
+      "path": "chicken-v2-rig.blend",
+      "bytes": 1779272,
+      "sha256": "946584052cad2943396beffade5c8caf59d1c47378b9d9e13ccad4f60bf54599"
+    },
+    {
+      "path": "chicken-v2-rig.glb",
+      "bytes": 520152,
+      "sha256": "ea0ebd42c7ea7a6b7ec6bf7c976edb2a1e91e205f83a017b21c9e5bc48121466"
+    },
+    {
+      "path": "flap.png",
+      "bytes": 184834,
+      "sha256": "95f05bd02a1f8c34acde0317193abd8f68e33f955a4fbb91ea4a51d5058d39d0"
+    },
+    {
+      "path": "idle.png",
+      "bytes": 182106,
+      "sha256": "c13b57ace9503cafbf7dc557cd7d9cef6040c7e840b89406264dc7b4f0400bd8"
+    },
+    {
+      "path": "peck.png",
+      "bytes": 172816,
+      "sha256": "6305e22f2a1b10f040922f5ebe42ef05b59a10f2df70452c0610c971f2cdd598"
+    },
+    {
+      "path": "report.json",
+      "bytes": 1261,
+      "sha256": "fdb4bf65d8c75c7194ae651b55974b3cd41f62de2e9f1303a55913dfaecba8fa"
+    },
+    {
+      "path": "run.png",
+      "bytes": 179905,
+      "sha256": "fbc65e411cccb05cc6502d7e985a26b11118d40ca6bcf6e9b6d1da145d81c0bf"
+    },
+    {
+      "path": "walk.png",
+      "bytes": 181313,
+      "sha256": "97ddd156e65856001984bdc004b96b7d8cefa6175bd74410febf4f86ffb77e35"
+    }
+  ]
+}
