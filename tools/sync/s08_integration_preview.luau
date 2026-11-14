@@ -1,4 +1,4 @@
--- S08 isolated integration preview. No save or terrain writes.
+-- S08 isolated integration preview. No save; temporary exact voxel rehydration only.
 local W=workspace
 local T=W.Terrain
 local F=W:FindFirstChild("RSResourcesP45") and W.RSResourcesP45:FindFirstChild("Models")
@@ -58,6 +58,28 @@ local function ground(x,z)
  local h=W:Raycast(Vector3.new(x,512,z),Vector3.new(0,-1024,0),ray)
  if h and (h.Material==Enum.Material.Grass or h.Material==Enum.Material.Ground) then return h end
 end
+-- Historical Open Cloud sessions load voxels without a usable terrain collision mesh.
+-- Rehydrate exact channels in playable regions only, following the proven S06/S07 method.
+local channels={"SolidMaterial","SolidOccupancy","LiquidOccupancy"}
+local function write(region,d) T:WriteVoxelChannels(region,4,{SolidMaterial=d.SolidMaterial,SolidOccupancy=d.SolidOccupancy,LiquidOccupancy=d.LiquidOccupancy}) end
+local rehydrated=0
+for _,r in cfg.regions do
+ if r.playable then
+  local b=r.bounds
+  for x=b[1],b[4]-64,64 do
+   for z=b[3],b[6]-64,64 do
+    local region=Region3.new(Vector3.new(x,b[2],z),Vector3.new(x+64,b[5],z+64))
+    local original=T:ReadVoxelChannels(region,4,channels)
+    local empty=T:ReadVoxelChannels(region,4,channels)
+    for i=1,16 do for j=1,(b[5]-b[2])/4 do for k=1,16 do
+     empty.SolidMaterial[i][j][k]=Enum.Material.Air;empty.SolidOccupancy[i][j][k]=0;empty.LiquidOccupancy[i][j][k]=0
+    end end end
+    write(region,empty);write(region,original);rehydrated+=1
+   end
+  end
+ end
+end
+task.wait(1)
 local counts={Stone=0,Branch=0};local seen={};local saved={};local failures={};local failCount=0
 local function fail(id,why)
  failCount+=1;if #failures<50 then table.insert(failures,{id=id,reason=why}) end
@@ -110,6 +132,7 @@ local wood=tree:FindFirstChild("Wood_V4",true);assert(wood and wood:IsA("MeshPar
 local siteParams=OverlapParams.new();siteParams.FilterType=Enum.RaycastFilterType.Include;siteParams.FilterDescendantsInstances={F,W.RSVegetationS06.Collisions};siteParams.MaxParts=1
 for _,region in cfg.regions do
  if site then break end
+ if not region.playable then continue end
  local b=region.bounds
  for x=b[1]+24,b[4]-24,16 do
   if site then break end
@@ -153,4 +176,4 @@ for _,m in templates do m:Destroy() end
 local after=terrainState();assert(#before==49 and #after==49,"Terrain coverage")
 for i,r in after do assert(r.digest==before[i].digest,"Terrain changed") end
 assert(fingerprint()==fp,"Non-resource scene changed")
-return syncResult({noPlaceWrites=true,counts=counts,loadedAssets=loaded,resourceFailures=failCount,failures=failures,maxVerticalShift=maxShift,maxSupportGap=maxGap,terrain=after,nonResourceFingerprint=fp,treeSite=site,treeSitesTried=tried,tint=tint,clientRenderVerified=false,readyForVisualReview=failCount==0 and site~=nil})
+return syncResult({noPlaceWrites=true,terrainRehydratedBlocks=rehydrated,counts=counts,loadedAssets=loaded,resourceFailures=failCount,failures=failures,maxVerticalShift=maxShift,maxSupportGap=maxGap,terrain=after,nonResourceFingerprint=fp,treeSite=site,treeSitesTried=tried,tint=tint,clientRenderVerified=false,readyForVisualReview=failCount==0 and site~=nil})
