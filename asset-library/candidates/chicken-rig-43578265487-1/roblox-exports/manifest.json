@@ -1,0 +1,48 @@
+{
+  "chicken-v2-base.glb": {
+    "sha256": "3d4c122b34e9fee090bb1ba53809b1d13a7dcde190e82bff627619fbee169723",
+    "bytes": 450428,
+    "clips": [],
+    "sourceParity": true
+  },
+  "chicken-v2-idle.glb": {
+    "sha256": "eb655339edd2eb4d30723fb778351a83e3f61d008bba7e9595cfd8f653269201",
+    "bytes": 463252,
+    "clips": [
+      "Idle"
+    ],
+    "sourceParity": true
+  },
+  "chicken-v2-walk.glb": {
+    "sha256": "7cbe51194ac1579f845bbf42e40a5ceb09e1c68deadb455e7a405bda8da4b3b4",
+    "bytes": 465268,
+    "clips": [
+      "Walk"
+    ],
+    "sourceParity": true
+  },
+  "chicken-v2-run.glb": {
+    "sha256": "1308911472b575659530366f9dea7e99fa9eadc4fb21fd905995e0074bdea41b",
+    "bytes": 464120,
+    "clips": [
+      "Run"
+    ],
+    "sourceParity": true
+  },
+  "chicken-v2-peck.glb": {
+    "sha256": "e7869f70d82aa9b562349a9540de29730f27d98bfba3c30c1311555d111148d3",
+    "bytes": 466424,
+    "clips": [
+      "Peck"
+    ],
+    "sourceParity": true
+  },
+  "chicken-v2-flap.glb": {
+    "sha256": "c7fb3f786c0beb294274b2ee21d6b80775b288f4a9b38f0791cf91bda1ceb566",
+    "bytes": 462788,
+    "clips": [
+      "Flap"
+    ],
+    "sourceParity": true
+  }
+}
