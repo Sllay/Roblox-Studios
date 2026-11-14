@@ -9,7 +9,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
  local self:any={peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
- mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false
+ mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=true
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={model};ray.IgnoreWater=false
  local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16;overlap.RespectCanCollide=true
  local groundRay=RaycastParams.new();groundRay.FilterType=Enum.RaycastFilterType.Include;groundRay.FilterDescendantsInstances={world.Terrain};groundRay.IgnoreWater=false
