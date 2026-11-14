@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Blender
-        run: sudo apt-get update && sudo apt-get install -y blender xvfb
+        run: sudo apt-get update && sudo apt-get install -y blender xvfb python3-numpy python3-pil python3-scipy libgl1-mesa-dri
       - name: Author, render and verify GLB
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
