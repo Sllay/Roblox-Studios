@@ -3,7 +3,7 @@
 local S={}
 local Players=game:GetService("Players")
 local RADIUS=500
-local AIM_RANGE=8
+local AIM_RANGE=12
 local function characterRoot(player:Player):BasePart?
  local c=player.Character;local h=if c then c:FindFirstChildWhichIsA("Humanoid") else nil
  local root=if c then c:FindFirstChild("HumanoidRootPart") else nil
@@ -15,6 +15,7 @@ local function aimedRecord(s:any,player:Player,direction:any):string?
  local head=c:FindFirstChild("Head");if not head or not head:IsA("BasePart") then return nil end
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={c};ray.IgnoreWater=false
  local hit=workspace:Raycast(head.Position,direction.Unit*AIM_RANGE,ray)
+ if not hit then hit=workspace:Spherecast(head.Position,.35,direction.Unit*AIM_RANGE,ray) end
  if not hit then return nil end
  local m=hit.Instance:FindFirstAncestorOfClass("Model")
  while m do
