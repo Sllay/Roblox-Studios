@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "a82a992136b834ee0ecf7f42afe00ef983a26f22",
+  "runId": "43576726729",
+  "files": [
+    {
+      "path": "asset.blend",
+      "bytes": 1035000,
+      "sha256": "dbcb52f8e54ac015ddf60777e3b7197f4895377f88d3fd53e82aef2b1ac8d4e9"
+    },
+    {
+      "path": "asset.glb",
+      "bytes": 164756,
+      "sha256": "1a9072b1c40603e28762e04cb1eca13a9e5a4eed18ffd0800b42c74108dfd164"
+    },
+    {
+      "path": "back.png",
+      "bytes": 285039,
+      "sha256": "51b72e72f6d1c4579c70952db023b1fafd2659d1a8eb24aba77ac1a61aa28e29"
+    },
+    {
+      "path": "front.png",
+      "bytes": 292026,
+      "sha256": "e42b5aa7620674364bd3e8bdcff57e669b5f3226e278d86a227e51d2ce2d1d7c"
+    },
+    {
+      "path": "left.png",
+      "bytes": 296176,
+      "sha256": "c7921377b0a42b7674d5b4b42762ed56156fbb6d1ac2c3483a79b4bd3f27c5f2"
+    },
+    {
+      "path": "report.json",
+      "bytes": 694,
+      "sha256": "1f0c2da9492b73f9d40a365f3f0bb84be45ad0acda512c0200e5984f02eda91b"
+    },
+    {
+      "path": "right.png",
+      "bytes": 298394,
+      "sha256": "8f480dd1e3f77691fb3812630e46599c2231d6881001bea80b037219ae459598"
+    },
+    {
+      "path": "three-quarter.png",
+      "bytes": 302103,
+      "sha256": "27fc25896e08179b867316d2cb43cb39b6b86fa90d66cc3238e53c0851f192ff"
+    },
+    {
+      "path": "top.png",
+      "bytes": 288042,
+      "sha256": "913acec8f9cae662d149468b2eab734bf937f0df73003d041d10710810ef5d91"
+    }
+  ]
+}
