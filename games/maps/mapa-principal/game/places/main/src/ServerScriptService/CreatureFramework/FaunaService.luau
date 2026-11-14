@@ -3,7 +3,7 @@
 local F={}
 function F.new(deps:any,template:Model,parent:Instance,seed:number):any
  local players=game:GetService("Players")
- local function nearest(p:Vector3):any
+ local function nearest(p:Vector3):(any,number)
   local best=nil;local distance=math.huge
   for _,player in players:GetPlayers() do
    local character=player.Character
