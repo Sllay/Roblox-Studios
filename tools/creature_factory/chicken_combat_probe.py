@@ -8,7 +8,7 @@ from deploy import load_all,resolve
 from s08_prop_intake import write,commit
 def main():
     folder=ROOT/"games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework"
-    files={"Registry":"CreatureRegistry","Passive":"MobBrain","Kernel":"AIKernel","Escape":"EscapePlanner","Agent":"AgentRuntime","Adapter":"RobloxMobAdapter","Profiles":"CombatProfiles","Brain":"CombatBrain","Rules":"CombatRules","Grid":"CombatSpatialIndex","Targets":"CombatTargets","World":"CombatWorld","CombatAdapter":"CombatAdapter"}
+    files={"Registry":"CreatureRegistry","Passive":"MobBrain","Kernel":"AIKernel","Escape":"EscapePlanner","Agent":"AgentRuntime","Adapter":"RobloxMobAdapter","Profiles":"CombatProfiles","Brain":"CombatBrain","Rules":"CombatRules","Grid":"CombatSpatialIndex","Targets":"CombatTargets","World":"CombatWorld","CombatAdapter":"CombatAdapter","Factory":"CreatureAgentFactory"}
     dispatch="do\n"+"\n".join("local "+k+"=(function()\n"+(folder/(v+".luau")).read_text()+"\nend)()" for k,v in files.items())+"\n"+(ROOT/"tools/sync/s095_f_native.luau").read_text()+"\nend"
     g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging")
     for i in range(4):

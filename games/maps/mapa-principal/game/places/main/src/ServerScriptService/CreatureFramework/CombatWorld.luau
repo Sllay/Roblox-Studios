@@ -77,11 +77,16 @@ function W.attack(s:any,attackerId:string,targetId:string,profile:any,token:numb
  local from,to=a.getPosition(),t.getPosition();local distance=(to-from).Magnitude
  if profile.kind=="Ranged" and #s.projectiles>=s.maxProjectiles then return false end
  if not s.rules.authorize(a.attackMemory,profile,a,t,token,now,distance,W.visibleFrom(s,from,t,a.model)) then return false end
- if profile.kind=="Melee" then t.applyDamage(a.damage,a.id);return true end
+ if profile.kind=="Melee" then
+  t.applyDamage(a.damage,a.id)
+  if profile.preyOnly and t.prey and not t.alive then a.hunger=math.max(0,(a.hunger or 1)-.8) end
+  return true
+ end
  local flight=math.max(.08,distance/profile.projectileSpeed)
  local gravity=Vector3.new(0,-s.world.Gravity*.25,0)
  local velocity=(to-from-gravity*(.5*flight*flight))/flight
- table.insert(s.projectiles,{attackerId=a.id,targetId=t.id,position=from,velocity=velocity,gravity=gravity,age=0,lifetime=math.min(3,flight+.75),damage=a.damage,exclude=a.model})
+ local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances={a.model};params.IgnoreWater=false
+ table.insert(s.projectiles,{params=params,attackerId=a.id,targetId=t.id,position=from,velocity=velocity,gravity=gravity,age=0,lifetime=math.min(3,flight+.75),damage=a.damage,exclude=a.model})
  return true
 end
 function W.step(s:any,dt:number)
@@ -92,8 +97,7 @@ function W.step(s:any,dt:number)
   for i=#s.projectiles,1,-1 do
    local p=s.projectiles[i];p.age+=step
    local delta=p.velocity*step+p.gravity*(.5*step*step)
-   local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances={p.exclude};params.IgnoreWater=false
-   s.queries+=1;local hit=s.world:Raycast(p.position,delta,params)
+   s.queries+=1;local hit=s.world:Raycast(p.position,delta,p.params)
    if hit then
     local a,t=s.actors[p.attackerId],s.actors[p.targetId]
     if a and t and t.alive and a.faction~=t.faction and hit.Instance:IsDescendantOf(t.model) then t.applyDamage(p.damage,p.attackerId) end

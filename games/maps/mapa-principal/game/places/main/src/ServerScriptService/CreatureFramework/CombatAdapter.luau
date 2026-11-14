@@ -4,7 +4,9 @@ local C={}
 function C.new(base:any,actor:any,profile:any,world:any,worldModule:any,selector:any):any
  local self:any={base=base,actor=actor,profile=profile,world=world,current=nil,lastKnown=nil,clock=0,goal=nil,nextPlan=0,blocked=false,lastAttackToken=0}
  function self:sense(dt:number):any
-  self.clock+=dt;worldModule.update(world,actor.id)
+  self.clock+=dt
+  if profile.preyOnly then actor.hunger=math.min(1,(actor.hunger or 1)+math.clamp(dt,0,2)*.012) end
+  worldModule.update(world,actor.id)
   local candidates=worldModule.candidates(world,actor,profile)
   local best=selector.choose(candidates,actor.faction,profile,self.current,24)
   if best then self.current=best.id;self.lastKnown=world.actors[best.id].getPosition() end

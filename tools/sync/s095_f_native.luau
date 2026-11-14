@@ -15,7 +15,7 @@ local ok,err=pcall(function()
   World.register(world,a);return a
  end
  local predator=Profiles.get("Predator");local melee=Profiles.get("Melee");local ranged=Profiles.get("Ranged")
- local hunter=fixture("hunter","hunter",false,Vector3.new(0,150,0),5)
+ local hunter=fixture("hunter","hunter",false,Vector3.new(0,150,0),5);hunter.profile="Predator"
  local prey=fixture("prey","prey",true,Vector3.new(2.3,150,0),0)
  local nonprey=fixture("nonprey","npc",false,Vector3.new(0,150,2.2),0)
  local ally=fixture("ally","hunter",true,Vector3.new(0,150,-2.2),0)
@@ -27,6 +27,8 @@ local ok,err=pcall(function()
  assert(not World.attack(world,"hunter","prey",predator,1,2))
  assert(not World.attack(world,"hunter","prey",predator,2,.5))
  result.predator={preyHealth=prey.health,nonPreyHealth=nonprey.health,allyHealth=ally.health,duplicateRejected=true}
+ hunter.damage=20;assert(World.attack(world,"hunter","prey",predator,2,2) and not prey.alive and hunter.hunger<.4)
+ result.predator.satiated=true;result.predator.hunger=hunter.hunger
  -- Exercise the actual shared runtime / combat adapter, including cancellation on loss of LOS.
  local swordsman=fixture("swordsman","swordsman",false,Vector3.new(40,150,0),4)
  local target=fixture("target","target",false,Vector3.new(42.8,150,0),0)
@@ -76,14 +78,18 @@ local ok,err=pcall(function()
   if start then break end
  end
  assert(start and a:place(start),"no safe native fixture")
- local real=Agent.new(Passive,Kernel,a)
- local threat={position=start+Vector3.new(0,1.3,6),velocity=Vector3.zero,predator=true}
+ local realActor={id="realChicken",model=chicken,faction=species.faction,prey=true,profile=species.profile,alive=true,damage=0,getPosition=function()return a.mesh.Position end,healthRatio=function()return 1 end,applyDamage=function()end}
+ local real=Factory.new({profiles=Profiles,brain=Passive,combatBrain=Brain,agent=Agent,kernel=Kernel,combatWorld=World,combatAdapter=CombatAdapter,targetSelector=Targets},species,a,realActor,world)
+ assert(world.actors.realChicken==realActor)
+ hunter.move(start+Vector3.new(0,1.3,6))
+ local threat=World.predatorNear(world,start,22);assert(threat and threat.predator)
+ result.predator.actualThreat=true
  a:setThreat(threat);local state=Agent.step(real,.1);assert(state.intent.state=="Flee")
  local before=a:position();for i=1,15 do Agent.step(real,.1) end
  local after=a:position();local gain=(after-threat.position).Magnitude-(before-threat.position).Magnitude
  assert(gain>.4,"prey did not escape predator")
  result.chicken={state=state.intent.state,escapeGain=gain,moved=(after-before).Magnitude,groundError=math.abs(after.Y-a:ground(after.X,after.Z).Y)}
- Agent.destroy(real)
+ World.remove(world,"realChicken");Agent.destroy(real)
  result.queries=world.queries;result.passed=true
 end)
 result.ok=ok;if not ok then result.error=tostring(err):sub(1,500) end

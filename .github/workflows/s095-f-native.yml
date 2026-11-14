@@ -6,6 +6,7 @@ on:
       - 'tools/creature_factory/chicken_combat_probe.py'
       - 'tools/sync/s095_f_native.luau'
       - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/Combat*.luau'
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CreatureAgentFactory.luau'
   workflow_dispatch:
 permissions:
   contents: write

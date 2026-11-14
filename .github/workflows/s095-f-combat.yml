@@ -1,17 +1,10 @@
 name: S09.5-F native combat profiles
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tools/creature_factory/chicken_combat_probe.py'
-      - 'tools/sync/s095_f_native.luau'
-      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/Combat*.luau'
-      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CreatureAgentFactory.luau'
   workflow_dispatch:
 permissions:
   contents: write
 concurrency:
-  group: s095-f-combat
+  group: s095-f-native
   cancel-in-progress: false
 jobs:
   probe:
