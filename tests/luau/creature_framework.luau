@@ -131,7 +131,7 @@ getFail=false;assert(BP.load(book,session,2) and session.ledger.mobs["345678"])
 assert(not BP.flush(book,session,2) and session.dirty)
 writeFail=false;assert(BP.flush(book,session,4) and db.u_1.mobs["210080"].firstAt==20 and db.u_1.mobs["345678"])
 local b2=BP.new(B,R,store);local p2=BP.session(b2,1);assert(BP.load(b2,p2,0))
-local snap=BP.snapshot(b2,1,"Alphabetical",false);assert(snap.ready and snap.discovered==1 and snap.percent==100 and snap.rows[1].id==nil)
+local snap=BP.snapshot(b2,1,"Alphabetical",false);assert(snap.ready and snap.discovered==1 and snap.percent==100 and snap.rows[1].id==nil and snap.rows[1].key=="entry_1")
 assert(BP.snapshot(b2,1,"Discovery",true).rows[1].id=="210080")
 -- Unknown schema is not overwritten.
 db.u_2={schema=2,mobs={}};local p3=BP.session(book,2);assert(BP.discover(book,2,"210080","Kill","Natural",1));assert(not BP.load(book,p3,0) and not BP.flush(book,p3,0))

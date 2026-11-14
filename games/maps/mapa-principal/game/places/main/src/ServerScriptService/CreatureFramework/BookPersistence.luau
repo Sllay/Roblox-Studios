@@ -19,7 +19,7 @@ end
 function B.session(s:any,userId:number):any
  assert(userId>0 and userId%1==0 and userId<2^53,"invalid user")
  local p=s.sessions[userId]
- if not p then p={userId=userId,key="u_"..tostring(userId),ledger=s.core.new(),ready=false,dirty=false,revision=0,busy=false,retryAt=0,failures=0,leaving=false};s.sessions[userId]=p end
+ if not p then p={userId=userId,key="u_"..tostring(userId),ledger=s.core.new(),ready=false,dirty=false,revision=0,busy=false,retryAt=0,failures=0,leaving=false,handles={},nextHandle=0};s.sessions[userId]=p end
  return p
 end
 local function fail(p:any,now:number,err:any)
@@ -80,7 +80,10 @@ function B.snapshot(s:any,userId:number,order:string,developer:boolean):any
  local rows={}
  for _,species in s.core.ordered(p.ledger,all,order) do
   local row=s.registry.bookRow(species.id,developer)
-  if row then row.firstAt=p.ledger.mobs[species.id].firstAt;row.reason=p.ledger.mobs[species.id].reason;table.insert(rows,row) end
+  if row then
+   if not p.handles[species.id] then p.nextHandle+=1;p.handles[species.id]="entry_"..tostring(p.nextHandle) end
+   row.key=p.handles[species.id];row.firstAt=p.ledger.mobs[species.id].firstAt;row.reason=p.ledger.mobs[species.id].reason;table.insert(rows,row)
+  end
  end
  return {ready=p.ready,discovered=found,total=total,percent=percent,unknown=total-found,rows=rows,schema=1}
 end

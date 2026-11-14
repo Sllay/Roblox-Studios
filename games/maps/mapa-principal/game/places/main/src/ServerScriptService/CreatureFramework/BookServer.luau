@@ -40,7 +40,7 @@ function S.request(s:any,player:Player,op:any,value:any):any
 end
 function S.attach(s:any,id:string,record:any)
  if record.origin~="Natural" then return end
- local prompt=Instance.new("ProximityPrompt");prompt.Name="BookDiscover";prompt.ActionText="Conhecer";prompt.ObjectText="Galinha";prompt.MaxActivationDistance=8;prompt.HoldDuration=.5;prompt.RequiresLineOfSight=true;prompt.Parent=record.adapter.mesh
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="BookDiscover";prompt.ActionText="Conhecer";prompt.ObjectText=assert(s.deps.registry.get(record.speciesId)).name;prompt.MaxActivationDistance=8;prompt.HoldDuration=.5;prompt.RequiresLineOfSight=true;prompt.Parent=record.adapter.mesh
  prompt.Triggered:Connect(function(player)
   if prompt.Enabled and record.adapter.alive then s.deps.gameplay.interact(s.events,player,id,os.clock(),os.time()) end
  end)

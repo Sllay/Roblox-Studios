@@ -9,7 +9,7 @@ local ok,err=pcall(function()
  local c=assert(Registry.get("210080"))
  local view=View.new(guiFolder,{refresh=function()end,command=function()end})
  local function snapshot(dev)
-  local row=Registry.bookRow(c.id,dev)
+  local row=Registry.bookRow(c.id,dev);row.key="entry_1"
   return {ready=true,developer=dev,discovered=1,total=1,percent=100,unknown=0,rows={row}}
  end
  view:update(snapshot(false))

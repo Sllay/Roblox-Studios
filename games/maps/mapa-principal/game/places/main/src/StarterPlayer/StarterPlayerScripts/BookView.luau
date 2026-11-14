@@ -51,7 +51,8 @@ function V.new(parent:Instance,callbacks:any):any
   if not row then line(detail,"Empty","Descubra criaturas para preencher seu Book.",90,15);return end
   line(detail,"SpeciesName",row.name,32,20)
   local image=Instance.new("ImageLabel");image.Name="Preview";image.Size=UDim2.new(1,-8,0,150);image.BackgroundTransparency=1;image.ScaleType=Enum.ScaleType.Fit;image.Image=if row.previewAssetId then "rbxassetid://"..row.previewAssetId else "";image.LayoutOrder=#detail:GetChildren();image.Parent=detail
-  line(detail,"Category",row.category.." • "..row.disposition,28,13)
+  local disposition=if row.disposition=="Passive" then "Passivo" elseif row.disposition=="Neutral" then "Neutro" else "Agressivo"
+  line(detail,"Category",row.category.." • "..disposition,28,13)
   line(detail,"Biome","Bioma: "..table.concat(row.biomes,", "),36,13)
   line(detail,"Description",row.description,80,14)
   local a,b=row.stats.level1,row.stats.level10
@@ -74,7 +75,7 @@ function V.new(parent:Instance,callbacks:any):any
   for _,row in snap.rows do
    if self.filter~="Todos" and row.disposition~=self.filter then continue end
    first=first or row
-   if self.selected and self.selected.name==row.name then chosen=row end
+   if self.selected and self.selected.key==row.key then chosen=row end
    local b=button(list,"SpeciesRow",row.name,UDim2.new(1,-8,0,46),UDim2.new());b.LayoutOrder=#list:GetChildren();b.Activated:Connect(function()details(row)end)
   end
   if snap.unknown>0 then line(list,"Unknown",string.format("?  %d desconhecidos",snap.unknown),44,13) end
