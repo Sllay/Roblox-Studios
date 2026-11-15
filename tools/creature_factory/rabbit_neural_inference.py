@@ -2,7 +2,7 @@
 No remote inference and no upload of concept images to any model provider.
 Source and checkpoint are pinned; only public model files are downloaded.
 """
-import argparse, hashlib, json, os, sys, time, gc
+import argparse, hashlib, json, os, sys, time, gc, subprocess, tempfile
 from pathlib import Path
 import numpy as np
 from PIL import Image,ImageDraw
@@ -105,11 +105,34 @@ def extract(model,code,res):
     main.fix_normals()
     assert main.is_watertight,"Neural master has open boundary"
     return main,{"connectedComponents":len(comps),"retainedAreaFraction":ratio}
+def valid_reduction(master,m):
+    if not len(m.faces) or not m.is_watertight or not m.is_winding_consistent:
+        return False
+    if m.euler_number!=master.euler_number or len(m.split(only_watertight=False))!=1:
+        return False
+    return .95<=float(m.area/master.area)<=1.05
+
 def simplify(master,target):
+    # Blender's collapse decimator is a separate implementation. Never accept
+    # topology damage, or close arbitrary holes after an unsafe reduction.
+    with tempfile.TemporaryDirectory(prefix="rabbit-decimate-") as tmp:
+        tmp=Path(tmp); src=tmp/"source.npz"; dst=tmp/"result.npz"
+        np.savez(src,vertices=np.asarray(master.vertices),faces=np.asarray(master.faces))
+        script=Path(__file__).with_name("rabbit_neural_decimate.py")
+        proc=subprocess.run(["blender","-b","--factory-startup","--python-exit-code","1",
+            "--python",str(script),"--",str(src),str(dst),str(target)],
+            check=True,capture_output=True,text=True)
+        if not dst.exists():raise RuntimeError(proc.stdout[-3000:]+proc.stderr[-3000:])
+        data=np.load(dst)
+        m=trimesh.Trimesh(vertices=data["vertices"],faces=data["faces"],process=False)
+        m.fix_normals()
+        if valid_reduction(master,m):return m,"blender_collapse"
+    # Alternative backend: accept only if independent topology checks pass.
     v,f=fast_simplification.simplify(np.ascontiguousarray(master.vertices,dtype=np.float64),np.ascontiguousarray(master.faces,dtype=np.int32),target_count=min(target,len(master.faces)))
-    m=trimesh.Trimesh(vertices=v,faces=f,process=True);m.fix_normals()
-    assert m.is_watertight,"Reduced neural mesh has open boundary"
-    return m
+    m=trimesh.Trimesh(vertices=v,faces=f,process=False);m.fix_normals()
+    if valid_reduction(master,m):return m,"fast_simplification"
+    raise ValueError("No topology-preserving reduction at target "+str(target))
+
 def atlas_mesh(mesh,res):
     a=xatlas.Atlas();a.add_mesh(np.asarray(mesh.vertices,np.float32),np.asarray(mesh.faces,np.uint32))
     options=xatlas.PackOptions();options.resolution=res;options.padding=8;options.bilinear=True
@@ -182,10 +205,22 @@ def main():
     with torch.inference_mode():code=model([im],device="cpu")[0]
     print("extracting learned surface",flush=True);master,topology=extract(model,code,args.resolution)
     print("master",len(master.vertices),len(master.faces),topology,flush=True)
-    for target in (27000,24000,21000,18000):
-        mesh=simplify(master,target);vm,ix,uv=atlas_mesh(mesh,2048)
-        if len(vm)<=18200:break
-    assert len(vm)<=18200,("UV split budget",len(vm))
+    # Retain the original learned geometry even if later stages fail.
+    master.export(out/"neural-master.ply")
+    chosen=None
+    for target in (32000,30000,27000,24000,21000,18000):
+        try:
+            mesh,method=simplify(master,target);vm,ix,uv=atlas_mesh(mesh,2048)
+        except (ValueError,RuntimeError,subprocess.CalledProcessError) as e:
+            print("reduction rejected",target,str(e),flush=True);continue
+        print("reduction",method,target,"vertices",len(mesh.vertices),"UV vertices",len(vm),flush=True)
+        if len(vm)<=18200:
+            chosen=method;break
+    assert chosen is not None,"No valid watertight mesh within exported vertex budget"
+    topology["reductionMethod"]=chosen
+    topology["masterEuler"]=int(master.euler_number)
+    topology["runtimeEuler"]=int(mesh.euler_number)
+    topology["runtimeWatertight"]=bool(mesh.is_watertight)
     print("baking learned field into UV",len(vm),flush=True)
     coverage=bake(model,code,mesh,vm,ix,uv,out,2048)
     world,master_world,orientation=align(mesh,master)
