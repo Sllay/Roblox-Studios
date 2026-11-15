@@ -130,6 +130,10 @@ function S.request(s:any,player:Player,op:any,value:any):any
   local words={};for word in string.gmatch(value,"%S+") do table.insert(words,word) end
   if #words==1 and (words[1]=="/fly" or words[1]=="/ghost") then return mode(player,string.sub(words[1],2))
   elseif #words==1 and words[1]=="/god" then return gold(player)
+  elseif #words==2 and (words[1]=="/force" or words[1]=="force") and (words[2]=="migrate" or words[2]=="migration") then
+   local root=characterRoot(player);if not root then return {ok=false,error="no character"} end
+   local d=s.fauna.deps;local p=root.Position;local count=if d.ecologyState then d.ecology.force(d.ecologyState,{x=p.X,z=p.Z},RADIUS,s.fauna.clock) else 0
+   return {ok=true,count=count,message="Grupos solicitados: "..tostring(count)}
   elseif words[1]=="/kill" or words[1]=="/delete" then
    if #words>2 then return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
    return kill(s,player,words[2],direction,origin,words[1]=="/delete",targetId)
