@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: s0910-rabbit-neural
   cancel-in-progress: false
@@ -35,7 +36,48 @@ jobs:
           python tools/creature_factory/test_organic_contract.py
           if python tools/asset_factory/promote_candidate.py --candidate rabbit-v1-43678677522-1 --asset rabbit-v1 --revision test --approval invalid --file asset.glb; then exit 1; fi
           if python tools/asset_factory/promote_candidate.py --candidate rabbit-v2-43679757855-1 --asset rabbit-v2 --revision test --approval invalid --file asset.glb; then exit 1; fi
+      - name: Restore verified full-resolution neural checkpoint
+        id: checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          source=dc22e0c0c04f2683163606999685fcb166890050
+          if git diff --quiet "$source" HEAD -- tools/creature_factory/rabbit_neural_inference.py tools/creature_factory/rabbit_organic_reference.py tools/creature_factory/tsr_cpu_marching_cubes.py asset-library/references/rabbit-v1 asset-library/creature-queue/rabbit-v3.json; then
+            archive="$RUNNER_TEMP/rabbit-neural-checkpoint.zip"
+            if curl --fail --silent --show-error --location --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/Sllay/Roblox-Studios/actions/artifacts/14148598078/zip -o "$archive" && echo "d045c52dd746d74db9b37dd5b974791c52a11813750efdd2b38536e5d706dd9c  $archive" | sha256sum -c -; then
+              mkdir -p dist/creature/rabbit-v3
+              unzip -q "$archive" -d dist/creature/rabbit-v3
+              python - <<'PY'
+              import json, hashlib
+              from pathlib import Path
+              p=Path("dist/creature/rabbit-v3")
+              r=json.loads((p/"neural-report.json").read_text())
+              assert r["topology"]["reductionMethod"]=="none_full_resolution"
+              assert r["masterTriangles"]==r["bodyTriangles"]==50508
+              assert r["topology"]["runtimeWatertight"]
+              for ref in r["sourceReferences"].values():
+                  assert hashlib.sha256((Path("asset-library/references/rabbit-v1")/ref["path"]).read_bytes()).hexdigest()==ref["sha256"]
+              for name in ("neural-mesh.npz","runtime-mesh.npz","neural-albedo.png","neural-master.ply"):
+                  assert (p/name).is_file(),name
+              r["checkpointProvenance"]={"runId":43681469940,"artifactId":14148598078,"sourceCommit":"dc22e0c0c04f2683163606999685fcb166890050"}
+              (p/"neural-report.json").write_text(json.dumps(r,indent=2)+"\n")
+          PY
+              echo "restored=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "restored=false" >> "$GITHUB_OUTPUT"
+      - name: Install Blender and its system Python NumPy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
+          blender -b --factory-startup --python-exit-code 1 --python-expr 'import numpy; print("Blender numpy",numpy.__version__)'
+      - name: Install audit dependencies when checkpoint restored
+        if: steps.checkpoint.outputs.restored == 'true'
+        run: python -m pip install numpy==1.26.4 scipy==1.13.1 scikit-image==0.24.0 Pillow==10.4.0
       - name: Install pinned CPU reconstruction environment
+        if: steps.checkpoint.outputs.restored != 'true'
         run: |
           python -m pip install --upgrade pip
           python -m pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cpu
@@ -43,9 +85,8 @@ jobs:
           python -m pip check
           git clone https://github.com/VAST-AI-Research/TripoSR.git "$RUNNER_TEMP/TripoSR"
           git -C "$RUNNER_TEMP/TripoSR" checkout 107cefdc244c39106fa830359024f6a2f1c78871
-          sudo apt-get update
-          sudo apt-get install -y blender xvfb libgl1-mesa-dri
       - name: Download verified open weights and reconstruct from approved hero
+        if: steps.checkpoint.outputs.restored != 'true'
         run: python -u tools/creature_factory/rabbit_neural_inference.py --upstream "$RUNNER_TEMP/TripoSR" --out dist/creature/rabbit-v3 --resolution 192
       - name: Bake Blender candidate, add six whiskers and render
         env:
