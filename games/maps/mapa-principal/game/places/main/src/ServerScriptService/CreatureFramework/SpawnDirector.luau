@@ -30,7 +30,7 @@ local function create(s:any,aiEnabled:boolean?):(any,any,Model,string)
  local model=s.template:Clone()
  local materials:{[Enum.Material]:boolean}={}
  for _,material in Enum.Material:GetEnumItems() do if p.allowedMaterials[material.Name] then materials[material]=true end end
- local options={contains=function(x:number,z:number)return d.biomes.regionAt(p.biomeId,x,z)~=nil end,materials=materials,random=function()return s.rng:NextNumber() end,threatProvider=d.threatProvider}
+ local options={contains=function(x:number,z:number)return d.biomes.regionAt(p.biomeId,x,z)~=nil end,materials=materials,random=function()return s.rng:NextNumber() end,threatProvider=d.threatProvider,longRoute=d.longRoute}
  local adapter=d.adapter.new(workspace,model,species,d.escape,options)
  adapter.aiEnabled=aiEnabled~=false
  return species,adapter,model,game:GetService("HttpService"):GenerateGUID(false)
@@ -199,7 +199,7 @@ function D.step(s:any,dt:number,now:number)
   local distance=if s.d.distanceProvider then s.d.distanceProvider(adapter:position()) else 0
   local tier=if s.d.scheduler then s.d.scheduler.tier(distance,r.tier,adapter.mesh.Size.Magnitude) else "Near"
   local previous=r.tier;r.tier=tier
-  local moving=tier~="Abstract"
+  local moving=tier~="Abstract" or adapter.travelTarget~=nil
   if previous~=tier then r.nextDecision=now end
   if r.foodKey and not s.d.food.owns(s.food,r.foodKey,id,now) then r.foodKey=nil;adapter:setFood(nil) end
   if r.profile=="PassivePrey" and moving and adapter.aiEnabled and r.agent.memory.state~="Peck" and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
