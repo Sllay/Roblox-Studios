@@ -4,11 +4,12 @@ local D={}
 function D.new(deps:any,policy:any,template:Model,parent:Instance,seed:number):any
  local regions=deps.biomes.regions(policy.biomeId);assert(#regions>0)
  local caps={global=policy.maximum,active=policy.maximum,perChunk=3,perBiome={[policy.biomeId]=policy.maximum},perSpecies={[policy.speciesId]=policy.maximum}}
- return {d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},developerIds={},developerIndex={},naturalIds={},naturalIndex={},developerCursor=1,closed=false}
+ return {space=if deps.separation then deps.separation.new(8) else nil,d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},developerIds={},developerIndex={},naturalIds={},naturalIndex={},developerCursor=1,closed=false}
 end
 function D.count(s:any):number return s.budget.total+s.developerCount end
 function D.remove(s:any,id:string,now:number?):boolean
  local r=s.agents[id];if not r then return false end
+ if s.space then s.d.separation.remove(s.space,id) end
  local list=if r.origin=="Natural" then s.naturalIds else s.developerIds
  local index=if r.origin=="Natural" then s.naturalIndex else s.developerIndex
  local slot=index[id];if slot then local last=list[#list];list[slot]=last;index[last]=slot;table.remove(list);index[id]=nil end
@@ -37,6 +38,12 @@ end
 local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin:string,now:number):string
  local d,p=s.d,s.p
  adapter.home=adapter:position()
+ if s.space then
+  local radius=math.max(adapter.mesh.Size.X,adapter.mesh.Size.Z)*.5
+  local function update() local p=adapter:position();d.separation.put(s.space,id,p.X,p.Z,radius) end
+  update();adapter.options.onMoved=update
+  adapter.options.steer=function(p:Vector3,v:Vector3) local x,z=d.separation.steer(s.space,id,p.X,p.Z,radius,v.X,v.Z);return Vector3.new(x,0,z) end
+ end
  adapter.options.canMove=function(g:Vector3)
   local region=d.biomes.regionAt(p.biomeId,g.X,g.Z)
   return region~=nil and (origin=="Developer" or d.population.move(s.budget,id,p.biomeId,region.id))
@@ -181,6 +188,7 @@ function D.step(s:any,dt:number,now:number)
   if not adapter.alive then
    if not r.deathAt then
     r.deathAt=now;adapter:beginDeath()
+    if s.space then s.d.separation.remove(s.space,id) end
     if r.foodKey then s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil end
    end
    local age=now-r.deathAt;adapter:deathStep(age)
