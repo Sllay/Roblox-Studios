@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "id": "rabbit-v1",
-  "status": "approved-design-binary-pending",
+  "status": "approved-design-references-verified",
   "template": "docs/ASSET_CONCEPT_PROMPT_TEMPLATE.md",
   "references": {
     "hero": {
