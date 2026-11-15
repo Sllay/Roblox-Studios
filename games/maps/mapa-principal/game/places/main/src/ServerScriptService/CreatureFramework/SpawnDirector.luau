@@ -189,7 +189,7 @@ function D.step(s:any,dt:number,now:number)
    continue
   end
   local distance=if s.d.distanceProvider then s.d.distanceProvider(adapter:position()) else 0
-  local tier=if s.d.scheduler then s.d.scheduler.tier(distance,r.tier) else "Near"
+  local tier=if s.d.scheduler then s.d.scheduler.tier(distance,r.tier,adapter.mesh.Size.Magnitude) else "Near"
   local previous=r.tier;r.tier=tier
   local moving=tier~="Abstract"
   if previous~=tier then r.nextDecision=now end
