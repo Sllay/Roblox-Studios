@@ -30,8 +30,8 @@ def publish_file(path,msg):
     subprocess.run(["git","pull","--rebase","origin","main"],cwd=ROOT,check=True)
     subprocess.run(["git","push","origin","HEAD:main"],cwd=ROOT,check=True)
 def main():
-    p=argparse.ArgumentParser();p.add_argument("--publish",action="store_true");a=p.parse_args()
-    require(a.publish,"Explicit staging publication approval")
+    p=argparse.ArgumentParser();p.add_argument("--publish",action="store_true");p.add_argument("--preview",action="store_true");a=p.parse_args()
+    require(a.publish != a.preview,"Select exactly one release mode")
     g,t=load_all();target=resolve(g,t,"mapa-principal","main","staging");key=os.environ["ROBLOX_OPEN_CLOUD_API_KEY"]
     require(target["placeId"]=="93428341652658" and target["universeId"]=="10769712441","Staging only")
     base=read(state_path(target));require(base["loadedVersion"]==25 and base["stateDigest"]==BASE_DIGEST and sha(base["records"])==BASE_DIGEST,"Fresh reviewed baseline")
@@ -47,6 +47,7 @@ def main():
     require(preview["nativeAimSmoke"] and preview["nativeThreatSmoke"] and preview["readyForStaging"] and preview["noPlaceWrites"] and preview["installedScripts"]==35 and preview["bones"]==14 and preview["enabled"] and preview["maximum"]==15 and preview["respawnSeconds"]==300,"Preview gate")
     print("S09_PREVIEW",json.dumps(preview),flush=True)
     require(retry(lambda:latest(target,key))==30,"Head changed")
+    if a.preview: return
     extra={}
     receipt={"status":"started","release":"S09.9","environment":"staging","beforeVersion":30,"baselineDigest":BASE_DIGEST,"retryAllowed":False,"sourceHashes":preview["sourceHashes"],"runId":os.environ.get("GITHUB_RUN_ID"),"clientRenderVerified":False}
     atomic_json(RECEIPT,receipt);publish_file(RECEIPT,"intent(s09): one-shot owner-approved staging v31 save")
