@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "id": "rabbit-v1",
+  "state": "review_ready",
+  "mode": "authored_reference_guided",
+  "triangles": 6136,
+  "triangleBudget": 6500,
+  "meshObjects": 36,
+  "bounds": {
+    "min": [
+      -0.73675936460495,
+      -0.831000030040741,
+      0.0
+    ],
+    "max": [
+      0.73675936460495,
+      0.7384138107299805,
+      3.5199999809265137
+    ]
+  },
+  "whiskers": 6,
+  "whiskerClosedMeshes": true,
+  "whiskerHeadBindingPlanned": true,
+  "uv": true,
+  "views": [
+    "front",
+    "back",
+    "left",
+    "right",
+    "top",
+    "bottom",
+    "three-quarter"
+  ],
+  "roundtrip": true,
+  "rigged": false,
+  "texturedAtlas": false,
+  "robloxPublished": false,
+  "artisticApproval": false,
+  "referenceHashes": {
+    "hero": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424",
+    "views": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4"
+  }
+}
