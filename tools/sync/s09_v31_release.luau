@@ -187,11 +187,36 @@ adapter.nextPlan=adapter.clock+1
 adapter:execute(intent,.1)
 assert(adapter.nextPlan<=adapter.clock+.16,"waypoint must replan immediately")
 adapter:beginDeath();assert(not adapter.alive and not adapter.hitbox.CanQuery,"death disables targeting");adapter:deathStep(.1);assert(adapter.mesh.Anchored,"death pose");adapter:deathStep(.4);assert(not adapter.mesh.Anchored,"physical corpse");adapter:destroy();probe:Destroy()
+-- Detached native locomotion benchmark; no live population or saved objects.
+local benchmark={}
+local budget=get("SimulationBudget")
+assert(budget.tier(60,nil)=="Near" and budget.tier(150,nil)=="Mid" and budget.tier(300,nil)=="Far","LOD distances")
+for _,count in {15,50,100,200} do
+ local batch=Instance.new("Folder");batch.Name="S099Benchmark";batch.Parent=workspace
+ local actors={}
+ for i=1,count do
+  local m=template:Clone();m.Parent=batch
+  local a=get("RobloxMobAdapter").new(workspace,m,species,get("EscapePlanner"),{contains=function(x,z)return get("BiomeRegions").regionAt("emerald_valley",x,z)~=nil end,materials={[Enum.Material.Grass]=true},random=function()return .37 end})
+  assert(a:place(found),"benchmark placement");actors[i]=a
+ end
+ local start=os.clock();local queries=0;local moves=0
+ for step=1,10 do
+  for _,a in actors do
+   if a:moveToward(found+Vector3.new(6,0,0),species.base.walkSpeed,1/30) then moves+=1 end
+  end
+ end
+ local elapsed=os.clock()-start
+ for _,a in actors do queries+=a.queries;a:destroy() end
+ batch:Destroy()
+ assert(moves==count*10,"benchmark movement")
+ table.insert(benchmark,{count=count,steps=10,elapsedMs=elapsed*1000,meanStepMs=elapsed*100,queries=queries,moves=moves})
+ task.wait()
+end
 assert(fingerprint()==beforeFP and environment()==env,"Unexpected scene changes")
 local endTerrain=terrainState();assert(#endTerrain==49)
 for _,r in endTerrain do assert(cfg.expectedTerrain[r.id]==r.digest,"Terrain changed") end
 assert(#cfg.sources==35,"Reviewed V31 script scope")
-local result={noPlaceWrites=cfg.mode~="apply",fingerprint=beforeFP,environment=env,terrainRegions=#endTerrain,counts=counts,installedScripts=#cfg.sources,sourceHashes=hashes,bones=bones,enabled=true,maximum=15,respawnSeconds=300,biomes=9,template=true,clientRenderVerified=false,nativeAimSmoke=true,nativeThreatSmoke=true,nativeBookSmoke=true,protectedStateSmoke=true,defaultClonePairNormalized=true}
+local result={noPlaceWrites=cfg.mode~="apply",fingerprint=beforeFP,environment=env,terrainRegions=#endTerrain,counts=counts,installedScripts=#cfg.sources,sourceHashes=hashes,bones=bones,enabled=true,maximum=15,respawnSeconds=300,biomes=9,template=true,clientRenderVerified=false,nativeLocomotionBenchmark=benchmark,nativeAimSmoke=true,nativeThreatSmoke=true,nativeBookSmoke=true,protectedStateSmoke=true,defaultClonePairNormalized=true}
 if cfg.mode=="apply" then
  assert(cfg.confirmStaging and game.PlaceVersion==30,"Explicit save guard")
  game:GetService("AssetService"):SavePlaceAsync({SaveWithoutPublish=false});result.saved=true
