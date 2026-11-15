@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "assetId": "rabbit-v2",
+  "candidate": "asset-library/candidates/rabbit-v2-43679757855-1",
+  "runId": 43679757855,
+  "technicalStatus": "passed",
+  "artisticStatus": "rejected",
+  "publicationAllowed": false,
+  "reviewer": "internal visual QA",
+  "reason": "Rendered V2 still fails concept quality: duplicated/distorted eye projections, horizontal bands at torso/haunch transitions, fused paw anatomy, distorted ear/head boundaries, dark baked view blending. Silhouette IoU and export success are insufficient.",
+  "next": "Try learned image-conditioned reconstruction with actual 3D geometry, independently review clay and colored renders. Do not advance V2 to rig or publication."
+}

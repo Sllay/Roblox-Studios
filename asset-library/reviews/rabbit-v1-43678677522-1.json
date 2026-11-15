@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "assetId": "rabbit-v1",
+  "candidate": "asset-library/candidates/rabbit-v1-43678677522-1",
+  "runId": 43678677522,
+  "technicalStatus": "passed",
+  "artisticStatus": "rejected",
+  "publicationAllowed": false,
+  "reason": "Owner rejected visual fidelity: the primitive-based model does not resemble the approved concept.",
+  "diagnosis": "rabbit_v1.py verifies reference SHA-256 but does not read reference pixels for geometry; manually defined lofts and UV spheres construct the anatomy and facial details.",
+  "nextCandidateRequirements": [
+    "Use the approved hero and orthographic reference images to derive silhouettes and anatomical landmarks before modeling.",
+    "Create coherent organic anatomical surfaces; avoid visible assembled primitive seams.",
+    "Compare matched front, side and three-quarter renders with the original concept before promotion.",
+    "Preserve exactly six tapered closed-mesh whiskers, three per side; verify GLB roundtrip and budget <=6500 triangles.",
+    "Require owner visual approval before texturing, rigging or Roblox publication."
+  ],
+  "referencePaths": [
+    "asset-library/references/rabbit-v1/hero.png",
+    "asset-library/references/rabbit-v1/views.png"
+  ],
+  "v31Changes": false
+}

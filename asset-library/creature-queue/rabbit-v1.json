@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "id": "rabbit-v1",
+  "backend": "authored-rabbit-v1",
+  "mode": "reference-guided",
+  "references": {
+    "hero": "asset-library/references/rabbit-v1/hero.png",
+    "views": "asset-library/references/rabbit-v1/views.png"
+  },
+  "triangle_budget": 6500,
+  "whiskers": {
+    "count": 6,
+    "perSide": 3,
+    "geometry": "closed tapered tubes",
+    "binding": "head",
+    "minimumRadius": 0.004
+  },
+  "status": "reference_verified_candidate_queued",
+  "publication": false
+}

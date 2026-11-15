@@ -1,0 +1,49 @@
+name: S09.10 Organic reference calibration
+on:
+  push:
+    branches: [feat/s0910-wildlife]
+    paths: ['.github/workflows/s0910-organic-calibration.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  calibrate:
+    if: github.ref == 'refs/heads/feat/s0910-wildlife'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read verified references and make inspection sheet
+        run: |
+          python -m pip install pillow numpy
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import hashlib,json,numpy as np
+          src=Path('asset-library/references/rabbit-v1')
+          out=Path('asset-library/calibration/rabbit-v2')
+          out.mkdir(parents=True,exist_ok=True)
+          manifest=json.loads((src/'manifest.json').read_text())
+          report={}
+          for name,ref in manifest['references'].items():
+              p=src/ref['path']
+              assert hashlib.sha256(p.read_bytes()).hexdigest()==ref['sha256']
+              im=Image.open(p).convert('RGBA')
+              a=np.asarray(im)[:,:,3]
+              bg=Image.new('RGBA',im.size,(235,235,235,255))
+              bg.alpha_composite(im)
+              bg=bg.convert('RGB')
+              bg.thumbnail((1000,1000))
+              bg.save(out/(name+'-preview.jpg'),quality=90)
+              report[name]={'size':im.size,'alpha_bbox':im.getchannel('A').getbbox(),'transparent_fraction':float((a<16).mean()),'reference_sha256':ref['sha256']}
+          (out/'reference-report.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps(report))
+          PY
+      - name: Archive calibration previews
+        run: |
+          git config user.name 'asset-factory[bot]'
+          git config user.email 'asset-factory[bot]@users.noreply.github.com'
+          git add asset-library/calibration/rabbit-v2
+          git diff --cached --quiet && exit 0
+          git commit -m 'assets(s0910): archive rabbit organic reference calibration'
+          git pull --rebase origin feat/s0910-wildlife
+          git push origin HEAD:feat/s0910-wildlife

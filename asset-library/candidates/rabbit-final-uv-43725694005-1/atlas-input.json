@@ -1,0 +1,65 @@
+[
+  {
+    "name": "FrontArm_L",
+    "index": 0,
+    "loops": 14106,
+    "vertices": 2353,
+    "triangles": 4702
+  },
+  {
+    "name": "FrontArm_R",
+    "index": 1,
+    "loops": 14106,
+    "vertices": 2353,
+    "triangles": 4702
+  },
+  {
+    "name": "Rabbit_Torso",
+    "index": 2,
+    "loops": 151020,
+    "vertices": 25168,
+    "triangles": 50340
+  },
+  {
+    "name": "Whisker_L_1",
+    "index": 3,
+    "loops": 400,
+    "vertices": 104,
+    "triangles": 204
+  },
+  {
+    "name": "Whisker_L_2",
+    "index": 4,
+    "loops": 400,
+    "vertices": 104,
+    "triangles": 204
+  },
+  {
+    "name": "Whisker_L_3",
+    "index": 5,
+    "loops": 400,
+    "vertices": 104,
+    "triangles": 204
+  },
+  {
+    "name": "Whisker_R_1",
+    "index": 6,
+    "loops": 400,
+    "vertices": 104,
+    "triangles": 204
+  },
+  {
+    "name": "Whisker_R_2",
+    "index": 7,
+    "loops": 400,
+    "vertices": 104,
+    "triangles": 204
+  },
+  {
+    "name": "Whisker_R_3",
+    "index": 8,
+    "loops": 400,
+    "vertices": 104,
+    "triangles": 204
+  }
+]

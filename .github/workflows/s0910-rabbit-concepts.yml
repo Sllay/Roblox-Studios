@@ -1,0 +1,32 @@
+name: S09.10 Rabbit Concept Import
+on:
+  push:
+    branches: [feat/s0910-wildlife]
+    paths:
+      - asset-library/references/rabbit-v1/concepts.zip
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: s0910-rabbit-concepts
+  cancel-in-progress: false
+jobs:
+  import:
+    if: github.ref == 'refs/heads/feat/s0910-wildlife'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install Pillow
+      - run: python tools/creature_factory/import_rabbit_concepts.py
+      - name: Commit verified PNGs
+        run: |
+          set -euo pipefail
+          git config user.name 'asset-factory[bot]'
+          git config user.email 'asset-factory[bot]@users.noreply.github.com'
+          git add asset-library/references/rabbit-v1/hero.png asset-library/references/rabbit-v1/views.png asset-library/references/rabbit-v1/manifest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "assets(s0910): archive verified rabbit concept PNGs"
+          git push origin HEAD:refs/heads/feat/s0910-wildlife

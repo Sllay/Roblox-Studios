@@ -15,6 +15,19 @@ root=Path(__file__).resolve().parents[2]/"asset-library"
 src=root/"candidates"/a.candidate
 dst=root/"approved"/a.asset/a.revision
 if dst.exists(): p.error("Immutable release already exists")
+# Reject known artistic failures and require a candidate-specific review for creatures.
+review_path=root/"reviews"/(a.candidate+".json")
+review=json.loads(review_path.read_text()) if review_path.exists() else {}
+if review.get("artisticStatus")=="rejected" or review.get("publicationAllowed") is False:
+    p.error("Candidate rejected by artistic review")
+report_path=src/"report.json"
+report=json.loads(report_path.read_text()) if report_path.exists() else {}
+is_creature=report.get("category")=="creature" or a.candidate.startswith(("rabbit-","chicken-"))
+if is_creature:
+    if review.get("artisticStatus")!="approved" or review.get("publicationAllowed") is not True:
+        p.error("Creature requires explicit artistic approval")
+    if review.get("candidate")!="asset-library/candidates/"+a.candidate or review.get("approval")!=a.approval:
+        p.error("Artistic approval must match exact candidate and approval reference")
 m=json.loads((src/"candidate-manifest.json").read_text())
 entries={x["path"]:x for x in m["files"]}
 selected=[]

@@ -221,3 +221,48 @@ assert(not CR.authorize(attack,melee,aa,tt,2,.5,2,true))
 assert(CR.authorize(attack,melee,aa,tt,2,2,2,true))
 assert(not CR.authorize(CR.new(),ranged,aa,tt,1,0,3,true))
 print("S09.5-F: predator prey filter, melee/ranged states, windup interruption, cooldown, spatial index and attack dedup passed")
+
+-- S09.10: species without chicken clips never select chicken-only routines.
+local W=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/WildlifeProfiles")
+assert(W.chicken.population+W.rabbit.population+W.cow.population+W.pig.population+W.sheep.population==64)
+assert(W.rabbit.groupKind=="Companion" and not W.rabbit.territorial and W.rabbit.groupMax==2)
+assert(W.cow.groupMax==8 and W.pig.exclusiveSameSpecies and W.sheep.groupMax==2)
+local generic=M.new()
+local gs:M.Sense={dt=2,alive=true,aiEnabled=true,hit=false,threatVisible=false,threatDistance=100,approachSpeed=0,predator=false,foodAvailable=true,atFood=true,pathBlocked=false,escapeAvailable=true,stuck=false,random=0,routineFood=false,routineFlap=false}
+for _=1,100 do local i=M.step(generic,gs);assert(i.state=="Idle" or i.state=="Explore") end
+assert(generic.hunger==.2)
+gs.hit=true;assert(M.step(generic,gs).state=="Flee")
+print("S09.10 wildlife profiles and optional passive routines passed")
+
+local Sep=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/LocalSeparation")
+local Route=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/LongRoute")
+local space=Sep.new(8);Sep.put(space,"a",0,0,1);Sep.put(space,"b",0,1,1)
+local sx,sz=Sep.steer(space,"a",0,0,1,1,0);assert(sx>0 and sz<0)
+Sep.remove(space,"b");sx,sz=Sep.steer(space,"a",0,0,1,1,0);assert(sx==1 and sz==0)
+Sep.put(space,"b",0,0,1);sx,sz=Sep.steer(space,"a",0,0,1,0,1);assert(sx>0 and sz>0)
+local route=Route.new(0,0,12,0,3,100)
+local function edge(x:number,z:number,tx:number,tz:number):boolean return not (tx==6 and tz==0) end
+for _=1,100 do if Route.advance(route,2,edge)~="Pending" then break end end
+assert(route.status=="Ready" and #route.path>4)
+for _,node in route.path do assert(not (node.x==6 and node.z==0)) end
+local blocked=Route.new(0,0,12,0,3,10);assert(Route.advance(blocked,2,function()return false end)=="Failed")
+print("S09.10 C spatial separation and bounded routing passed")
+
+local Ecology=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/GroupEcology")
+local WP=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/WildlifeProfiles")
+local eco=Ecology.new()
+local pig=assert(Ecology.create(eco,"pig",WP.pig,{x=0,z=0},0))
+for i=1,4 do assert(Ecology.join(eco,pig,"p"..i)) end
+assert(not Ecology.join(eco,pig,"p5"))
+assert(not Ecology.create(eco,"pig",WP.pig,{x=50,z=0},0))
+local pig2=assert(Ecology.create(eco,"pig",WP.pig,{x=100,z=0},0))
+assert(not Ecology.begin(eco,pig,{x=100,z=0},300))
+assert(Ecology.begin(eco,pig,{x=-100,z=0},300))
+Ecology.finish(pig,301,true);assert(pig.center.x==-100 and pig.nextMigration==601)
+local rabbit=assert(Ecology.create(eco,"rabbit",WP.rabbit,{x=0,z=0},0))
+local rabbit2=assert(Ecology.create(eco,"rabbit",WP.rabbit,{x=1,z=0},0))
+assert(Ecology.join(eco,rabbit,"r1") and Ecology.join(eco,rabbit2,"r2"))
+assert(Ecology.pair(eco,"r1","r2") and rabbit.count==2)
+assert(Ecology.force(eco,{x=0,z=0},500,400)==2)
+assert(rabbit.nextMigration==math.huge)
+print("S09.10 D group territory migration tests passed")

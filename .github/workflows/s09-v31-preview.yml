@@ -16,16 +16,37 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Check immutable V31 release lifecycle
+        id: lifecycle
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path("games/maps/mapa-principal/docs/s09/publication-v31.json")
+          closed = False
+          if p.exists():
+              receipt = json.loads(p.read_text())
+              if not (receipt.get("status") == "verified" and receipt.get("afterVersion") == 31 and receipt.get("verification", {}).get("verified") is True):
+                  raise SystemExit("V31 receipt requires reconciliation")
+              closed = True
+              print("V31 already verified; historical release preview is not applicable to later changes.")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"closed={str(closed).lower()}\n")
+          PY
       - uses: actions/setup-python@v5
+        if: steps.lifecycle.outputs.closed == 'false'
         with:
           python-version: '3.13'
       - run: python -m pip install Pillow==11.3.0
+        if: steps.lifecycle.outputs.closed == 'false'
       - run: bash tools/install-luau.sh
-      - env:
+        if: steps.lifecycle.outputs.closed == 'false'
+      - if: steps.lifecycle.outputs.closed == 'false'
+        env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python tools/s09_v31_release.py --preview
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.lifecycle.outputs.closed == 'false'
         with:
           name: s09-v31-preview
           path: dist/s09-v31/

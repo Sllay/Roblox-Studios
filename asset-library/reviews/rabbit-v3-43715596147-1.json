@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "assetId": "rabbit-v3",
+  "candidate": "asset-library/candidates/rabbit-v3-43715596147-1",
+  "runId": 43715596147,
+  "technicalStatus": "passed_export_failed_silhouette",
+  "artisticStatus": "rejected",
+  "publicationAllowed": false,
+  "reason": "Full-resolution neural model from hero has asymmetric ears, shifted head, excessive profile depth and rough learned texture. Independent orthographic scores: front 0.80364, right 0.51661, left 0.51768, back 0.79508. No threshold relaxation.",
+  "next": "Fit retained learned geometry to all four actual orthographic silhouette masks; rerender and independently audit. Surface and UV stay intact; artistic review remains required."
+}

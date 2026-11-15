@@ -8,7 +8,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local mesh=assert(model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
  local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
- local self:any={peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
+ local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
  mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
  local hitbox=Instance.new("Part");hitbox.Name="CreatureHitbox";hitbox.Size=mesh.Size+Vector3.new(.6,.6,.6);hitbox.Transparency=1;hitbox.Anchored=true;hitbox.CanCollide=false;hitbox.CanTouch=false;hitbox.CanQuery=true;hitbox.CFrame=mesh.CFrame;hitbox.Parent=model
  self.hitbox=hitbox
@@ -81,7 +81,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   if visible then self.observedThreat=t;self.lastSeen=self.clock elseif self.lastSeen and self.clock-self.lastSeen>4 then self.observedThreat=nil end
   local food=self.food
-  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,approachThreshold=if t and t.normalSpeed then math.max(1,t.normalSpeed*.6) else 4,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random()}
+  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,approachThreshold=if t and t.normalSpeed then math.max(1,t.normalSpeed*.6) else 4,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random(),routineFood=species.animations.Peck~=nil,routineFlap=species.animations.Flap~=nil}
   self.hit=false;return s
  end
  function self:animate(name:string,speed:number)
@@ -112,7 +112,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if not flee and self.home then
    if not self.exploreTarget or horizontal(self.exploreTarget-p).Magnitude<5 then
     local radius=25+self.options.random()*70
-    self.exploreTarget=self.home+Vector3.new(math.cos(angle0)*radius,0,math.sin(angle0)*radius)
+    self.exploreTarget=(if self.options.freeRoam then p else self.home)+Vector3.new(math.cos(angle0)*radius,0,math.sin(angle0)*radius)
    end
    local toward=horizontal(self.exploreTarget-p)
    if toward.Magnitude>1 then angle0=math.atan2(toward.Z,toward.X) end
@@ -125,7 +125,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   for i=0,7 do
    local angle=math.rad(i*45)
    local dir=Vector3.new(away.X*math.cos(angle)-away.Z*math.sin(angle),0,away.X*math.sin(angle)+away.Z*math.cos(angle))
-   local dest=p+dir*6;local g=if self.home and horizontal(dest-self.home).Magnitude>100 then nil else self:ground(dest.X,dest.Z)
+   local dest=p+dir*6;local g=if not self.options.freeRoam and self.home and horizontal(dest-self.home).Magnitude>(self.options.roamRadius or 100) then nil else self:ground(dest.X,dest.Z)
    if g and self:route(p,g) then
     if not flee then return g end
     local exits=0
@@ -152,6 +152,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local elapsed=math.clamp(dt,0,.2)
   local forward=horizontal(mesh.CFrame.LookVector).Unit
   local target=delta.Unit
+  if self.options.steer then target=self.options.steer(p,target) end
   local angle=math.atan2(forward:Cross(target).Y,forward:Dot(target))
   local turn=math.clamp(angle,-math.rad(240)*elapsed,math.rad(240)*elapsed)
   local facing=CFrame.fromAxisAngle(Vector3.yAxis,turn):VectorToWorldSpace(forward)
@@ -159,12 +160,36 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
   local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
   local q=p+target*step;local g=self:ground(q.X,q.Z)
-  if not g or (self.home and horizontal(g-self.home).Magnitude>100) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
+  if not g and self.options.steer then q=p+delta.Unit*step;g=self:ground(q.X,q.Z) end
+  if not g or (not self.travelTarget and not self.options.freeRoam and self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
   local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);hitbox.CFrame=mesh.CFrame;self.moveDistance+=step
+  if self.options.onMoved then self.options.onMoved() end
   return true
+ end
+ function self:setTravelTarget(target:Vector3?)
+  self.travelTarget=target;self.travelSearch=nil;self.travelIndex=1;self.goal=nil
+ end
+ function self:travelStep(dt:number):string
+  local planner=self.options.longRoute;local target=self.travelTarget
+  if not planner or not target then return "Failure" end
+  local p=self:position()
+  if horizontal(target-p).Magnitude<1 then self:setTravelTarget(nil);return "Success" end
+  if not self.travelSearch then self.travelSearch=planner.new(p.X,p.Z,target.X,target.Z,3,2048) end
+  local search=self.travelSearch
+  local status=planner.advance(search,4,function(x:number,z:number,tx:number,tz:number)
+   local a=self:ground(x,z);local b=self:ground(tx,tz);return a~=nil and b~=nil and self:route(a,b)
+  end)
+  if status=="Failed" then self:setTravelTarget(nil);return "Failure" end
+  if status~="Ready" then return "Running" end
+  local node=search.path[self.travelIndex];local goal=if node then self:ground(node.x,node.z) else target
+  if not goal then self:setTravelTarget(nil);return "Failure" end
+  if horizontal(goal-p).Magnitude<.25 and node then self.travelIndex+=1;return "Running" end
+  if not self:moveToward(goal,self.stats.walkSpeed,dt) then self.travelSearch=nil;self.travelIndex=1;return "Running" end
+  self:animate("Walk",1);return "Running"
  end
  function self:execute(intent:any,dt:number):string
   local action=intent.action
+  if self.travelTarget and (action=="Wander" or action=="Stop" or action=="Idle" or action=="SeekFood") and intent.state~="Static" and intent.state~="Dead" then return self:travelStep(dt) end
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
   if not moving then
    if action=="Peck" or action=="Flap" then
@@ -190,7 +215,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   local goal=self.goal
   if not goal then self:animate(if flee then "Run" else "Idle",1);return "Running" end
-  local speed=if flee then math.max(12,self.stats.runSpeed) else self.stats.walkSpeed
+  local speed=if flee then math.max(self.options.minimumRunSpeed or 12,self.stats.runSpeed) else self.stats.walkSpeed
   if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if flee then "Run" else "Idle",1);return "Running" end
   self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"

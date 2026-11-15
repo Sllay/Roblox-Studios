@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "8ee39166f9df9fa2854acf0bf53d14c47ecd243c",
+  "runId": "43717552690",
+  "files": [
+    {
+      "path": "asset.blend",
+      "bytes": 5335016,
+      "sha256": "5345bb8d81b2b240d6f94dfca692e764e20f0022ea9017c5bd7a324d2c80a7df"
+    },
+    {
+      "path": "asset.glb",
+      "bytes": 2083040,
+      "sha256": "3996ab3ea5edf0a5689e4d6ec5b3e846b31dc6755a9c1ec21e6b23dcb4ac0309"
+    },
+    {
+      "path": "back.png",
+      "bytes": 616753,
+      "sha256": "4de87c44a4db9b32bcb645fbadb70ce47f26c675c7a3555d9e7c485e09782753"
+    },
+    {
+      "path": "bottom.png",
+      "bytes": 477873,
+      "sha256": "60978a7df0eab4008461b1f9e7144ec0ef726a2a1e19e2a1f2ce42028645b42f"
+    },
+    {
+      "path": "clay-front.png",
+      "bytes": 509782,
+      "sha256": "bb8be7e58543bcc8392c9378e585e0c385c20c32685da52625fc71cdd23ead3a"
+    },
+    {
+      "path": "clay-right.png",
+      "bytes": 489517,
+      "sha256": "1bb0f7a95f68d9967b612694f9d96a56846d11a9cd22f993cba223784d6fd3ae"
+    },
+    {
+      "path": "clay-three-quarter.png",
+      "bytes": 520576,
+      "sha256": "47e10bbca4a07da11941a4f35aaf273cde25df3e8dd2aae7957269134c76ff59"
+    },
+    {
+      "path": "conditioning.png",
+      "bytes": 97657,
+      "sha256": "9807a9de927b2df663cefb21d52aa3d8cc606c4df2af9ff4155c0f062d481a2a"
+    },
+    {
+      "path": "front.png",
+      "bytes": 636309,
+      "sha256": "b1ccc00a08465214ca8a8ad42c2ba0e91163044a358b8633e17397decd2318f3"
+    },
+    {
+      "path": "left.png",
+      "bytes": 566635,
+      "sha256": "7bf78795f8d0dd741726fddff9cff1d2581ebbe6f84edbe7976b92b5bbf13c6e"
+    },
+    {
+      "path": "neural-albedo.png",
+      "bytes": 2351186,
+      "sha256": "751c08714f00e90556c3eb5bff989613d65676f0bd9773bb4f1f60a24bca7044"
+    },
+    {
+      "path": "neural-master.ply",
+      "bytes": 959871,
+      "sha256": "681fd8bc26e7f3b250eb27edcace7b9a41d5bb9f16039c22886ac1c8ea7b8cbb"
+    },
+    {
+      "path": "neural-report.json",
+      "bytes": 2247,
+      "sha256": "76f74b210027292a5237a70eeca75cf5e977f2bdb31079f47dcc10a76046c5e7"
+    },
+    {
+      "path": "overlay-back.png",
+      "bytes": 97357,
+      "sha256": "9d82c501c93677b9ff30f9be83991b5c22dfb84c5991fdd3c96ca704919a7942"
+    },
+    {
+      "path": "overlay-front.png",
+      "bytes": 112221,
+      "sha256": "721b8160ce68aebb7e2c6b8a4768c3b74dd654f8cd5390220544ebfcf4cf7c2e"
+    },
+    {
+      "path": "overlay-left.png",
+      "bytes": 98656,
+      "sha256": "ce24196a5b71913466307b6ab671f226246762314800955ce0124c265bedb788"
+    },
+    {
+      "path": "overlay-right.png",
+      "bytes": 98367,
+      "sha256": "2a0ff66086bab6dd411df42c5631cf8cf9c9492b9235f9d6323edbd422ffd5c5"
+    },
+    {
+      "path": "report.json",
+      "bytes": 6601,
+      "sha256": "f48bb05a0cfa9707c9a11556515afdce603462204affda330db3788e4efb6ded"
+    },
+    {
+      "path": "right.png",
+      "bytes": 565310,
+      "sha256": "311a5145ac3bb1438a799db608fadbc94d1aa502caa4dfaf25a3748cf42bd8f9"
+    },
+    {
+      "path": "sculpt-master.blend",
+      "bytes": 2866732,
+      "sha256": "d10c3350d8225cf3d0ef223e601cb080b82a3a4ef8f5e5fb0e5e4a0de785790a"
+    },
+    {
+      "path": "three-quarter.png",
+      "bytes": 626554,
+      "sha256": "1e5bafeca21c65cfe1de0aaf29774314451482182e671bb69cdc009eb289643a"
+    },
+    {
+      "path": "top.png",
+      "bytes": 489778,
+      "sha256": "06e3ae33a1919b72356e26be0c74ac79f33bf67cf8a2dc52ae2779cf32c1d612"
+    }
+  ]
+}

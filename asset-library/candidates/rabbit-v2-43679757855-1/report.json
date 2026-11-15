@@ -1,0 +1,85 @@
+{
+  "schema": 2,
+  "id": "rabbit-v2",
+  "category": "creature",
+  "state": "needs_visual_review",
+  "method": "pixel intervals + rounded cross-sections + traced anatomical relief",
+  "sourceReferences": {
+    "hero": {
+      "path": "hero.png",
+      "sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424",
+      "size": [
+        1312,
+        1199
+      ]
+    },
+    "views": {
+      "path": "views.png",
+      "sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  },
+  "masterVertices": 96057,
+  "masterTriangles": 192110,
+  "bodyVertices": 12502,
+  "exportedVertices": 17068,
+  "vertexBudget": 20000,
+  "triangles": 26224,
+  "whiskers": 6,
+  "whiskerClosedMeshes": true,
+  "whiskerHeadBindingPlanned": true,
+  "uv": true,
+  "atlasSize": 2048,
+  "atlasCoverage": 0.35882067680358887,
+  "texture": "reference-projected candidate albedo; not final hand-painted texture",
+  "views": [
+    "front",
+    "right",
+    "left",
+    "back",
+    "top",
+    "bottom",
+    "three-quarter"
+  ],
+  "clayViews": [
+    "front",
+    "right",
+    "three-quarter"
+  ],
+  "roundtrip": true,
+  "rigged": false,
+  "artisticApproval": false,
+  "robloxPublished": false,
+  "limitations": [
+    "Illustrated views are not exact camera-calibrated photographs.",
+    "Silhouettes constrain exterior, not all concavities or occluded anatomy.",
+    "Reduction is candidate topology, not final deformation retopology.",
+    "Projection may contain baked illumination and view seams."
+  ],
+  "silhouetteAudit": {
+    "front": {
+      "iou": 0.87942,
+      "referencePixels": 57678,
+      "candidatePixels": 57833
+    },
+    "right": {
+      "iou": 0.90401,
+      "referencePixels": 49526,
+      "candidatePixels": 52388
+    },
+    "left": {
+      "iou": 0.9059,
+      "referencePixels": 49289,
+      "candidatePixels": 52385
+    },
+    "back": {
+      "iou": 0.85513,
+      "referencePixels": 55771,
+      "candidatePixels": 56557
+    }
+  },
+  "silhouetteGatePassed": true
+}

@@ -1,0 +1,73 @@
+{
+  "schema": 3,
+  "id": "rabbit-v3",
+  "category": "creature",
+  "state": "neural_geometry_candidate",
+  "backend": "TripoSR CPU, learned triplane density and color",
+  "model": {
+    "repo": "VAST-AI-Research/TripoSR",
+    "codeRevision": "107cefdc244c39106fa830359024f6a2f1c78871",
+    "checkpoint": "stabilityai/TripoSR",
+    "checkpointRevision": "c1cf7716aed5aa6c1c5e174657791ef0e1327bde",
+    "checkpointSHA256": "429e2c6b22a0923967459de24d67f05962b235f79cde6b032aa7ed2ffcd970ee",
+    "license": "MIT"
+  },
+  "sourceReferences": {
+    "hero": {
+      "path": "hero.png",
+      "sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424",
+      "size": [
+        1312,
+        1199
+      ]
+    },
+    "views": {
+      "path": "views.png",
+      "sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  },
+  "conditioning": "approved hero, isolated silhouette, whisker strokes removed",
+  "masterVertices": 25254,
+  "masterTriangles": 50508,
+  "bodyVertices": 25254,
+  "bodyTriangles": 50508,
+  "atlasVertices": 38777,
+  "atlasSize": 2048,
+  "atlasCoverage": 0.4175755977630615,
+  "orientation": {
+    "yawDegrees": -115,
+    "scale": 3.5330037234660487,
+    "referenceAlignmentIoU": {
+      "front": 0.8047344461305007,
+      "right": 0.5200022827141472,
+      "left": 0.5146589094227698,
+      "back": 0.7932704246337223
+    }
+  },
+  "topology": {
+    "connectedComponents": 3,
+    "retainedAreaFraction": 0.9997996761687189,
+    "reductionMethod": "none_full_resolution",
+    "masterEuler": 0,
+    "runtimeEuler": 0,
+    "runtimeWatertight": true
+  },
+  "elapsedCPUSeconds": 84.36,
+  "artisticApproval": false,
+  "robloxPublished": false,
+  "rigged": false,
+  "limitations": [
+    "Single-image neural inference estimates hidden anatomy; compare all original multiview references.",
+    "Neural colors are candidate albedo, not final material or painted correction.",
+    "Full-resolution review candidate; Roblox runtime mesh partition and animation retopology are separate gates."
+  ],
+  "checkpointProvenance": {
+    "runId": 43681469940,
+    "artifactId": 14148598078,
+    "sourceCommit": "dc22e0c0c04f2683163606999685fcb166890050"
+  }
+}

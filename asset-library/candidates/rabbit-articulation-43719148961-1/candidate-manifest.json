@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "9236f312b03bee754a2d654fe483a15442d53abc",
+  "runId": "43719148961",
+  "files": [
+    {
+      "path": "asset.blend",
+      "bytes": 7512796,
+      "sha256": "8b9325454a9c0df84e64bf8e1bb1b28853699a85062e2c28f9880a5d06a92598"
+    },
+    {
+      "path": "asset.glb",
+      "bytes": 3424164,
+      "sha256": "c6cd69f3b01dc5f8980c69691d38afa42fb4da153077a48bb898438188867076"
+    },
+    {
+      "path": "back.png",
+      "bytes": 606648,
+      "sha256": "4bd28f18a006c723f60e811991ecfe96f22b21dfd3a6f362f40b06c6d0f76d88"
+    },
+    {
+      "path": "clay-three-quarter.png",
+      "bytes": 521718,
+      "sha256": "79ea230b1d42a990b4a2f933550ebd69f19d80dda0f3159aa026ce562d624ca2"
+    },
+    {
+      "path": "front.png",
+      "bytes": 610809,
+      "sha256": "dc66476e919078e401e49b6dfff850f606937d379a0c0bba5bcecb7cb05be955"
+    },
+    {
+      "path": "left.png",
+      "bytes": 570873,
+      "sha256": "2830f4d1d84038d5d8cb7e05b0cf8b087c5bdadf01182018cdb0b13f83508a4f"
+    },
+    {
+      "path": "pose-front-left.png",
+      "bytes": 615168,
+      "sha256": "d848d4cdd85102d7c7b5c2c0a5fd58af3af712de52c9fb2886655a89481c22bb"
+    },
+    {
+      "path": "pose-head.png",
+      "bytes": 609339,
+      "sha256": "47eef2c1cac2bc7b464c29b8c6381443ba7aa01602f0453cdc5ff2de22ddee3a"
+    },
+    {
+      "path": "pose-hind-right.png",
+      "bytes": 605880,
+      "sha256": "ef082a98c2c6b9eda029ad4da815f42f87d56103722cd9527fe6475a9f1dc460"
+    },
+    {
+      "path": "report.json",
+      "bytes": 1798,
+      "sha256": "1f63977b5a0f8d1ca63234568b21cce4d0cb1f5d162635fd823ee3e199664b47"
+    },
+    {
+      "path": "right.png",
+      "bytes": 572090,
+      "sha256": "0c04f84d335a4c27b41d7c2da4fb2d93b17466b510d58e3103c2c2f3c5057cdd"
+    },
+    {
+      "path": "three-quarter.png",
+      "bytes": 613717,
+      "sha256": "e060d88d567cf1a163f03c85a9162c7541acf128bceb1b4e6efd31f87a463e36"
+    }
+  ]
+}
