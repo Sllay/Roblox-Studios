@@ -49,19 +49,19 @@ jobs:
               mkdir -p dist/creature/rabbit-v3
               unzip -q "$archive" -d dist/creature/rabbit-v3
               python - <<'PY'
-              import json, hashlib
-              from pathlib import Path
-              p=Path("dist/creature/rabbit-v3")
-              r=json.loads((p/"neural-report.json").read_text())
-              assert r["topology"]["reductionMethod"]=="none_full_resolution"
-              assert r["masterTriangles"]==r["bodyTriangles"]==50508
-              assert r["topology"]["runtimeWatertight"]
-              for ref in r["sourceReferences"].values():
-                  assert hashlib.sha256((Path("asset-library/references/rabbit-v1")/ref["path"]).read_bytes()).hexdigest()==ref["sha256"]
-              for name in ("neural-mesh.npz","runtime-mesh.npz","neural-albedo.png","neural-master.ply"):
-                  assert (p/name).is_file(),name
-              r["checkpointProvenance"]={"runId":43681469940,"artifactId":14148598078,"sourceCommit":"dc22e0c0c04f2683163606999685fcb166890050"}
-              (p/"neural-report.json").write_text(json.dumps(r,indent=2)+"\n")
+          import json, hashlib
+          from pathlib import Path
+          p=Path("dist/creature/rabbit-v3")
+          r=json.loads((p/"neural-report.json").read_text())
+          assert r["topology"]["reductionMethod"]=="none_full_resolution"
+          assert r["masterTriangles"]==r["bodyTriangles"]==50508
+          assert r["topology"]["runtimeWatertight"]
+          for ref in r["sourceReferences"].values():
+              assert hashlib.sha256((Path("asset-library/references/rabbit-v1")/ref["path"]).read_bytes()).hexdigest()==ref["sha256"]
+          for name in ("neural-mesh.npz","runtime-mesh.npz","neural-albedo.png","neural-master.ply"):
+              assert (p/name).is_file(),name
+          r["checkpointProvenance"]={"runId":43681469940,"artifactId":14148598078,"sourceCommit":"dc22e0c0c04f2683163606999685fcb166890050"}
+          (p/"neural-report.json").write_text(json.dumps(r,indent=2)+"\n")
           PY
               echo "restored=true" >> "$GITHUB_OUTPUT"
               exit 0
