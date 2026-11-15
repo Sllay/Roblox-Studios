@@ -32,8 +32,8 @@ bpy.ops.wm.save_as_mainfile(filepath=str(out/"sculpt-master.blend"))
 bpy.data.objects.remove(master,do_unlink=True)
 z=v[:,2].astype(np.float64)
 knots=np.array([0,.25,.55,.9,1.25,1.55,1.85,2.10,2.35,2.60,3.05,3.60])
-yscale=np.array([.80,.80,.77,.68,.70,.78,.85,.88,.90,.95,.98,.98])
-yshift=np.array([.12,.12,.07,.02,.08,.19,.28,.35,.38,.41,.46,.46])
+yscale=np.array([.95,.91,.80,.78,.78,.82,.94,1.10,1.02,.95,.98,.98])
+yshift=np.array([.02,.04,.07,-.02,.04,.16,.26,.38,.38,.46,.60,.60])
 def smooth_curve(x,k,y):
     i=np.clip(np.searchsorted(k,x,side="right")-1,0,len(k)-2)
     t=np.clip((x-k[i])/(k[i+1]-k[i]),0,1)
@@ -45,7 +45,36 @@ v[:,1]=x*math.sin(theta)+y*math.cos(theta)
 v[:,1]=v[:,1]*smooth_curve(z,knots,yscale)+smooth_curve(z,knots,yshift)
 def bump(x,c,w):return np.exp(-((x-c)/w)**2)
 v[:,1]-=.065*bump(z,1.57,.24)*bump(v[:,1],.12,.36)
-v[:,1]-=.11*bump(z,.90,.39)*np.clip((v[:,1]-.30)/.55,0,1)
+v[:,1]-=.055*bump(z,.90,.39)*np.clip((v[:,1]-.30)/.55,0,1)
+# Each ear is a distinct connected region above the roots. Label on the original
+# topology, not by x sign: the learned right ear crosses the sagittal plane.
+edges=np.unique(np.sort(np.concatenate([f[:,[0,1]],f[:,[1,2]],f[:,[2,0]]]),axis=1),axis=0)
+upper=z>2.70;parent=np.arange(len(v),dtype=np.int32)
+def find(i):
+    while parent[i]!=i:
+        parent[i]=parent[parent[i]];i=parent[i]
+    return i
+for a,b in edges[upper[edges].all(axis=1)]:
+    a,b=find(a),find(b)
+    if a!=b:parent[b]=a
+labels=np.array([find(i) for i in range(len(v))]);groups=[]
+for label in np.unique(labels[upper]):
+    ids=np.flatnonzero(upper&(labels==label))
+    if len(ids)>100:groups.append(ids)
+assert len(groups)==2,"Expected two distinct learned ears"
+groups.sort(key=lambda ids:float(original[ids,0].mean()))
+weight=np.zeros(len(v));weight[groups[0]]=-1;weight[groups[1]]=1
+fixed=upper|(z<2.50)
+ii=np.r_[edges[:,0],edges[:,1]];jj=np.r_[edges[:,1],edges[:,0]]
+dd=np.bincount(ii,minlength=len(v));assert np.all(dd>0)
+for _ in range(180):
+    avg=np.bincount(ii,weights=weight[jj],minlength=len(v))/dd
+    weight[~fixed]=avg[~fixed]
+# Move the ear interiors away from center and narrow the upper outer edges.
+# The transition is harmonic through the root; no detached or primitive ears.
+v[:,0]+=weight*(.17-.24*(weight*v[:,0]-.32))
+right_ear_min=float(v[groups[1],0].min())
+assert right_ear_min>.035,("right ear crosses symmetry plane",right_ear_min)
 body=mesh_obj("Rabbit_Neural_Body",v,f)
 # Bilateral symmetry from the more intact learned half, with a welded seam.
 bm=bmesh.new();bm.from_mesh(body.data)
@@ -71,7 +100,7 @@ w*=1-.40*bump(p[:,2],2.10,.24)
 w*=1-.40*bump(p[:,2],3.25,.36)
 w*=1-.35*bump(p[:,2],.14,.17)
 start=p.copy()
-for _ in range(12):
+for _ in range(22):
     for fac in (.46,-.48):
         avg=np.column_stack([np.bincount(i,weights=p[j,k],minlength=len(p))/deg for k in range(3)])
         p+=fac*w[:,None]*(avg-p)
@@ -97,23 +126,36 @@ tree=KDTree(len(v))
 for idx,co in enumerate(v):tree.insert(Vector(co),idx)
 tree.balance()
 ids=np.array([tree.find(Vector((abs(q[0]),q[1],q[2])))[1] for q in p])
-src=c[ids];orig=original[ids];h=orig[:,2]
+# Use only the learned eye location as a landmark, never the source's mottled
+# colors. All other regions are defined by clean, symmetric geometric masks.
 def smoothstep(lo,hi,x):
     t=np.clip((x-lo)/(hi-lo),0,1);return t*t*(3-2*t)
-red,green,blue=src.T
-cream=smoothstep(.62,.76,green/np.maximum(red,.05))*smoothstep(.48,.68,red)
-cream*=np.maximum.reduce([(h<.4).astype(float),
-    ((h>.35)&(h<1.5)&(orig[:,1]>.55)).astype(float),
-    ((h>.35)&(h<1.87)&(orig[:,1]<-.43)).astype(float),
-    ((h>1.85)&(h<2.27)&(orig[:,1]<-.70)).astype(float)])
-ear=(h>2.60)*smoothstep(.045,.13,red-green)*smoothstep(.36,.58,red)
-ear*=smoothstep(.48,.80,blue/np.maximum(green,.05))
-eye=((h>2.18)&(h<2.50)&(abs(orig[:,0])>.14)&(orig[:,1]<-.48))*(1-smoothstep(.28,.47,red))
-nose=((h>2.04)&(h<2.23)&(abs(orig[:,0]-.10)<.18)&(orig[:,1]<-.98))*smoothstep(.10,.22,red-green)
+xx=np.abs(p[:,0]);yy=p[:,1];hh=p[:,2]
+def band(x,lo,hi,fade=.035):
+    return smoothstep(lo-fade,lo,x)*(1-smoothstep(hi,hi+fade,x))
+chest=band(hh,.45,1.86,.09)*(1-smoothstep(.23,.35,xx))*(1-smoothstep(-.28,-.14,yy))
+muzzle=band(hh,1.94,2.20,.045)*(1-smoothstep(.29,.40,xx))*(1-smoothstep(-.53,-.42,yy))
+feet=(1-smoothstep(.19,.29,hh))*(1-smoothstep(-.22,-.08,yy))
+tail=band(hh,.62,1.23,.08)*smoothstep(.57,.70,yy)
+cream=np.maximum.reduce([chest,muzzle,feet,tail])
+# Ear paint is intentionally minimal: inner front surface, no photographic bake.
+ear_center=.42+.14*np.clip((hh-2.72)/.75,0,1)
+ear=band(hh,2.78,3.52,.055)*(1-smoothstep(.11,.21,np.abs(xx-ear_center)))
+ear*=1-smoothstep(.02,.14,yy)
+# Detect a single eye landmark from the original source; paint a filled clean eye.
+red=c[:,0]
+eye_ids=np.flatnonzero((original[:,2]>2.18)&(original[:,2]<2.50)&(original[:,0]>.13)&(original[:,1]<-.48)&(red<.38))
+if len(eye_ids)>15:ec=np.median(v[eye_ids],axis=0)
+else:ec=np.array([.29,-.43,2.32])
+eye_dist=((xx-abs(ec[0]))/.115)**2+((hh-ec[2])/.145)**2
+eye=(1-smoothstep(.78,1.05,eye_dist))*(1-smoothstep(ec[1]+.10,ec[1]+.20,yy))
+rim=(1-smoothstep(1.1,1.55,eye_dist))*(1-smoothstep(ec[1]+.10,ec[1]+.20,yy))
+nose_dist=(xx/.085)**2+((hh-2.14)/.065)**2
+nose=(1-smoothstep(.75,1.05,nose_dist))*(1-smoothstep(-.56,-.45,yy))
 def mix(a,b,w):return a*(1-w[:,None])+np.asarray(b)*w[:,None]
 rgb=np.tile([.66,.39,.20],(len(p),1))
-rgb=mix(rgb,[.93,.78,.55],cream);rgb=mix(rgb,[.82,.42,.37],ear*.95)
-rgb=mix(rgb,[.16,.075,.04],eye);rgb=mix(rgb,[.82,.40,.35],nose)
+rgb=mix(rgb,[.93,.78,.55],cream);rgb=mix(rgb,[.82,.42,.37],ear)
+rgb=mix(rgb,[.87,.69,.44],rim);rgb=mix(rgb,[.12,.055,.035],eye);rgb=mix(rgb,[.82,.40,.35],nose)
 lin=np.where(rgb<=.04045,rgb/12.92,((rgb+.055)/1.055)**2.4)
 attr=m.color_attributes.new(name="BasePalette",type="FLOAT_COLOR",domain="POINT")
 attr.data.foreach_set("color",np.column_stack([lin,np.ones(len(p))]).astype(np.float32).ravel())
@@ -132,7 +174,8 @@ np.savez_compressed(out/"runtime-mesh.npz",vertices=np.array([tuple(q.co) for q 
     faces=np.array([tuple(t.vertices) for t in body.data.loop_triangles],np.int32))
 report["polish"]={"source":"unfitted neural checkpoint","symmetry":"positive X half mirrored and welded",
     "profile":"bounded smooth anatomical deformation","shoulder":"localized relaxation and weighted Taubin smoothing",
-    "palette":"clean provisional vertex colors, no baked illumination","freshUV":True,
+    "palette":"geometric clean swatches, no baked illumination","freshUV":True,
+    "earMinimumXBeforeMirror":right_ear_min,"eyeLandmark":list(map(float,ec)),
     "microscopicRepair":repair_info,"maxSmoothingDisplacement":float(np.max(np.linalg.norm(p-start,axis=1))),
     "bodyVertices":len(body.data.vertices),"bodyTriangles":len(body.data.loop_triangles)}
 # Ground the six whisker roots directly on the learned muzzle surface.
@@ -212,7 +255,7 @@ assert len([o for o in objs if o.name.startswith("Whisker_")])==6
 assert all(o.data.uv_layers for o in objs)
 for o in objs:o.data.calc_loop_triangles()
 assert sum(len(o.data.loop_triangles) for o in objs)==tris
-report.update({"id":"rabbit-v3-polish","state":"pending_silhouette_audit","exportedVertices":verts,"vertexBudget":None,"triangles":tris,
+report.update({"id":"rabbit-v3-polish","state":"pending_silhouette_audit","atlasSize":None,"atlasCoverage":None,"texture":"provisional vertex colors; future painting pending","exportedVertices":verts,"vertexBudget":None,"triangles":tris,
  "geometryPolicy":"unrestricted_artistic_candidate","referenceTriangleTarget":50000,
  "meshTriangles":mesh_triangles,"robloxPerMeshTriangleLimit":platform_limit,
  "robloxOversizedMeshes":oversized,"robloxGeometryReady":not bool(oversized),
