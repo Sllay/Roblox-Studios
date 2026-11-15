@@ -8,3 +8,6 @@
 - Candidate texture projection is not a final hand-painted albedo. Final deformation retopology, rig, animations, texture polish, LOD and Roblox preview are separate gates.
 - Chicken: future visual redesign requested; preserve the existing passive AI, states, behavior, and V31 for now. Do not replace or publish chicken in this change.
 - No paid service, no external model upload, no modification to V31.
+
+## V2 internal visual failure and learned V3 experiment
+V2 passed silhouette/GLB checks (17,068 exported vertices) but failed actual artistic inspection. Do not promote it. V3 uses the MIT-licensed TripoSR learned triplane reconstruction from the verified hero. Its source and checkpoint are pinned, the checkpoint SHA-256 is checked, and all inference is on the GitHub runner CPU; only public weights are downloaded. It is not an external image-upload service. The original multi-view sheet is used for orientation and independent silhouette review. The final candidate still requires visual approval, hidden anatomy checks, texture correction, final deformation retopology and rigging. No promise that a learned model matches a specific illustration exactly.

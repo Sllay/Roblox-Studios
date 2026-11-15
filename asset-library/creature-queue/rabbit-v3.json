@@ -1,0 +1,26 @@
+{
+  "schema": 3,
+  "id": "rabbit-v3",
+  "backend": "triposr-cpu-learned",
+  "references": {
+    "hero": "asset-library/references/rabbit-v1/hero.png",
+    "views": "asset-library/references/rabbit-v1/views.png"
+  },
+  "runtimeVertexBudget": 20000,
+  "whiskers": {
+    "count": 6,
+    "perSide": 3,
+    "closed": true,
+    "headBindingRequired": true
+  },
+  "status": "experimental_neural_candidate",
+  "approvalRequired": true,
+  "publication": false,
+  "model": {
+    "source": "VAST-AI-Research/TripoSR",
+    "license": "MIT",
+    "codeRevision": "107cefdc244c39106fa830359024f6a2f1c78871",
+    "weightRevision": "c1cf7716aed5aa6c1c5e174657791ef0e1327bde",
+    "execution": "CPU inside GitHub runner; no external inference service"
+  }
+}
