@@ -125,7 +125,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   for i=0,7 do
    local angle=math.rad(i*45)
    local dir=Vector3.new(away.X*math.cos(angle)-away.Z*math.sin(angle),0,away.X*math.sin(angle)+away.Z*math.cos(angle))
-   local dest=p+dir*6;local g=if self.home and horizontal(dest-self.home).Magnitude>100 then nil else self:ground(dest.X,dest.Z)
+   local dest=p+dir*6;local g=if self.home and horizontal(dest-self.home).Magnitude>(self.options.roamRadius or 100) then nil else self:ground(dest.X,dest.Z)
    if g and self:route(p,g) then
     if not flee then return g end
     local exits=0
@@ -152,6 +152,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local elapsed=math.clamp(dt,0,.2)
   local forward=horizontal(mesh.CFrame.LookVector).Unit
   local target=delta.Unit
+  if self.options.steer then target=self.options.steer(p,target) end
   local angle=math.atan2(forward:Cross(target).Y,forward:Dot(target))
   local turn=math.clamp(angle,-math.rad(240)*elapsed,math.rad(240)*elapsed)
   local facing=CFrame.fromAxisAngle(Vector3.yAxis,turn):VectorToWorldSpace(forward)
@@ -159,8 +160,9 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
   local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
   local q=p+target*step;local g=self:ground(q.X,q.Z)
-  if not g or (self.home and horizontal(g-self.home).Magnitude>100) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
+  if not g or (self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
   local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);hitbox.CFrame=mesh.CFrame;self.moveDistance+=step
+  if self.options.onMoved then self.options.onMoved() end
   return true
  end
  function self:execute(intent:any,dt:number):string
@@ -190,7 +192,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   local goal=self.goal
   if not goal then self:animate(if flee then "Run" else "Idle",1);return "Running" end
-  local speed=if flee then math.max(12,self.stats.runSpeed) else self.stats.walkSpeed
+  local speed=if flee then math.max(self.options.minimumRunSpeed or 12,self.stats.runSpeed) else self.stats.walkSpeed
   if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if flee then "Run" else "Idle",1);return "Running" end
   self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"
