@@ -4,7 +4,7 @@ local D={}
 function D.new(deps:any,policy:any,template:Model,parent:Instance,seed:number):any
  local regions=deps.biomes.regions(policy.biomeId);assert(#regions>0)
  local caps={global=policy.maximum,active=policy.maximum,perChunk=3,perBiome={[policy.biomeId]=policy.maximum},perSpecies={[policy.speciesId]=policy.maximum}}
- return {space=if deps.separation then deps.separation.new(8) else nil,d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},developerIds={},developerIndex={},naturalIds={},naturalIndex={},developerCursor=1,closed=false}
+ return {space=if deps.separation then (deps.separationSpace or deps.separation.new(8)) else nil,d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},developerIds={},developerIndex={},naturalIds={},naturalIndex={},developerCursor=1,closed=false}
 end
 function D.count(s:any):number return s.budget.total+s.developerCount end
 function D.remove(s:any,id:string,now:number?):boolean
@@ -202,7 +202,7 @@ function D.step(s:any,dt:number,now:number)
   local moving=tier~="Abstract" or adapter.travelTarget~=nil
   if previous~=tier then r.nextDecision=now end
   if r.foodKey and not s.d.food.owns(s.food,r.foodKey,id,now) then r.foodKey=nil;adapter:setFood(nil) end
-  if r.profile=="PassivePrey" and moving and adapter.aiEnabled and r.agent.memory.state~="Peck" and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
+  if r.profile=="PassivePrey" and adapter.routineFood~=false and moving and adapter.aiEnabled and r.agent.memory.state~="Peck" and now>=r.nextFood and r.agent.memory.hunger>.35 and not r.foodKey then
    r.nextFood=now+3
    local pos=adapter:position()
    for i=1,4 do
