@@ -4,14 +4,14 @@ export type Tier="Near"|"Mid"|"Far"|"Abstract"
 export type Slot={id:string,tier:Tier,due:number}
 local B={}
 local intervals:{[Tier]:number}={Near=.1,Mid=.5,Far=2,Abstract=10}
-function B.tier(distance:number,previous:Tier?):Tier
+function B.tier(distance:number,previous:Tier?,extent:number?):Tier
  -- Hysteresis avoids repeated promotion/demotion at a boundary.
- local d=math.max(0,distance)
- if previous=="Near" and d<=55 then return "Near" end
- if previous=="Mid" and d>45 and d<=125 then return "Mid" end
- if previous=="Far" and d>115 and d<=255 then return "Far" end
- if previous=="Abstract" and d>245 then return "Abstract" end
- if d<=50 then return "Near" elseif d<=120 then return "Mid" elseif d<=250 then return "Far" else return "Abstract" end
+ local d=math.max(0,distance)/math.clamp((extent or 3)/3,1,8)
+ if previous=="Near" and d<=110 then return "Near" end
+ if previous=="Mid" and d>90 and d<=275 then return "Mid" end
+ if previous=="Far" and d>225 and d<=850 then return "Far" end
+ if previous=="Abstract" and d>750 then return "Abstract" end
+ if d<=100 then return "Near" elseif d<=250 then return "Mid" elseif d<=800 then return "Far" else return "Abstract" end
 end
 function B.take(slots:{Slot},cursor:number,now:number,maxChecks:number,maxUpdates:number):({string},number,number)
  local out:{string}={};local n=#slots

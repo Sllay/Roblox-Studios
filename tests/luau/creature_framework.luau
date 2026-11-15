@@ -65,7 +65,11 @@ for i=1,100 do
  assert(#out==100 and checks==100)
  for _,id in out do assert(not seen[id]);seen[id]=true end
 end
-assert(cursor==1 and Q.tier(54,"Near")=="Near" and Q.tier(56,"Near")=="Mid")
+assert(cursor==1 and Q.tier(110,"Near")=="Near" and Q.tier(111,"Near")=="Mid")
+assert(Q.tier(60,nil)=="Near" and Q.tier(150,nil)=="Mid" and Q.tier(300,nil)=="Far")
+assert(Q.tier(800,nil)=="Far" and Q.tier(801,nil)=="Abstract")
+assert(Q.tier(500,nil,15)=="Near" and Q.tier(260,"Mid")=="Mid")
+assert(Q.tier(840,"Far")=="Far" and Q.tier(851,"Far")=="Abstract")
 assert(S.parse({"mob",c.id,"3","here","true"},false,true,10)==nil)
 assert(S.parse({"mob",c.id,"21","here","true"},true,true,0)~=nil)
 assert(S.parse({"mob",c.id,"10000","here","false"},true,true,0)~=nil)
