@@ -19,3 +19,8 @@ A source audit; B profile capabilities and focused tests; C separation/navigatio
 
 ## B — Targeted validation passed
 Commit 8b14772: core 43670123917, build 43670123912, historical V31 lifecycle 43670123890 all success. V31 preview is closed, not native certification of S09.10. C next. Art template discovery remains pending before asset production.
+
+## C — Automated validation passed
+7d52626: core 43676270878, build 43676270877, historical lifecycle 43676270875 success. Native terrain and visual regression pending.
+## D — Automated validation passed
+6c0492e: core 43676817802, build 43676817814, historical lifecycle 43676817807 success. GroupEcology and service integration implemented; real species registration, native group spawn/migration and visual validation remain pending. E next; locate approved chicken art template before asset production.
