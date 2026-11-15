@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/s0910-rabbit-neural.yml'
       - 'tools/creature_factory/rabbit_neural*.py'
+      - 'tools/creature_factory/rabbit_fit_multiview.py'
       - 'tools/creature_factory/tsr_cpu_marching_cubes.py'
       - 'asset-library/creature-queue/rabbit-v3.json'
   workflow_dispatch:
@@ -88,6 +89,8 @@ jobs:
       - name: Download verified open weights and reconstruct from approved hero
         if: steps.checkpoint.outputs.restored != 'true'
         run: python -u tools/creature_factory/rabbit_neural_inference.py --upstream "$RUNNER_TEMP/TripoSR" --out dist/creature/rabbit-v3 --resolution 192
+      - name: Calibrate learned geometry against all four concept silhouettes
+        run: python -u tools/creature_factory/rabbit_fit_multiview.py dist/creature/rabbit-v3
       - name: Bake Blender candidate, add six whiskers and render
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
@@ -101,7 +104,7 @@ jobs:
         run: |
           set -euo pipefail
           revision="asset-library/candidates/rabbit-v3-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          rm -f dist/creature/rabbit-v3/neural-mesh.npz dist/creature/rabbit-v3/runtime-mesh.npz
+          rm -f dist/creature/rabbit-v3/neural-mesh.npz dist/creature/rabbit-v3/runtime-mesh.npz dist/creature/rabbit-v3/neural-mesh-unfitted.npz
           python tools/asset_factory/persist_candidates.py dist/creature/rabbit-v3 "$revision"
           git config user.name 'asset-factory[bot]'
           git config user.email 'asset-factory[bot]@users.noreply.github.com'
