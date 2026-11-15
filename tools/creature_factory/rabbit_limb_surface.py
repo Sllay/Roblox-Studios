@@ -78,28 +78,77 @@ def clip(v,f,c,q,positive):
         seen.update(L);loops.append(L)
     return V,F,C,loops
 
+def fill_patch(p,colors,limb):
+    """Constrained planar triangulation and harmonic curved surface.
+    
+    The cut boundary stays exactly on the source mesh. The interior is a
+    two-dimensional grid, not concentric rings collapsing to a central fan.
+    Project onto a local tangent plane, triangulate the actual nonconvex
+    contour, and recover its third coordinate and colors harmonically.
+    """
+    from mathutils import Vector
+    from mathutils.geometry import delaunay_2d_cdt
+    n=len(p);origin=p.mean(axis=0)
+    _,_,basis=np.linalg.svd(p-origin,full_matrices=False)
+    normal=basis[2].copy()
+    outward=np.array([np.sign(origin[0]),-1.,0.])
+    if normal@outward<0:normal=-normal
+    q=(p-origin)@basis[:2].T
+    h=(p-origin)@normal
+    spacing=.024
+    xs=np.arange(q[:,0].min()+spacing,q[:,0].max(),spacing)
+    ys=np.arange(q[:,1].min()+spacing,q[:,1].max(),spacing*.8660254)
+    grid=np.array([(x+(spacing*.5 if j%2 else 0),y) for j,y in enumerate(ys) for x in xs])
+    dist=sdpoly(grid,q)
+    grid=grid[dist>spacing*.65]
+    xy=np.concatenate([q,grid],axis=0)
+    area=np.sum(q[:,0]*np.roll(q[:,1],-1)-q[:,1]*np.roll(q[:,0],-1))
+    loop=list(range(n)) if area>0 else list(reversed(range(n)))
+    boundary=[(i,(i+1)%n) for i in range(n)]
+    pts,_,faces,orig,_,_=delaunay_2d_cdt([Vector(x) for x in xy],boundary,[loop],1,1e-8)
+    # No seam vertices may be merged or dropped. Input indices from CDT map
+    # its reordered output to the original vertices, keeping the weld exact.
+    mapping={}
+    for j,ids in enumerate(orig):
+        assert len(ids)==1,("CDT merged a constraint or inserted a vertex",ids)
+        mapping[int(ids[0])]=j
+    assert len(mapping)==len(xy) and all(i in mapping for i in range(len(xy)))
+    inv=np.array([int(ids[0]) for ids in orig],dtype=np.int32)
+    tri=inv[np.array(faces,dtype=np.int32)]
+    assert tri.ndim==2 and tri.shape[1]==3 and len(tri)>n
+    assert len(np.unique(tri))==len(xy)
+    # Use positive edge weights to avoid oscillations on tiny clipped edges.
+    E=edges(tri);I=len(xy)-n
+    assert I>100,("Insufficient interior sampling",I)
+    A=np.zeros((I,I),dtype=np.float64)
+    rhs=np.zeros((I,5),dtype=np.float64)
+    values=np.column_stack([h,colors])
+    for i,j in E:
+        w=1.0/max(float(np.linalg.norm(xy[i]-xy[j])),spacing*.15)
+        for u,v in ((i,j),(j,i)):
+            if u<n:continue
+            A[u-n,u-n]+=w
+            if v<n:rhs[u-n]+=w*values[v]
+            else:A[u-n,v-n]-=w
+    inner=np.linalg.solve(A,rhs)
+    assert np.all(np.isfinite(inner))
+    # A smooth, bounded recess with zero displacement at the cut edge.
+    # The torso sits deeper than the arm's inner surface, allowing clearance.
+    d=sdpoly(grid,q)
+    depth=.042 if limb else .105
+    bubble=(1-np.exp(-d/.075))**2
+    hh=inner[:,0]-depth*bubble
+    pos=origin+grid@basis[:2]+hh[:,None]*normal
+    # Diffuse color interpolation is harmonic, with no radial center seam.
+    return pos,tri,np.clip(inner[:,1:],0,1)
+
 def close(v,f,c,loops,limb):
     V=list(v);F=list(f);C=list(c)
     for L in loops:
-        p=v[L];center=p.mean(axis=0);sign=np.sign(center[0]);assert sign!=0
-        # Recess the torso underneath the forelimb. The forelimb's back surface
-        # is shallower, leaving clearance except at the shoulder insertion.
-        depth=.065 if limb else .16
-        center[1]+=depth;center[0]-=sign*(.045 if limb else .09)
-        prev=list(L);n=len(L)
-        for t in (.26,.52,.78):
-            ring=p*(1-t)+center*t
-            ring[:,1]+=depth*.22*np.sin(np.pi*t)
-            ids=list(range(len(V),len(V)+n));V.extend(ring)
-            C.extend(c[L]*(1-t)+c[L].mean(axis=0)*t)
-            for k in range(n):
-                j=(k+1)%n
-                F.extend([[prev[k],prev[j],ids[j]],[prev[k],ids[j],ids[k]]])
-            prev=ids
-        i=len(V);V.append(center);C.append(c[L].mean(axis=0))
-        for k in range(n):F.append([prev[k],prev[(k+1)%n],i])
+        pos,tri,col=fill_patch(v[L],c[L],limb)
+        indices=np.r_[np.asarray(L,dtype=np.int32),np.arange(len(V),len(V)+len(pos),dtype=np.int32)]
+        V.extend(pos);C.extend(col);F.extend(indices[tri])
     V=np.asarray(V);F=np.asarray(F,dtype=np.int32);C=np.asarray(C)
-    # Open a slight clearance under the arm, taper to zero at the shoulder.
     if limb:
         t=np.clip((1.77-V[:,2])/.65,0,1);t=t*t*(3-2*t)
         V[:,1]-=.055*t
@@ -108,6 +157,8 @@ def close(v,f,c,loops,limb):
     _,n=np.unique(e,axis=0,return_counts=True)
     assert np.all(n==2),"Closed joint surface expected"
     assert np.all(np.isfinite(V))
+    pp=V[F];areas=np.linalg.norm(np.cross(pp[:,1]-pp[:,0],pp[:,2]-pp[:,0]),axis=1)
+    assert float(areas.min())>1e-12,"Degenerate joint faces"
     return V,F,C
 
 def separate(v,f,c):
@@ -120,4 +171,5 @@ def separate(v,f,c):
         stats[name]={"cutLoops":[len(x) for x in L],"sourceSurfaceTriangles":len(F)}
         result[name]=close(V,F,C,L,pos)
         stats[name]["closedTriangles"]=len(result[name][1])
+        stats[name]["capMethod"]="constrained Delaunay + harmonic curved interior"
     return result,stats
