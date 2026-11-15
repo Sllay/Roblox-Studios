@@ -77,7 +77,16 @@ def glb_counts(path):
 activate(body)
 for o in parts:o.select_set(True)
 bpy.ops.export_scene.gltf(filepath=str(out/"asset.glb"),export_format="GLB",use_selection=True)
-verts,tris=glb_counts(out/"asset.glb");assert verts<=20000,(verts,"GLB vertex cap")
+verts,tris=glb_counts(out/"asset.glb")
+# Review asset has no project vertex/triangle ceiling. Platform compliance is
+# measured and reported independently, never hidden by automatic decimation.
+mesh_triangles={}
+for o in parts:
+    o.data.calc_loop_triangles()
+    mesh_triangles[o.name]=len(o.data.loop_triangles)
+platform_limit=20000
+oversized={name:n for name,n in mesh_triangles.items() if n>platform_limit}
+print("full resolution review",verts,tris,"Roblox oversized meshes",oversized,flush=True)
 scene=bpy.context.scene;scene.render.engine="BLENDER_WORKBENCH"
 scene.render.resolution_x=900;scene.render.resolution_y=900;scene.render.resolution_percentage=100
 scene.render.film_transparent=True;scene.render.image_settings.file_format="PNG";scene.render.image_settings.color_mode="RGBA"
@@ -100,7 +109,11 @@ assert len([o for o in objs if o.name.startswith("Whisker_")])==6
 assert all(o.data.uv_layers for o in objs)
 for o in objs:o.data.calc_loop_triangles()
 assert sum(len(o.data.loop_triangles) for o in objs)==tris
-report.update({"state":"pending_silhouette_audit","exportedVertices":verts,"vertexBudget":20000,"triangles":tris,
+report.update({"state":"pending_silhouette_audit","exportedVertices":verts,"vertexBudget":None,"triangles":tris,
+ "geometryPolicy":"unrestricted_artistic_candidate","referenceTriangleTarget":50000,
+ "meshTriangles":mesh_triangles,"robloxPerMeshTriangleLimit":platform_limit,
+ "robloxOversizedMeshes":oversized,"robloxGeometryReady":not bool(oversized),
+ "runtimePackagingRequired":bool(oversized),
  "whiskers":6,"whiskerClosedMeshes":True,"whiskerRootPositions":rootloc,"whiskerHeadBindingPlanned":True,
  "uv":True,"roundtrip":True,"views":list(views),"clayViews":["front","right","three-quarter"],"artisticApproval":False,"robloxPublished":False})
 (out/"report.json").write_text(json.dumps(report,indent=2)+"\n");print(json.dumps(report),flush=True)

@@ -6,7 +6,7 @@
     "hero": "asset-library/references/rabbit-v1/hero.png",
     "views": "asset-library/references/rabbit-v1/views.png"
   },
-  "runtimeVertexBudget": 20000,
+  "runtimeVertexBudget": null,
   "whiskers": {
     "count": 6,
     "perSide": 3,
@@ -22,5 +22,9 @@
     "codeRevision": "107cefdc244c39106fa830359024f6a2f1c78871",
     "weightRevision": "c1cf7716aed5aa6c1c5e174657791ef0e1327bde",
     "execution": "CPU inside GitHub runner; no external inference service"
-  }
+  },
+  "geometryPolicy": "unrestricted_artistic_candidate",
+  "referenceTriangleTarget": 50000,
+  "robloxPerMeshTriangleLimit": 20000,
+  "runtimePackaging": "After visual approval: partition by anatomical regions and shared rig, or reduce only with demonstrated fidelity; validate seams and platform limits. Never import oversized candidate automatically."
 }

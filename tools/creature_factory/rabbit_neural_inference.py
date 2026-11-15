@@ -207,20 +207,16 @@ def main():
     print("master",len(master.vertices),len(master.faces),topology,flush=True)
     # Retain the original learned geometry even if later stages fail.
     master.export(out/"neural-master.ply")
-    chosen=None
-    for target in (32000,30000,27000,24000,21000,18000):
-        try:
-            mesh,method=simplify(master,target);vm,ix,uv=atlas_mesh(mesh,2048)
-        except (ValueError,RuntimeError,subprocess.CalledProcessError) as e:
-            print("reduction rejected",target,str(e),flush=True);continue
-        print("reduction",method,target,"vertices",len(mesh.vertices),"UV vertices",len(vm),flush=True)
-        if len(vm)<=18200:
-            chosen=method;break
-    assert chosen is not None,"No valid watertight mesh within exported vertex budget"
-    topology["reductionMethod"]=chosen
+    # Artistic candidate: preserve all learned geometry, no forced decimation.
+    # Runtime packaging is a separate stage, after artistic approval.
+    mesh=master.copy()
+    vm,ix,uv=atlas_mesh(mesh,2048)
+    assert mesh.is_watertight and mesh.is_winding_consistent
+    topology["reductionMethod"]="none_full_resolution"
     topology["masterEuler"]=int(master.euler_number)
     topology["runtimeEuler"]=int(mesh.euler_number)
     topology["runtimeWatertight"]=bool(mesh.is_watertight)
+    print("full resolution",len(mesh.vertices),len(mesh.faces),"UV vertices",len(vm),flush=True)
     print("baking learned field into UV",len(vm),flush=True)
     coverage=bake(model,code,mesh,vm,ix,uv,out,2048)
     world,master_world,orientation=align(mesh,master)
@@ -236,7 +232,7 @@ def main():
       "bodyTriangles":len(mesh.faces),"atlasVertices":len(vm),"atlasSize":2048,"atlasCoverage":coverage,
       "orientation":orientation,"topology":topology,"elapsedCPUSeconds":round(time.monotonic()-start,2),
       "artisticApproval":False,"robloxPublished":False,"rigged":False,
-      "limitations":["Single-image neural inference estimates hidden anatomy; compare all original multiview references.","Neural colors are candidate albedo, not final material or painted correction.","Runtime reduction is not final animation retopology."]}
+      "limitations":["Single-image neural inference estimates hidden anatomy; compare all original multiview references.","Neural colors are candidate albedo, not final material or painted correction.","Full-resolution review candidate; Roblox runtime mesh partition and animation retopology are separate gates."]}
     (out/"neural-report.json").write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps(report),flush=True)
 if __name__=="__main__":main()
