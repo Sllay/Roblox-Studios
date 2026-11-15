@@ -21,6 +21,7 @@ function F.new(deps:any,template:Model,parent:Instance,seed:number):any
   return best,distance
  end
  local d=table.clone(deps)
+ if d.separation then d.separationSpace=d.separation.new(8) end
  d.distanceProvider=function(p:Vector3) local _,distance=nearest(p);return distance end
  d.threatProvider=function(p:Vector3)
   local best,distance=nearest(p)
