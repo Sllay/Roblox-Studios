@@ -41,7 +41,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
-          python -m pip install numpy==1.26.4 scipy==1.13.1 Pillow==10.4.0 xatlas==0.0.9
+          python -m pip install numpy==1.26.4 scipy==1.13.1 Pillow==10.4.0 xatlas==0.0.9 shapely==2.0.6
           blender -b --factory-startup --python-exit-code 1 --python-expr 'import numpy'
       - name: Polish anatomy and validate independent poses
         run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/creature_factory/rabbit_final_polish.py -- "$PWD/dist/creature/rabbit-final-uv" "$PWD/dist/creature/final-source"

@@ -7,6 +7,8 @@ import numpy as np
 from PIL import Image,ImageDraw,ImageFont
 from scipy import ndimage as ndi
 import xatlas
+import shapely
+from shapely.strtree import STRtree
 out=Path(sys.argv[1]);size=4096
 meta=json.loads((out/"atlas-input.json").read_text());a=np.load(out/"atlas-input.npz")
 # Rectangles are UV-space (origin lower-left). Keep head and body largest;
@@ -78,44 +80,77 @@ for rid,(name,slot) in enumerate(slots.items(),1):
         print("chart attempt",name,cost,"degenerate",int(bad.sum()),flush=True)
         if not bad.any():break
     bad_count,local,ix,chart_count,aw,ah,cost=best
-    # Preserve all valid charts. For truly unparametrizable microscopic faces,
-    # create exact local planar UVs in a separate reserved strip. Never discard
-    # geometry, silently allow a collapsed UV, or move existing chart corners.
-    reserve=64 if bad_count else 0
-    scale=min((w-2*pad)/(aw),(h-2*pad-reserve)/(ah))
-    xy=local*scale+np.array([x+(w-aw*scale)/2,y+(h-reserve-ah*scale)/2])
-    q=xy[ix].copy()
-    micro=[]
-    if bad_count:
-        bad=np.flatnonzero(area_uv(q)<=1e-10)
-        assert len(bad)<=max(12,int(.002*len(f))),("Too many invalid faces; requires chart redesign",name,len(bad))
-        assert np.all(area3[bad]<1e-5),("Non-microscopic face needs chart redesign",name,area3[bad].max())
-        # Each tiny triangle receives a mathematically exact planar chart, with
-        # a uniform minimum footprint and 12px gutters. All corners remain
-        # paintable. Only these diagnosed faces acquire an extra seam.
-        cols=max(1,(w-2*pad)//36)
-        assert len(bad)<=cols,("Insufficient microchart space",name,len(bad))
+    # Check the actual stored float32 UVs using exact polygon intersection,
+    # not just raster hits. Shared edges have zero intersection area.
+    def stored_coords(q):
+        return (q/size).astype(np.float32).astype(np.float64)*size
+    def conflicts(q):
+        area=area_uv(q)
+        bad=np.flatnonzero(area<=1e-10)
+        good=np.flatnonzero(area>1e-10)
+        poly=shapely.polygons(q[good])
+        tree=STRtree(poly)
+        pairs=tree.query(poly,predicate="intersects")
+        pairs=pairs[:,pairs[0]<pairs[1]]
+        if pairs.shape[1]:
+            intersection=shapely.area(shapely.intersection(poly[pairs[0]],poly[pairs[1]]))
+            pairs=pairs[:,intersection>1e-8]
+        return bad,good[pairs].T
+    def placed(reserve):
+        scale=min((w-2*pad)/(aw),(h-2*pad-reserve)/(ah))
+        return local*scale+np.array([x+(w-aw*scale)/2,y+(h-reserve-ah*scale)/2])
+    xy=placed(0);q=stored_coords(xy[ix])
+    bad,collisions=conflicts(q)
+    micro=[];initial_pairs=int(len(collisions));initial_bad=int(len(bad))
+    if len(bad) or len(collisions):
+        # Reserve a disjoint repair strip only in affected regions. Keep all
+        # valid charts intact and give the few offending faces planar charts.
+        reserve=160
+        xy=placed(reserve);q=stored_coords(xy[ix])
+        bad,collisions=conflicts(q)
+        selected=set(map(int,bad))
+        # Prefer removing the smaller physical face from each collision pair,
+        # without isolating both faces unnecessarily.
+        for i,j in collisions:
+            i,j=int(i),int(j)
+            if i not in selected and j not in selected:
+                selected.add(i if area3[i]<=area3[j] else j)
+        assert len(selected)<=max(24,int(.005*len(f))),("Too many conflicting faces; redesign chart",name,len(selected))
+        if len(bad):assert np.all(area3[bad]<1e-5),("Non-microscopic collapsed face",name,area3[bad].max())
+        valid=(area3>1e-9)&(area_uv(q)>1e-5)
+        density=float(np.median(np.sqrt(area_uv(q)[valid]/area3[valid])))
         newxy=list(xy);newix=ix.copy()
-        for k,face_id in enumerate(bad):
+        cursor_x=x+pad;cursor_y=y+h-reserve+12;row_h=0
+        for face_id in sorted(selected):
             p=geo[face_id];e=p[1]-p[0];u=e/np.linalg.norm(e)
             normal=np.cross(e,p[2]-p[0]);normal/=np.linalg.norm(normal);vaxis=np.cross(normal,u)
             pp=np.column_stack([(p-p[0])@u,(p-p[0])@vaxis]);pp-=pp.min(axis=0)
-            pp*=9/max(np.ptp(pp,axis=0).max(),1e-12)
-            pp+=np.array([x+pad+36*k+12,y+h-reserve+22])
-            q[face_id]=pp;newix[face_id]=np.arange(len(newxy),len(newxy)+3)
+            # Maintain regional density; tiny slivers get a small paintable
+            # footprint without changing the geometry or material.
+            extent=max(float(np.ptp(pp,axis=0).max()),1e-12)
+            pp*=max(density,5/extent)
+            bw,bh=np.ceil(np.ptp(pp,axis=0)).astype(int)+26
+            assert bw<=w-2*pad and bh<=reserve-24,("Repair face too large",name,face_id,bw,bh)
+            if cursor_x+bw>x+w-pad:
+                cursor_x=x+pad;cursor_y+=row_h;row_h=0
+            assert cursor_y+bh<y+h-8,("Repair strip capacity exceeded",name,len(selected))
+            pp+=np.array([cursor_x+13,cursor_y+13])
+            newix[face_id]=np.arange(len(newxy),len(newxy)+3)
             newxy.extend(pp)
-            micro.append({"face":int(face_id),"worldArea":float(area3[face_id])})
+            micro.append({"face":int(face_id),"worldArea":float(area3[face_id]),"reason":"degenerate" if face_id in bad else "intersection"})
+            cursor_x+=bw;row_h=max(row_h,bh)
         xy=np.asarray(newxy);ix=newix
         chart_count+=len(micro)
+        q=stored_coords(xy[ix])
+    bad,collisions=conflicts(q)
+    assert not len(bad) and not len(collisions),("Invalid stored UV",name,len(bad),len(collisions))
     assert np.all(q[:,:,0]>x) and np.all(q[:,:,0]<x+w) and np.all(q[:,:,1]>y) and np.all(q[:,:,1]<y+h)
     facecol=col[f];area2=area_uv(q)
     assert np.all(np.isfinite(q)) and np.all(area2>1e-10),("Degenerate UV",name)
-    # Confirm precision survives actual Blender/glTF float32 UV storage.
-    stored=(q/size).astype(np.float32).astype(np.float64)*size
-    assert np.all(area_uv(stored)>1e-10),("UV precision collapse",name)
+    print("exact UV check",name,"initial overlaps",initial_pairs,"initial collapsed",initial_bad,"recharted",len(micro),"remaining",len(collisions),flush=True)
     valid=(area3>1e-9)&(area2>1e-5)
     dens=np.sqrt(area2[valid]/area3[valid])
-    stats[name]={"triangles":len(f),"charts":chart_count,"chartCost":cost,"microcharts":micro,"slot":list(slot),"pixelArea":float(area2.sum()),"texelsPerStudMedian":float(np.median(dens)),"texelsPerStudP10":float(np.percentile(dens,10)),"texelsPerStudP90":float(np.percentile(dens,90))}
+    stats[name]={"triangles":len(f),"charts":chart_count,"chartCost":cost,"microcharts":micro,"initialOverlapPairs":initial_pairs,"initialCollapsedFaces":initial_bad,"remainingOverlapPairs":0,"slot":list(slot),"pixelArea":float(area2.sum()),"texelsPerStudMedian":float(np.median(dens)),"texelsPerStudP10":float(np.percentile(dens,10)),"texelsPerStudP90":float(np.percentile(dens,90))}
     all_area+=area2.sum();all_tri+=len(f)
     for j,(i,k) in enumerate(pairs):uvs[i][a[f"l{i}"][k]]=q[j]/size
     # True chart boundary: UV vertex split indices, not mesh topology.
@@ -161,5 +196,5 @@ guide.save(out/"rabbit_uv_regions_4096.png")
 for name in ("rabbit_uv_wire","rabbit_uv_islands","rabbit_uv_regions","rabbit_basecolor"):
     im=Image.open(out/(name+"_4096.png"));im.resize((2048,2048),Image.Resampling.LANCZOS).save(out/(name+"_2048.png"))
 np.savez_compressed(out/"atlas-output.npz",**{f"uv{i}":uv for i,uv in uvs.items()})
-report={"schema":1,"resolution":size,"regions":stats,"triangles":all_tri,"coverage":float(mask.mean()),"interiorOverlappingTexels":overlap,"paddingPixels":12,"uniqueUVs":True,"uvHash":hashlib.sha256((out/"atlas-output.npz").read_bytes()).hexdigest(),"paintingStatus":"provisional base color, artistic painting pending"}
+report={"schema":1,"resolution":size,"regions":stats,"triangles":all_tri,"coverage":float(mask.mean()),"interiorOverlappingTexels":overlap,"exactPositiveAreaOverlapPairs":0,"paddingPixels":12,"uniqueUVs":True,"uvHash":hashlib.sha256((out/"atlas-output.npz").read_bytes()).hexdigest(),"paintingStatus":"provisional base color, artistic painting pending"}
 (out/"uv-report.json").write_text(json.dumps(report,indent=2)+"\n");print(json.dumps(report),flush=True)
