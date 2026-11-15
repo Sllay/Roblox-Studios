@@ -1,0 +1,64 @@
+name: S09.10 Rabbit articulation polish
+on:
+  push:
+    branches: [feat/s0910-wildlife]
+    paths:
+      - '.github/workflows/s0910-rabbit-articulation.yml'
+      - 'tools/creature_factory/rabbit_limb_surface.py'
+      - 'tools/creature_factory/rabbit_articulation.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: s0910-rabbit-articulation
+  cancel-in-progress: false
+jobs:
+  articulation:
+    if: github.ref == 'refs/heads/feat/s0910-wildlife'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore exact Polish 2 source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/Sllay/Roblox-Studios/actions/artifacts/14162429289/zip -o "$RUNNER_TEMP/polish2.zip"
+          echo "d82c5310b361e468a12c47262e3da73e14d80b5105759caf3162bac78b321826  $RUNNER_TEMP/polish2.zip" | sha256sum -c -
+          mkdir -p dist/creature/articulation-source dist/creature/rabbit-articulation
+          unzip -q "$RUNNER_TEMP/polish2.zip" -d dist/creature/articulation-source
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
+          blender -b --factory-startup --python-exit-code 1 --python-expr 'import numpy'
+      - name: Separate limbs, build rig, render rest and independent test poses
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/creature_factory/rabbit_articulation.py -- "$PWD/dist/creature/rabbit-articulation" "$PWD/dist/creature/articulation-source"
+      - name: Archive review candidate
+        run: |
+          set -euo pipefail
+          revision="asset-library/candidates/rabbit-articulation-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          python3 tools/asset_factory/persist_candidates.py dist/creature/rabbit-articulation "$revision"
+          git config user.name 'asset-factory[bot]'
+          git config user.email 'asset-factory[bot]@users.noreply.github.com'
+          git add "$revision"
+          git commit -m "assets(s0910): archive rabbit articulation candidate $GITHUB_RUN_ID"
+          for attempt in 1 2 3; do
+            git fetch origin feat/s0910-wildlife
+            git rebase origin/feat/s0910-wildlife
+            if git push origin HEAD:refs/heads/feat/s0910-wildlife; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s0910-rabbit-articulation
+          path: dist/creature/rabbit-articulation/
+          if-no-files-found: warn
