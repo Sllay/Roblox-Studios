@@ -1,0 +1,74 @@
+name: S09.10 Rabbit final polish and paint UV
+on:
+  push:
+    branches: [feat/s0910-wildlife]
+    paths:
+      - '.github/workflows/s0910-rabbit-final-uv.yml'
+      - 'tools/creature_factory/rabbit_final_*.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: s0910-rabbit-final-uv
+  cancel-in-progress: false
+jobs:
+  final-uv:
+    if: github.ref == 'refs/heads/feat/s0910-wildlife'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore exact articulated source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/Sllay/Roblox-Studios/actions/artifacts/14163783420/zip -o "$RUNNER_TEMP/articulation.zip"
+          echo "1571b7ca66720a684169c9993777e49d569c8648c1eae8a495e9604c957ddb94  $RUNNER_TEMP/articulation.zip" | sha256sum -c -
+          mkdir -p dist/creature/final-source dist/creature/rabbit-final-uv
+          unzip -q "$RUNNER_TEMP/articulation.zip" -d dist/creature/final-source
+      - name: Install Blender and atlas dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
+          python -m pip install numpy==1.26.4 scipy==1.13.1 Pillow==10.4.0 xatlas==0.0.9
+          blender -b --factory-startup --python-exit-code 1 --python-expr 'import numpy'
+      - name: Polish anatomy and validate independent poses
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/creature_factory/rabbit_final_polish.py -- "$PWD/dist/creature/rabbit-final-uv" "$PWD/dist/creature/final-source"
+      - name: Build anatomical UV and paint templates
+        run: python -u tools/creature_factory/rabbit_final_atlas.py dist/creature/rabbit-final-uv
+      - name: Apply atlas and export rigged GLB
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/creature_factory/rabbit_final_apply.py -- "$PWD/dist/creature/rabbit-final-uv"
+      - name: Archive candidate without promotion
+        run: |
+          set -euo pipefail
+          revision="asset-library/candidates/rabbit-final-uv-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          rm -f dist/creature/rabbit-final-uv/atlas-input.npz dist/creature/rabbit-final-uv/atlas-output.npz dist/creature/rabbit-final-uv/polished.blend
+          python tools/asset_factory/persist_candidates.py dist/creature/rabbit-final-uv "$revision"
+          git config user.name 'asset-factory[bot]'
+          git config user.email 'asset-factory[bot]@users.noreply.github.com'
+          git add "$revision"
+          git commit -m "assets(s0910): archive paint-ready rabbit UV candidate $GITHUB_RUN_ID"
+          for attempt in 1 2 3; do
+            git fetch origin feat/s0910-wildlife
+            git rebase origin/feat/s0910-wildlife
+            if git push origin HEAD:refs/heads/feat/s0910-wildlife; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s0910-rabbit-final-uv
+          path: dist/creature/rabbit-final-uv/
+          if-no-files-found: warn
