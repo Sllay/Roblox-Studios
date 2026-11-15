@@ -37,7 +37,7 @@ def add(name,v,f,mats,indices=None,smooth=True):
         p.use_smooth=smooth
         if indices:p.material_index=indices[p.index]
     parts.append(o);return o
-def ell(name,c,s,m,rot=(0,0,0),seg=16,rings=10):
+def ell(name,c,s,m,rot=(0,0,0),seg=12,rings=8):
     bpy.ops.mesh.primitive_uv_sphere_add(segments=seg,ring_count=rings,location=c)
     o=bpy.context.object;o.name=name;o.scale=s;o.rotation_euler=rot
     bpy.ops.object.transform_apply(location=False,rotation=True,scale=True)
@@ -66,7 +66,7 @@ loft("Torso",[(.27,0,.10,.12,.19),(.36,0,.08,.39,.35),(.51,0,.075,.50,.43),(.76,
 loft("Head",[(1.64,0,-.16,.13,.14),(1.72,0,-.22,.29,.27),(1.83,0,-.25,.43,.39),(1.99,0,-.24,.50,.44),(2.17,0,-.20,.46,.41),(2.35,0,-.15,.37,.33),(2.49,0,-.12,.23,.23),(2.55,0,-.10,.08,.09)],24,lambda z,a:z<1.98 and front(a)<1.10)
 # Rounded muzzle lobes, nose and mouth seam.
 for s,label in [(-1,"L"),(1,"R")]:
-    ell("Muzzle_"+label,(s*.125,-.665,1.90),(.215,.135,.14),cream,seg=16,rings=8)
+    ell("Muzzle_"+label,(s*.125,-.665,1.90),(.215,.135,.14),cream,seg=12,rings=7)
 ell("Nose",(0,-.795,1.985),(.092,.036,.053),nosemat,seg=12,rings=8)
 # Ears are sculpted leaf-shaped closed surfaces. Pink interiors follow the same curved profile.
 for s,label in [(-1,"L"),(1,"R")]:
@@ -82,19 +82,19 @@ for s,label in [(-1,"L"),(1,"R")]:
     # Eyes: angled toward both sides, dark outline and glossy iris/pupil.
     angle=s*.49
     rot=(0,0,angle)
-    ell("EyePatch_"+label,(s*.305,-.490,2.19),(.185,.075,.205),cream,rot,16,10)
-    ell("EyeRim_"+label,(s*.329,-.548,2.192),(.143,.060,.163),dark,rot,16,10)
-    ell("Iris_"+label,(s*.345,-.588,2.192),(.116,.043,.137),iris,rot,16,10)
+    ell("EyePatch_"+label,(s*.305,-.490,2.19),(.185,.075,.205),cream,rot,12,8)
+    ell("EyeRim_"+label,(s*.329,-.548,2.192),(.143,.060,.163),dark,rot,12,8)
+    ell("Iris_"+label,(s*.345,-.588,2.192),(.116,.043,.137),iris,rot,12,8)
     ell("Pupil_"+label,(s*.356,-.620,2.192),(.079,.029,.107),pupil,rot,12,8)
     ell("Catchlight_"+label,(s*.347,-.646,2.245),(.026,.012,.028),glint,rot,8,6)
     # Strong hindquarters and long hind feet; forelegs are short and bent.
-    ell("Haunch_"+label,(s*.36,.12,.64),(.30,.38,.46),brown,(.07,s*.10,0),16,10)
-    ell("HindFoot_"+label,(s*.30,-.18,.15),(.235,.40,.15),brown,seg=16,rings=10)
-    ell("HindToe_"+label,(s*.30,-.425,.135),(.225,.185,.132),cream,seg=16,rings=8)
-    ell("UpperArm_"+label,(s*.32,-.18,1.33),(.14,.18,.30),brown,(-.38,s*.18,0),16,10)
-    ell("Forearm_"+label,(s*.29,-.41,1.08),(.13,.235,.125),brown,(.42,0,s*.32),16,10)
-    ell("ForePaw_"+label,(s*.22,-.53,.96),(.13,.15,.17),cream,(.08,0,s*.12),16,8)
-ell("Tail",(0,.49,.70),(.25,.25,.29),cream,(-.2,0,0),16,10)
+    ell("Haunch_"+label,(s*.36,.12,.64),(.30,.38,.46),brown,(.07,s*.10,0),12,8)
+    ell("HindFoot_"+label,(s*.30,-.18,.15),(.235,.40,.15),brown,seg=12,rings=8)
+    ell("HindToe_"+label,(s*.30,-.425,.135),(.225,.185,.132),cream,seg=12,rings=7)
+    ell("UpperArm_"+label,(s*.32,-.18,1.33),(.14,.18,.30),brown,(-.38,s*.18,0),12,8)
+    ell("Forearm_"+label,(s*.29,-.41,1.08),(.13,.235,.125),brown,(.42,0,s*.32),12,8)
+    ell("ForePaw_"+label,(s*.22,-.53,.96),(.13,.15,.17),cream,(.08,0,s*.12),12,7)
+ell("Tail",(0,.49,.70),(.25,.25,.29),cream,(-.2,0,0),12,8)
 # Exactly six swept capped tubes, 3/side; no alpha planes, no loose edge strokes.
 def tube(name,points,radii,m,sides=8):
     v=[];f=[]
