@@ -103,7 +103,7 @@ function D.spawnOne(s:any,now:number,aiEnabled:boolean?):string?
   for _=1,16 do
    s.attempts+=1
    local x=s.rng:NextNumber(region.minX+8,region.maxX-8);local z=s.rng:NextNumber(region.minZ+8,region.maxZ-8)
-   if (not d.spawnAllowed or d.spawnAllowed(Vector3.new(x,0,z))) and place(s,adapter,id,region,x,z,now,nil) then
+   if (not s.profile or not s.profile.territorial or d.ecology.valid(s.ecology,p.speciesId,{x=x,z=z},s.profile.territoryRadius or 40,s.profile.exclusiveSameSpecies,nil)) and (not d.spawnAllowed or d.spawnAllowed(Vector3.new(x,0,z))) and place(s,adapter,id,region,x,z,now,nil) then
     return finish(s,species,adapter,model,id,"Natural",now)
    end
   end
@@ -188,7 +188,7 @@ function D.tickEcology(s:any,now:number)
   if g.destination then
    local arrived=true;local failed=false
    for id in pairs(g.members) do local r=s.agents[id];if r then
-    if r.adapter.travelTarget then arrived=false elseif (r.adapter:position()-Vector3.new(g.destination.x,0,g.destination.z))*Vector3.new(1,0,1) then
+    if r.adapter.travelTarget then arrived=false else
      local p=r.adapter:position();if Vector2.new(p.X-g.destination.x,p.Z-g.destination.z).Magnitude>g.radius then failed=true end
     end
    end end
@@ -213,10 +213,30 @@ function D.tickEcology(s:any,now:number)
   end
  end
 end
+function D.spawnGroup(s:any,now:number):string?
+ local profile=s.profile;local d=s.d
+ if not profile or profile.groupKind~="Herd" then return D.spawnOne(s,now,true) end
+ local count=math.min(profile.groupMax,s.p.maximum-s.naturalCount)
+ if count<1 then return nil end
+ local first=D.spawnOne(s,now,true);if not first then return nil end
+ local g=s.ecology.groups[s.ecology.membership[first]];if not g then D.remove(s,first,now);return nil end
+ local ids={first};s.pendingGroup=g
+ for i=2,count do
+  local species,adapter,model,id=create(s,true);local placed=false
+  for k=1,24 do
+   local angle=(i+k)*2.399963;local radius=4*math.sqrt(i)+k*.3
+   local x,z=g.center.x+math.cos(angle)*radius,g.center.z+math.sin(angle)*radius
+   local region=d.biomes.regionAt(s.p.biomeId,x,z)
+   if region and place(s,adapter,id,region,x,z,now,nil) then finish(s,species,adapter,model,id,"Natural",now);table.insert(ids,id);placed=true;break end
+  end
+  if not placed then adapter:destroy();s.pendingGroup=nil;for _,created in ids do D.remove(s,created,now) end;return nil end
+ end
+ s.pendingGroup=nil;return first
+end
 function D.tickSpawn(s:any,now:number):string?
  s.now=now
  if not s.d.spawn.next(s.clock,s.p,s.naturalCount,now) then return nil end
- local id=D.spawnOne(s,now,true)
+ local id=D.spawnGroup(s,now)
  s.d.spawn.result(s.clock,s.p,s.naturalCount,now,id~=nil)
  return id
 end
@@ -237,6 +257,7 @@ function D.step(s:any,dt:number,now:number)
   if not adapter.alive then
    if not r.deathAt then
     r.deathAt=now;adapter:beginDeath()
+    if s.ecology then s.d.ecology.leave(s.ecology,id) end
     if s.space then s.d.separation.remove(s.space,id) end
     if r.foodKey then s.d.food.release(s.food,r.foodKey,id);r.foodKey=nil end
    end
