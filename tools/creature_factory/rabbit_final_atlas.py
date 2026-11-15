@@ -53,24 +53,69 @@ for rid,(name,slot) in enumerate(slots.items(),1):
             row.append(vertmap[key])
         faces.append(row)
     v=np.asarray(verts,np.float32);f=np.asarray(faces,np.uint32);col=np.asarray(colors)
-    at=xatlas.Atlas();at.add_mesh(v,f)
-    co=xatlas.ChartOptions();co.max_iterations=4
-    po=xatlas.PackOptions();po.resolution=max(slot[2:]);po.padding=12;po.bilinear=True
-    at.generate(chart_options=co,pack_options=po)
-    vm,ix,uv=at[0];assert np.array_equal(vm[ix],f),"Atlas changed face correspondence"
-    # Preserve chart aspect ratio and reserve a 20px region margin at 4K.
+    # xatlas may weld UVs of microscopic 3D slivers into a zero-area face.
+    # Normalize the region before charting; try lower chart cost and a larger
+    # packing resolution, then independently validate every triangle.
+    geo=v[f].astype(np.float64)
+    area3=np.linalg.norm(np.cross(geo[:,1]-geo[:,0],geo[:,2]-geo[:,0]),axis=1)*.5
+    assert np.all(area3>0),("Degenerate source face",name)
     x,y,w,h=slot;pad=20
-    scale=min((w-2*pad)/at.width,(h-2*pad)/at.height)
-    xy=uv*np.array([at.width,at.height])*scale
-    xy+=np.array([x+(w-at.width*scale)/2,y+(h-at.height*scale)/2])
-    assert np.all(xy[:,0]>x) and np.all(xy[:,0]<x+w) and np.all(xy[:,1]>y) and np.all(xy[:,1]<y+h)
-    q=xy[ix];facecol=col[f]
-    geo=v[f];area3=np.linalg.norm(np.cross(geo[:,1]-geo[:,0],geo[:,2]-geo[:,0]),axis=1)*.5
-    area2=np.abs((q[:,1,0]-q[:,0,0])*(q[:,2,1]-q[:,0,1])-(q[:,1,1]-q[:,0,1])*(q[:,2,0]-q[:,0,0]))*.5
-    assert np.all(np.isfinite(q)) and np.all(area2>1e-10),"Degenerate UV"
+    def area_uv(q):
+        return np.abs((q[:,1,0]-q[:,0,0])*(q[:,2,1]-q[:,0,1])-(q[:,1,1]-q[:,0,1])*(q[:,2,0]-q[:,0,0]))*.5
+    best=None
+    vv=np.ascontiguousarray((v.astype(np.float64)-v.astype(np.float64).mean(axis=0))*100,np.float32)
+    for cost,iterations,res in ((2.0,4,max(w,h)),(1.0,2,4096),(.5,1,4096)):
+        at=xatlas.Atlas();at.add_mesh(vv,f)
+        co=xatlas.ChartOptions();co.max_iterations=iterations;co.max_cost=cost
+        po=xatlas.PackOptions();po.resolution=res;po.padding=12;po.bilinear=True
+        at.generate(chart_options=co,pack_options=po)
+        vm,ix,uv=at[0];assert np.array_equal(vm[ix],f),"Atlas changed face correspondence"
+        # float64 avoids precision loss when placing a small chart far from origin.
+        local=uv.astype(np.float64)*np.array([at.width,at.height],np.float64)
+        bad=area_uv(local[ix])<=1e-12
+        candidate=(int(bad.sum()),local,ix.copy(),int(at.chart_count),at.width,at.height,cost)
+        if best is None or candidate[0]<best[0]:best=candidate
+        print("chart attempt",name,cost,"degenerate",int(bad.sum()),flush=True)
+        if not bad.any():break
+    bad_count,local,ix,chart_count,aw,ah,cost=best
+    # Preserve all valid charts. For truly unparametrizable microscopic faces,
+    # create exact local planar UVs in a separate reserved strip. Never discard
+    # geometry, silently allow a collapsed UV, or move existing chart corners.
+    reserve=64 if bad_count else 0
+    scale=min((w-2*pad)/(aw),(h-2*pad-reserve)/(ah))
+    xy=local*scale+np.array([x+(w-aw*scale)/2,y+(h-reserve-ah*scale)/2])
+    q=xy[ix].copy()
+    micro=[]
+    if bad_count:
+        bad=np.flatnonzero(area_uv(q)<=1e-10)
+        assert len(bad)<=max(12,int(.002*len(f))),("Too many invalid faces; requires chart redesign",name,len(bad))
+        assert np.all(area3[bad]<1e-5),("Non-microscopic face needs chart redesign",name,area3[bad].max())
+        # Each tiny triangle receives a mathematically exact planar chart, with
+        # a uniform minimum footprint and 12px gutters. All corners remain
+        # paintable. Only these diagnosed faces acquire an extra seam.
+        cols=max(1,(w-2*pad)//36)
+        assert len(bad)<=cols,("Insufficient microchart space",name,len(bad))
+        newxy=list(xy);newix=ix.copy()
+        for k,face_id in enumerate(bad):
+            p=geo[face_id];e=p[1]-p[0];u=e/np.linalg.norm(e)
+            normal=np.cross(e,p[2]-p[0]);normal/=np.linalg.norm(normal);vaxis=np.cross(normal,u)
+            pp=np.column_stack([(p-p[0])@u,(p-p[0])@vaxis]);pp-=pp.min(axis=0)
+            pp*=9/max(np.ptp(pp,axis=0).max(),1e-12)
+            pp+=np.array([x+pad+36*k+12,y+h-reserve+22])
+            q[face_id]=pp;newix[face_id]=np.arange(len(newxy),len(newxy)+3)
+            newxy.extend(pp)
+            micro.append({"face":int(face_id),"worldArea":float(area3[face_id])})
+        xy=np.asarray(newxy);ix=newix
+        chart_count+=len(micro)
+    assert np.all(q[:,:,0]>x) and np.all(q[:,:,0]<x+w) and np.all(q[:,:,1]>y) and np.all(q[:,:,1]<y+h)
+    facecol=col[f];area2=area_uv(q)
+    assert np.all(np.isfinite(q)) and np.all(area2>1e-10),("Degenerate UV",name)
+    # Confirm precision survives actual Blender/glTF float32 UV storage.
+    stored=(q/size).astype(np.float32).astype(np.float64)*size
+    assert np.all(area_uv(stored)>1e-10),("UV precision collapse",name)
     valid=(area3>1e-9)&(area2>1e-5)
     dens=np.sqrt(area2[valid]/area3[valid])
-    stats[name]={"triangles":len(f),"charts":int(at.chart_count),"slot":list(slot),"pixelArea":float(area2.sum()),"texelsPerStudMedian":float(np.median(dens)),"texelsPerStudP10":float(np.percentile(dens,10)),"texelsPerStudP90":float(np.percentile(dens,90))}
+    stats[name]={"triangles":len(f),"charts":chart_count,"chartCost":cost,"microcharts":micro,"slot":list(slot),"pixelArea":float(area2.sum()),"texelsPerStudMedian":float(np.median(dens)),"texelsPerStudP10":float(np.percentile(dens,10)),"texelsPerStudP90":float(np.percentile(dens,90))}
     all_area+=area2.sum();all_tri+=len(f)
     for j,(i,k) in enumerate(pairs):uvs[i][a[f"l{i}"][k]]=q[j]/size
     # True chart boundary: UV vertex split indices, not mesh topology.
