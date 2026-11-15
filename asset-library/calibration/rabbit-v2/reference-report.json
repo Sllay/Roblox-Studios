@@ -1,0 +1,30 @@
+{
+  "hero": {
+    "size": [
+      1312,
+      1199
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      1302,
+      1199
+    ],
+    "transparent_fraction": 0.7450206218596798,
+    "reference_sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424"
+  },
+  "views": {
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha_bbox": [
+      0,
+      2,
+      1253,
+      1254
+    ],
+    "transparent_fraction": 0.601445708660516,
+    "reference_sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4"
+  }
+}
