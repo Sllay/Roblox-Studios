@@ -3,13 +3,14 @@
 local D={}
 function D.new(deps:any,policy:any,template:Model,parent:Instance,seed:number):any
  local regions=deps.biomes.regions(policy.biomeId);assert(#regions>0)
- local caps={global=policy.maximum,active=policy.maximum,perChunk=3,perBiome={[policy.biomeId]=policy.maximum},perSpecies={[policy.speciesId]=policy.maximum}}
- return {space=if deps.separation then (deps.separationSpace or deps.separation.new(8)) else nil,d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},developerIds={},developerIndex={},naturalIds={},naturalIndex={},developerCursor=1,closed=false}
+ local caps={global=policy.maximum,active=policy.maximum,perChunk=policy.perChunk or 3,perBiome={[policy.biomeId]=policy.maximum},perSpecies={[policy.speciesId]=policy.maximum}}
+ return {ecology=deps.ecologyState,profile=policy.wildlifeProfile,space=if deps.separation then (deps.separationSpace or deps.separation.new(8)) else nil,d=deps,p=policy,template=template,parent=parent,regions=regions,budget=deps.population.new(caps),clock=deps.spawn.new(),agents={},rng=Random.new(seed),cursor=1,food=deps.food.new(256),now=0,lastPrune=0,attempts=0,foodConsumed=0,naturalCount=0,developerCount=0,developerJobs={},developerIds={},developerIndex={},naturalIds={},naturalIndex={},developerCursor=1,closed=false}
 end
 function D.count(s:any):number return s.budget.total+s.developerCount end
 function D.remove(s:any,id:string,now:number?):boolean
  local r=s.agents[id];if not r then return false end
  if s.space then s.d.separation.remove(s.space,id) end
+ if s.ecology then s.d.ecology.leave(s.ecology,id) end
  local list=if r.origin=="Natural" then s.naturalIds else s.developerIds
  local index=if r.origin=="Natural" then s.naturalIndex else s.developerIndex
  local slot=index[id];if slot then local last=list[#list];list[slot]=last;index[last]=slot;table.remove(list);index[id]=nil end
@@ -38,6 +39,7 @@ end
 local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin:string,now:number):string
  local d,p=s.d,s.p
  adapter.home=adapter:position()
+ if s.profile then adapter.options.roamRadius=s.profile.roamRadius;adapter.options.freeRoam=s.profile.groupKind=="Companion" end
  if s.space then
   local radius=math.max(adapter.mesh.Size.X,adapter.mesh.Size.Z)*.5
   local function update() local p=adapter:position();d.separation.put(s.space,id,p.X,p.Z,radius) end
@@ -67,6 +69,10 @@ local function finish(s:any,species:any,adapter:any,model:Model,id:string,origin
   record.agent=d.factory.new(d,species,adapter,actor,d.combatState)
  else record.agent=d.agent.new(d.brain,d.kernel,adapter) end
  s.agents[id]=record
+ if s.ecology and s.profile and origin=="Natural" and s.profile.groupKind~="Solo" then
+  local pos=adapter:position();local g=s.pendingGroup or d.ecology.create(s.ecology,p.speciesId,s.profile,{x=pos.X,z=pos.Z},now)
+  if g then d.ecology.join(s.ecology,g,id);model:SetAttribute("CreatureGroupId",g.id) end
+ end
  local list=if origin=="Natural" then s.naturalIds else s.developerIds
  local index=if origin=="Natural" then s.naturalIndex else s.developerIndex
  table.insert(list,id);index[id]=#list
@@ -162,6 +168,49 @@ end
 function D.cancelDeveloperNear(s:any,position:Vector3,radius:number,speciesId:string?)
  for _,j in pairs(s.developerJobs) do
   if not j.done and (not speciesId or j.plan.speciesId==speciesId) and (j.position-position).Magnitude<=radius then j.done=true;j.reason="cancelled by kill command" end
+ end
+end
+function D.tickEcology(s:any,now:number)
+ if not s.ecology or not s.profile then return end
+ local d=s.d;local groups=s.ecology.groups
+ for _,g in pairs(groups) do
+  if g.species~=s.p.speciesId then continue end
+  if g.profile.groupKind=="Companion" and g.count==1 then
+   local id=next(g.members);local a=s.agents[id]
+   if a then for other,h in pairs(groups) do
+    if other~=g.id and h.species==g.species and h.count==1 then
+     local bid=next(h.members);local b=s.agents[bid]
+     if b and (a.adapter:position()-b.adapter:position()).Magnitude<12 and d.ecology.pair(s.ecology,id,bid) then b.adapter.model:SetAttribute("CreatureGroupId",g.id);break end
+    end
+   end end
+  end
+  if not g.profile.migrationSeconds then continue end
+  if g.destination then
+   local arrived=true;local failed=false
+   for id in pairs(g.members) do local r=s.agents[id];if r then
+    if r.adapter.travelTarget then arrived=false elseif (r.adapter:position()-Vector3.new(g.destination.x,0,g.destination.z))*Vector3.new(1,0,1) then
+     local p=r.adapter:position();if Vector2.new(p.X-g.destination.x,p.Z-g.destination.z).Magnitude>g.radius then failed=true end
+    end
+   end end
+   if failed or now-g.started>600 then
+    for id in pairs(g.members) do local r=s.agents[id];if r then r.adapter:setTravelTarget(nil) end end;d.ecology.finish(g,now,false)
+   elseif arrived then
+    d.ecology.finish(g,now,true);for id in pairs(g.members) do local r=s.agents[id];if r then r.adapter.home=Vector3.new(g.center.x,0,g.center.z);r.adapter.exploreTarget=nil end end
+   end
+  elseif now>=g.nextMigration then
+   local first=s.agents[next(g.members)];if not first then continue end
+   local found=false
+   for _=1,8 do
+    local region=s.regions[s.rng:NextInteger(1,#s.regions)];local x=s.rng:NextNumber(region.minX+8,region.maxX-8);local z=s.rng:NextNumber(region.minZ+8,region.maxZ-8)
+    local center=first.adapter:ground(x,z);if not center then continue end
+    local targets={};local n=0;local valid=true
+    for id in pairs(g.members) do n+=1;local r=s.agents[id];local angle=n*2.399963;local radius=math.sqrt(n)*4;local target=r.adapter:ground(x+math.cos(angle)*radius,z+math.sin(angle)*radius);if not target then valid=false;break end;targets[id]=target end
+    if valid and d.ecology.begin(s.ecology,g,{x=x,z=z},now) then
+     for id,target in pairs(targets) do s.agents[id].adapter:setTravelTarget(target) end;found=true;break
+    end
+   end
+   if not found then g.nextMigration=now+15 end
+  end
  end
 end
 function D.tickSpawn(s:any,now:number):string?
