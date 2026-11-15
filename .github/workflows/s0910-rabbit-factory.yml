@@ -1,0 +1,51 @@
+name: S09.10 Rabbit Geometry Candidate
+on:
+  push:
+    branches: [feat/s0910-wildlife]
+    paths:
+      - '.github/workflows/s0910-rabbit-factory.yml'
+      - 'tools/creature_factory/rabbit_v1.py'
+      - 'asset-library/creature-queue/rabbit-v1.json'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: s0910-rabbit-factory
+  cancel-in-progress: false
+jobs:
+  rabbit:
+    if: github.ref == 'refs/heads/feat/s0910-wildlife'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Blender
+        run: sudo apt-get update && sudo apt-get install -y blender xvfb python3-numpy python3-pil python3-scipy libgl1-mesa-dri
+      - name: Author, render and roundtrip GLB
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/creature_factory/rabbit_v1.py -- "$PWD/asset-library/creature-queue/rabbit-v1.json" "$PWD/dist/creature/rabbit-v1"
+      - name: Archive candidate on wildlife branch
+        run: |
+          set -euo pipefail
+          revision="asset-library/candidates/rabbit-v1-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python3 tools/asset_factory/persist_candidates.py dist/creature/rabbit-v1 "$revision"
+          git config user.name "asset-factory[bot]"
+          git config user.email "asset-factory[bot]@users.noreply.github.com"
+          git add "$revision"
+          git commit -m "assets(s0910): archive rabbit candidate ${GITHUB_RUN_ID}"
+          for attempt in 1 2 3; do
+            git fetch origin feat/s0910-wildlife
+            git rebase origin/feat/s0910-wildlife
+            if git push origin HEAD:refs/heads/feat/s0910-wildlife; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s0910-rabbit-v1
+          path: dist/creature/rabbit-v1/
+          if-no-files-found: warn
