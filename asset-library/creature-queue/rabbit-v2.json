@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "id": "rabbit-v2",
+  "backend": "reference-pixel-organic",
+  "references": {
+    "hero": "asset-library/references/rabbit-v1/hero.png",
+    "views": "asset-library/references/rabbit-v1/views.png"
+  },
+  "runtimeVertexBudget": 20000,
+  "budgetAppliesTo": "exported GLB POSITION vertex count including seams and whiskers",
+  "masterBudget": "unrestricted offline sculpt",
+  "whiskers": {
+    "count": 6,
+    "perSide": 3,
+    "closed": true,
+    "headBindingRequired": true
+  },
+  "status": "reconstruction_candidate",
+  "approvalRequired": true,
+  "publication": false
+}
