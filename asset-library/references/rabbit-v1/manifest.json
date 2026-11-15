@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "id": "rabbit-v1",
+  "status": "approved-design-binary-pending",
+  "template": "docs/ASSET_CONCEPT_PROMPT_TEMPLATE.md",
+  "references": {
+    "hero": {
+      "path": "hero.png",
+      "sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424",
+      "size": [
+        1312,
+        1199
+      ]
+    },
+    "views": {
+      "path": "views.png",
+      "sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  },
+  "requirements": {
+    "whiskers": 6,
+    "whiskersPerSide": 3,
+    "whiskerGeometry": "six tapered closed mesh strands, head weighted, no alpha cards",
+    "style": "match approved hero silhouette and palette",
+    "triangleBudget": 6500,
+    "publication": false
+  },
+  "next": "Commit original PNGs before running image-conditioned or authored rabbit backend; validate actual mesh renders and whisker count."
+}
