@@ -160,13 +160,35 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
   local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
   local q=p+target*step;local g=self:ground(q.X,q.Z)
-  if not g or (self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
+  if not g or (not self.travelTarget and self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
   local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);hitbox.CFrame=mesh.CFrame;self.moveDistance+=step
   if self.options.onMoved then self.options.onMoved() end
   return true
  end
+ function self:setTravelTarget(target:Vector3?)
+  self.travelTarget=target;self.travelSearch=nil;self.travelIndex=1;self.goal=nil
+ end
+ function self:travelStep(dt:number):string
+  local planner=self.options.longRoute;local target=self.travelTarget
+  if not planner or not target then return "Failure" end
+  local p=self:position()
+  if horizontal(target-p).Magnitude<1 then self:setTravelTarget(nil);return "Success" end
+  if not self.travelSearch then self.travelSearch=planner.new(p.X,p.Z,target.X,target.Z,3,2048) end
+  local search=self.travelSearch
+  local status=planner.advance(search,4,function(x:number,z:number,tx:number,tz:number)
+   local a=self:ground(x,z);local b=self:ground(tx,tz);return a~=nil and b~=nil and self:route(a,b)
+  end)
+  if status=="Failed" then self:setTravelTarget(nil);return "Failure" end
+  if status~="Ready" then return "Running" end
+  local node=search.path[self.travelIndex];local goal=if node then self:ground(node.x,node.z) else target
+  if not goal then self:setTravelTarget(nil);return "Failure" end
+  if horizontal(goal-p).Magnitude<.25 and node then self.travelIndex+=1;return "Running" end
+  if not self:moveToward(goal,self.stats.walkSpeed,dt) then self.travelSearch=nil;self.travelIndex=1;return "Running" end
+  self:animate("Walk",1);return "Running"
+ end
  function self:execute(intent:any,dt:number):string
   local action=intent.action
+  if self.travelTarget and (action=="Wander" or action=="Stop" or action=="SeekFood") and intent.state~="Static" and intent.state~="Dead" then return self:travelStep(dt) end
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
   if not moving then
    if action=="Peck" or action=="Flap" then
