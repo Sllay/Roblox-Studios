@@ -12,6 +12,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
  local hitbox=Instance.new("Part");hitbox.Name="CreatureHitbox";hitbox.Size=mesh.Size+Vector3.new(.6,.6,.6);hitbox.Transparency=1;hitbox.Anchored=true;hitbox.CanCollide=false;hitbox.CanTouch=false;hitbox.CanQuery=true;hitbox.CFrame=mesh.CFrame;hitbox.Parent=model
  self.hitbox=hitbox
+ game:GetService("CollectionService"):AddTag(mesh,"CreatureVisual")
  local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={model};ray.IgnoreWater=false
  local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude;overlap.FilterDescendantsInstances={model};overlap.MaxParts=16;overlap.RespectCanCollide=true
  local groundRay=RaycastParams.new();groundRay.FilterType=Enum.RaycastFilterType.Include;groundRay.FilterDescendantsInstances={world.Terrain};groundRay.IgnoreWater=false
