@@ -12,8 +12,13 @@ RunService.PreRender:Connect(function(dt:number)
  if not camera then return end
  for _,instance in CollectionService:GetTagged("CreatureVisual") do
   if not instance:IsA("BasePart") then continue end
-  local model=instance.Parent
-  local hitbox=if model then model:FindFirstChild("CreatureHitbox") else nil
+  local ancestor=instance.Parent
+  local hitbox:Instance?=nil
+  while ancestor and ancestor~=workspace do
+   hitbox=ancestor:FindFirstChild("CreatureHitbox")
+   if hitbox then break end
+   ancestor=ancestor.Parent
+  end
   if not hitbox or not hitbox:IsA("BasePart") or not hitbox.CanQuery or not instance.Anchored then
    poses[instance]=nil
    continue
@@ -28,7 +33,7 @@ RunService.PreRender:Connect(function(dt:number)
   local pose=previous:Lerp(target,1-math.exp(-24*math.min(dt,.1)))
   local offset=pose.Position-target.Position
   -- Stay inside the server hitbox's extra .3 stud margin.
-  if offset.Magnitude>.25 then pose=pose.Rotation+target.Position+offset.Unit*.25 end
+  if offset.Magnitude>.25 then pose=pose.Rotation+(target.Position+offset.Unit*.25) end
   -- Bound angular error too; the server hitbox remains the aim authority.
   local _,angle=target:ToObjectSpace(pose):ToAxisAngle()
   if math.abs(angle)>math.rad(8) then pose=target:Lerp(pose,math.rad(8)/math.abs(angle)) end
