@@ -1,0 +1,83 @@
+{
+  "height": 3.6,
+  "maps": {
+    "front": {
+      "box": [
+        0,
+        0,
+        250,
+        475
+      ],
+      "center": 128.0,
+      "bottom": 461,
+      "top": 14,
+      "scale": 0.008053691275167786,
+      "axis": 0,
+      "sign": 1
+    },
+    "right": {
+      "box": [
+        250,
+        0,
+        500,
+        475
+      ],
+      "center": 122.5,
+      "bottom": 461,
+      "top": 11,
+      "scale": 0.008,
+      "axis": 1,
+      "sign": 1
+    },
+    "left": {
+      "box": [
+        500,
+        0,
+        750,
+        475
+      ],
+      "center": 127.5,
+      "bottom": 461,
+      "top": 11,
+      "scale": 0.008,
+      "axis": 1,
+      "sign": -1
+    },
+    "back": {
+      "box": [
+        750,
+        0,
+        1000,
+        475
+      ],
+      "center": 127.5,
+      "bottom": 457,
+      "top": 15,
+      "scale": 0.008144796380090498,
+      "axis": 0,
+      "sign": -1
+    }
+  },
+  "source": {
+    "hero": {
+      "path": "hero.png",
+      "sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424",
+      "size": [
+        1312,
+        1199
+      ]
+    },
+    "views": {
+      "path": "views.png",
+      "sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  },
+  "method": "pixel intervals + rounded cross-sections + traced anatomical relief",
+  "landmarkRegions": 39,
+  "masterVertices": 96057,
+  "masterTriangles": 192110
+}
