@@ -12,7 +12,7 @@ local Gameplay=get("BookGameplay")
 local Remote=get("BookServer")
 local CombatWorld=get("CombatWorld")
 local combatState=CombatWorld.new(workspace,get("CombatSpatialIndex"),get("CombatRules"),64)
-local deps={separation=get("LocalSeparation"),factory=get("CreatureAgentFactory"),profiles=get("CombatProfiles"),combatBrain=get("CombatBrain"),combatWorld=CombatWorld,combatState=combatState,combatAdapter=get("CombatAdapter"),targetSelector=get("CombatTargets"),registry=Registry,brain=get("MobBrain"),kernel=get("AIKernel"),escape=get("EscapePlanner"),adapter=get("RobloxMobAdapter"),agent=get("AgentRuntime"),population=get("PopulationBudget"),spawn=get("SpawnPolicy"),biomes=get("BiomeRegions"),food=get("FoodSites"),scheduler=get("SimulationBudget"),director=Director}
+local deps={separation=get("LocalSeparation"),longRoute=get("LongRoute"),factory=get("CreatureAgentFactory"),profiles=get("CombatProfiles"),combatBrain=get("CombatBrain"),combatWorld=CombatWorld,combatState=combatState,combatAdapter=get("CombatAdapter"),targetSelector=get("CombatTargets"),registry=Registry,brain=get("MobBrain"),kernel=get("AIKernel"),escape=get("EscapePlanner"),adapter=get("RobloxMobAdapter"),agent=get("AgentRuntime"),population=get("PopulationBudget"),spawn=get("SpawnPolicy"),biomes=get("BiomeRegions"),food=get("FoodSites"),scheduler=get("SimulationBudget"),director=Director}
 local assets=assert(game:GetService("ServerStorage"):WaitForChild("RSCreatureAssets",10),"Missing reviewed creature assets")
 local stored=assert(assets:WaitForChild("ChickenV2",10),"Missing ChickenV2 template")
 assert(stored:IsA("Model") and stored:GetAttribute("RSAssetId")==Registry.get("210080").modelAssetId,"Chicken template identity")
