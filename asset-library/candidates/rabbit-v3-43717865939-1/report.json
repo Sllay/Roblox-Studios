@@ -1,0 +1,569 @@
+{
+  "schema": 3,
+  "id": "rabbit-v3",
+  "category": "creature",
+  "state": "needs_visual_review",
+  "backend": "TripoSR CPU, learned triplane density and color",
+  "model": {
+    "repo": "VAST-AI-Research/TripoSR",
+    "codeRevision": "107cefdc244c39106fa830359024f6a2f1c78871",
+    "checkpoint": "stabilityai/TripoSR",
+    "checkpointRevision": "c1cf7716aed5aa6c1c5e174657791ef0e1327bde",
+    "checkpointSHA256": "429e2c6b22a0923967459de24d67f05962b235f79cde6b032aa7ed2ffcd970ee",
+    "license": "MIT"
+  },
+  "sourceReferences": {
+    "hero": {
+      "path": "hero.png",
+      "sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424",
+      "size": [
+        1312,
+        1199
+      ]
+    },
+    "views": {
+      "path": "views.png",
+      "sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  },
+  "conditioning": "approved hero, isolated silhouette, whisker strokes removed",
+  "masterVertices": 25242,
+  "masterTriangles": 50484,
+  "bodyVertices": 25242,
+  "bodyTriangles": 50484,
+  "atlasVertices": 38777,
+  "atlasSize": 2048,
+  "atlasCoverage": 0.4175755977630615,
+  "orientation": {
+    "yawDegrees": -115,
+    "scale": 3.5330037234660487,
+    "referenceAlignmentIoU": {
+      "front": 0.8047344461305007,
+      "right": 0.5200022827141472,
+      "left": 0.5146589094227698,
+      "back": 0.7932704246337223
+    }
+  },
+  "topology": {
+    "connectedComponents": 3,
+    "retainedAreaFraction": 0.9997996761687189,
+    "reductionMethod": "none_full_resolution",
+    "masterEuler": 0,
+    "runtimeEuler": 0,
+    "runtimeWatertight": true
+  },
+  "elapsedCPUSeconds": 84.36,
+  "artisticApproval": false,
+  "robloxPublished": false,
+  "rigged": false,
+  "limitations": [
+    "Single-image neural inference estimates hidden anatomy; compare all original multiview references.",
+    "Neural colors are candidate albedo, not final material or painted correction.",
+    "Full-resolution review candidate; Roblox runtime mesh partition and animation retopology are separate gates.",
+    "Multiview silhouette fitting does not independently resolve facial detail or hidden concavities."
+  ],
+  "checkpointProvenance": {
+    "runId": 43681469940,
+    "artifactId": 14148598078,
+    "sourceCommit": "dc22e0c0c04f2683163606999685fcb166890050"
+  },
+  "microTopologyRepair": {
+    "collapses": [
+      {
+        "edgeLength": 1.3709068298339844e-06,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 1.9661191032791528e-12
+      },
+      {
+        "edgeLength": 1.3334666085956749e-06,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 2.097254729294028e-12
+      },
+      {
+        "edgeLength": 9.020804111215666e-06,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 7.293916480252214e-11
+      },
+      {
+        "edgeLength": 8.086114812916587e-06,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 1.2864169142858185e-10
+      },
+      {
+        "edgeLength": 1.4554447460390265e-05,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 2.6678165925384063e-10
+      },
+      {
+        "edgeLength": 1.2402493465066824e-05,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 3.1900985583901937e-10
+      },
+      {
+        "edgeLength": 1.4782222285797332e-05,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 4.066731152426689e-10
+      },
+      {
+        "edgeLength": 1.3409621110129408e-05,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 4.550183905807963e-10
+      },
+      {
+        "edgeLength": 2.4584947131540684e-05,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 6.180396514917871e-10
+      },
+      {
+        "edgeLength": 1.791127013668668e-05,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 6.970536489979646e-10
+      },
+      {
+        "edgeLength": 1.6102081985844582e-05,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 7.597538806500229e-10
+      },
+      {
+        "edgeLength": 2.353932618178651e-05,
+        "removedFaces": 2,
+        "minDoubleAreaBefore": 8.118422978996819e-10
+      }
+    ],
+    "removedFaces": 24,
+    "euler": 0,
+    "minDoubleAreaAfter": 1.2595730029902535e-09
+  },
+  "originalMasterTriangles": 50508,
+  "originalMasterVertices": 25254,
+  "calibrationFit": {
+    "method": "smooth positive-scale cross-section deformation",
+    "before": {
+      "front": 0.8036407544401308,
+      "right": 0.5166098197139499,
+      "left": 0.5176766587592553,
+      "back": 0.7950754318768076
+    },
+    "after": {
+      "front": 0.8806266692723601,
+      "right": 0.9545409644980936,
+      "left": 0.9564743424573365,
+      "back": 0.8705135468390709
+    },
+    "yawOffset": 10,
+    "smoothingSigma": 2.0,
+    "strength": 1.0,
+    "maxVertexDisplacement": 0.88496517433592,
+    "faceCountAfterLocalizedRepair": 50484,
+    "topologyPreservedDuringFit": true,
+    "uvPreserved": true,
+    "trials": [
+      {
+        "yawOffset": -20,
+        "sigma": 2.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.8034879567654869,
+          "right": 0.7821252788498991,
+          "left": 0.7835956093922063,
+          "back": 0.8041487542550301
+        }
+      },
+      {
+        "yawOffset": -20,
+        "sigma": 2.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8681709634972464,
+          "right": 0.9475959261013738,
+          "left": 0.9494831478474395,
+          "back": 0.8628317108947859
+        }
+      },
+      {
+        "yawOffset": -20,
+        "sigma": 4.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.7927502699367577,
+          "right": 0.7760694008534048,
+          "left": 0.7771687236977048,
+          "back": 0.7922170596723808
+        }
+      },
+      {
+        "yawOffset": -20,
+        "sigma": 4.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8492822581941519,
+          "right": 0.9229974865070242,
+          "left": 0.9250381261486724,
+          "back": 0.8451933227764582
+        }
+      },
+      {
+        "yawOffset": -10,
+        "sigma": 2.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.8369865624702182,
+          "right": 0.7742716730306888,
+          "left": 0.77576789387813,
+          "back": 0.8331160789936779
+        }
+      },
+      {
+        "yawOffset": -10,
+        "sigma": 2.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8732931037302327,
+          "right": 0.9509511486873555,
+          "left": 0.9524224710195185,
+          "back": 0.8653646444005226
+        }
+      },
+      {
+        "yawOffset": -10,
+        "sigma": 4.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.8226953702829446,
+          "right": 0.7673084368730422,
+          "left": 0.7683116241307494,
+          "back": 0.8203146474364157
+        }
+      },
+      {
+        "yawOffset": -10,
+        "sigma": 4.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8543819643232579,
+          "right": 0.9275039993757072,
+          "left": 0.9292634710614394,
+          "back": 0.8475972615909957
+        }
+      },
+      {
+        "yawOffset": 0,
+        "sigma": 2.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.8649266956661833,
+          "right": 0.7845662567703463,
+          "left": 0.7856498274794302,
+          "back": 0.8541673532610486
+        }
+      },
+      {
+        "yawOffset": 0,
+        "sigma": 2.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8795784098720173,
+          "right": 0.9530406941122992,
+          "left": 0.9546572029025735,
+          "back": 0.869822980690325
+        }
+      },
+      {
+        "yawOffset": 0,
+        "sigma": 4.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.8477658082610913,
+          "right": 0.7773134328358209,
+          "left": 0.7783452502553626,
+          "back": 0.8379233315397283
+        }
+      },
+      {
+        "yawOffset": 0,
+        "sigma": 4.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8565479169020678,
+          "right": 0.9317057915208851,
+          "left": 0.9341088312605438,
+          "back": 0.8473282442748091
+        }
+      },
+      {
+        "yawOffset": 10,
+        "sigma": 2.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.8619823337387186,
+          "right": 0.7955733981300512,
+          "left": 0.7964823676914655,
+          "back": 0.8426150515228964
+        }
+      },
+      {
+        "yawOffset": 10,
+        "sigma": 2.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8806266692723601,
+          "right": 0.9545409644980936,
+          "left": 0.9564743424573365,
+          "back": 0.8705135468390709
+        }
+      },
+      {
+        "yawOffset": 10,
+        "sigma": 4.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.8439358471466532,
+          "right": 0.7895179814486858,
+          "left": 0.7903407292802138,
+          "back": 0.8265212418037409
+        }
+      },
+      {
+        "yawOffset": 10,
+        "sigma": 4.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8548632828161334,
+          "right": 0.9335990154134678,
+          "left": 0.9357310858486868,
+          "back": 0.8441765091863517
+        }
+      },
+      {
+        "yawOffset": 20,
+        "sigma": 2.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.8323610828732738,
+          "right": 0.8069525975285138,
+          "left": 0.8077779741912675,
+          "back": 0.8048409580534787
+        }
+      },
+      {
+        "yawOffset": 20,
+        "sigma": 2.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8749153089207937,
+          "right": 0.9515674012113082,
+          "left": 0.9521294483017823,
+          "back": 0.8653979467203644
+        }
+      },
+      {
+        "yawOffset": 20,
+        "sigma": 4.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.818494477063936,
+          "right": 0.8005581983183837,
+          "left": 0.8019723518534825,
+          "back": 0.7946747143238868
+        }
+      },
+      {
+        "yawOffset": 20,
+        "sigma": 4.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8493531232637511,
+          "right": 0.9284419407029103,
+          "left": 0.9294929434301575,
+          "back": 0.839417362216232
+        }
+      },
+      {
+        "yawOffset": 30,
+        "sigma": 2.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.7987512816196612,
+          "right": 0.8189193976970771,
+          "left": 0.8197772527843402,
+          "back": 0.7723974323192855
+        }
+      },
+      {
+        "yawOffset": 30,
+        "sigma": 2.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8658978741075565,
+          "right": 0.9444061928274939,
+          "left": 0.9441048895899053,
+          "back": 0.8584868614810695
+        }
+      },
+      {
+        "yawOffset": 30,
+        "sigma": 4.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.7889709009173197,
+          "right": 0.8111391244556497,
+          "left": 0.8125497409051519,
+          "back": 0.7655609335018652
+        }
+      },
+      {
+        "yawOffset": 30,
+        "sigma": 4.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8414095531490184,
+          "right": 0.9180019398642095,
+          "left": 0.918691279737011,
+          "back": 0.8341010855909545
+        }
+      },
+      {
+        "yawOffset": 40,
+        "sigma": 2.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.7734037082967847,
+          "right": 0.8259077526987242,
+          "left": 0.8275991694114277,
+          "back": 0.7474218115508972
+        }
+      },
+      {
+        "yawOffset": 40,
+        "sigma": 2.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.863773837190793,
+          "right": 0.9313981065877418,
+          "left": 0.9312234794908062,
+          "back": 0.855003259452412
+        }
+      },
+      {
+        "yawOffset": 40,
+        "sigma": 4.0,
+        "strength": 0.7,
+        "scores": {
+          "front": 0.7662091670299604,
+          "right": 0.8159541835848153,
+          "left": 0.8173572825893651,
+          "back": 0.7425635396179238
+        }
+      },
+      {
+        "yawOffset": 40,
+        "sigma": 4.0,
+        "strength": 1.0,
+        "scores": {
+          "front": 0.8371772589913414,
+          "right": 0.902243156634879,
+          "left": 0.9025272853936063,
+          "back": 0.8296749987974795
+        }
+      }
+    ]
+  },
+  "exportedVertices": 39816,
+  "vertexBudget": null,
+  "triangles": 51708,
+  "geometryPolicy": "unrestricted_artistic_candidate",
+  "referenceTriangleTarget": 50000,
+  "meshTriangles": {
+    "Rabbit_Neural_Body": 50484,
+    "Whisker_L_1": 204,
+    "Whisker_L_2": 204,
+    "Whisker_L_3": 204,
+    "Whisker_R_1": 204,
+    "Whisker_R_2": 204,
+    "Whisker_R_3": 204
+  },
+  "robloxPerMeshTriangleLimit": 20000,
+  "robloxOversizedMeshes": {
+    "Rabbit_Neural_Body": 50484
+  },
+  "robloxGeometryReady": false,
+  "runtimePackagingRequired": true,
+  "whiskers": 6,
+  "whiskerClosedMeshes": true,
+  "whiskerRootPositions": [
+    [
+      -0.10999999940395355,
+      -0.8352701663970947,
+      2.0199999809265137
+    ],
+    [
+      -0.11999999731779099,
+      -0.8274524211883545,
+      1.9850000143051147
+    ],
+    [
+      -0.12999999523162842,
+      -0.8444347381591797,
+      1.934999942779541
+    ],
+    [
+      0.10999999940395355,
+      -0.8496205806732178,
+      2.0199999809265137
+    ],
+    [
+      0.11999999731779099,
+      -0.837383508682251,
+      1.9850000143051147
+    ],
+    [
+      0.12999999523162842,
+      -0.7887442111968994,
+      1.934999942779541
+    ]
+  ],
+  "whiskerHeadBindingPlanned": true,
+  "uv": true,
+  "roundtrip": true,
+  "views": [
+    "front",
+    "right",
+    "left",
+    "back",
+    "top",
+    "bottom",
+    "three-quarter"
+  ],
+  "clayViews": [
+    "front",
+    "right",
+    "three-quarter"
+  ],
+  "silhouetteAudit": {
+    "front": {
+      "iou": 0.88063,
+      "referencePixels": 57678,
+      "candidatePixels": 57800
+    },
+    "right": {
+      "iou": 0.95454,
+      "referencePixels": 49526,
+      "candidatePixels": 49407
+    },
+    "left": {
+      "iou": 0.95643,
+      "referencePixels": 49289,
+      "candidatePixels": 49419
+    },
+    "back": {
+      "iou": 0.87051,
+      "referencePixels": 55771,
+      "candidatePixels": 56486
+    }
+  },
+  "silhouetteGatePassed": true
+}
