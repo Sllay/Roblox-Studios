@@ -221,3 +221,15 @@ assert(not CR.authorize(attack,melee,aa,tt,2,.5,2,true))
 assert(CR.authorize(attack,melee,aa,tt,2,2,2,true))
 assert(not CR.authorize(CR.new(),ranged,aa,tt,1,0,3,true))
 print("S09.5-F: predator prey filter, melee/ranged states, windup interruption, cooldown, spatial index and attack dedup passed")
+
+-- S09.10: species without chicken clips never select chicken-only routines.
+local W=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/WildlifeProfiles")
+assert(W.chicken.population+W.rabbit.population+W.cow.population+W.pig.population+W.sheep.population==64)
+assert(W.rabbit.groupKind=="Companion" and not W.rabbit.territorial and W.rabbit.groupMax==2)
+assert(W.cow.groupMax==8 and W.pig.exclusiveSameSpecies and W.sheep.groupMax==2)
+local generic=M.new()
+local gs:M.Sense={dt=2,alive=true,aiEnabled=true,hit=false,threatVisible=false,threatDistance=100,approachSpeed=0,predator=false,foodAvailable=true,atFood=true,pathBlocked=false,escapeAvailable=true,stuck=false,random=0,routineFood=false,routineFlap=false}
+for _=1,100 do local i=M.step(generic,gs);assert(i.state=="Idle" or i.state=="Explore") end
+assert(generic.hunger==.2)
+gs.hit=true;assert(M.step(generic,gs).state=="Flee")
+print("S09.10 wildlife profiles and optional passive routines passed")
