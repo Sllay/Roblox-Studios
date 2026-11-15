@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "20ef2b63b051e390330017525576d4731147d459",
+  "runId": "43725694005",
+  "files": [
+    {
+      "path": "asset.blend",
+      "bytes": 8372844,
+      "sha256": "25d3f62033b9cf633bf4d458517b8f01bf5c78731dbd970859d69e017e136d05"
+    },
+    {
+      "path": "asset.glb",
+      "bytes": 3949776,
+      "sha256": "5e59738741bf983ad90067ed307f601d7b3baa2e35c012f8c5a996035ff10662"
+    },
+    {
+      "path": "atlas-front.png",
+      "bytes": 611084,
+      "sha256": "2a817bf2e14fc0197be62786fd51d7be5ec92a37532512ee0bca958bd705317d"
+    },
+    {
+      "path": "atlas-input.json",
+      "bytes": 1024,
+      "sha256": "2ddaf6e3243d02dc6f39a81a7d1b677536846db205b9d0886c993974ee650cdc"
+    },
+    {
+      "path": "atlas-right.png",
+      "bytes": 571805,
+      "sha256": "d047d8f513c2e40f6e60076bc17ae609b07136e19dcde0ba71a006a0d0ac561e"
+    },
+    {
+      "path": "atlas-three-quarter.png",
+      "bytes": 614929,
+      "sha256": "27aa320b0ac3cad28b0f52a78611a0c1138e0578371318738b2a77c95fdee66f"
+    },
+    {
+      "path": "back.png",
+      "bytes": 605625,
+      "sha256": "16ccef373760118fd57ac0fbff49661f9bc9e4989cc93154b4734c2b70404cae"
+    },
+    {
+      "path": "clay-three-quarter.png",
+      "bytes": 521655,
+      "sha256": "dcefd758f85c0341fbe47d48638788763e51e2e2040eda56eb91c6534e7d0bc5"
+    },
+    {
+      "path": "front.png",
+      "bytes": 610459,
+      "sha256": "688a377d8f94eafd666966c29cd04b0f7a86a5161e5c4af4a646b1cee92c7413"
+    },
+    {
+      "path": "polish-report.json",
+      "bytes": 990,
+      "sha256": "856cbd7aae312f866c7399fe1df04d6561bfdb105772da15fd80d9138e14299a"
+    },
+    {
+      "path": "pose-front-left.png",
+      "bytes": 609799,
+      "sha256": "a5f779c87c617800093dacb1d257d6fa3a2341c7a4911f67c8cd80e83326151d"
+    },
+    {
+      "path": "pose-head.png",
+      "bytes": 608653,
+      "sha256": "0102f069a894106b78d2710870d4947f4c2f34c6009014d3dadc7b98411d4ab6"
+    },
+    {
+      "path": "pose-hind-right.png",
+      "bytes": 606594,
+      "sha256": "8847a0fdb8610eef81635851ab5ea04563b1b0eecdb382ecc9112933b721ce70"
+    },
+    {
+      "path": "rabbit_basecolor_2048.png",
+      "bytes": 1455835,
+      "sha256": "fa39136f747658596a3b57c86007b1ac91afd86b612cd967f3dc94ca10e7d8fe"
+    },
+    {
+      "path": "rabbit_basecolor_4096.png",
+      "bytes": 1600272,
+      "sha256": "98d3664cf08f52d9b9d270bd9e9b2f72af14138bcad1c14fd555210609d8db62"
+    },
+    {
+      "path": "rabbit_uv_islands_2048.png",
+      "bytes": 1209021,
+      "sha256": "a43e141fc13d79d8221c7f023ec0751e8f40994d67b6e40abe24b837e1d2c9a6"
+    },
+    {
+      "path": "rabbit_uv_islands_4096.png",
+      "bytes": 414623,
+      "sha256": "189e00c992a8732a6f6d323e6f87c27f6166ab0e84856fc1c95c700e8037e442"
+    },
+    {
+      "path": "rabbit_uv_regions_2048.png",
+      "bytes": 1346811,
+      "sha256": "c8df6885fde1cc5eadc086761043b7961cac1393e1caa93f7fdc0266dc668c24"
+    },
+    {
+      "path": "rabbit_uv_regions_4096.png",
+      "bytes": 413916,
+      "sha256": "9790363d3fd0d24f85bbca3976e3b8aea3f4dda5c74a0242ec42e4ceecea104f"
+    },
+    {
+      "path": "rabbit_uv_wire_2048.png",
+      "bytes": 4735224,
+      "sha256": "8c211805e7cd311ffb9866663c62dd237f4947d274b03ebf3b068d069de5937b"
+    },
+    {
+      "path": "rabbit_uv_wire_4096.png",
+      "bytes": 1588907,
+      "sha256": "7e74b985b431e8d4ccb3f0903b6324e73a838a796bc975299f35fd338ea2b583"
+    },
+    {
+      "path": "report.json",
+      "bytes": 9812,
+      "sha256": "b233d36f41f79bc8b3beaadd3270c621c7b6dabfadc5c7dd1d1d72acd3366568"
+    },
+    {
+      "path": "right.png",
+      "bytes": 571176,
+      "sha256": "ea71700483a71cbe287eb7cece2ed3d23f28496b7b7783a250a40799fc8e5cda"
+    },
+    {
+      "path": "three-quarter.png",
+      "bytes": 613659,
+      "sha256": "c0f6dec57c72f5059ff2d8ef2f81cbcdd2415b1940df531534b68827f526982a"
+    },
+    {
+      "path": "uv-report.json",
+      "bytes": 7637,
+      "sha256": "04d77e755b369c47756295e7711eef44e6b9571f4dfa6e422972f0501dddaf8b"
+    }
+  ]
+}

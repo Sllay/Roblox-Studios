@@ -1,0 +1,46 @@
+{
+  "source": "rabbit-articulation-43719614276-1",
+  "polish": {
+    "FrontArm_L": {
+      "vertices": 2353,
+      "maxDisplacement": 0.004727364641130291
+    },
+    "FrontArm_R": {
+      "vertices": 2353,
+      "maxDisplacement": 0.004837533842995745
+    },
+    "Rabbit_Torso": {
+      "vertices": 25168,
+      "maxDisplacement": 0.04276843068244061
+    },
+    "Whisker_L_1": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_L_2": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_L_3": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_R_1": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_R_2": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_R_3": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    }
+  },
+  "bones": 19,
+  "independentArmDisplacement": 1.2464978113806005,
+  "torsoDuringArm": 0.0,
+  "topologyAndWeightsPreserved": true,
+  "artisticApproval": false
+}

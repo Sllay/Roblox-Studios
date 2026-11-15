@@ -1,0 +1,368 @@
+{
+  "source": "rabbit-articulation-43719614276-1",
+  "polish": {
+    "FrontArm_L": {
+      "vertices": 2353,
+      "maxDisplacement": 0.004727364641130291
+    },
+    "FrontArm_R": {
+      "vertices": 2353,
+      "maxDisplacement": 0.004837533842995745
+    },
+    "Rabbit_Torso": {
+      "vertices": 25168,
+      "maxDisplacement": 0.04276843068244061
+    },
+    "Whisker_L_1": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_L_2": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_L_3": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_R_1": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_R_2": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    },
+    "Whisker_R_3": {
+      "vertices": 104,
+      "maxDisplacement": 0
+    }
+  },
+  "bones": 19,
+  "independentArmDisplacement": 1.2464978113806005,
+  "torsoDuringArm": 0.0,
+  "topologyAndWeightsPreserved": true,
+  "artisticApproval": false,
+  "uv": {
+    "schema": 1,
+    "resolution": 4096,
+    "regions": {
+      "Torso": {
+        "triangles": 24670,
+        "charts": 169,
+        "chartCost": 2.0,
+        "microcharts": [
+          {
+            "face": 1518,
+            "worldArea": 7.33113164784477e-07,
+            "reason": "intersection"
+          },
+          {
+            "face": 7618,
+            "worldArea": 5.005197129487009e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 9768,
+            "worldArea": 0.00012184859383785422,
+            "reason": "intersection"
+          },
+          {
+            "face": 9769,
+            "worldArea": 6.90824076520366e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 10342,
+            "worldArea": 1.2590892122050919e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 10506,
+            "worldArea": 4.319772195391239e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 12044,
+            "worldArea": 7.33113164784477e-07,
+            "reason": "intersection"
+          },
+          {
+            "face": 20869,
+            "worldArea": 1.2590892122050919e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 21033,
+            "worldArea": 4.319771410426878e-05,
+            "reason": "intersection"
+          }
+        ],
+        "initialOverlapPairs": 20,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          0,
+          0,
+          2048,
+          2048
+        ],
+        "pixelArea": 1824679.8703465508,
+        "texelsPerStudMedian": 525.0479626461639,
+        "texelsPerStudP10": 484.5206340757373,
+        "texelsPerStudP90": 559.134335333933
+      },
+      "Head": {
+        "triangles": 8222,
+        "charts": 87,
+        "chartCost": 2.0,
+        "microcharts": [
+          {
+            "face": 1510,
+            "worldArea": 0.00016054845505846706,
+            "reason": "intersection"
+          },
+          {
+            "face": 1511,
+            "worldArea": 0.00016961111183266567,
+            "reason": "intersection"
+          },
+          {
+            "face": 4041,
+            "worldArea": 4.144414143565951e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 4069,
+            "worldArea": 1.549865133968968e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 4458,
+            "worldArea": 9.433914567872022e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 4460,
+            "worldArea": 5.029535643149697e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 5621,
+            "worldArea": 0.00016054845505846706,
+            "reason": "intersection"
+          },
+          {
+            "face": 5622,
+            "worldArea": 0.00016961111183266567,
+            "reason": "intersection"
+          },
+          {
+            "face": 6025,
+            "worldArea": 0.000137962004795638,
+            "reason": "intersection"
+          },
+          {
+            "face": 8151,
+            "worldArea": 4.144414143565951e-05,
+            "reason": "intersection"
+          },
+          {
+            "face": 8179,
+            "worldArea": 1.549865133968968e-05,
+            "reason": "intersection"
+          }
+        ],
+        "initialOverlapPairs": 17,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          0,
+          2048,
+          2048,
+          2048
+        ],
+        "pixelArea": 1726560.9426231105,
+        "texelsPerStudMedian": 772.9236308594329,
+        "texelsPerStudP10": 686.102369650171,
+        "texelsPerStudP90": 832.7973193403542
+      },
+      "Ear_L": {
+        "triangles": 4417,
+        "charts": 11,
+        "chartCost": 2.0,
+        "microcharts": [],
+        "initialOverlapPairs": 0,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          2048,
+          3072,
+          1024,
+          1024
+        ],
+        "pixelArea": 491448.3864194155,
+        "texelsPerStudMedian": 598.8474249737865,
+        "texelsPerStudP10": 579.7453046712466,
+        "texelsPerStudP90": 619.1198153745994
+      },
+      "Ear_R": {
+        "triangles": 4417,
+        "charts": 12,
+        "chartCost": 2.0,
+        "microcharts": [],
+        "initialOverlapPairs": 0,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          3072,
+          3072,
+          1024,
+          1024
+        ],
+        "pixelArea": 459243.6016969383,
+        "texelsPerStudMedian": 576.2269284877871,
+        "texelsPerStudP10": 559.882732808041,
+        "texelsPerStudP90": 607.291746483745
+      },
+      "FrontArm_L": {
+        "triangles": 4702,
+        "charts": 61,
+        "chartCost": 2.0,
+        "microcharts": [],
+        "initialOverlapPairs": 0,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          2048,
+          1792,
+          1024,
+          1280
+        ],
+        "pixelArea": 619390.0909679383,
+        "texelsPerStudMedian": 704.8606102168601,
+        "texelsPerStudP10": 612.1233125430263,
+        "texelsPerStudP90": 733.4261381862065
+      },
+      "FrontArm_R": {
+        "triangles": 4702,
+        "charts": 104,
+        "chartCost": 2.0,
+        "microcharts": [],
+        "initialOverlapPairs": 0,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          3072,
+          1792,
+          1024,
+          1280
+        ],
+        "pixelArea": 502872.6367508322,
+        "texelsPerStudMedian": 637.9026480126763,
+        "texelsPerStudP10": 546.8713017748938,
+        "texelsPerStudP90": 657.5335045917343
+      },
+      "HindPaw_L": {
+        "triangles": 3497,
+        "charts": 7,
+        "chartCost": 2.0,
+        "microcharts": [],
+        "initialOverlapPairs": 0,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          2048,
+          768,
+          1024,
+          1024
+        ],
+        "pixelArea": 510531.17266681045,
+        "texelsPerStudMedian": 646.6964024761818,
+        "texelsPerStudP10": 593.5862791713097,
+        "texelsPerStudP90": 693.6353283259576
+      },
+      "HindPaw_R": {
+        "triangles": 3497,
+        "charts": 7,
+        "chartCost": 2.0,
+        "microcharts": [],
+        "initialOverlapPairs": 0,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          3072,
+          768,
+          1024,
+          1024
+        ],
+        "pixelArea": 492263.9471110478,
+        "texelsPerStudMedian": 635.0139631479783,
+        "texelsPerStudP10": 582.8680218469214,
+        "texelsPerStudP90": 681.1115125192727
+      },
+      "Tail": {
+        "triangles": 1620,
+        "charts": 10,
+        "chartCost": 2.0,
+        "microcharts": [],
+        "initialOverlapPairs": 0,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          2048,
+          0,
+          768,
+          768
+        ],
+        "pixelArea": 262587.9062400076,
+        "texelsPerStudMedian": 809.057242102095,
+        "texelsPerStudP10": 775.0241884245394,
+        "texelsPerStudP90": 834.8473604655275
+      },
+      "Whiskers": {
+        "triangles": 1224,
+        "charts": 36,
+        "chartCost": 2.0,
+        "microcharts": [],
+        "initialOverlapPairs": 0,
+        "initialCollapsedFaces": 0,
+        "remainingOverlapPairs": 0,
+        "slot": [
+          2816,
+          0,
+          1280,
+          768
+        ],
+        "pixelArea": 311228.7612784582,
+        "texelsPerStudMedian": 1733.2256466265062,
+        "texelsPerStudP10": 1662.5821849753781,
+        "texelsPerStudP90": 1867.2018394341305
+      }
+    },
+    "triangles": 60968,
+    "coverage": 0.4292065501213074,
+    "interiorOverlappingTexels": 0,
+    "exactPositiveAreaOverlapPairs": 0,
+    "paddingPixels": 12,
+    "uniqueUVs": true,
+    "uvHash": "27ad5748fed0c09b45025533dc6194d5cc614cb3c0e170d8bce9a6bc2389fdb7",
+    "paintingStatus": "provisional base color, artistic painting pending"
+  },
+  "schema": 1,
+  "id": "rabbit-final-uv",
+  "category": "creature",
+  "state": "paint_ready_review",
+  "triangles": 60968,
+  "exportedVertices": 37832,
+  "rigged": true,
+  "atlasImages": 1,
+  "robloxPublished": false,
+  "runtimePackagingRequired": true,
+  "geometryFrozenForPainting": false,
+  "limitations": [
+    "UV is a definitive candidate, freeze only after owner approves polished geometry and atlas.",
+    "Provisional clean base color is not final artistic texture.",
+    "Roblox mesh partitioning and full animation collision checks remain pending."
+  ]
+}
