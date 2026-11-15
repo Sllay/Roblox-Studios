@@ -233,3 +233,17 @@ for _=1,100 do local i=M.step(generic,gs);assert(i.state=="Idle" or i.state=="Ex
 assert(generic.hunger==.2)
 gs.hit=true;assert(M.step(generic,gs).state=="Flee")
 print("S09.10 wildlife profiles and optional passive routines passed")
+
+local Sep=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/LocalSeparation")
+local Route=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/LongRoute")
+local space=Sep.new(8);Sep.put(space,"a",0,0,1);Sep.put(space,"b",0,1,1)
+local sx,sz=Sep.steer(space,"a",0,0,1,1,0);assert(sx>0 and sz<0)
+Sep.remove(space,"b");sx,sz=Sep.steer(space,"a",0,0,1,1,0);assert(sx==1 and sz==0)
+Sep.put(space,"b",0,0,1);sx,sz=Sep.steer(space,"a",0,0,1,0,1);assert(sx>0 and sz>0)
+local route=Route.new(0,0,12,0,3,100)
+local function edge(x:number,z:number,tx:number,tz:number):boolean return not (tx==6 and tz==0) end
+for _=1,100 do if Route.advance(route,2,edge)~="Pending" then break end end
+assert(route.status=="Ready" and #route.path>4)
+for _,node in route.path do assert(not (node.x==6 and node.z==0)) end
+local blocked=Route.new(0,0,12,0,3,10);assert(Route.advance(blocked,2,function()return false end)=="Failed")
+print("S09.10 C spatial separation and bounded routing passed")
