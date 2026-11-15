@@ -11,6 +11,7 @@ import numpy as np
 from PIL import Image,ImageDraw
 from scipy.ndimage import gaussian_filter1d
 from rabbit_organic_reference import panel_data,intervals,HEIGHT
+from rabbit_mesh_repair import repair,areas
 
 def masks_for(v,f,maps):
     result={}
@@ -101,8 +102,15 @@ def geometry_check(v,f):
 def main(out):
     p=out/"neural-mesh.npz";d=np.load(p)
     arrays={k:d[k] for k in d.files};d.close()
-    v=arrays["vertices"].astype(np.float64);f=arrays["faces"]
-    master=arrays["master_vertices"].astype(np.float64)
+    # Checkpoint has two near-collapsed faces below the strict audit floor.
+    # Repair only subpixel marching-cubes artifacts; retain every other face.
+    np.savez_compressed(out/"neural-mesh-unfitted.npz",**arrays)
+    assert np.array_equal(arrays["vertices"],arrays["master_vertices"])
+    assert np.array_equal(arrays["faces"],arrays["master_faces"])
+    v,f,uv,repair_report=repair(arrays["vertices"],arrays["faces"],arrays["loop_uv"])
+    arrays["faces"]=f;arrays["master_faces"]=f.copy();arrays["loop_uv"]=uv
+    v=v.astype(np.float64);master=v.copy()
+    print("microscopic topology repair",json.dumps(repair_report),flush=True)
     refs,_,maps,_=panel_data()
     before=scores(v,f,refs,maps)
     zs=np.linspace(.025,HEIGHT-.025,145)
@@ -124,19 +132,23 @@ def main(out):
         print("calibration yaw",yaw,"best",best[0],flush=True)
     _,yaw,sigma,strength,params,q,after=best
     assert quality(after)>quality(before)+.03,"Calibration did not improve independent views"
-    geometry_check(q,f)
+    geometry_check(q.astype(np.float32).astype(np.float64),f)
     qm=deform(rotate(master,yaw),zs,params,strength)
-    geometry_check(qm,arrays["master_faces"])
-    # Preserve original artifact and UV correspondences. No texture projection or re-bake.
-    np.savez_compressed(out/"neural-mesh-unfitted.npz",**arrays)
+    geometry_check(qm.astype(np.float32).astype(np.float64),arrays["master_faces"])
+    # Original checkpoint remains archived; all retained UV corners unchanged.
     arrays["vertices"]=q.astype(np.float32);arrays["master_vertices"]=qm.astype(np.float32)
     np.savez_compressed(p,**arrays)
     np.savez_compressed(out/"runtime-mesh.npz",vertices=arrays["vertices"],faces=f)
     report=json.loads((out/"neural-report.json").read_text())
+    report["microTopologyRepair"]=repair_report
+    report["originalMasterTriangles"]=report["masterTriangles"]
+    report["originalMasterVertices"]=report["masterVertices"]
+    report["masterTriangles"]=int(len(f));report["bodyTriangles"]=int(len(f))
+    report["masterVertices"]=int(len(v));report["bodyVertices"]=int(len(v))
     report["calibrationFit"]={"method":"smooth positive-scale cross-section deformation",
         "before":before,"after":after,"yawOffset":yaw,"smoothingSigma":sigma,"strength":strength,
         "maxVertexDisplacement":float(np.max(np.linalg.norm(q-v,axis=1))),
-        "unchangedFaceCount":int(len(f)),"topologyPreserved":True,"uvPreserved":True,
+        "faceCountAfterLocalizedRepair":int(len(f)),"topologyPreservedDuringFit":True,"uvPreserved":True,
         "trials":trials}
     report["limitations"].append("Multiview silhouette fitting does not independently resolve facial detail or hidden concavities.")
     (out/"neural-report.json").write_text(json.dumps(report,indent=2)+"\n")

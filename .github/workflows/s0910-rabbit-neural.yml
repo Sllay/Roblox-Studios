@@ -6,6 +6,7 @@ on:
       - '.github/workflows/s0910-rabbit-neural.yml'
       - 'tools/creature_factory/rabbit_neural*.py'
       - 'tools/creature_factory/rabbit_fit_multiview.py'
+      - 'tools/creature_factory/rabbit_mesh_repair.py'
       - 'tools/creature_factory/tsr_cpu_marching_cubes.py'
       - 'asset-library/creature-queue/rabbit-v3.json'
   workflow_dispatch:
