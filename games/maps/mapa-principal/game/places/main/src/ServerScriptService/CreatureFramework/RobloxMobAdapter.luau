@@ -8,7 +8,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local mesh=assert(model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
  local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
- local self:any={peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
+ local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
  mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
  local hitbox=Instance.new("Part");hitbox.Name="CreatureHitbox";hitbox.Size=mesh.Size+Vector3.new(.6,.6,.6);hitbox.Transparency=1;hitbox.Anchored=true;hitbox.CanCollide=false;hitbox.CanTouch=false;hitbox.CanQuery=true;hitbox.CFrame=mesh.CFrame;hitbox.Parent=model
  self.hitbox=hitbox
@@ -160,6 +160,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
   local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
   local q=p+target*step;local g=self:ground(q.X,q.Z)
+  if not g and self.options.steer then q=p+delta.Unit*step;g=self:ground(q.X,q.Z) end
   if not g or (not self.travelTarget and self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
   local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);hitbox.CFrame=mesh.CFrame;self.moveDistance+=step
   if self.options.onMoved then self.options.onMoved() end
