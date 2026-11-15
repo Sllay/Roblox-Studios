@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "id": "rabbit-v3-articulation",
+  "category": "creature",
+  "source": "rabbit-v3-polish-43717865946-1",
+  "state": "articulation_review",
+  "cut": {
+    "FrontArm_L": {
+      "cutLoops": [
+        292
+      ],
+      "sourceSurfaceTriangles": 2894,
+      "closedTriangles": 4702,
+      "capMethod": "constrained Delaunay + harmonic curved interior"
+    },
+    "FrontArm_R": {
+      "cutLoops": [
+        292
+      ],
+      "sourceSurfaceTriangles": 2894,
+      "closedTriangles": 4702,
+      "capMethod": "constrained Delaunay + harmonic curved interior"
+    },
+    "Rabbit_Torso": {
+      "cutLoops": [
+        292,
+        292
+      ],
+      "sourceSurfaceTriangles": 46724,
+      "closedTriangles": 50340,
+      "capMethod": "constrained Delaunay + harmonic curved interior"
+    }
+  },
+  "meshNames": [
+    "FrontArm_L",
+    "FrontArm_R",
+    "Rabbit_Torso",
+    "Whisker_L_1",
+    "Whisker_L_2",
+    "Whisker_L_3",
+    "Whisker_R_1",
+    "Whisker_R_2",
+    "Whisker_R_3"
+  ],
+  "triangles": 60968,
+  "exportedVertices": 43073,
+  "rigged": true,
+  "bones": 19,
+  "frontArmsIndependent": true,
+  "hindLegsWeighted": true,
+  "whiskers": 6,
+  "whiskerHeadBound": true,
+  "poseTests": {
+    "leftArmDisplacement": 1.2465708835339118,
+    "oppositeArmDisplacement": 0.0,
+    "torsoDisplacementDuringArm": 0.0,
+    "hindLegDisplacement": 0.2906483497193061,
+    "whiskerDisplacements": {
+      "Whisker_L_1": 0.37826591664265163,
+      "Whisker_L_2": 0.3574870641640929,
+      "Whisker_L_3": 0.31720814726453705,
+      "Whisker_R_1": 0.37826596529971696,
+      "Whisker_R_2": 0.3574870353997009,
+      "Whisker_R_3": 0.3172081573882508
+    }
+  },
+  "artisticApproval": false,
+  "robloxPublished": false,
+  "runtimePackagingRequired": true,
+  "limitations": [
+    "Joint caps are newly reconstructed hidden surfaces; visual review of the shoulder seam and pose clearance is required.",
+    "Prototype rig and test poses only; final animation and Roblox mesh partitioning remain pending."
+  ]
+}

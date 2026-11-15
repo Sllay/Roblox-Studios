@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "status": "candidate",
+  "sourceCommit": "7d5124f1ebf6cd4827cf6dd6db47de02ecb72ed0",
+  "runId": "43719614276",
+  "files": [
+    {
+      "path": "asset.blend",
+      "bytes": 7402692,
+      "sha256": "7427c8636cdfcbb6aef2c3f861a249caba8ddcb8ba10151ddd8356422f1fab17"
+    },
+    {
+      "path": "asset.glb",
+      "bytes": 3312420,
+      "sha256": "f08e5b19859a469d2616d5b236a08d4aba4f2ee42b9deaca4cfff59771077cd9"
+    },
+    {
+      "path": "back.png",
+      "bytes": 606417,
+      "sha256": "fa3d526ada368d96535a8587368974dad47049430458a17467e5e6d064bce8f7"
+    },
+    {
+      "path": "clay-three-quarter.png",
+      "bytes": 521665,
+      "sha256": "786abbdf20a2f841e5b462e16956948773254f23f784bdc73fde36c71d9ecdea"
+    },
+    {
+      "path": "front.png",
+      "bytes": 609699,
+      "sha256": "2819ad9d5d7fc2601e34e1960bc4d29c20e7c622f1b13493a099d1fb3c31c5dd"
+    },
+    {
+      "path": "left.png",
+      "bytes": 570285,
+      "sha256": "53608c70e20df332d12991b026e76c551490c7045fb43722c299dc856219914f"
+    },
+    {
+      "path": "pose-front-left.png",
+      "bytes": 609220,
+      "sha256": "8b63cef18f28b555344ecc81fe3dce42c795f37edd7f6d3870a4ea4c5aca7fc5"
+    },
+    {
+      "path": "pose-head.png",
+      "bytes": 609080,
+      "sha256": "d3bcfb324d6d90ecd98160125a97daf52e282052297fae467237e13f56498eb4"
+    },
+    {
+      "path": "pose-hind-right.png",
+      "bytes": 605653,
+      "sha256": "ca6508b94f2c2b0719793c06ea2444cdc8d07e4da73d1edf28034784449b313a"
+    },
+    {
+      "path": "report.json",
+      "bytes": 2008,
+      "sha256": "1e15399b164dad53dc935ab8308fcbfecb4a1c3e88c39bca8bca3a9690b7e0f2"
+    },
+    {
+      "path": "right.png",
+      "bytes": 571121,
+      "sha256": "7dd76e2315ba518df50b356e1265adee0b8b770b67f2049b50c13470f2a36b41"
+    },
+    {
+      "path": "three-quarter.png",
+      "bytes": 613387,
+      "sha256": "1cd650b02c6ad8d7114f6cff7c674ce5ff35c3b86fc69d46fc8a05d455757674"
+    }
+  ]
+}
