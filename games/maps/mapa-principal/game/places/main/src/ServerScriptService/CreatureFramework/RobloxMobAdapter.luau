@@ -112,7 +112,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if not flee and self.home then
    if not self.exploreTarget or horizontal(self.exploreTarget-p).Magnitude<5 then
     local radius=25+self.options.random()*70
-    self.exploreTarget=self.home+Vector3.new(math.cos(angle0)*radius,0,math.sin(angle0)*radius)
+    self.exploreTarget=(if self.options.freeRoam then p else self.home)+Vector3.new(math.cos(angle0)*radius,0,math.sin(angle0)*radius)
    end
    local toward=horizontal(self.exploreTarget-p)
    if toward.Magnitude>1 then angle0=math.atan2(toward.Z,toward.X) end
@@ -125,7 +125,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   for i=0,7 do
    local angle=math.rad(i*45)
    local dir=Vector3.new(away.X*math.cos(angle)-away.Z*math.sin(angle),0,away.X*math.sin(angle)+away.Z*math.cos(angle))
-   local dest=p+dir*6;local g=if self.home and horizontal(dest-self.home).Magnitude>(self.options.roamRadius or 100) then nil else self:ground(dest.X,dest.Z)
+   local dest=p+dir*6;local g=if not self.options.freeRoam and self.home and horizontal(dest-self.home).Magnitude>(self.options.roamRadius or 100) then nil else self:ground(dest.X,dest.Z)
    if g and self:route(p,g) then
     if not flee then return g end
     local exits=0
@@ -161,7 +161,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
   local q=p+target*step;local g=self:ground(q.X,q.Z)
   if not g and self.options.steer then q=p+delta.Unit*step;g=self:ground(q.X,q.Z) end
-  if not g or (not self.travelTarget and self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
+  if not g or (not self.travelTarget and not self.options.freeRoam and self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
   local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);hitbox.CFrame=mesh.CFrame;self.moveDistance+=step
   if self.options.onMoved then self.options.onMoved() end
   return true
@@ -189,7 +189,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  end
  function self:execute(intent:any,dt:number):string
   local action=intent.action
-  if self.travelTarget and (action=="Wander" or action=="Stop" or action=="SeekFood") and intent.state~="Static" and intent.state~="Dead" then return self:travelStep(dt) end
+  if self.travelTarget and (action=="Wander" or action=="Stop" or action=="Idle" or action=="SeekFood") and intent.state~="Static" and intent.state~="Dead" then return self:travelStep(dt) end
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
   if not moving then
    if action=="Peck" or action=="Flap" then
