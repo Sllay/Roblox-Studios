@@ -1,0 +1,252 @@
+{
+  "schema": 3,
+  "id": "rabbit-v3-polish",
+  "category": "creature",
+  "state": "needs_geometry_revision",
+  "backend": "TripoSR CPU, learned triplane density and color",
+  "model": {
+    "repo": "VAST-AI-Research/TripoSR",
+    "codeRevision": "107cefdc244c39106fa830359024f6a2f1c78871",
+    "checkpoint": "stabilityai/TripoSR",
+    "checkpointRevision": "c1cf7716aed5aa6c1c5e174657791ef0e1327bde",
+    "checkpointSHA256": "429e2c6b22a0923967459de24d67f05962b235f79cde6b032aa7ed2ffcd970ee",
+    "license": "MIT"
+  },
+  "sourceReferences": {
+    "hero": {
+      "path": "hero.png",
+      "sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424",
+      "size": [
+        1312,
+        1199
+      ]
+    },
+    "views": {
+      "path": "views.png",
+      "sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  },
+  "conditioning": "approved hero, isolated silhouette, whisker strokes removed",
+  "masterVertices": 25254,
+  "masterTriangles": 50508,
+  "bodyVertices": 25254,
+  "bodyTriangles": 50508,
+  "atlasVertices": 38777,
+  "atlasSize": null,
+  "atlasCoverage": null,
+  "orientation": {
+    "yawDegrees": -115,
+    "scale": 3.5330037234660487,
+    "referenceAlignmentIoU": {
+      "front": 0.8047344461305007,
+      "right": 0.5200022827141472,
+      "left": 0.5146589094227698,
+      "back": 0.7932704246337223
+    }
+  },
+  "topology": {
+    "connectedComponents": 3,
+    "retainedAreaFraction": 0.9997996761687189,
+    "reductionMethod": "none_full_resolution",
+    "masterEuler": 0,
+    "runtimeEuler": 0,
+    "runtimeWatertight": true
+  },
+  "elapsedCPUSeconds": 84.36,
+  "artisticApproval": false,
+  "robloxPublished": false,
+  "rigged": false,
+  "limitations": [
+    "Single-image neural inference estimates hidden anatomy; compare all original multiview references.",
+    "Neural colors are candidate albedo, not final material or painted correction.",
+    "Full-resolution review candidate; Roblox runtime mesh partition and animation retopology are separate gates."
+  ],
+  "checkpointProvenance": {
+    "runId": 43681469940,
+    "artifactId": 14148598078,
+    "sourceCommit": "dc22e0c0c04f2683163606999685fcb166890050"
+  },
+  "polish": {
+    "source": "unfitted neural checkpoint",
+    "symmetry": "positive X half mirrored and welded",
+    "profile": "bounded smooth anatomical deformation",
+    "shoulder": "localized relaxation and weighted Taubin smoothing",
+    "palette": "geometric clean swatches, no baked illumination",
+    "freshUV": true,
+    "earMinimumXBeforeMirror": 0.1691795438528061,
+    "eyeLandmark": [
+      0.3326382040977478,
+      -0.4849998652935028,
+      2.380951404571533
+    ],
+    "microscopicRepair": {
+      "collapses": [
+        {
+          "edgeLength": 1.3709068298339844e-06,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 1.9661191032791528e-12
+        },
+        {
+          "edgeLength": 1.3334666085956749e-06,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 2.097254729294028e-12
+        },
+        {
+          "edgeLength": 9.020804111215666e-06,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 7.293916480252214e-11
+        },
+        {
+          "edgeLength": 8.086114812916587e-06,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 1.2864169142858185e-10
+        },
+        {
+          "edgeLength": 1.4554447460390265e-05,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 2.6678165925384063e-10
+        },
+        {
+          "edgeLength": 1.2402493465066824e-05,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 3.1900985583901937e-10
+        },
+        {
+          "edgeLength": 1.4782222285797332e-05,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 4.066731152426689e-10
+        },
+        {
+          "edgeLength": 1.3409621110129408e-05,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 4.550183905807963e-10
+        },
+        {
+          "edgeLength": 2.4584947131540684e-05,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 6.180396514917871e-10
+        },
+        {
+          "edgeLength": 1.791127013668668e-05,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 6.970536489979646e-10
+        },
+        {
+          "edgeLength": 1.6102081985844582e-05,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 7.597538806500229e-10
+        },
+        {
+          "edgeLength": 2.353932618178651e-05,
+          "removedFaces": 2,
+          "minDoubleAreaBefore": 8.118422978996819e-10
+        }
+      ],
+      "removedFaces": 24,
+      "euler": 0,
+      "minDoubleAreaAfter": 1.2595730029902535e-09
+    },
+    "maxSmoothingDisplacement": 0.03212938819444537,
+    "bodyVertices": 25670,
+    "bodyTriangles": 51344
+  },
+  "texture": "provisional vertex colors; future painting pending",
+  "exportedVertices": 36998,
+  "vertexBudget": null,
+  "triangles": 52568,
+  "geometryPolicy": "unrestricted_artistic_candidate",
+  "referenceTriangleTarget": 50000,
+  "meshTriangles": {
+    "Rabbit_Neural_Body": 51344,
+    "Whisker_L_1": 204,
+    "Whisker_L_2": 204,
+    "Whisker_L_3": 204,
+    "Whisker_R_1": 204,
+    "Whisker_R_2": 204,
+    "Whisker_R_3": 204
+  },
+  "robloxPerMeshTriangleLimit": 20000,
+  "robloxOversizedMeshes": {
+    "Rabbit_Neural_Body": 51344
+  },
+  "robloxGeometryReady": false,
+  "runtimePackagingRequired": true,
+  "whiskers": 6,
+  "whiskerClosedMeshes": true,
+  "whiskerRootPositions": [
+    [
+      -0.17000000178813934,
+      -0.884669303894043,
+      2.119999885559082
+    ],
+    [
+      -0.1899999976158142,
+      -0.8430061340332031,
+      2.0799999237060547
+    ],
+    [
+      -0.20999999344348907,
+      -0.7932770252227783,
+      2.0399999618530273
+    ],
+    [
+      0.17000000178813934,
+      -0.884669303894043,
+      2.119999885559082
+    ],
+    [
+      0.1899999976158142,
+      -0.8430061340332031,
+      2.0799999237060547
+    ],
+    [
+      0.20999999344348907,
+      -0.7932770252227783,
+      2.0399999618530273
+    ]
+  ],
+  "whiskerHeadBindingPlanned": true,
+  "uv": true,
+  "roundtrip": true,
+  "views": [
+    "front",
+    "right",
+    "left",
+    "back",
+    "top",
+    "bottom",
+    "three-quarter"
+  ],
+  "clayViews": [
+    "front",
+    "right",
+    "three-quarter"
+  ],
+  "silhouetteAudit": {
+    "front": {
+      "iou": 0.85459,
+      "referencePixels": 57678,
+      "candidatePixels": 60142
+    },
+    "right": {
+      "iou": 0.82062,
+      "referencePixels": 49526,
+      "candidatePixels": 45807
+    },
+    "left": {
+      "iou": 0.82154,
+      "referencePixels": 49289,
+      "candidatePixels": 45819
+    },
+    "back": {
+      "iou": 0.85396,
+      "referencePixels": 55771,
+      "candidatePixels": 58817
+    }
+  },
+  "silhouetteGatePassed": false
+}
