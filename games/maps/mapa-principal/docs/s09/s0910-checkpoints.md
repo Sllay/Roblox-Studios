@@ -16,3 +16,6 @@ Baseline: verified staging V31; user approved client locomotion and corpse physi
 
 ## Gates
 A source audit; B profile capabilities and focused tests; C separation/navigation; D groups/territory/migration; E rabbit; F cow; G pig; H sheep; I integrated staging validation. Save each checkpoint, targeted tests before advancing. Art: locate original chicken template before generating transparent full-body 3/4 and front/side/back/top/bottom concepts; no placeholder asset IDs. V31 stays intact. Template discovery and adapter audit remain open in A.
+
+## B — Targeted validation passed
+Commit 8b14772: core 43670123917, build 43670123912, historical V31 lifecycle 43670123890 all success. V31 preview is closed, not native certification of S09.10. C next. Art template discovery remains pending before asset production.
