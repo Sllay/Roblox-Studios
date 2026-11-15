@@ -45,6 +45,8 @@ def main():
     require(retry(lambda:latest(target,key))==30,"Head changed")
     preview=retry(lambda:native("preview",30));write(OUT/"preview.json",preview)
     require(preview["nativeAimSmoke"] and preview["nativeThreatSmoke"] and preview["readyForStaging"] and preview["noPlaceWrites"] and preview["installedScripts"]==35 and preview["bones"]==14 and preview["enabled"] and preview["maximum"]==15 and preview["respawnSeconds"]==300,"Preview gate")
+    require([row["count"] for row in preview["nativeLocomotionBenchmark"]]==[15,50,100,200],"Native benchmark census")
+    require(all(row["moves"]==row["count"]*10 for row in preview["nativeLocomotionBenchmark"]),"Native movement benchmark")
     print("S09_PREVIEW",json.dumps(preview),flush=True)
     require(retry(lambda:latest(target,key))==30,"Head changed")
     if a.preview: return
