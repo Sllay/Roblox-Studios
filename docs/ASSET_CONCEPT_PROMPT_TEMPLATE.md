@@ -1,5 +1,5 @@
 # Asset Factory — Universal 3D concept image prompt
-Version: 1.0 | Status: approved format, reusable visual reference standard.
+Version: 2.0 | Status: one-sheet default for 3D reconstruction; legacy hero workflow remains optional.
 Scope: all original 3D asset concepts (creatures, vegetation, tools, weapons, props, structures). Black Islands default: stylized low-poly, organic/intentional shapes, mobile-friendly visual complexity. This document is not a runtime mesh generator or a publication authorization.
 
 ## Parameters
@@ -10,11 +10,18 @@ Replace brackets before submitting; omit irrelevant fields rather than inventing
 - [SHAPE]: silhouette, proportions, anatomy or functional construction, distinctive details.
 - [COLORS]: palette, materials, texture finish; matte by default where appropriate.
 - [POSE]: neutral reference pose, articulation state or upright orientation.
-- [VIEWS]: single three-quarter view OR front, side, back, three-quarter; add top/bottom only if needed.
+- [VIEWS]: default one composite with front, back, left, right, top, bottom and three-quarter. Single hero only when explicitly requested.
 - [REFERENCE]: attached approved hero image or design reference, if any. Do not claim an attachment exists if absent.
 - [SPECIAL]: constraints such as modular components, foliage cards, movable joints, scale cues internal to the design (no labels).
 
-## A — Single asset hero (English prompt)
+## Default — One multiview reference sheet (English prompt)
+```text
+Create ONE original 3D asset reference sheet of [ASSET] for [PROJECT], [STYLE].
+Design: [SHAPE]. Materials and colors: [COLORS]. Pose: [POSE]. Constraints: [SPECIAL].
+Show the exact same asset in seven distinct views: front, back, left profile, right profile, top, bottom, and three-quarter. Use an evenly spaced grid, generous transparent gaps, complete extremities, consistent scale and neutral pose. Six orthographic-like views, one three-quarter view. Same proportions, anatomy, parts, color placement and intended asymmetry. Reveal actual curvature and thickness with clean diffuse illumination, no harsh shadows or misleading painted relief. No labels, scenery, ground, borders, watermarks, or checkerboard. True transparent PNG background. Do not create a separate hero image. If an approved reference exists, preserve identity without redesign.
+```
+
+## A — Single asset hero (optional, only when requested)
 ```text
 Create an original full-object concept image of [ASSET] for [PROJECT].
 Visual style: [STYLE].
@@ -30,7 +37,7 @@ True transparent background (PNG alpha). No floor, ground plane, cast shadow out
 ```
 
 ## B — Multiple perspectives (English prompt)
-Use the approved single image as an actual image reference. This is a separate generation step.
+Optional legacy workflow when the owner supplies or requests a separate approved hero. Use that image as actual reference. Not the default.
 ```text
 Create a clean multi-view reference of the exact same [ASSET] in the attached approved image, for [PROJECT]. Preserve its design identity, silhouette, dimensions and relative proportions, topology-like form language, materials, palette, distinctive details and articulation state. Do not redesign it between views.
 Show [VIEWS] of the complete asset in a neat, evenly spaced arrangement, with every view fully visible at consistent scale and alignment. Front, side and back should be as close to orthographic as possible; use three-quarter only where requested. Maintain the same neutral pose and the same ground/contact alignment. For asymmetric assets, preserve actual left/right details rather than inventing symmetry. No duplicate or missing parts; no overlaps between views. Leave generous transparent margins around each view so individual images can be extracted.
@@ -39,9 +46,9 @@ True transparent background (PNG alpha). No text, captions, labels, UI/UX, panel
 ```
 
 ## Production checkpoints
-1. Define brief and select A or A followed by B; use actual user-approved design as anchor.
-2. Generate A and show the actual image in chat for visual review, not merely a repository link. Keep original PNG. If a reference already exists, do not redesign it unnecessarily.
-3. Generate B only when needed; inspect full visibility, pose, scale, colors, feature correspondence, alpha and margins. Prefer separate views if a generator cannot maintain consistency in a composite. Do not describe AI views as exact projections of a mesh.
+1. Define brief and generate the single seven-view sheet by default; use existing approved references where available.
+2. Show the actual sheet for visual review and preserve original PNG. Do not generate a second image unless requested or a specific inconsistency must be corrected.
+3. Validate pose, scale, view consistency, alpha, margins and feature correspondence. Record crop boxes and camera estimates; reject inconsistent panels before reconstruction. Depth/normal maps are derived technical outputs, not extra concept generations.
 4. Save reviewed references, source prompt and manifest with hashes in the asset's reference directory. Keep candidate and approved status distinct. If alpha/margins or view consistency fail, correct before automated reconstruction. A transparent-looking image is not evidence of an actual alpha channel; inspect the file.
 5. Translate the approved reference into geometry, UV/materials, optional rig and LOD; render the actual model from multiple cameras and show those renders in chat. Validate model topology, budgets, export/reimport and platform compatibility separately. Concept art is not a GLB, exact measured blueprint, UV texture or proof of runtime performance.
 
