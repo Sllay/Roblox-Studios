@@ -67,6 +67,14 @@ if cam is None:
     scene.collection.objects.link(cam);scene.camera=cam
 cam.data.type='ORTHO';cam.data.ortho_scale=5.2
 center=Vector((0,0,1.8))
+# Consistent neutral studio lighting for both master and LOD silhouette/color tests.
+fill=bpy.data.lights.new('RabbitLOD_ReviewSoftbox','AREA')
+fill.energy=1400;fill.shape='DISK';fill.size=7.0
+light=bpy.data.objects.new('RabbitLOD_ReviewSoftbox',fill)
+scene.collection.objects.link(light)
+light.location=Vector((-3,-4,7))
+light.rotation_euler=(center-light.location).to_track_quat('-Z','Y').to_euler()
+
 
 def render(name,relative):
     cam.location=center+Vector(relative)
@@ -90,6 +98,10 @@ for name in TARGETS:
     dec.decimate_type='COLLAPSE'
     dec.ratio=ratio
     dec.use_collapse_triangulate=True
+    # Ensure decimation runs on the bind-pose mesh BEFORE armature skinning.
+    # Applying an out-of-order modifier can silently alter rig deformations.
+    while list(o.modifiers).index(dec)>0:
+        bpy.ops.object.modifier_move_up(modifier=dec.name)
     bpy.ops.object.modifier_apply(modifier=dec.name)
     # Defensive triangulation: some Blender versions leave n-gons.
     bm=bmesh.new();bm.from_mesh(o.data)
