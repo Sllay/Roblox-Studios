@@ -25,6 +25,18 @@ def align_stage(m,source,out,cfg,inputs):
     chosen=a if r["status"]=="similarity_hypothesis_improved" else b
     save_mesh(out,"aligned",chosen,f);write_json(out/"alignment-report.json",r)
     return {"status":r["status"],"heldout_iou":r["heldout_mean_after"]}
+def select_volume_hypothesis(reports,grids):
+    """C3 evidence gate: silhouette agreement cannot certify anatomy.
+    Until measured surface evidence and part preservation gates exist,
+    a voxel hull is a diagnostic only. No override or approval by IoU.
+    The unchanged neural candidate is not claimed to have correct anatomy.
+    """
+    require("neural" in reports and bool(grids),"Missing volume candidates")
+    diagnostic=max(grids,key=lambda k:reports[k]["objective"])
+    return {"selected":"neural","diagnostic_candidate":diagnostic,
+            "status":"surface_evidence_required","anatomy_verified":False,
+            "reason":"Silhouette-only volume can fill limb gaps and erase anatomy; retain neural prior for experimental review only."}
+
 def volume_stage(m,source,out,cfg,inputs):
     views=read_views(inputs);v,f=load_mesh(inputs["candidate_alignment_ready"]["aligned.npz"])
     r=json.loads(inputs["candidate_alignment_ready"]["alignment-report.json"].read_text());train=r["train_views"];held=r["holdout_views"];vs=resized({k:views[k] for k in train+held},192)
@@ -36,11 +48,14 @@ def volume_stage(m,source,out,cfg,inputs):
     for name,g in grids.items():
         a,b=surface_from_grid({**h,"grid":g});meshes[name]=(a,b);r=scores(a,b)
         r["prior_iou"]=float((g&p).sum()/max(1,(g|p).sum()));r["objective"]=r["train_mean"]-.1*(1-r["prior_iou"]);reports[name]=r
-    selected=max(grids,key=lambda k:reports[k]["objective"])
-    if reports[selected]["holdout_mean"]<=reports["neural"]["holdout_mean"]+.005:selected="neural"
+    decision=select_volume_hypothesis(reports,grids)
+    selected=decision["selected"];diagnostic=decision["diagnostic_candidate"]
+    # Keep the outer-volume candidate for inspection, never substitute it for
+    # an organic master just because it matches external contours.
+    a,b=meshes[diagnostic];save_mesh(out,"volume-diagnostic",a,b)
     a,b=meshes[selected];save_mesh(out,"volume",a,b)
-    write_json(out/"volume-report.json",{"schema":1,"selected":selected,"metrics":reports,"depth_used":False,"production_approval":False})
-    return {"selected":selected,"heldout_iou":reports[selected]["holdout_mean"]}
+    write_json(out/"volume-report.json",{"schema":1,**decision,"metrics":reports,"depth_used":False,"production_approval":False})
+    return {**decision,"heldout_iou":reports[selected]["holdout_mean"]}
 def refine_stage(m,source,out,cfg,inputs):
     v,f=load_mesh(inputs["candidate_volume_ready"]["volume.npz"]);views=read_views(inputs)
     a,b,r=refine(v,f,views);save_mesh(out,"refined",a,b);write_json(out/"refinement-report.json",r)

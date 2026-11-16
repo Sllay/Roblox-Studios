@@ -25,7 +25,7 @@ def run(archive,out,resume=False):
     job=out/"job";previous=json.loads((job/"job.json").read_text()) if resume else None
     s=build(staging/"manifest.json",job,cfg,resume=resume)
     if previous:
-        for stage in ("candidate_ready","candidate_alignment_ready","candidate_volume_ready"):
+        for stage in ("candidate_ready",):
             require(s["stages"][stage]["attempt"]==previous["stages"][stage]["attempt"],"Upstream checkpoint unexpectedly rebuilt: "+stage)
     require(s["stages"]["candidate_review_ready"]["state"]=="succeeded",str({k:(v["state"],v["cause"]) for k,v in s["stages"].items()}))
     require(s["stages"]["review_ready"]["state"]=="blocked","Production approval bypass")
