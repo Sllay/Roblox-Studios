@@ -11,6 +11,7 @@ from .evidence import segment
 from .cameras import calibrate
 from .anatomy import validate_anatomy
 from .master_candidate import import_checkpoint
+from .neural_backend import generate_candidate
 
 class JobError(ValueError):pass
 class TransientError(RuntimeError):pass
@@ -60,7 +61,9 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
     config=config or {};finite(config);runners=RUNNERS if runners is None else runners
     production=runners is RUNNERS
     if production and config.get("candidate_ready",{}).get("backend"):
-        runners={**RUNNERS,"candidate_ready":import_checkpoint}
+        choice=config["candidate_ready"]["backend"]
+        require(choice in ("verified_triposr_checkpoint","generic_triposr"),"Unknown candidate backend")
+        runners={**RUNNERS,"candidate_ready":import_checkpoint if choice=="verified_triposr_checkpoint" else generate_candidate}
     # Read actual input bytes, not only the digest asserted by a manifest.
     def input_digest():
         return digest({"manifest":sha256(source),"sources":{v.source:sha256(path_inside(source.parent,v.source)) for v in m.views}})
@@ -92,9 +95,14 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
                 backend=f"{s.backend}:pillow@{version('Pillow')}"
                 code_hash=digest({"runner_module":sha256(Path(inspect.getfile(runner))),"contracts":sha256(Path(__file__).with_name("contracts.py"))})
             if production and s.name=="candidate_ready" and runner is not None:
-                actual=sha256(path_inside(source.parent,cfg["archive"]))
-                require(actual==cfg["sha256"],"Candidate archive hash mismatch")
-                code_hash=digest([code_hash,actual])
+                backend=cfg["backend"]
+                if backend=="verified_triposr_checkpoint":
+                    actual=sha256(path_inside(source.parent,cfg["archive"]))
+                    require(actual==cfg["sha256"],"Candidate archive hash mismatch")
+                    code_hash=digest([code_hash,actual])
+                else:
+                    legacy=Path(__file__).resolve().parents[1]
+                    code_hash=digest([code_hash,sha256(legacy/"rabbit_neural_inference.py"),sha256(legacy/"tsr_cpu_marching_cubes.py")])
             key=digest({"stage":s.name,"version":s.version,"backend":backend,"implementation":code_hash,"deps":deps,"config":cfg,"input":input_hash if not s.deps else None})
             ready=all(records[d]["state"] in ("succeeded","skipped") for d in s.deps)
             # Include attempt identity so corruption/recovery invalidates descendants even when bytes match.

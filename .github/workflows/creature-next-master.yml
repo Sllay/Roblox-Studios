@@ -1,0 +1,41 @@
+name: Creature Factory Next C3 master candidate
+on:
+  pull_request:
+    paths:
+      - 'tools/creature_factory/next/master_candidate.py'
+      - 'tools/creature_factory/next/master_benchmark.py'
+      - 'tools/creature_factory/next/neural_backend.py'
+      - 'tools/creature_factory/next/anatomy.py'
+      - 'tools/creature_factory/next/dag.py'
+      - '.github/workflows/creature-next-master.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  checkpoint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6 Pillow==11.3.0 trimesh==4.6.8
+      - run: python -m unittest tests.test_creature_next_anatomy tests.test_creature_next_c1 -v
+      - name: Restore immutable learned master
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl --fail --location --silent --show-error --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/Sllay/Roblox-Studios/actions/artifacts/14148598078/zip -o "$RUNNER_TEMP/checkpoint.zip"
+          echo "d045c52dd746d74db9b37dd5b974791c52a11813750efdd2b38536e5d706dd9c  $RUNNER_TEMP/checkpoint.zip" | sha256sum -c -
+      - run: python -u -m tools.creature_factory.next.master_benchmark "$RUNNER_TEMP/checkpoint.zip" dist/creature-next/c3master
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creature-next-c3master
+          path: dist/creature-next/c3master/
+          if-no-files-found: warn
