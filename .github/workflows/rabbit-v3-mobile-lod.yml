@@ -1,0 +1,119 @@
+name: Rabbit V3 Cartoon V2 mobile LOD0 - geometry, rig and UV verification
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - '.github/workflows/rabbit-v3-mobile-lod.yml'
+      - 'tools/creature_factory/rabbit_runtime_lod_blender.py'
+      - 'tools/creature_factory/rabbit_runtime_lod_validate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rabbit-v3-mobile-lod0
+  cancel-in-progress: false
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dependencies for deterministic GLB audit and Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
+          python -m pip install --disable-pip-version-check numpy==1.26.4 Pillow==10.4.0
+          blender -b --factory-startup --python-exit-code 1 --python-expr 'import numpy; print(numpy.__version__)'
+
+      - name: Verify immutable master and create runtime 2048 atlas from approved V2 paint
+        run: |
+          set -euo pipefail
+          mkdir -p dist/creature/rabbit-v3-mobile-lod0
+          src=asset-library/candidates/rabbit-final-uv-43725694005-1/asset.blend
+          paint=asset-library/candidates/rabbit-v3-cartoon-v2/rabbit_v2_basecolor_4096.png
+          echo '25d3f62033b9cf633bf4d458517b8f01bf5c78731dbd970859d69e017e136d05  '"$src" | sha256sum --check -
+          echo '9a9a3fe75c140a1e559ead9f854ab9eb1e76c2f4c37454588efd6fc105550a5c  '"$paint" | sha256sum --check -
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          img=Image.open('asset-library/candidates/rabbit-v3-cartoon-v2/rabbit_v2_basecolor_4096.png').convert('RGB')
+          img.resize((2048,2048),Image.Resampling.LANCZOS).save('dist/creature/rabbit-v3-mobile-lod0/paint_runtime_2048.png',optimize=True)
+          PY
+
+      - name: Build real decimated skinned mesh and render master-vs-runtime six directions
+        run: |
+          xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/creature_factory/rabbit_runtime_lod_blender.py -- \
+            "$PWD/asset-library/candidates/rabbit-final-uv-43725694005-1/asset.blend" \
+            "$PWD/dist/creature/rabbit-v3-mobile-lod0/paint_runtime_2048.png" \
+            "$PWD/dist/creature/rabbit-v3-mobile-lod0"
+
+      - name: Validate exported GLB geometry, rig, UV, pose deformation and silhouette
+        run: |
+          set -euo pipefail
+          dir=dist/creature/rabbit-v3-mobile-lod0
+          python tools/creature_factory/rabbit_runtime_lod_validate.py \
+            asset-library/candidates/rabbit-v3-cartoon-v2/asset.glb \
+            "$dir/rabbit_lod_mobile.glb" "$dir/build_report.json" "$dir"
+
+      - name: Archive review candidate - never overwrite master
+        run: |
+          set -euo pipefail
+          src=dist/creature/rabbit-v3-mobile-lod0
+          dst=asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0
+          mkdir -p "$dst"
+          cp "$src/rabbit_lod_mobile.glb" "$dst/asset.glb"
+          cp "$src/rabbit_lod_mobile.blend" "$dst/asset.blend"
+          cp "$src/paint_runtime_2048.png" "$dst/albedo_2048.png"
+          cp "$src/build_report.json" "$dst/build_report.json"
+          cp "$src/validation.json" "$dst/validation.json"
+          for v in front right left back top three-quarter; do
+            cp "$src/master-$v.png" "$dst/master-$v.png"
+            cp "$src/lod-$v.png" "$dst/lod-$v.png"
+          done
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          dst=Path('asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0')
+          files={p.name:{'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size} for p in sorted(dst.iterdir()) if p.is_file()}
+          manifest={'schema':1,'status':'runtime_mesh_candidate_review','artistic_approval':False,
+                    'roblox_imported':False,'roblox_published':False,
+                    'geometry_master':'asset-library/candidates/rabbit-final-uv-43725694005-1',
+                    'approved_paint_master':'asset-library/candidates/rabbit-v3-cartoon-v2',
+                    'maximum_mesh_triangles':20000,'mobile_total_triangle_budget':20000,
+                    'files':files}
+          (dst/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          PY
+
+      - name: Commit candidate assets only after hard gates pass
+        run: |
+          set -euo pipefail
+          git config user.name 'asset-factory[bot]'
+          git config user.email 'asset-factory[bot]@users.noreply.github.com'
+          git add asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0
+          git commit -m "assets(creatures): add validated skinned rabbit V3 mobile LOD0 candidate"
+          for attempt in 1 2 3; do
+            git fetch origin feat/creature-factory-next
+            git rebase origin/feat/creature-factory-next
+            if git push origin HEAD:refs/heads/feat/creature-factory-next; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rabbit-v3-mobile-lod0-build
+          path: dist/creature/rabbit-v3-mobile-lod0/
+          if-no-files-found: warn
