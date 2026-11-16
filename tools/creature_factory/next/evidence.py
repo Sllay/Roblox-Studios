@@ -4,7 +4,6 @@ No learned anatomy, depth or calibrated probability is claimed.
 from __future__ import annotations
 from pathlib import Path
 import json, math
-from PIL import Image,ImageDraw
 from .audit import write_json,sha256
 from .contracts import require,path_inside,VIEWS
 
@@ -52,6 +51,7 @@ def analyze_alpha(im,threshold=16):
         "threshold":threshold,"coverage_semantics":"source alpha coverage; not learned or calibrated confidence"}
 
 def segment(m,source,out,cfg,inputs):
+    from PIL import Image,ImageDraw
     src=inputs["reference_ready"];threshold=cfg.get("alpha_threshold",16)
     reports={};tiles=[]
     for v in m.views:
