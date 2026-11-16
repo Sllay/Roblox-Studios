@@ -4,6 +4,7 @@ on:
     paths:
       - 'tools/creature_factory/next/hull_alignment.py'
       - 'tools/creature_factory/next/hull_benchmark.py'
+      - 'tools/creature_factory/next/anchor_benchmark.py'
       - 'tests/test_creature_next_hull.py'
       - '.github/workflows/creature-next-hull.yml'
   workflow_dispatch:
@@ -39,9 +40,13 @@ jobs:
           done
       - name: Benchmark hull depth constraints and candidate correspondence
         run: python -u -m tools.creature_factory.next.hull_benchmark "$RUNNER_TEMP/c1/c1-ci" "$RUNNER_TEMP/ab" "$RUNNER_TEMP/depth" dist/creature-next/c2hull
+      - name: Benchmark triangulated correspondence anchors
+        run: python -u -m tools.creature_factory.next.anchor_benchmark "$RUNNER_TEMP/c1/c1-ci" "$RUNNER_TEMP/ab" "$RUNNER_TEMP/depth" dist/creature-next/c2hull dist/creature-next/c2anchors
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: creature-next-c2hull
-          path: dist/creature-next/c2hull/
+          path: |
+            dist/creature-next/c2hull/
+            dist/creature-next/c2anchors/
           if-no-files-found: warn

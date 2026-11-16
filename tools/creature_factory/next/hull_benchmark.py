@@ -31,7 +31,9 @@ def overlay_mask(mask,hit):
     return Image.fromarray(rgb)
 def feature_tracks(raw,views,hull):
     """Conservative appearance correspondences. Never label anatomical parts.
-    Require mutual ratio-test matches, geometric reprojection, and 3-view cycles.
+    Require mutual ratio-test matches, geometric reprojection, and 3-view chains.
+    Opposing canonical cameras are parallel, so requiring a triangle of
+    nonparallel pair edges would make a 3-view track impossible.
     """
     import cv2
     sift=cv2.SIFT_create(nfeatures=1000,contrastThreshold=.02);matcher=cv2.BFMatcher(cv2.NORM_L2)
@@ -61,12 +63,14 @@ def feature_tracks(raw,views,hull):
     tracks=[];seen=set()
     for a,edges in nodes.items():
         for b,c in itertools.combinations(edges,2):
-            if len({a[0],b[0],c[0]})<3 or c not in nodes.get(b,set()):continue
+            if len({a[0],b[0],c[0]})<3:continue
             key=tuple(sorted([a,b,c]))
             if key in seen:continue
             seen.add(key);obs={n:kp[n][i].pt for n,i in key}
             try:q=triangulate_observations(obs,views,2)
             except ValueError:continue
+            idx=np.floor((np.asarray(q["point"])-hull["origin"])/hull["step"]).astype(int)
+            if not (((idx>=0)&(idx<np.asarray(hull["grid"].shape))).all() and hull["grid"][tuple(idx)]):continue
             tracks.append({"observations":{n:list(p) for n,p in obs.items()},**q})
     return {"keypoints":{k:len(v) for k,v in kp.items()},"pairs":counts,"three_view_tracks":tracks,"semantic_landmarks":False,"scope":"appearance candidates only; not independent anatomical ground truth"}
 

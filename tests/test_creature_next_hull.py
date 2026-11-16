@@ -33,3 +33,17 @@ class HullAlignmentTests(unittest.TestCase):
     def test_flat_span_rejected(self):
         m=np.ones((64,64),bool);x=np.ones(m.shape)*4;r=np.ones(m.shape,np.uint16)
         d,report=align_hypothesis(x,m,x-.01,x+.01,r,.02);self.assertIsNone(d);self.assertEqual(report["status"],"insufficient_hull_depth_span")
+
+    def test_triangulated_anchor_solver(self):
+        y,x=np.indices((64,64));mask=np.ones((64,64),bool);d=4+x/128+y/256
+        score=(1/d-.1)/.01;near=d-.02;far=d+.02;runs=np.ones(mask.shape,np.uint16)
+        views=self.views.copy();views["top"]=(mask,views["top"][1])
+        obs=[]
+        for iy in range(8,56,5):
+            for ix in range(8,56,5):
+                c=views["top"][1];r,u,b,t=map(np.asarray,basis(c));p=t+(ix+.5-32)*4/64*r+(32-iy-.5)*4/64*u-d[iy,ix]*b
+                obs.append({k:list(ortho_project(p,cam,m.shape)[:2]) for k,(m,cam) in views.items()})
+        a,rep=align_from_observations(score,mask,near,far,runs,.01,"top",views,obs,"synthetic_annotations")
+        self.assertEqual(rep["status"],"triangulated_anchor_candidate");self.assertLess(np.max(abs(a[a>0]-d[a>0])),1e-5)
+        a,rep=align_from_observations(score,mask,near,far,runs,.01,"top",views,obs[:3],"synthetic_annotations")
+        self.assertIsNone(a);self.assertEqual(rep["status"],"insufficient_correspondences")

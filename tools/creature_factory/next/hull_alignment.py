@@ -146,3 +146,59 @@ def triangulate_observations(observations,views,max_reprojection_px=2.0):
         err[name]=float(np.hypot(x-p[0],y-p[1]))
     require(max(err.values())<=max_reprojection_px,"Inconsistent correspondence")
     return {"point":point.tolist(),"reprojection_pixels":err,"gauge":gauge}
+
+
+def align_from_observations(scores,mask,near,far,runs,step,view_name,views,correspondences,source_kind):
+    """Use explicit pixel observations, never hull midpoint as measured depth.
+
+    Observations are triangulated in the supplied camera gauge. A deterministic
+    spatial split tests independent observations. Appearance hypotheses are
+    diagnostics; they cannot authorize production fusion or become semantics.
+    """
+    from .geometry_evidence import fit_anchors
+    require(source_kind in ("synthetic_annotations","reviewed_annotations","appearance_hypotheses"),"Unknown anchor provenance")
+    require(view_name in views and scores.shape==mask.shape==near.shape==far.shape==runs.shape,"Anchor input shapes")
+    gauge=validate_views(views)
+    report={"scope":gauge,"anchor_provenance":source_kind,"fusion_allowed":False}
+    m,cam=views[view_name];require(m.shape==mask.shape,"View shape mismatch")
+    anchors=[]
+    for obs in correspondences:
+        if view_name not in obs or len(obs)<2:continue
+        try:
+            tri=triangulate_observations(obs,views,1.5)
+        except (ValueError,KeyError):continue
+        p=np.asarray(tri["point"]);x,y,z=ortho_project(p,cam,m.shape)
+        ix,iy=int(np.floor(x)),int(np.floor(y))
+        if not (0<=ix<m.shape[1] and 0<=iy<m.shape[0] and mask[iy,ix] and near[iy,ix]>0 and runs[iy,ix]==1):continue
+        if not near[iy,ix]-2*step<=z<=far[iy,ix]+2*step:continue
+        # Bilinear interpolation with pixel-center coordinates. Do not
+        # interpolate across the silhouette boundary.
+        fx,fy=x-.5,y-.5;x0,y0=int(np.floor(fx)),int(np.floor(fy))
+        if x0<0 or y0<0 or x0+1>=m.shape[1] or y0+1>=m.shape[0] or not mask[y0:y0+2,x0:x0+2].all():continue
+        u,v=fx-x0,fy-y0
+        val=(1-v)*((1-u)*scores[y0,x0]+u*scores[y0,x0+1])+v*((1-u)*scores[y0+1,x0]+u*scores[y0+1,x0+1])
+        anchors.append((float(x),float(y),float(val),float(z)))
+    report["triangulated_anchors"]=len(anchors)
+    if len(anchors)<24:return None,{**report,"status":"insufficient_correspondences"}
+    a=np.asarray(anchors);train=((a[:,0].astype(int)//12+a[:,1].astype(int)//12)%3)!=0
+    if train.sum()<16 or (~train).sum()<8:return None,{**report,"status":"insufficient_spatial_holdout"}
+    span=float(np.ptp(a[train,3]));report.update(train_anchors=int(train.sum()),heldout_anchors=int((~train).sum()),depth_span=span)
+    if span<3*step:return None,{**report,"status":"insufficient_anchor_span"}
+    try:scale,offset,n=fit_anchors(a[train,2],a[train,3])
+    except ValueError as exc:return None,{**report,"status":"anchor_fit_rejected","reason":str(exc)}
+    inv=scale*a[~train,2]+offset
+    if (inv<=0).any():return None,{**report,"status":"nonpositive_heldout_depth"}
+    target=a[~train,3];err=abs(1/inv-target);baseline=abs(np.median(a[train,3])-target)
+    mae=float(err.mean());base_mae=float(baseline.mean());p90=float(np.percentile(err,90))
+    report.update(scale=scale,offset=offset,retained_train=n,heldout_mae=mae,heldout_p90=p90,heldout_constant_mae=base_mae)
+    if mae>max(2.5*step,.12*span) or p90>max(4*step,.25*span) or mae>.9*base_mae:
+        return None,{**report,"status":"independent_anchors_rejected"}
+    valid=interior(mask)&(near>0)&(runs==1)
+    inv=scale*scores.astype(np.float64)+offset
+    valid&=(inv>0)&np.isfinite(inv)
+    depth=np.zeros(mask.shape,np.float32);depth[valid]=(1/inv[valid]).astype(np.float32)
+    ok=valid&(depth>=near-2*step)&(depth<=far+2*step)
+    coverage=float(ok.sum()/mask.sum());report["retained_fraction"]=coverage
+    if coverage<.5:return None,{**report,"status":"insufficient_hull_coverage"}
+    depth[~ok]=0
+    return depth,{**report,"status":"triangulated_anchor_candidate"}
