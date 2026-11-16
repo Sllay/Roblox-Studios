@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "asset_id": "rabbit-v3-stylized-cartoon-v2",
+  "status": "local_validated_binary_pending_repository_import",
+  "source": {
+    "repository": "Sllay/Roblox-Studios",
+    "branch": "feat/creature-factory-next",
+    "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/asset.glb",
+    "workflow_run_id": 43725694005
+  },
+  "paint": {
+    "atlas_size": [
+      4096,
+      4096
+    ],
+    "islands_changed": false,
+    "texture_only": true,
+    "source_v1_glb_sha256": "65d156d3c72aed244cd6a2cb9195d1fd104ef2e4d29ec56fcacefb6332be678d",
+    "v2_glb_sha256": "dec392bfdcd2a5cc87df7d477d2e675179a9db1a65f9bbb3845c1316522ad215",
+    "v2_png_sha256": "9a9a3fe75c140a1e559ead9f854ab9eb1e76c2f4c37454588efd6fc105550a5c",
+    "modified_atlas_texels": 68179,
+    "modified_fraction": 0.004063785076141357
+  },
+  "checks": {
+    "mesh_skin_uv_equal_source": true,
+    "geometry_triangles": 60968,
+    "whiskers": 6,
+    "glb_images": 1,
+    "atlas_embedded_png_matches_external": true,
+    "rendered_views": [
+      "front",
+      "right",
+      "left",
+      "back",
+      "top",
+      "three-quarter"
+    ],
+    "roblox_runtime": false,
+    "artistic_review_via_real_mesh": true
+  },
+  "blockers": [
+    "GLB and PNG binaries have been produced locally, but are not yet attached to this Git branch.",
+    "A texture-only polish cannot fix the original silhouette of a recessed nose; geometry alteration requires separate review.",
+    "Roblox runtime import, animation, collision, mobile FPS and platform publication have not been validated."
+  ],
+  "next_actions": [
+    "Transfer exact SHA-matched rabbit_v2_final.glb and rabbit_v2_basecolor_4096.png into versioned asset-library directory.",
+    "Run tools/creature_factory/rabbit_v2_validate.py against authoritative source GLB and committed V2 assets.",
+    "Run Roblox platform import and visual/rig checks before release."
+  ],
+  "artistic_note": "Concept review sheets are visual references, never evidence that their painted pixels are valid on the UV atlas."
+}
