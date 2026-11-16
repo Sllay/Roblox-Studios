@@ -34,7 +34,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y blender python3-numpy
       - name: Audit preserved candidates without inference or asset writes
-        run: python -m tools.creature_factory.next audit --out dist/creature-next/c0-ci --render --resolution 64 --timeout 180
+        # setup-python exports its libpython directory. The apt Blender/NumPy
+        # pair must use distribution Python, not the toolcache interpreter.
+        run: |
+          env -u LD_LIBRARY_PATH -u PYTHONHOME -u PYTHONPATH \
+            /usr/bin/python3 -m tools.creature_factory.next audit \
+            --out dist/creature-next/c0-ci --render --resolution 64 --timeout 180
       - name: Preserve diagnostic outputs even on failure
         if: always()
         uses: actions/upload-artifact@v4

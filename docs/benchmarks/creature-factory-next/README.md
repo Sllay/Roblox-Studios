@@ -112,6 +112,16 @@ Executed successfully:
 The workflow is added for future PR execution; these statements describe local
 results, not an unobserved GitHub Actions run.
 
+The first [remote C0 run](https://github.com/Sllay/Roblox-Studios/actions/runs/43782590860)
+passed Python tests but stopped in Blender preflight: `ModuleNotFoundError: numpy`.
+The artifact preserved the error before any candidate execution. `setup-python`
+had exported its toolcache `LD_LIBRARY_PATH` while Blender and NumPy were installed
+as distribution packages. The workflow now executes the audit with distribution
+Python and clears only Python/libpython overrides for that process, keeping the
+Blender/NumPy pair in the same environment. The initial failure artifact has SHA-256
+`aa897280e7ff727b1ca0b02203ad67e551c5ea8e900fca3493a9c25936fa3a0c`.
+Remote success is checked separately; no gate was disabled or converted to a skip.
+
 ## Reproduce
 
 From the repository root, with Python 3.11+ and Blender/its own NumPy installed:
