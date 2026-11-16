@@ -5,6 +5,7 @@ on:
     paths:
       - 'tools/creature_factory/next/**'
       - 'tests/test_creature_next_audit.py'
+      - 'tests/test_creature_next_c1.py'
       - 'docs/benchmarks/creature-factory-next/**'
       - '.github/workflows/creature-factory-next.yml'
   workflow_dispatch:
@@ -27,7 +28,7 @@ jobs:
           python-version: '3.12'
       - name: Python regression suite
         run: |
-          python -m pip install Pillow==11.3.0
+          python -m pip install Pillow==11.3.0 numpy==2.2.6
           python -m unittest discover -s tests -v
       - name: Install pinned Blender with its bundled Python and NumPy
         run: |
@@ -46,6 +47,23 @@ jobs:
             /usr/bin/python3 -m tools.creature_factory.next audit \
             --out dist/creature-next/c0-ci --render --resolution 64 --timeout 180 \
             --blender "$RUNNER_TEMP/creature-blender/blender-4.3.2-linux-x64/blender"
+      - name: C1 known geometry fixtures and CLI integration
+        run: |
+          BLENDER="$RUNNER_TEMP/creature-blender/blender-4.3.2-linux-x64/blender"
+          env -u LD_LIBRARY_PATH -u PYTHONHOME -u PYTHONPATH python -m tools.creature_factory.next fixtures --out dist/creature-next/c1-ci --blender "$BLENDER" --resolution 128
+          python -m tools.creature_factory.next build --manifest dist/creature-next/c1-ci/wavy/manifest.json --out dist/creature-next/c1-job
+          python -m tools.creature_factory.next resume --job dist/creature-next/c1-job
+          python -m tools.creature_factory.next validate --job dist/creature-next/c1-job
+          python -m tools.creature_factory.next legacy-rabbit --source asset-library/references/rabbit-v1
+      - name: Preserve C1 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: creature-next-c1
+          path: |
+            dist/creature-next/c1-ci/
+            dist/creature-next/c1-job/
+          if-no-files-found: warn
       - name: Preserve diagnostic outputs even on failure
         if: always()
         uses: actions/upload-artifact@v4

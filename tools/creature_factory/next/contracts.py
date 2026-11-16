@@ -161,6 +161,10 @@ def legacy_rabbit(root):
     Preserve full source sheet, do not fabricate unmeasured crop labels."""
     raw=json.loads((root/"manifest.json").read_text());h=raw["references"]["hero"];s=raw["references"]["views"]
     for v in (h,s):require(sha256(path_inside(root,v["path"]))==v["sha256"],"Legacy hash mismatch")
-    # Historical sheet has four panels but not machine-verified crop metadata.
-    # Keep sheet as preserved supplemental source; only hero is mapped.
-    return AssetManifest("rabbit-v1","creature",[ReferenceView("three-quarter",h["path"],h["sha256"],[0,0,*h["size"]],CameraCalibration("unknown"))],legacy=True,rig_required=True,identity={"supplemental_sheet":s,"legacy_unmapped_panel_count":4,"reason":"requires explicit crop calibration","whiskers":6})
+    # Historical panel_data uses four cells of a 1000px normalized copy.
+    # Map the documented rectangles back to original pixel coordinates.
+    width,height=s["size"];bounds=[round(i*width/4) for i in range(5)]
+    views=[ReferenceView("three-quarter",h["path"],h["sha256"],[0,0,*h["size"]],CameraCalibration("unknown"))]
+    for i,name in enumerate(("front","right","left","back")):
+        views.append(ReferenceView(name,s["path"],s["sha256"],[bounds[i],0,bounds[i+1]-bounds[i],round(.475*height)],CameraCalibration("unknown")))
+    return AssetManifest("rabbit-v1","creature",views,legacy=True,rig_required=True,identity={"legacy_panel_layout":"rabbit_organic_reference.PANELS; approximate crops, uncalibrated cameras","whiskers":6})
