@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Install image renderer
-        run: python -m pip install Pillow==11.3.0 numpy==2.2.6 opencv-python-headless==4.11.0.86
+        run: python -m pip install Pillow==11.3.0 numpy==2.2.6 opencv-python-headless==4.11.0.86 scipy==1.13.1 scikit-image==0.24.0 trimesh==4.6.8
       - name: Structural validation
         run: python tools/workspace.py validate
       - name: Validate deployment mappings

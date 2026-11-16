@@ -14,9 +14,7 @@ from .audit import write_json,sha256,validate_output
 from .landmark_fixture import sphere,raster,camera,RES,DIRECTIONS
 from .dag import build,validate_job
 
-def run(upstream,out):
-    out=validate_output(Path(out));out.mkdir(parents=True,exist_ok=False)
-    src=out/"input";src.mkdir()
+def fixture_geometry():
     defs=[Part("body","body")]
     data=[((0,.1,1.12),(.60,1.0,.48))]
     def add(id,kind,center,radii,side="none",thin=False):
@@ -37,6 +35,12 @@ def run(upstream,out):
         # Distinct but simple painted colors, not marker IDs.
         color=(86,153,123) if defs[i].kind=="wing" else (174,119,72)
         tex=np.tile(np.asarray(color,np.uint8),(128,128,1));parts.append((v,n,uv,f,tex,tex))
+    return parts,anatomy
+
+def run(upstream,out):
+    out=validate_output(Path(out));out.mkdir(parents=True,exist_ok=False)
+    src=out/"input";src.mkdir()
+    parts,anatomy=fixture_geometry()
     sheet=Image.new("RGBA",(RES*4,RES*2));views=[]
     for i,name in enumerate(VIEWS):
         c=camera(DIRECTIONS[name]);rgb,d,m,n,ids=raster(parts,c,False)
