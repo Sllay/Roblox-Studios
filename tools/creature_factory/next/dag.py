@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from contextlib import contextmanager
-import fcntl, json, os, time, uuid
+import fcntl, inspect, json, os, time, uuid, hashlib
 from .audit import sha256,write_json,validate_output
 from .contracts import *
 
@@ -50,14 +50,16 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
     require(not source.is_relative_to(root),"Source must be outside job directory")
     config=config or {};finite(config);runners=RUNNERS if runners is None else runners
     # Read actual input bytes, not only the digest asserted by a manifest.
-    input_hash=digest({"manifest":asdict(m),"sources":{v.source:sha256(path_inside(source.parent,v.source)) for v in m.views}})
+    def input_digest():
+        return digest({"manifest":sha256(source),"sources":{v.source:sha256(path_inside(source.parent,v.source)) for v in m.views}})
+    input_hash=input_digest()
     with lock(root):
         p=path_inside(root,"job.json")
         old=read_state(root) if p.exists() else None
         if old and not resume:raise JobError("Existing job: use resume")
         if old and old["asset_id"]!=m.asset_id:raise JobError("Asset identity changed")
         state=old or asdict(JobManifest(m.asset_id,str(source),config,{}))
-        state.update(manifest_path=str(source),config=config)
+        state.update(manifest_path=str(source),config=config,input_hash=input_hash,status="incomplete")
         records=state["stages"]
         def persist():write_json(p,state)
         def archive(r):
@@ -67,11 +69,18 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
         for s in stages:
             prev=records.get(s.name);deps={d:records[d]["key"] for d in s.deps}
             cfg=config.get(s.name,{})
-            key=digest({"stage":s.name,"version":s.version,"backend":s.backend,"deps":deps,"config":cfg,"input":input_hash if not s.deps else None})
+            require(isinstance(cfg,dict),"Stage configuration must be object")
+            runner=runners.get(s.name)
+            # Explicit stage versions plus real implementation fingerprints. For
+            # callable test doubles, source identity is diagnostic only.
+            code_hash=sha256(Path(__file__)) if runners is RUNNERS else "injected-test-runner"
+            if runners is RUNNERS and s.name in RUNNERS:code_hash=digest([code_hash,sha256(Path(__file__).with_name("contracts.py"))])
+            key=digest({"stage":s.name,"version":s.version,"backend":s.backend,"implementation":code_hash,"deps":deps,"config":cfg,"input":input_hash if not s.deps else None})
             ready=all(records[d]["state"] in ("succeeded","skipped") for d in s.deps)
             # Include attempt identity so corruption/recovery invalidates descendants even when bytes match.
             key=digest({"key":key,"dependency_attempts":{d:records[d].get("attempt") for d in s.deps}})
             if prev and prev["key"]==key and prev["state"]=="succeeded" and ready and valid_outputs(root,prev):continue
+            if prev and prev["key"]==key and prev["state"]=="skipped" and s.name=="rig_ready" and not m.rig_required:continue
             if prev:
                 archive(prev)
                 records[s.name]={**prev,"state":"invalidated"};persist()
@@ -90,12 +99,15 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
                 out.mkdir(parents=True,exist_ok=False)
                 result("running",attempt=attempt);start=time.monotonic()
                 try:
+                    if input_digest()!=input_hash:raise JobError("Inputs changed during job; resume with new manifest")
                     metrics=runners[s.name](m,source,out,cfg) or {}
+                    if input_digest()!=input_hash:raise JobError("Inputs changed during stage; partial attempt retained")
                     outputs={}
                     for f in sorted(out.rglob("*")):
                         if f.is_symlink():raise JobError("Symlink output prohibited")
                         if f.is_file():
                             rel=str(f.relative_to(root));outputs[rel]=sha256(path_inside(root,rel))
+                            with f.open("rb") as stream:os.fsync(stream.fileno())
                     if not outputs:raise JobError("No output")
                     finite(metrics)
                     result("succeeded",attempt=attempt,outputs=outputs,metrics=metrics,duration_seconds=time.monotonic()-start);break
@@ -110,4 +122,9 @@ def validate_job(root):
     with lock(root):
         state=read_state(root)
         invalid=[s for s,r in state["stages"].items() if r["state"]=="succeeded" and not valid_outputs(root,r)]
-        return {"status":"invalid" if invalid else "valid_incomplete" if state["status"]!="review_ready" else "valid","invalid_stages":invalid,"artistic_approval":False}
+        try:
+            source=Path(state["manifest_path"]);m=AssetManifest.read(source)
+            current=digest({"manifest":sha256(source),"sources":{v.source:sha256(path_inside(source.parent,v.source)) for v in m.views}})
+            if current!=state.get("input_hash"):invalid.append("intake:source_changed")
+        except (OSError,ValueError,KeyError):invalid.append("intake:source_unavailable")
+        return {"status":"invalid" if invalid else "valid_incomplete" if state.get("status")!="review_ready" else "valid","invalid_stages":invalid,"artistic_approval":False}

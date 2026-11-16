@@ -49,4 +49,5 @@ for kind in ("flat","wavy","convex","concave","asymmetric","articulation"):
     bpy.context.view_layer.objects.active=objects[0]
     bpy.ops.export_scene.gltf(filepath=str(p/"ground-truth.glb"),export_format="GLB",use_selection=True,export_animations=False)
     bpy.ops.wm.save_as_mainfile(filepath=str(p/"ground-truth.blend"))
-    write_json(p/"geometry.json",{"fixture":kind,"seed":0,"parameters":expected,"cameras":cameras,"metrics":metrics,"objects":[o.name for o in objects],"triangles":sum(len(o.data.loop_triangles) for o in objects),"units":"unit","camera_convention":"Blender camera -Z forward +Y up; world Z up; top-left pixel centers"})
+    for o in objects:o.data.calc_loop_triangles()
+    write_json(p/"geometry.json",{"fixture":kind,"seed":0,"parameters":expected,"cameras":cameras,"metrics":metrics,"objects":[o.name for o in objects],"vertices":sum(len(o.data.vertices) for o in objects),"triangles":sum(len(o.data.loop_triangles) for o in objects),"units":"unit","camera_convention":"Blender camera -Z forward +Y up; world Z up; top-left pixel centers"})

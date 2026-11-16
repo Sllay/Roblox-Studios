@@ -43,7 +43,7 @@ def generate(out,blender="blender",resolution=128):
             require(not d[~mask].any() and not n[~mask].any(),"Background nonzero")
             evid.append(asdict(EvidenceBundle(name,v.camera,f"mask-{name}.npy",f"depth-{name}.npy",f"normal-{name}.npy")))
         write_json(p/"evidence.json",{"schema":1,"views":evid})
-        write_json(p/"artifact.json",{"schema":1,"path":"ground-truth.glb","sha256":sha256(p/"ground-truth.glb"),"triangles":raw["triangles"],"units":"unit"})
+        write_json(p/"artifact.json",asdict(GeometryArtifact("ground-truth.glb",sha256(p/"ground-truth.glb"),"unit",raw["vertices"],raw["triangles"])))
         y=k*(resolution+24);draw.text((5,y+4),kind,fill=(20,20,20))
         for j,name in enumerate(("color-three-quarter.png","mask-top.npy","depth-top.png","normal-top.png")):
             if name.endswith(".npy"):

@@ -108,18 +108,30 @@ class AssetManifest:
 class GeometryArtifact:
     path:str;sha256:str;units:str;vertices:int;triangles:int
     schema:int=1
+    def __post_init__(self):
+        require(self.schema==1 and re.fullmatch("[0-9a-f]{64}",self.sha256),"Geometry schema/hash")
+        require(type(self.vertices)==int and type(self.triangles)==int and min(self.vertices,self.triangles)>0,"Geometry counts")
+        require(self.units in ("stud","m","cm","unit"),"Geometry units")
 @dataclass(frozen=True)
 class EvidenceBundle:
     view_id:str;camera:CameraCalibration;mask:str;depth:str;normals:str
     confidence:str|None=None;schema:int=1
     convention:str="camera-forward distance; world XYZ normals; top-left array; zero background"
+    def __post_init__(self):
+        require(self.schema==1 and self.view_id in VIEWS,"Evidence schema/view")
+        require(all(isinstance(p,str) and p for p in (self.mask,self.depth,self.normals)),"Evidence file paths")
 @dataclass(frozen=True)
 class ExportTarget:
     name:str;format:str;max_triangles_per_mesh:int|None=None;schema:int=1
+    def __post_init__(self):
+        require(self.schema==1 and self.format in ("glb","blend","fbx","obj"),"Export schema/format")
+        require(self.max_triangles_per_mesh is None or type(self.max_triangles_per_mesh)==int and self.max_triangles_per_mesh>0,"Export limit")
 @dataclass(frozen=True)
 class QualityReport:
     status:str;metrics:dict;limitations:list[str];schema:int=1
     artistic_approval:bool=False;publication_allowed:bool=False
+    def __post_init__(self):
+        finite(self.metrics);require(self.schema==1,"Quality schema")
 @dataclass(frozen=True)
 class StageResult:
     stage:str;version:str;state:str;key:str;attempt:str|None=None
@@ -127,6 +139,9 @@ class StageResult:
     dependencies:dict=field(default_factory=dict);config:dict=field(default_factory=dict)
     duration_seconds:float=0.;cause:str|None=None;limitations:list[str]=field(default_factory=list)
     backend:str="c1";schema:int=1
+    def __post_init__(self):
+        require(self.schema==1 and self.state in ("pending","running","succeeded","failed","blocked","skipped","invalidated"),"Stage state/schema")
+        finite(asdict(self));require(self.duration_seconds>=0,"Stage duration")
 @dataclass(frozen=True)
 class JobManifest:
     asset_id:str;manifest_path:str;config:dict;stages:dict
