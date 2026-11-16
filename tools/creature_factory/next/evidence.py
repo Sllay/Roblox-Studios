@@ -59,6 +59,10 @@ def segment(m,source,out,cfg,inputs):
         with Image.open(p) as original:im=original.convert("RGBA")
         mask,alpha,r=analyze_alpha(im,threshold);r["source_sha256"]=sha256(p)
         mask.save(out/(v.id+"-mask.png"));alpha.save(out/(v.id+"-alpha.png"))
+        # Majority coverage approximates center-sampled visibility; retain
+        # low-alpha coverage separately for thin features and soft boundaries.
+        core=alpha.point(lambda a:255 if a>=128 else 0);core.save(out/(v.id+"-core-mask.png"))
+        r["core_pixels"]=core.histogram()[255];r["core_threshold"]=128
         reports[v.id]=r
         thumb=im.copy();thumb.thumbnail((180,180));tile=Image.new("RGB",(360,210),(225,230,235));draw=ImageDraw.Draw(tile);draw.text((5,4),v.id,fill=(15,15,15))
         tile.paste(thumb,((180-thumb.width)//2,22+(180-thumb.height)//2),thumb.getchannel("A"))
