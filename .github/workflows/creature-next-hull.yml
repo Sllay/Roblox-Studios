@@ -1,0 +1,47 @@
+name: Creature Factory Next C2 hull alignment
+on:
+  pull_request:
+    paths:
+      - 'tools/creature_factory/next/hull_alignment.py'
+      - 'tools/creature_factory/next/hull_benchmark.py'
+      - 'tests/test_creature_next_hull.py'
+      - '.github/workflows/creature-next-hull.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  hull:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install bounded CPU dependencies
+        run: python -m pip install Pillow==11.3.0 numpy==2.2.6 opencv-python-headless==4.11.0.86
+      - name: Hull regression tests
+        run: python -m unittest tests.test_creature_next_hull tests.test_creature_next_geometry tests.test_creature_next_c2 tests.test_creature_next_c1 -v
+      - name: Restore hash-verified fixture, camera and neural evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for pair in "14190612099 87eb505f4efaee2f58412844834e77523dda45a42cd42e795d1ca3da77b20f60 c1" "14191062045 230dc0856c282900ab722eaf9403e51f7395e849419907ed2fe6e56404ded36b ab" "14191840234 b970259960b85d4adf3e1130f61da7daff400840e3c0a0b800e4bce5775ffa01 depth"; do
+            read -r id hash name <<< "$pair"
+            curl --fail --location --silent --show-error --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/Sllay/Roblox-Studios/actions/artifacts/$id/zip" -o "$RUNNER_TEMP/$name.zip"
+            echo "$hash  $RUNNER_TEMP/$name.zip" | sha256sum -c -
+            unzip -q "$RUNNER_TEMP/$name.zip" -d "$RUNNER_TEMP/$name"
+          done
+      - name: Benchmark hull depth constraints and candidate correspondence
+        run: python -u -m tools.creature_factory.next.hull_benchmark "$RUNNER_TEMP/c1/c1-ci" "$RUNNER_TEMP/ab" "$RUNNER_TEMP/depth" dist/creature-next/c2hull
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creature-next-c2hull
+          path: dist/creature-next/c2hull/
+          if-no-files-found: warn
