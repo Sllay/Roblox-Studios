@@ -8,6 +8,7 @@ on:
       - tools/creature_factory/rabbit_v2_paint_v1.py
       - tools/creature_factory/rabbit_v2_nose_fix.py
       - tools/creature_factory/rabbit_v2_validate.py
+      - tools/creature_factory/rabbit_runtime_preflight.py
   workflow_dispatch:
 
 permissions:
@@ -66,6 +67,9 @@ jobs:
           echo '9a9a3fe75c140a1e559ead9f854ab9eb1e76c2f4c37454588efd6fc105550a5c  /mnt/data/rabbit_paint/v2/rabbit_v2_basecolor_4096.png' | sha256sum --check -
           python tools/creature_factory/rabbit_v2_validate.py /mnt/data/rabbit_src/asset.glb /mnt/data/rabbit_paint/v2/rabbit_v2_final.glb /mnt/data/rabbit_paint/v2/rabbit_v2_basecolor_4096.png
 
+      - name: Record Roblox per-mesh budget (does not claim runtime PASS)
+        run: python tools/creature_factory/rabbit_runtime_preflight.py /mnt/data/rabbit_paint/v2/rabbit_v2_final.glb --output /mnt/data/rabbit_paint/v2/runtime_readiness.json
+
       - name: Stage reviewed candidate without overwriting authoritative source
         run: |
           set -euo pipefail
@@ -76,6 +80,7 @@ jobs:
           cp /mnt/data/rabbit_paint/v2/rabbit_v2_basecolor_2048.png "$dst/rabbit_v2_basecolor_2048.png"
           cp /mnt/data/rabbit_paint/rabbit_uv_clean_4096.png "$dst/rabbit_uv_clean_4096.png"
           cp /mnt/data/rabbit_paint/v2/validation_v2.json "$dst/validation_v2.json"
+          cp /mnt/data/rabbit_paint/v2/runtime_readiness.json "$dst/runtime_readiness.json"
           for view in front left right back top three-quarter rabbit_v2_views_real comparativo_topo_real; do
             cp "/mnt/data/rabbit_paint/v2/$view.png" "$dst/$view.png"
           done
