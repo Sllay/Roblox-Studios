@@ -54,7 +54,9 @@ jobs:
         run: python -u tools/creature_factory/rabbit_v2_paint_v1.py
 
       - name: Apply localized V2 muzzle painting and real mesh renders
-        run: python -u tools/creature_factory/rabbit_v2_nose_fix.py
+        run: |
+          cp tools/creature_factory/rabbit_v2_paint_v1.py /mnt/data/rabbit_paint/paint_v1.py
+          python -u tools/creature_factory/rabbit_v2_nose_fix.py
 
       - name: Enforce exact published V2 hashes and GLB invariants
         run: |
