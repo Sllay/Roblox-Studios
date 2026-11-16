@@ -1,0 +1,46 @@
+{
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "packages": {
+    "numpy": "2.3.5",
+    "Pillow": "13.0.0",
+    "scipy": "1.17.0",
+    "torch": null,
+    "torchvision": null,
+    "xatlas": null,
+    "trimesh": null,
+    "open3d": null,
+    "meshoptimizer": null
+  },
+  "resources": {
+    "cpu_count_visible": 3,
+    "cpu_quota": 2.0,
+    "memory_limit_bytes": 8589934592,
+    "disk_free_bytes": 2775941120,
+    "nvidia_smi": null,
+    "gpu_device_paths": [],
+    "gpu_scope": "NVIDIA executable/device discovery only; CPU renderer explicitly selected; other accelerators not validated"
+  },
+  "network_operations": [],
+  "paid_services": false,
+  "blender": {
+    "status": "passed",
+    "returncode": 0,
+    "wall_seconds": 1.2685,
+    "sampled_peak_process_rss_bytes": 286474240,
+    "rss_method": "Root process Linux /proc RSS sampled at 100ms; excludes descendants; lower bound on transient peaks. Blender also records its getrusage peak.",
+    "log": "preflight-blender.log",
+    "data": {
+      "blender": "4.3.2",
+      "python": "3.11.9 (main, Sep 11 2024, 06:43:20) [GCC 11.2.1 20220127 (Red Hat 11.2.1-9)]",
+      "numpy": "1.24.3",
+      "xatlas_import": {
+        "available": false,
+        "error_type": "ModuleNotFoundError",
+        "error": "No module named 'xatlas'"
+      },
+      "glb_export_reimport_meshes": 1,
+      "cycles_available": true
+    }
+  }
+}

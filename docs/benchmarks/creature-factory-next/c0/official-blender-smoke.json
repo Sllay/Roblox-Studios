@@ -1,0 +1,209 @@
+{
+  "schema": 1,
+  "status": "measured_review_required",
+  "sourceSha256": "ea0ebd42c7ea7a6b7ec6bf7c976edb2a1e91e205f83a017b21c9e5bc48121466",
+  "sourceUnchanged": true,
+  "blenderVersion": "4.3.2",
+  "numpyVersion": "1.24.3",
+  "totals": {
+    "triangles": 3120,
+    "vertices": 7620,
+    "bones": 14,
+    "uvCharts": 331,
+    "meshesWithoutUV": 0,
+    "exactZeroAreaTriangles": 0,
+    "invalidWeightVertices": 0
+  },
+  "excludedDisplayHelpers": {
+    "count": 1,
+    "objects": [
+      {
+        "name": "Icosphere",
+        "vertices": 42,
+        "triangles": 80,
+        "reason": "armature pose-bone custom_shape referenced only through collections hidden for both render and viewport",
+        "collections": [
+          {
+            "name": "glTF_not_exported",
+            "hideRender": true,
+            "hideViewport": true
+          }
+        ]
+      }
+    ]
+  },
+  "measurements": {
+    "elapsedSeconds": 2.3988,
+    "processPeakRssKiB": 333220,
+    "renderer": "Cycles CPU",
+    "samples": 32,
+    "threads": 2,
+    "resolution": 64
+  },
+  "cameras": {
+    "front": {
+      "type": "orthographic",
+      "matrixWorld": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.6292068494294654e-07,
+          -1.0,
+          -11.880309104919434
+        ],
+        [
+          0.0,
+          1.0,
+          -1.6292068494294654e-07,
+          1.324847936630249
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "orthoScale": 4.519594192504883,
+      "validPixels": 473,
+      "depthMin": 10.899582862854004,
+      "depthMax": 13.027956008911133,
+      "bufferValidation": {
+        "finite": true,
+        "unitNormalsTolerance": 1e-05,
+        "zeroBackground": true,
+        "positiveMaskedDepth": true
+      }
+    },
+    "right": {
+      "type": "orthographic",
+      "matrixWorld": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          12.10605525970459
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          0.22574591636657715
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.324847936630249
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "orthoScale": 4.519594192504883,
+      "validPixels": 514,
+      "depthMin": 11.262054443359375,
+      "depthMax": 12.102502822875977,
+      "bufferValidation": {
+        "finite": true,
+        "unitNormalsTolerance": 1e-05,
+        "zeroBackground": true,
+        "positiveMaskedDepth": true
+      }
+    },
+    "back": {
+      "type": "orthographic",
+      "matrixWorld": [
+        [
+          -1.0,
+          -1.5099580252808664e-07,
+          1.1399865765455465e-14,
+          0.0
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          12.331801414489746
+        ],
+        [
+          -1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          1.324847936630249
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "orthoScale": 4.519594192504883,
+      "validPixels": 473,
+      "depthMin": 10.853763580322266,
+      "depthMax": 12.741771697998047,
+      "bufferValidation": {
+        "finite": true,
+        "unitNormalsTolerance": 1e-05,
+        "zeroBackground": true,
+        "positiveMaskedDepth": true
+      }
+    },
+    "three-quarter": {
+      "type": "orthographic",
+      "matrixWorld": [
+        [
+          0.7071067094802856,
+          0.12309147417545319,
+          -0.6963106989860535,
+          -8.429574966430664
+        ],
+        [
+          -0.70710688829422,
+          0.12309132516384125,
+          -0.6963105797767639,
+          -8.203828811645508
+        ],
+        [
+          -8.215030788960576e-08,
+          0.9847319722175598,
+          0.17407752573490143,
+          3.432241678237915
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "orthoScale": 4.519594192504883,
+      "validPixels": 584,
+      "depthMin": 11.133511543273926,
+      "depthMax": 12.801966667175293,
+      "bufferValidation": {
+        "finite": true,
+        "unitNormalsTolerance": 1e-05,
+        "zeroBackground": true,
+        "positiveMaskedDepth": true
+      }
+    }
+  },
+  "limitations": [
+    "C0 measurements are observations of preserved candidates, not artistic approval.",
+    "No self-intersection or positive-area UV-overlap test is performed by this worker.",
+    "Diagnostic position welding can merge coincident separate surfaces; raw topology is retained.",
+    "Camera axes use imported Blender world (+Z up, front -Y); concept cameras are not calibrated.",
+    "Depth and geometric world normals are center-sampled from a BVH of evaluated imported geometry, without texture, shading normals or antialiasing.",
+    "Pose probes are generic joint rotations, not anatomy, collision or deformation approval."
+  ]
+}

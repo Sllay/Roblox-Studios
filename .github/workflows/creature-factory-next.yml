@@ -29,17 +29,23 @@ jobs:
         run: |
           python -m pip install Pillow==11.3.0
           python -m unittest discover -s tests -v
-      - name: Install CPU Blender and its distribution NumPy
+      - name: Install pinned Blender with its bundled Python and NumPy
         run: |
-          sudo apt-get update
-          sudo apt-get install -y blender python3-numpy
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/creature-blender"
+          curl --fail --location --silent --show-error --retry 2 \
+            https://download.blender.org/release/Blender4.3/blender-4.3.2-linux-x64.tar.xz \
+            -o "$RUNNER_TEMP/creature-blender/blender.tar.xz"
+          printf '%s  %s\n' 4da1c956673c0485e63054e563ee69198cc8f80d8157dd7592dffc8a6a5592e6 \
+            "$RUNNER_TEMP/creature-blender/blender.tar.xz" | sha256sum --check
+          tar -xJf "$RUNNER_TEMP/creature-blender/blender.tar.xz" -C "$RUNNER_TEMP/creature-blender"
       - name: Audit preserved candidates without inference or asset writes
-        # setup-python exports its libpython directory. The apt Blender/NumPy
-        # pair must use distribution Python, not the toolcache interpreter.
+        # Keep setup-python's libpython overrides out of the bundled renderer.
         run: |
           env -u LD_LIBRARY_PATH -u PYTHONHOME -u PYTHONPATH \
             /usr/bin/python3 -m tools.creature_factory.next audit \
-            --out dist/creature-next/c0-ci --render --resolution 64 --timeout 180
+            --out dist/creature-next/c0-ci --render --resolution 64 --timeout 180 \
+            --blender "$RUNNER_TEMP/creature-blender/blender-4.3.2-linux-x64/blender"
       - name: Preserve diagnostic outputs even on failure
         if: always()
         uses: actions/upload-artifact@v4

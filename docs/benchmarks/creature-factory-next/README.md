@@ -116,10 +116,22 @@ The first [remote C0 run](https://github.com/Sllay/Roblox-Studios/actions/runs/4
 passed Python tests but stopped in Blender preflight: `ModuleNotFoundError: numpy`.
 The artifact preserved the error before any candidate execution. `setup-python`
 had exported its toolcache `LD_LIBRARY_PATH` while Blender and NumPy were installed
-as distribution packages. The workflow now executes the audit with distribution
-Python and clears only Python/libpython overrides for that process, keeping the
-Blender/NumPy pair in the same environment. The initial failure artifact has SHA-256
+as distribution packages. Clearing those overrides in a second run was insufficient:
+the distribution Blender still did not discover NumPy in its embedded interpreter.
+An OS package installation was therefore not evidence of a working embedded import.
+The initial failure artifact has SHA-256
 `aa897280e7ff727b1ca0b02203ad67e551c5ea8e900fca3493a9c25936fa3a0c`.
+The second [failure artifact](https://github.com/Sllay/Roblox-Studios/actions/runs/43782901603/artifacts/14188779445)
+has SHA-256 `fc5026345b7e983fb4c3eddf9d17c9d8f873d50bf19279f3df6b75f9c2438a35`.
+The workflow now pins the official Blender 4.3.2 Linux bundle, including its own
+Python 3.11.9 / NumPy 1.24.3. The release archive SHA-256 is
+`4da1c956673c0485e63054e563ee69198cc8f80d8157dd7592dffc8a6a5592e6`,
+checked against the [official checksum list](https://download.blender.org/release/Blender4.3/blender-4.3.2.sha256).
+Its actual embedded NumPy import and GLB export/reimport passed locally; the
+independent distribution build used for the full local baseline remains preserved.
+Python/libpython overrides are cleared only for the audit process. The precise
+distribution-package search-path discrepancy is not claimed diagnosed beyond the
+observed failed import; the pinned bundle removes that unverified dependency pair.
 Remote success is checked separately; no gate was disabled or converted to a skip.
 
 ## Reproduce
