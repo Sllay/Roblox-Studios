@@ -1,0 +1,23 @@
+{
+  "status": "local_texture_baked_and_verified",
+  "validation": {
+    "unchanged_binary_geometry_uv_skin": true,
+    "one_texture": true,
+    "4096x4096": true,
+    "uv_coords_in_bounds": true,
+    "face_triangles": 60968,
+    "rigged": true,
+    "whiskers": 6,
+    "texture_changed_texels": 68179,
+    "texture_fraction_changed": 0.004063785076141357,
+    "changed_gutter_pixels": 0,
+    "unaffected_pixels_byte_identical": true,
+    "preview_rendered_from_GLTF_geometry": true,
+    "roblox_runtime_tested": false,
+    "visual_comparison_real_render": true
+  },
+  "source_glb_sha256": "65d156d3c72aed244cd6a2cb9195d1fd104ef2e4d29ec56fcacefb6332be678d",
+  "v2_glb_sha256": "dec392bfdcd2a5cc87df7d477d2e675179a9db1a65f9bbb3845c1316522ad215",
+  "texture_sha256": "9a9a3fe75c140a1e559ead9f854ab9eb1e76c2f4c37454588efd6fc105550a5c",
+  "note": "This is a texture-only correction. The previously generated conceptual reference sheet was not used as a UV map."
+}
