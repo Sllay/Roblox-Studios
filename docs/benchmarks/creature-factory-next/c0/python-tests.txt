@@ -1,0 +1,212 @@
+test_cloud_and_rate_errors_distinct (test_asset_access.AssetAccessTests.test_cloud_and_rate_errors_distinct) ... ok
+test_denied_is_not_security_rejection (test_asset_access.AssetAccessTests.test_denied_is_not_security_rejection) ... ok
+test_loadable_rejected_and_pass_never_authorize_import (test_asset_access.AssetAccessTests.test_loadable_rejected_and_pass_never_authorize_import) ... ok
+test_restricted_texture_is_incomplete_not_access_denied (test_asset_access.AssetAccessTests.test_restricted_texture_is_incomplete_not_access_denied) ... ok
+test_reject_wrong_game_or_asset (test_asset_catalog.AssetCatalogTests.test_reject_wrong_game_or_asset) ... ok
+test_shortlist_is_never_import_or_safety_approval (test_asset_catalog.AssetCatalogTests.test_shortlist_is_never_import_or_safety_approval) ... ok
+test_artifacts_escape_untrusted_asset_names (test_asset_discovery.AssetDiscoveryTests.test_artifacts_escape_untrusted_asset_names) ... ok
+test_empty_results_fail_closed (test_asset_discovery.AssetDiscoveryTests.test_empty_results_fail_closed) ... ok
+test_no_external_thumbnails (test_asset_discovery.AssetDiscoveryTests.test_no_external_thumbnails) ... ok
+test_search_normalization_and_no_auto_approval (test_asset_discovery.AssetDiscoveryTests.test_search_normalization_and_no_auto_approval) ... ok
+test_read_only_extraction_contract (test_asset_pack.PackTests.test_read_only_extraction_contract) ... ok
+test_selector (test_asset_pack.PackTests.test_selector) ... ok
+test_unexpected_authorization_rejected (test_asset_pack.PackTests.test_unexpected_authorization_rejected) ... ok
+test_apply_protocol_and_evidence (test_asset_pipeline.AssetPipelineTests.test_apply_protocol_and_evidence) ... ok
+test_invalid_asset_id (test_asset_pipeline.AssetPipelineTests.test_invalid_asset_id) ... ok
+test_reaudit_before_parent_and_save (test_asset_pipeline.AssetPipelineTests.test_reaudit_before_parent_and_save) ... ok
+test_reject_production (test_asset_pipeline.AssetPipelineTests.test_reject_production) ... ok
+test_reject_script_or_unknown_class (test_asset_pipeline.AssetPipelineTests.test_reject_script_or_unknown_class) ... ok
+test_reject_wrong_biome_and_target (test_asset_pipeline.AssetPipelineTests.test_reject_wrong_biome_and_target) ... ok
+test_stale_plan_blocks_before_write (test_asset_pipeline.AssetPipelineTests.test_stale_plan_blocks_before_write) ... ok
+test_valid_plan (test_asset_pipeline.AssetPipelineTests.test_valid_plan) ... ok
+test_each_card_is_indivisible (test_canopy_card_partition.CanopyPartitionTests.test_each_card_is_indivisible) ... ok
+test_even_exact_balance_and_unchanged_faces (test_canopy_card_partition.CanopyPartitionTests.test_even_exact_balance_and_unchanged_faces) ... ok
+test_invalid_index_fails (test_canopy_card_partition.CanopyPartitionTests.test_invalid_index_fails) ... ok
+test_nonplanar_fails (test_canopy_card_partition.CanopyPartitionTests.test_nonplanar_fails) ... ok
+test_odd_balance (test_canopy_card_partition.CanopyPartitionTests.test_odd_balance) ... ok
+test_one_card_fails (test_canopy_card_partition.CanopyPartitionTests.test_one_card_fails) ... ok
+test_welded_fails (test_canopy_card_partition.CanopyPartitionTests.test_welded_fails) ... ok
+test_dispatch_contract (test_capabilities.CapabilityTests.test_dispatch_contract) ... ok
+test_registry (test_capabilities.CapabilityTests.test_registry) ... ok
+test_mismatch (test_cloud_pinned_read.PinnedReadTests.test_mismatch) ... ok
+test_pin (test_cloud_pinned_read.PinnedReadTests.test_pin) ... CREATED 1 candidates; 1 thumbnails; files in /tmp/tmpiwy1kylf
+STAGING IMPORT VERIFIED: tree-one version 6
+Cloud task: universes/1/places/2/versions/14/luau-execution-sessions/a/tasks/b
+ok
+test_apply_never_replaces_entire_place (test_cloud_smoke.CloudSmokeTests.test_apply_never_replaces_entire_place) ... ok
+test_identity_checks_both_ids (test_cloud_smoke.CloudSmokeTests.test_identity_checks_both_ids) ... ok
+test_local_dry_run_does_not_require_key (test_cloud_smoke.CloudSmokeTests.test_local_dry_run_does_not_require_key) ... Target: mapa-principal/main (production) Universe 10769712453 Place 118200154785968
+Strategy: Luau Execution + SavePlaceAsync; NEVER replace full Place file
+DRY RUN: 6728 bytes Luau; no API calls made
+ok
+test_script_embedding_preserves_source (test_cloud_smoke.CloudSmokeTests.test_script_embedding_preserves_source) ... ok
+test_verification_is_read_only (test_cloud_smoke.CloudSmokeTests.test_verification_is_read_only) ... ok
+test_get_retry_only (test_cloud_tasks_rate_limit.RateLimitTests.test_get_retry_only) ... Rate-limited reading task; retry GET in 8s
+ok
+test_post_not_retried (test_cloud_tasks_rate_limit.RateLimitTests.test_post_not_retried) ... ok
+test_actual_exported_baseline_counts (test_creature_next_audit.AuditTests.test_actual_exported_baseline_counts) ... ok
+test_atomic_report_retained_when_nan_rejected (test_creature_next_audit.AuditTests.test_atomic_report_retained_when_nan_rejected) ... ok
+test_audit_cannot_write_inside_assets (test_creature_next_audit.AuditTests.test_audit_cannot_write_inside_assets) ... ok
+test_cached_images_are_verified_and_tampering_invalidates (test_creature_next_audit.AuditTests.test_cached_images_are_verified_and_tampering_invalidates) ... ok
+test_cgroup_effective_limits (test_creature_next_audit.AuditTests.test_cgroup_effective_limits) ... ok
+test_comparison_output_cannot_mutate_asset_library (test_creature_next_audit.AuditTests.test_comparison_output_cannot_mutate_asset_library) ... ok
+test_concurrent_writers_rejected_and_lock_released (test_creature_next_audit.AuditTests.test_concurrent_writers_rejected_and_lock_released) ... ok
+test_empty_or_traversing_cache_not_accepted (test_creature_next_audit.AuditTests.test_empty_or_traversing_cache_not_accepted) ... ok
+test_path_traversal_and_symlink_rejected (test_creature_next_audit.AuditTests.test_path_traversal_and_symlink_rejected) ... ok
+test_real_subprocess_failure_recorded (test_creature_next_audit.AuditTests.test_real_subprocess_failure_recorded) ... ok
+test_reference_changed_fails_closed (test_creature_next_audit.AuditTests.test_reference_changed_fails_closed) ... ok
+test_reject_chunk_past_file_end (test_creature_next_audit.AuditTests.test_reject_chunk_past_file_end) ... ok
+test_reject_fractional_triangle (test_creature_next_audit.AuditTests.test_reject_fractional_triangle) ... ok
+test_reject_nontriangles_instead_of_miscounting (test_creature_next_audit.AuditTests.test_reject_nontriangles_instead_of_miscounting) ... ok
+test_reject_truncated_and_false_length (test_creature_next_audit.AuditTests.test_reject_truncated_and_false_length) ... ok
+test_rss_measures_without_proc_children_extension (test_creature_next_audit.AuditTests.test_rss_measures_without_proc_children_extension) ... ok
+test_source_registry_has_no_asset_promotion (test_creature_next_audit.AuditTests.test_source_registry_has_no_asset_promotion) ... ok
+test_timeout_kills_job_and_preserves_log (test_creature_next_audit.AuditTests.test_timeout_kills_job_and_preserves_log) ... ok
+test_exact_clone_only (test_default_clone_delta.DefaultCloneTests.test_exact_clone_only) ... ok
+test_all_configs_validate (test_deploy.DeployTests.test_all_configs_validate) ... ok
+test_cross_game_target_alias_rejected (test_deploy.DeployTests.test_cross_game_target_alias_rejected) ... ok
+test_id_validation (test_deploy.DeployTests.test_id_validation) ... ok
+test_missing_ids_prevent_publication (test_deploy.DeployTests.test_missing_ids_prevent_publication) ... ok
+test_multipart_body_contains_required_fields (test_deploy.DeployTests.test_multipart_body_contains_required_fields) ... ok
+test_partial_place_cannot_be_replaced (test_deploy.DeployTests.test_partial_place_cannot_be_replaced) ... ok
+test_reject_duplicate_place_ids_and_universe (test_deploy.DeployTests.test_reject_duplicate_place_ids_and_universe) ... ok
+test_incomplete_layout (test_environment_layout.EnvironmentLayoutTests.test_incomplete_layout) ... ok
+test_invalid_root (test_environment_layout.EnvironmentLayoutTests.test_invalid_root) ... ok
+test_plan (test_environment_layout.EnvironmentLayoutTests.test_plan) ... ok
+test_compare (test_p45_transaction.P45TransactionTests.test_compare) ... ok
+test_composition (test_p45_transaction.P45TransactionTests.test_composition) ... ok
+test_scope_rejects_unrelated (test_p45_transaction.P45TransactionTests.test_scope_rejects_unrelated) ... ok
+test_require_and_tokens (test_p4_code_audit.CodeAuditTests.test_require_and_tokens) ... ok
+test_strings_and_comments (test_p4_code_audit.CodeAuditTests.test_strings_and_comments) ... ok
+test_manifest (test_p4_intake.P4IntakeTests.test_manifest) ... ok
+test_mixed_inventory_never_authorizes_import (test_p4_intake.P4IntakeTests.test_mixed_inventory_never_authorizes_import) ... AUDIT_RESULT {"id": "1", "status": "inventory_observed", "models": 0, "scripts": 1, "components": 3, "classes": {"ParticleEmitter": 2, "Script": 1}, "importAuthorized": false, "loadedVersion": null, "staticAudit": null, "sampleAudit": null, "codeReview": [], "codeReviewTruncated": false, "modelCandidates": []}
+ok
+test_partial_inventory_does_not_stop_batch (test_p4_intake.P4IntakeTests.test_partial_inventory_does_not_stop_batch) ... AUDIT_RESULT {"id": "1", "status": "inventory_truncated", "models": 0, "scripts": 0, "components": 300, "classes": {"ParticleEmitter": 300}, "importAuthorized": false, "loadedVersion": null, "staticAudit": null, "sampleAudit": null, "codeReview": [], "codeReviewTruncated": false, "modelCandidates": []}
+AUDIT_RESULT {"id": "2", "status": "inventory_observed", "models": 0, "scripts": 0, "components": 300, "classes": {"ParticleEmitter": 300}, "importAuthorized": false, "loadedVersion": null, "staticAudit": null, "sampleAudit": null, "codeReview": [], "codeReviewTruncated": false, "modelCandidates": []}
+ok
+test_rate_limit_stops (test_p4_intake.P4IntakeTests.test_rate_limit_stops) ... AUDIT_RESULT {"id": "1", "status": "rate_limited", "diagnostic": "HTTP 429", "nextAction": "Stop the batch; retry later.", "importAuthorized": false}
+ok
+test_resume_skips_observed_and_retries_rate_limit (test_p4_intake.P4IntakeTests.test_resume_skips_observed_and_retries_rate_limit) ... ok
+test_duplicate_names_require_exact_hierarchy (test_pack_import.PackImportTests.test_duplicate_names_require_exact_hierarchy) ... ok
+test_geometry_precision (test_pack_import.PackImportTests.test_geometry_precision) ... ok
+test_legacy_comparison (test_pack_import.PackImportTests.test_legacy_comparison) ... ok
+test_pbr_fields_match (test_pack_import.PackImportTests.test_pbr_fields_match) ... ok
+test_production_rejected (test_pack_import.PackImportTests.test_production_rejected) ... ok
+test_reject_missing_or_changed_dependency (test_pack_import.PackImportTests.test_reject_missing_or_changed_dependency) ... ok
+test_reject_bad_dimensions (test_physics_builder.PhysicsBuilderTests.test_reject_bad_dimensions) ... ok
+test_shaft_cap (test_physics_builder.PhysicsBuilderTests.test_shaft_cap) ... ok
+test_glb (test_pine_rig.PineRigTests.test_glb) ... ok
+test_alias_rejected (test_place_provision.ProvisionTests.test_alias_rejected) ... ok
+test_burial (test_placement.PlacementTests.test_burial) ... ok
+test_custom_anchor (test_placement.PlacementTests.test_custom_anchor) ... ok
+test_invalid (test_placement.PlacementTests.test_invalid) ... ok
+test_sit (test_placement.PlacementTests.test_sit) ... ok
+test_capacity (test_prop_framework.FrameworkTests.test_capacity) ... ok
+test_invalid (test_prop_framework.FrameworkTests.test_invalid) ... ok
+test_scatter (test_prop_framework.FrameworkTests.test_scatter) ... ok
+test_upright (test_prop_framework.FrameworkTests.test_upright) ... ok
+test_no_terrain_write (test_prop_reconcile.PropTests.test_no_terrain_write) ... ok
+test_paint_preserves_transforms (test_prop_reconcile.PropTests.test_paint_preserves_transforms) ... ok
+test_dimensions (test_resource_layout.ResourceTests.test_dimensions) ... ok
+test_horizontal_stick (test_resource_layout.ResourceTests.test_horizontal_stick) ... ok
+test_ambiguous_post_no_replay (test_s01_contracts.S01Tests.test_ambiguous_post_no_replay) ... ok
+test_compile_fail_closed (test_s01_contracts.S01Tests.test_compile_fail_closed) ... ok
+test_composition (test_s01_contracts.S01Tests.test_composition) ... ok
+test_coupled_scope (test_s01_contracts.S01Tests.test_coupled_scope) ... ok
+test_poll_resume_get_only (test_s01_contracts.S01Tests.test_poll_resume_get_only) ... ok
+test_reconciliation_no_replay_or_promotion (test_s01_contracts.S01Tests.test_reconciliation_no_replay_or_promotion) ... ok
+test_wrong_target (test_s01_contracts.S01Tests.test_wrong_target) ... ok
+test_bad_ids (test_scaffold.ScaffoldTests.test_bad_ids) ... ok
+test_id_safety (test_scaffold.ScaffoldTests.test_id_safety) ... ok
+test_new_game (test_scaffold.ScaffoldTests.test_new_game) ... ok
+test_new_place (test_scaffold.ScaffoldTests.test_new_place) ... ok
+test_reject_overwrite_and_unsafe_slug (test_scaffold.ScaffoldTests.test_reject_overwrite_and_unsafe_slug) ... ok
+test_no_terrain_mutation (test_scene_builder.SceneBuilderTests.test_no_terrain_mutation) ... ok
+test_plan (test_scene_builder.SceneBuilderTests.test_plan) ... ok
+test_malformed_objects_skipped (test_scene_inspector.SceneInspectorTests.test_malformed_objects_skipped) ... ok
+test_outputs_map_json_and_report (test_scene_inspector.SceneInspectorTests.test_outputs_map_json_and_report) ... ok
+test_read_only_contract (test_scene_inspector.SceneInspectorTests.test_read_only_contract) ... ok
+test_cframe (test_scene_patch.PatchTests.test_cframe) ... ok
+test_property_allowlist (test_scene_patch.PatchTests.test_property_allowlist) ... ok
+test_stale (test_scene_patch.PatchTests.test_stale) ... ok
+test_changed_geometry (test_scene_snapshot.SnapshotTests.test_changed_geometry) ... ok
+test_order_independent_and_duplicate_preserved (test_scene_snapshot.SnapshotTests.test_order_independent_and_duplicate_preserved) ... ok
+test_truncated_and_wrong_target_rejected (test_scene_snapshot.SnapshotTests.test_truncated_and_wrong_target_rejected) ... ok
+test_external_not_deleted (test_scene_sync.SyncTests.test_external_not_deleted) ... ok
+test_identity (test_scene_sync.SyncTests.test_identity) ... ok
+test_stale_guard (test_scene_sync.SyncTests.test_stale_guard) ... ok
+test_three_way (test_scene_sync.SyncTests.test_three_way) ... ok
+test_manifest_binds_source (test_scene_transaction.TransactionTests.test_manifest_binds_source) ... ok
+test_target_and_budget (test_scene_transaction.TransactionTests.test_target_and_budget) ... ok
+test_compiler_failure_blocks (test_script_quality.QualityTests.test_compiler_failure_blocks) ... CREATED scene report: /tmp/tmp85i9xz26 (1 parts)
+PASS good.luau
+FAIL bad.luau (exit 1)
+
+::error file=bad.luau::Luau syntax/bytecode compilation failed
+ok
+test_discovers_all_kinds_of_source (test_script_quality.QualityTests.test_discovers_all_kinds_of_source) ... ok
+test_empty_source_not_silently_accepted (test_script_quality.QualityTests.test_empty_source_not_silently_accepted) ... ok
+test_missing_compiler_fails_closed (test_script_quality.QualityTests.test_missing_compiler_fails_closed) ... ERROR: luau-compile is missing; install official Luau
+ok
+test_complete_and_reject_missing (test_sharded_scene_sync.ShardTests.test_complete_and_reject_missing) ... ok
+test_empty (test_sharded_scene_sync.ShardTests.test_empty) ... ok
+test_cross_seam_and_normal (test_spatial_index.SpatialTests.test_cross_seam_and_normal) ... ok
+test_determinism (test_spatial_index.SpatialTests.test_determinism) ... ok
+test_water_and_occupancy (test_spatial_index.SpatialTests.test_water_and_occupancy) ... ok
+test_missing_mapping_stops_without_remote_access (test_staging_readiness.StagingReadinessTests.test_missing_mapping_stops_without_remote_access) ... ok
+test_production_alias_blocks (test_staging_readiness.StagingReadinessTests.test_production_alias_blocks) ... ok
+test_read_only_remote_identity (test_staging_readiness.StagingReadinessTests.test_read_only_remote_identity) ... ok
+test_composed_layout (test_surface_integration.SurfaceIntegrationTests.test_composed_layout) ... ok
+test_every_required_template_document_exists (test_template_contract.TemplateContractTests.test_every_required_template_document_exists) ... ok
+test_spec_contains_exact_current_source_of_all_runtime_files (test_template_contract.TemplateContractTests.test_spec_contains_exact_current_source_of_all_runtime_files) ... ok
+test_decode_and_percentile (test_terrain_atlas.TerrainAtlasTests.test_decode_and_percentile) ... ok
+test_paint_channel_only (test_terrain_builder.TerrainTests.test_paint_channel_only) ... ok
+test_plan (test_terrain_builder.TerrainTests.test_plan) ... ok
+test_reject_unsafe (test_terrain_builder.TerrainTests.test_reject_unsafe) ... ok
+test_no_geometry_write (test_terrain_paint.PaintTests.test_no_geometry_write) ... ok
+test_plan (test_terrain_paint.PaintTests.test_plan) ... ok
+test_classification (test_vegetation_regeneration.RegenerationTests.test_classification) ... ok
+test_separate_canopy_and_ground (test_vegetation_regeneration.RegenerationTests.test_separate_canopy_and_ground) ... ok
+test_scope (test_verified_script_stage.ScriptStageTests.test_scope) ... ok
+test_inventory_and_lookup (test_visual_lookup.VisualLookupTests.test_inventory_and_lookup) ... ok
+test_reuse_and_invalidate (test_visual_lookup.VisualLookupTests.test_reuse_and_invalidate) ... ok
+test_no_invented_visual_description_or_permission (test_visual_memory.VisualMemoryTests.test_no_invented_visual_description_or_permission) ... ok
+test_demo_has_two_places (test_workspace.WorkspaceTests.test_demo_has_two_places) ... ok
+test_game_documents_present (test_workspace.WorkspaceTests.test_game_documents_present) ... ok
+test_project_paths_resolve (test_workspace.WorkspaceTests.test_project_paths_resolve) ... ok
+test_slug_rules (test_workspace.WorkspaceTests.test_slug_rules) ... ok
+test_death_guard (test_world_test.WorldTests.test_death_guard) ... ok
+test_plan (test_world_test.WorldTests.test_plan) ... ok
+test_support_not_terrain (test_world_test.WorldTests.test_support_not_terrain) ... ok
+
+----------------------------------------------------------------------
+Ran 163 tests in 1.078s
+
+OK
+{
+  "schemaVersion": 1,
+  "game": "mapa-principal",
+  "place": "main",
+  "ready": false,
+  "status": "blocked",
+  "diagnostic": "Target is not configured"
+}
+{
+  "schemaVersion": 1,
+  "game": "mapa-principal",
+  "place": "main",
+  "ready": false,
+  "status": "blocked",
+  "diagnostic": "Staging aliases a configured production target"
+}
+{
+  "schemaVersion": 1,
+  "game": "mapa-principal",
+  "place": "main",
+  "ready": true,
+  "status": "identity_verified",
+  "universeId": "123",
+  "placeId": "456",
+  "loadedVersion": 3,
+  "note": "Read access only; save permission not tested"
+}
