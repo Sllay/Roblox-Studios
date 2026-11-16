@@ -1,0 +1,52 @@
+name: Creature Factory Next C2 depth candidate CPU
+on:
+  pull_request:
+    paths:
+      - 'tools/creature_factory/next/depth_candidate.py'
+      - 'tools/creature_factory/next/depth_benchmark.py'
+      - '.github/workflows/creature-next-depth.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  depth-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU-only depth dependencies
+        run: |
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install transformers==4.48.3 Pillow==11.3.0 numpy==1.26.4 safetensors==0.5.3
+      - name: Restore public pinned checkpoint and certified C1 fixtures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/depth-model"
+          base="https://huggingface.co/depth-anything/Depth-Anything-V2-Small-hf/resolve/b4769fd619394250528294b658587285526fab1c"
+          for f in config.json preprocessor_config.json model.safetensors; do
+            curl --fail --location --silent --show-error --retry 2 "$base/$f?download=true" -o "$RUNNER_TEMP/depth-model/$f"
+          done
+          echo "3152477ce0d8d6978d76b995120de97cb5b928701fd0f817769f59e249a16b70  $RUNNER_TEMP/depth-model/model.safetensors" | sha256sum -c -
+          curl --fail --location --silent --show-error --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/Sllay/Roblox-Studios/actions/artifacts/14190612099/zip -o "$RUNNER_TEMP/c1.zip"
+          echo "87eb505f4efaee2f58412844834e77523dda45a42cd42e795d1ca3da77b20f60  $RUNNER_TEMP/c1.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/c1.zip" -d "$RUNNER_TEMP/c1"
+      - name: Run CPU relative depth inference and held-out calibration benchmark
+        run: python -u -m tools.creature_factory.next.depth_benchmark "$RUNNER_TEMP/c1/c1-ci" "$RUNNER_TEMP/depth-model" dist/creature-next/c2depth
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creature-next-c2depth
+          path: dist/creature-next/c2depth/
+          if-no-files-found: warn
