@@ -116,7 +116,9 @@ def refine(cam,shape,anchors):
     if np.any(abs(params)>=limits*.995):return None,{**report,"status":"camera_bounds_reached"}
     # Improvement must be visible on untouched identities. Keep the original
     # if it was already consistent; never choose a camera on training loss alone.
-    if after["rmse"]>3 or after["max"]>5 or after["rmse"]>before["rmse"]*.85 or train_after["rmse"]>train_before["rmse"]:
+    if before["rmse"]<=.25:
+        return None,{**report,"status":"original_camera_already_consistent"}
+    if after["rmse"]>3 or after["max"]>5 or after["rmse"]>before["rmse"]*.85 or before["rmse"]-after["rmse"]<.25 or train_after["rmse"]>train_before["rmse"]:
         return None,{**report,"status":"holdout_rejected_or_no_improvement"}
     return fitted,{**report,"status":"refined_camera_hypothesis","metric_calibration":False}
 
