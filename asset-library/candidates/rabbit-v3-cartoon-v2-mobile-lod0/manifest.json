@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "status": "runtime_mesh_candidate_review",
+  "artistic_approval": false,
+  "roblox_imported": false,
+  "roblox_published": false,
+  "geometry_master": "asset-library/candidates/rabbit-final-uv-43725694005-1",
+  "approved_paint_master": "asset-library/candidates/rabbit-v3-cartoon-v2",
+  "maximum_mesh_triangles": 20000,
+  "mobile_total_triangle_budget": 20000,
+  "files": {
+    "albedo_2048.png": {
+      "sha256": "ffb4e038975b1c261a7c5ed52dc09d1f0f3be16c54844970322d032a40cfe9de",
+      "bytes": 1494325
+    },
+    "asset.blend": {
+      "sha256": "9222be335d2b8676de68224d4c81ac4e17e65c2a4b6a7f7df6c4aeda3b6c70ce",
+      "bytes": 5519400
+    },
+    "asset.glb": {
+      "sha256": "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133",
+      "bytes": 2359056
+    },
+    "build_report.json": {
+      "sha256": "a87e6143bd3bbc80a267576333ef9005df13402146808792fa9cd502742c36ce",
+      "bytes": 4027
+    },
+    "lod-back.png": {
+      "sha256": "9189c0dfb3310b26e4a3cb6e820eb340b2b63a8a99e8f76004ddeb6103b554d3",
+      "bytes": 272385
+    },
+    "lod-front.png": {
+      "sha256": "6acae51cb709dc30c0315de37b7ad9c686469e54f955fc56de474792de6328b1",
+      "bytes": 288023
+    },
+    "lod-left.png": {
+      "sha256": "9e24a8385e3a884ea3629d3b40eb65d131bddc6402579dbbb2cd804fc4f61e12",
+      "bytes": 273257
+    },
+    "lod-right.png": {
+      "sha256": "98a7574db4b0259a38f985dd58110510f0661a6e26856253bbdf84e385f65193",
+      "bytes": 261108
+    },
+    "lod-three-quarter.png": {
+      "sha256": "e597b90b79caf32af5edea9e19ed527155fda7741cb58e4f73df62f1e920c117",
+      "bytes": 291015
+    },
+    "lod-top.png": {
+      "sha256": "9ed4101fbf971cf475de351f81c03cfd797044e5939b1a5b754bf8a2ca269931",
+      "bytes": 230267
+    },
+    "master-back.png": {
+      "sha256": "55572622648959afe694efbb09914a0e7a49296d0dba984d21279a9924ad4dc4",
+      "bytes": 274410
+    },
+    "master-front.png": {
+      "sha256": "b21ab0c04296d0a2ef1066ec55ac5a6e4aa2ecfa7da8a9c58fb56583f1598c5b",
+      "bytes": 292172
+    },
+    "master-left.png": {
+      "sha256": "a565357c049086accc97d7ab8ed23ab8005abbd57a927835dfce264c4c9cf682",
+      "bytes": 276570
+    },
+    "master-right.png": {
+      "sha256": "a14e80315a85252683011beea82788bd363416ad6f0433c7a4b9923333298e2d",
+      "bytes": 262927
+    },
+    "master-three-quarter.png": {
+      "sha256": "7eb3553c665c0261f7396a50f44efc49fce1342909f182493ada55733aebeab7",
+      "bytes": 294489
+    },
+    "master-top.png": {
+      "sha256": "cefb800e69d2a25200557286bf7bfd69b4e6cf52e751f758d3de2283bb65622f",
+      "bytes": 231664
+    },
+    "validation.json": {
+      "sha256": "1cbfe7ed69ba2d772cbc38f50188fcce46e8e6698b38a47ea8cc6cb066e32b02",
+      "bytes": 3793
+    }
+  }
+}
