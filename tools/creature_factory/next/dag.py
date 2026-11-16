@@ -21,7 +21,7 @@ class Stage:
     deps:tuple[str,...]
     version:str="1"
     backend:str="c1"
-STAGES=(Stage("intake",()),Stage("reference_ready",("intake",)),Stage("segmentation_ready",("reference_ready",),"2a","alpha"),Stage("calibration_ready",("segmentation_ready",),"2b","camera"),Stage("candidate_ready",("reference_ready","calibration_ready"),"3a","checkpoint"),Stage("evidence_ready",("calibration_ready",)),Stage("master_ready",("evidence_ready",)),Stage("quality_checked",("master_ready",)),Stage("optimized",("quality_checked",)),Stage("uv_ready",("optimized",)),Stage("materials_ready",("uv_ready",)),Stage("rig_ready",("optimized",)),Stage("packaged",("materials_ready","rig_ready")),Stage("review_ready",("packaged",)))
+STAGES=(Stage("intake",()),Stage("reference_ready",("intake",)),Stage("segmentation_ready",("reference_ready",),"2a","alpha"),Stage("calibration_ready",("segmentation_ready",),"2b","camera"),Stage("candidate_ready",("reference_ready","calibration_ready"),"3a","checkpoint"),Stage("candidate_alignment_ready",("candidate_ready","segmentation_ready","calibration_ready"),"3b","similarity"),Stage("candidate_volume_ready",("candidate_alignment_ready","segmentation_ready","calibration_ready"),"3c","volume"),Stage("candidate_refinement_ready",("candidate_volume_ready","segmentation_ready","calibration_ready"),"4b","refine"),Stage("candidate_optimized_ready",("candidate_refinement_ready",),"4a","optimize"),Stage("candidate_uv_ready",("candidate_optimized_ready",),"5a","uv"),Stage("candidate_review_ready",("candidate_ready","candidate_alignment_ready","candidate_volume_ready","candidate_refinement_ready","candidate_optimized_ready","candidate_uv_ready"),"6a","review"),Stage("evidence_ready",("calibration_ready",)),Stage("master_ready",("evidence_ready",)),Stage("quality_checked",("master_ready",)),Stage("optimized",("quality_checked",)),Stage("uv_ready",("optimized",)),Stage("materials_ready",("uv_ready",)),Stage("rig_ready",("optimized",)),Stage("packaged",("materials_ready","rig_ready")),Stage("review_ready",("packaged",)))
 @contextmanager
 def lock(root):
     root.mkdir(parents=True,exist_ok=True)
@@ -64,6 +64,9 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
         choice=config["candidate_ready"]["backend"]
         require(choice in ("verified_triposr_checkpoint","generic_triposr"),"Unknown candidate backend")
         runners={**RUNNERS,"candidate_ready":import_checkpoint if choice=="verified_triposr_checkpoint" else generate_candidate}
+        if config.get("candidate_review_ready",{}).get("enabled",False):
+            from .pipeline_stages import RUNNERS as review_runners
+            runners.update(review_runners)
     # Read actual input bytes, not only the digest asserted by a manifest.
     def input_digest():
         return digest({"manifest":sha256(source),"sources":{v.source:sha256(path_inside(source.parent,v.source)) for v in m.views}})
@@ -94,6 +97,9 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
             if production and runner is not None:
                 backend=f"{s.backend}:pillow@{version('Pillow')}"
                 code_hash=digest({"runner_module":sha256(Path(inspect.getfile(runner))),"contracts":sha256(Path(__file__).with_name("contracts.py"))})
+            if production and runner is not None and s.name.startswith("candidate_") and s.name!="candidate_ready":
+                module_deps={"candidate_alignment_ready":["rigid_alignment.py","camera_refinement.py","hull_alignment.py"],"candidate_volume_ready":["volumetric_reconstruction.py","hull_alignment.py","rigid_alignment.py"],"candidate_refinement_ready":["surface_refinement.py","mesh_optimization.py","rigid_alignment.py"],"candidate_optimized_ready":["mesh_optimization.py","rigid_alignment.py"],"candidate_uv_ready":["uv_atlas.py"],"candidate_review_ready":[]}
+                code_hash=digest([code_hash]+[sha256(Path(__file__).with_name(n)) for n in module_deps[s.name]])
             if production and s.name=="candidate_ready" and runner is not None:
                 backend=cfg["backend"]
                 if backend=="verified_triposr_checkpoint":
@@ -128,7 +134,7 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
                 result("running",attempt=attempt);start=time.monotonic()
                 try:
                     if input_digest()!=input_hash:raise JobError("Inputs changed during job; resume with new manifest")
-                    if production and s.name in ("segmentation_ready","calibration_ready","candidate_ready"):
+                    if production and s.name not in ("intake","reference_ready"):
                         inputs={d:{Path(p).name:path_inside(root,p) for p in records[d]["outputs"]} for d in s.deps}
                         metrics=runner(m,source,out,cfg,inputs) or {}
                     else:metrics=runner(m,source,out,cfg) or {}
