@@ -72,6 +72,43 @@ def measure(prepared,v,f,limits=None):
         "area_relative":float(area),"protected_max_distance":float(pd.max()),"topology":top}
     failures=[k for k,t in limits.items() if (result[k]<t if k=="silhouette_min_iou" else result[k]>t)]
     return {**result,"passed":not failures,"failed_metrics":failures,"reason":"passed" if not failures else "quality_gate"}
+
+def repair_microscopic_edges(v,f,max_collapses=64):
+    """Generic link-condition collapse of microscopic sliver edges.
+    No UV edits and no arbitrary face deletion. The caller rechecks the
+    repaired candidate against the original master quality gates.
+    """
+    import trimesh
+    v=np.asarray(v,np.float64).copy();f=np.asarray(f,np.int32).copy()
+    m=trimesh.Trimesh(vertices=v,faces=f,process=False)
+    if not m.is_watertight or not m.is_winding_consistent:return v,f,[]
+    initial=mesh_topology(m);diag=float(np.linalg.norm(np.ptp(v,axis=0)));limit=diag*1e-4;changes=[]
+    for _ in range(max_collapses):
+        p=v[f];e=np.linalg.norm(p[:,[1,2,0]]-p[:,[0,1,2]],axis=-1)
+        area=np.linalg.norm(np.cross(p[:,1]-p[:,0],p[:,2]-p[:,0]),axis=1)*.5
+        quality=4*np.sqrt(3)*area/np.maximum((e*e).sum(1),1e-30)
+        candidates=np.flatnonzero((e.min(1)<limit)&(quality<.015))
+        if not len(candidates):break
+        changed=False
+        for k in candidates[np.argsort(e[candidates].min(1))]:
+            face=f[k];a=int(e[k].argmin());i,j=int(face[a]),int(face[(a+1)%3])
+            fi=(f==i).any(1);fj=(f==j).any(1);shared=fi&fj
+            if shared.sum()!=2:continue
+            ni=set(f[fi].ravel())-{i,j};nj=set(f[fj].ravel())-{i,j};opp=set(f[shared].ravel())-{i,j}
+            if len(opp)!=2 or ni&nj!=opp:continue
+            q=v.copy();q[i]=(v[i]+v[j])/2;g=f.copy();g[g==j]=i;keep=~shared;affected=(fi|fj)&keep
+            a0=v[f[affected]];a1=q[g[affected]];n0=np.cross(a0[:,1]-a0[:,0],a0[:,2]-a0[:,0]);n1=np.cross(a1[:,1]-a1[:,0],a1[:,2]-a1[:,0])
+            if np.any((n0*n1).sum(1)<=0):continue
+            g=g[keep]
+            if len(np.unique(np.sort(g,axis=1),axis=0))!=len(g):continue
+            used=np.unique(g);remap=np.full(len(q),-1,np.int32);remap[used]=np.arange(len(used),dtype=np.int32)
+            q=q[used];g=remap[g];candidate=trimesh.Trimesh(vertices=q,faces=g,process=False)
+            if not topology_compatible(initial,mesh_topology(candidate)):continue
+            changes.append({"edge_length":float(e[k].min()),"relative_edge":float(e[k].min()/diag),"removed_faces":2,"sliver_quality":float(quality[k])})
+            v,f=q,g;changed=True;break
+        if not changed:break
+    return v,f,changes
+
 def optimize(v,f,protected=None,limits=None,ratios=(.85,.65,.5,.35,.25,.15,.08),sample_count=8000,resolution=192):
     import fast_simplification,trimesh
     v=np.asarray(v,np.float64);f=np.asarray(f,np.int32);p=prepare(v,f,protected,sample_count,resolution)
@@ -83,7 +120,8 @@ def optimize(v,f,protected=None,limits=None,ratios=(.85,.65,.5,.35,.25,.15,.08),
         try:
             a,b=fast_simplification.simplify(np.ascontiguousarray(v.copy()),np.ascontiguousarray(f.copy()),target_count=target)
             m=trimesh.Trimesh(vertices=a,faces=b,process=False);m.fix_normals();a=np.asarray(m.vertices);b=np.asarray(m.faces,dtype=np.int32)
-            r=measure(p,a,b,limits);r.update(target=target,triangles=len(b),ratio=ratio)
+            a,b,repairs=repair_microscopic_edges(a,b)
+            r=measure(p,a,b,limits);r.update(target=target,triangles=len(b),ratio=ratio,microscopic_edge_repairs=repairs)
             if r["passed"] and len(b)<len(best[1]):best=(a.copy(),b.copy());best_ratio=ratio
         except (ValueError,RuntimeError) as exc:r={"passed":False,"target":target,"ratio":ratio,"reason":str(exc)}
         attempts.append(r)
