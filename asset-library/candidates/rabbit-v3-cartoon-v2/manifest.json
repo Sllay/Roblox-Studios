@@ -26,6 +26,10 @@
       "bytes": 145406,
       "sha256": "95b0bf97e3c39593857479724da9437d1490609932cfac94f18b730cfa8e9158"
     },
+    "manifest.json": {
+      "bytes": 2022,
+      "sha256": "5379fce89fa31ca05990ecaf695de18edbc090369533b1f941479d17780e3f2d"
+    },
     "rabbit_uv_clean_4096.png": {
       "bytes": 384746,
       "sha256": "db18f8d43531624cfabad18b7d28725ebd30bd4a3be6aa279cb1bbfe775a1d09"
@@ -45,6 +49,10 @@
     "right.png": {
       "bytes": 146701,
       "sha256": "dbae94612b817cb07daaccd4fcf3d044aa38a808e6394740b8f46cc8efb87c78"
+    },
+    "runtime_readiness.json": {
+      "bytes": 1943,
+      "sha256": "0851fc9e30a91632fd8cc424af554f28e763172f25c8f4e46f77c09bd83f92bf"
     },
     "three-quarter.png": {
       "bytes": 180272,

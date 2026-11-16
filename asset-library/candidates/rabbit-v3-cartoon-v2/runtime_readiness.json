@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "asset": "rabbit_v2_final.glb",
+  "phase": "pre_import",
+  "mesh_triangle_limit": 20000,
+  "total_triangles": 60968,
+  "mesh_count": 9,
+  "skin_count": 1,
+  "whisker_count": 6,
+  "texture_count": 1,
+  "mesh_budget_pass": false,
+  "ready_for_roblox_runtime": false,
+  "status": "mesh_budget_blocked",
+  "meshes": [
+    {
+      "name": "FrontArm_L",
+      "triangles": 4702,
+      "vertices": 3074,
+      "under_triangle_limit": true
+    },
+    {
+      "name": "FrontArm_R",
+      "triangles": 4702,
+      "vertices": 3310,
+      "under_triangle_limit": true
+    },
+    {
+      "name": "Rabbit_Torso",
+      "triangles": 50340,
+      "vertices": 30504,
+      "under_triangle_limit": false
+    },
+    {
+      "name": "Whisker_L_1",
+      "triangles": 204,
+      "vertices": 158,
+      "under_triangle_limit": true
+    },
+    {
+      "name": "Whisker_L_2",
+      "triangles": 204,
+      "vertices": 156,
+      "under_triangle_limit": true
+    },
+    {
+      "name": "Whisker_L_3",
+      "triangles": 204,
+      "vertices": 158,
+      "under_triangle_limit": true
+    },
+    {
+      "name": "Whisker_R_1",
+      "triangles": 204,
+      "vertices": 160,
+      "under_triangle_limit": true
+    },
+    {
+      "name": "Whisker_R_2",
+      "triangles": 204,
+      "vertices": 154,
+      "under_triangle_limit": true
+    },
+    {
+      "name": "Whisker_R_3",
+      "triangles": 204,
+      "vertices": 158,
+      "under_triangle_limit": true
+    }
+  ],
+  "blocking_meshes": [
+    {
+      "name": "Rabbit_Torso",
+      "triangles": 50340,
+      "excess": 30340
+    }
+  ],
+  "warnings": [],
+  "required_before_runtime_release": [
+    "Create a runtime mesh variant that satisfies the per-mesh limit without destroying the approved artwork",
+    "Validate skinning, UV seams, whisker pivots and animated deformation after mesh optimization",
+    "Import via the skinned mesh pipeline into a test place and check mobile performance"
+  ]
+}
