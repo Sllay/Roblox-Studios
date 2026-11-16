@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "asset_id": "rabbit-v3-stylized-cartoon-v2",
-  "status": "local_validated_binary_pending_repository_import",
+  "status": "repository_binary_pass_runtime_pending",
   "source": {
     "repository": "Sllay/Roblox-Studios",
     "branch": "feat/creature-factory-next",
@@ -36,17 +36,27 @@
       "three-quarter"
     ],
     "roblox_runtime": false,
-    "artistic_review_via_real_mesh": true
+    "artistic_review_via_real_mesh": true,
+    "binary_committed_to_repository": true,
+    "exact_v2_hashes_match": true,
+    "github_workflow_bake_pass": true
   },
   "blockers": [
-    "GLB and PNG binaries have been produced locally, but are not yet attached to this Git branch.",
-    "A texture-only polish cannot fix the original silhouette of a recessed nose; geometry alteration requires separate review.",
-    "Roblox runtime import, animation, collision, mobile FPS and platform publication have not been validated."
+    "Runtime Roblox import/animation/collision and mobile performance remain untested.",
+    "Current asset contains 60,968 triangles including a torso above the documented Roblox 20,000 triangle per-mesh target; no automatic runtime publish before mesh budgeting.",
+    "Visual texture-only correction does not reshape the real nose silhouette; conceptual approval and actual geometry review remain separate."
   ],
   "next_actions": [
-    "Transfer exact SHA-matched rabbit_v2_final.glb and rabbit_v2_basecolor_4096.png into versioned asset-library directory.",
-    "Run tools/creature_factory/rabbit_v2_validate.py against authoritative source GLB and committed V2 assets.",
-    "Run Roblox platform import and visual/rig checks before release."
+    "Create/validate lower-cost runtime mesh candidate, respecting 20k triangle per MeshPart and mobile performance constraints, preserving UV/skin.",
+    "Automate Roblox import and test-place validation using existing authorized asset-import workflow only after mesh gates pass.",
+    "Review in-game appearance and animation, then promote from candidate."
   ],
-  "artistic_note": "Concept review sheets are visual references, never evidence that their painted pixels are valid on the UV atlas."
+  "artistic_note": "Concept review sheets are visual references, never evidence that their painted pixels are valid on the UV atlas.",
+  "repository_asset_path": "asset-library/candidates/rabbit-v3-cartoon-v2",
+  "verified_workflow_run": "https://github.com/Sllay/Roblox-Studios/actions/runs/43967188055",
+  "artifacts": {
+    "model": "asset-library/candidates/rabbit-v3-cartoon-v2/asset.glb",
+    "texture": "asset-library/candidates/rabbit-v3-cartoon-v2/rabbit_v2_basecolor_4096.png",
+    "manifest": "asset-library/candidates/rabbit-v3-cartoon-v2/manifest.json"
+  }
 }
