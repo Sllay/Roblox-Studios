@@ -36,7 +36,7 @@ class LandmarkObservation:
         finite(asdict(self))
         require(self.view_id in VIEWS,"Unknown landmark view")
         require(self.visibility in ("visible","occluded","unknown","out_of_frame"),"Visibility")
-        require(self.source in ("reviewed","detector_candidate","fixture_truth","fixture_marker_detector"),"Observation source")
+        require(self.source in ("reviewed","unreviewed_annotation","detector_candidate","fixture_truth","fixture_marker_detector"),"Observation source")
         require(isinstance(self.confidence,(int,float)) and 0<=self.confidence<=1,"Confidence must be 0..1")
         require(re.fullmatch("[0-9a-f]{64}",self.reference_sha256),"Reference SHA required")
         if self.visibility=="visible":
@@ -82,7 +82,7 @@ def solve_landmarks(bundle,views,hashes,max_holdout_px=3.0,min_confidence=.65):
     for d in bundle.definitions:
         obs=[o for o in bundle.observations if o.landmark_id==d.id]
         usable=[o for o in obs if o.visibility=="visible" and o.confidence>=min_confidence and views[o.view_id][1].status!="unknown" and views[o.view_id][1].projection=="orthographic"]
-        report={"kind":d.kind,"side":d.side,"visible":len(usable),"unobserved":len(obs)-len(usable),"production_fusion":False}
+        report={"kind":d.kind,"side":d.side,"visible":len(usable),"unobserved":len(obs)-len(usable),"production_fusion":False,"metric_candidate":False}
         if d.kind!="surface":
             results[d.id]={**report,"status":"not_surface_anchor"};continue
         if len(usable)<3:

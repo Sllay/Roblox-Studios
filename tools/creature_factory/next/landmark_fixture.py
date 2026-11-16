@@ -20,37 +20,38 @@ RES=256
 DIRECTIONS={"front":(0,-1,0),"back":(0,1,0),"left":(-1,0,0),"right":(1,0,0),"top":(0,0,1),"bottom":(0,0,-1),"three-quarter":(-1,-1,.8)}
 # Technical quadruped with distinctly painted coat and asymmetric tail.
 # Each landmark is on an actual mesh vertex (longitude/latitude indices).
+# Anatomical left is +X for an animal facing -Y; camera view names are separate.
 PARTS=[
  ("torso",(0,.15,1.13),(.63,1.05,.57),None),
  ("neck",(0,-.57,1.36),(.38,.49,.51),None),
  ("head",(0,-.98,1.65),(.46,.49,.43),None),
  ("muzzle",(0,-1.36,1.49),(.33,.34,.25),None),
- ("left_ear",(-.29,-1.0,2.12),(.16,.22,.43),None),
- ("right_ear",(.29,-1.0,2.09),(.16,.22,.40),None),
- ("left_foreleg",(-.39,-.55,.53),(.20,.25,.60),None),
- ("right_foreleg",(.39,-.55,.53),(.20,.25,.60),None),
- ("left_hindleg",(-.42,.75,.53),(.25,.30,.60),None),
- ("right_hindleg",(.42,.75,.53),(.25,.30,.60),None),
- ("left_paw",(-.39,-.65,.12),(.23,.35,.15),None),
- ("right_paw",(.39,-.65,.12),(.23,.35,.15),None),
- ("left_hindpaw",(-.42,.66,.12),(.27,.34,.15),None),
- ("right_hindpaw",(.42,.66,.12),(.27,.34,.15),None),
+ ("right_ear",(-.29,-1.0,2.12),(.16,.22,.43),None),
+ ("left_ear",(.29,-1.0,2.09),(.16,.22,.40),None),
+ ("right_foreleg",(-.39,-.55,.53),(.20,.25,.60),None),
+ ("left_foreleg",(.39,-.55,.53),(.20,.25,.60),None),
+ ("right_hindleg",(-.42,.75,.53),(.25,.30,.60),None),
+ ("left_hindleg",(.42,.75,.53),(.25,.30,.60),None),
+ ("right_paw",(-.39,-.65,.12),(.23,.35,.15),None),
+ ("left_paw",(.39,-.65,.12),(.23,.35,.15),None),
+ ("right_hindpaw",(-.42,.66,.12),(.27,.34,.15),None),
+ ("left_hindpaw",(.42,.66,.12),(.27,.34,.15),None),
  ("tail",(.23,1.22,1.42),(.26,.44,.28),None)]
 # Longitude u=0 along +X, u=.25 along +Y; latitude v=0 north.
 # Deliberately use surface points rather than internal joint centers.
 MARKS=[
- ("left_brow","head","left",20,6,(245,25,35)),
- ("right_brow","head","right",28,6,(25,235,50)),
+ ("right_brow","head","right",20,6,(245,25,35)),
+ ("left_brow","head","left",28,6,(25,235,50)),
  ("nose_tip","muzzle","midline",24,7,(35,80,245)),
- ("left_ear_outer","left_ear","left",20,4,(245,225,20)),
- ("right_ear_outer","right_ear","right",28,4,(225,30,235)),
- ("left_shoulder_surface","torso","left",19,6,(25,235,235)),
- ("right_shoulder_surface","torso","right",29,6,(245,110,20)),
- ("left_forepaw_outer","left_paw","left",20,5,(115,35,245)),
- ("right_forepaw_outer","right_paw","right",28,5,(35,245,140)),
- ("left_hip_surface","torso","left",12,6,(245,35,135)),
- ("right_hip_surface","torso","right",4,6,(140,245,35)),
- ("tail_outer","tail","right",4,5,(35,150,245))]
+ ("right_ear_outer","right_ear","right",20,4,(245,225,20)),
+ ("left_ear_outer","left_ear","left",28,4,(225,30,235)),
+ ("right_shoulder_surface","torso","right",19,6,(25,235,235)),
+ ("left_shoulder_surface","torso","left",29,6,(245,110,20)),
+ ("right_forepaw_outer","right_paw","right",20,5,(115,35,245)),
+ ("left_forepaw_outer","left_paw","left",28,5,(35,245,140)),
+ ("right_hip_surface","torso","right",12,6,(245,35,135)),
+ ("left_hip_surface","torso","left",4,6,(140,245,35)),
+ ("tail_outer","tail","left",4,5,(35,150,245))]
 NU=32;NV=16;TEX=128
 def sphere(center,radii):
     u=np.arange(NU+1)/NU;v=np.arange(NV+1)/NV
