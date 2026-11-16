@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "status": "mesh_lod_verified_asset_only",
+  "asset_name": "rabbit-v3-cartoon-v2-mobile-lod0",
+  "candidate_path": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0",
+  "reference_sha": "dec392bfdcd2a5cc87df7d477d2e675179a9db1a65f9bbb3845c1316522ad215",
+  "runtime_sha": "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133",
+  "runtime_triangles": 19524,
+  "reduction_percent": 67.98,
+  "max_per_mesh": 13200,
+  "preserved_bones": 19,
+  "preserved_whiskers": 6,
+  "silhouette_iou": {
+    "front": 0.9976428791036108,
+    "right": 0.9974037701772209,
+    "left": 0.9976744711115125,
+    "back": 0.9976599596898166,
+    "top": 0.9980293801504837,
+    "three-quarter": 0.9978336144899228
+  },
+  "motion_checks": [
+    "Head",
+    "Shoulder_L",
+    "Shoulder_R",
+    "Hip_L",
+    "Hip_R"
+  ],
+  "approved_paint_atlas": "asset-library/candidates/rabbit-v3-cartoon-v2/rabbit_v2_basecolor_4096.png",
+  "runtime_atlas_size": [
+    2048,
+    2048
+  ],
+  "workflow_url": "https://github.com/Sllay/Roblox-Studios/actions/runs/43973663108",
+  "runtime_roblox_imported": false,
+  "runtime_mobile_fps_tested": false,
+  "artistic_runtime_review_required": true,
+  "limitations": [
+    "GH Actions tested binary asset shape, UV, skin, silhouette and bone deformations, not Roblox client/gameplay.",
+    "The current 2048-pixel texture is a runtime derivative; 4096-pixel source is preserved.",
+    "Do not replace the approved master; import only the candidate into the test environment after in-engine compatibility checks."
+  ]
+}
