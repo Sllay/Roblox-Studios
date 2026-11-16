@@ -1,0 +1,40 @@
+name: Creature Factory Next C3 fresh fantasy inference
+on:
+  pull_request:
+    paths:
+      - 'tools/creature_factory/next/fantasy_smoke.py'
+      - 'tools/creature_factory/next/neural_backend.py'
+      - '.github/workflows/creature-next-fantasy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fresh-fantasy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU reconstruction dependencies
+        run: |
+          python -m pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy==1.26.4 scipy==1.13.1 scikit-image==0.24.0 Pillow==10.4.0 einops==0.7.0 omegaconf==2.3.0 transformers==4.35.2 huggingface-hub==0.26.5 trimesh==4.4.9 fast-simplification==0.1.11 xatlas==0.0.9 imageio==2.35.1 rembg==2.0.60 onnxruntime==1.19.2 opencv-python-headless==4.10.0.84
+          python -m pip check
+          git clone https://github.com/VAST-AI-Research/TripoSR.git "$RUNNER_TEMP/TripoSR"
+          git -C "$RUNNER_TEMP/TripoSR" checkout 107cefdc244c39106fa830359024f6a2f1c78871
+      - name: Generate new fantasy creature from pixels through DAG
+        run: python -u -m tools.creature_factory.next.fantasy_smoke "$RUNNER_TEMP/TripoSR" dist/creature-next/c3fantasy
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creature-next-c3fantasy
+          path: dist/creature-next/c3fantasy/
+          if-no-files-found: warn

@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install numpy==2.2.6 Pillow==11.3.0 trimesh==4.6.8
+      - run: python -m pip install numpy==2.2.6 Pillow==11.3.0 trimesh==4.6.8 scipy==1.13.1
       - run: python -m unittest tests.test_creature_next_anatomy tests.test_creature_next_c1 -v
       - name: Restore immutable learned master
         env:
