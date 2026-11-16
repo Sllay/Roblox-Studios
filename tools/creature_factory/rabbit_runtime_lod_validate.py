@@ -78,7 +78,7 @@ def verify(source,optimized,report_path,outdir):
                     'weights_sum_range':[weight_min,weight_max]}
     assert len([n for n in names if n.startswith('Whisker_')])==6
     assert triangles<=MAX_TOTAL,(triangles,MAX_TOTAL)
-    assert triangles<sum(s['accessors'][p['indices']]['count']//3 for m in src['meshes'] for p in m['primitives'])*.4
+    assert triangles<sum(src['accessors'][p['indices']]['count']//3 for m in src['meshes'] for p in m['primitives'])*.4
     assert sum(v['triangles'] for v in build['per_mesh_after'].values())==triangles
 
     i=dst['images'][0]
@@ -101,7 +101,7 @@ def verify(source,optimized,report_path,outdir):
         # measured only on jointly visible pixels to avoid background artifacts
         delta=np.abs(a[:,:,:3].astype(np.int16)-b[:,:,:3].astype(np.int16))
         color_deltas[angle]=float(delta[inter].mean()) if np.any(inter) else 255
-        assert iou>=.96,(angle,'silhouette_iou',iou)
+        assert iou>=.985,(angle,'silhouette_iou',iou)
         assert color_deltas[angle]<35,(angle,'mean RGB difference',color_deltas[angle])
 
     assert len(build['pose_probes'])>=5
@@ -116,6 +116,21 @@ def verify(source,optimized,report_path,outdir):
             'limitations':['No actual Roblox Studio import, joint skin playback or mobile client measured.',
                            'Approval of the runtime appearance requires owner review of side-by-side renders.']}
     (root/'validation.json').write_text(json.dumps(result,indent=2)+'\n')
+    # True same-camera, same-light renders with neutral backgrounds; never an AI concept.
+    from PIL import ImageDraw, ImageFont
+    sheet=Image.new('RGB',(3*800,2*690),(247,246,242))
+    draw=ImageDraw.Draw(sheet)
+    try: font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',22)
+    except OSError: font=ImageFont.load_default()
+    for idx,angle in enumerate(VIEWS):
+        col=idx%3;row=idx//3
+        for half,version in enumerate(('master','lod')):
+            render=Image.open(root/f'{version}-{angle}.png').convert('RGBA').resize((390,575),Image.Resampling.LANCZOS)
+            backdrop=Image.new('RGBA',render.size,(247,246,242,255))
+            backdrop.alpha_composite(render)
+            sheet.paste(backdrop.convert('RGB'),(col*800+half*400,row*690+45))
+            draw.text((col*800+half*400+20,row*690+12),f'{angle} - '+('master' if half==0 else 'mobile LOD'),fill=(45,40,35),font=font)
+    sheet.save(root/'comparison_real_views.png')
     print(json.dumps(result,indent=2),flush=True)
     return result
 
