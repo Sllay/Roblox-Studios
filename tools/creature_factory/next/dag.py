@@ -3,7 +3,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from contextlib import contextmanager
-import fcntl, inspect, json, os, time, uuid, hashlib
+import fcntl, inspect, json, os, time, uuid
+from importlib.metadata import version
 from .audit import sha256,write_json,validate_output
 from .contracts import *
 
@@ -28,7 +29,9 @@ def lock(root):
     finally:os.close(fd)
 
 def read_state(root):
-    return json.loads(path_inside(root,"job.json").read_text())
+    state=json.loads(path_inside(root,"job.json").read_text());finite(state)
+    require(state.get("schema")==1 and isinstance(state.get("stages"),dict),"Invalid job schema")
+    return state
 def valid_outputs(root,r):
     try:
         return bool(r["outputs"]) and all(sha256(path_inside(root,p))==h for p,h in r["outputs"].items())
@@ -46,13 +49,15 @@ def references(m,source,out,cfg):
     return {"views":len(m.views)}
 RUNNERS={"intake":intake,"reference_ready":references}
 def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
-    root=validate_output(Path(root));source=Path(manifest).resolve();m=AssetManifest.read(source)
+    root=validate_output(Path(root));source=Path(manifest).resolve();initial_manifest_hash=sha256(source);m=AssetManifest.read(source)
+    require(sha256(source)==initial_manifest_hash,"Manifest changed while reading")
     require(not source.is_relative_to(root),"Source must be outside job directory")
     config=config or {};finite(config);runners=RUNNERS if runners is None else runners
     # Read actual input bytes, not only the digest asserted by a manifest.
     def input_digest():
         return digest({"manifest":sha256(source),"sources":{v.source:sha256(path_inside(source.parent,v.source)) for v in m.views}})
     input_hash=input_digest()
+    require(sha256(source)==initial_manifest_hash,"Manifest changed while hashing inputs")
     with lock(root):
         p=path_inside(root,"job.json")
         old=read_state(root) if p.exists() else None
@@ -73,9 +78,12 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
             runner=runners.get(s.name)
             # Explicit stage versions plus real implementation fingerprints. For
             # callable test doubles, source identity is diagnostic only.
-            code_hash=sha256(Path(__file__)) if runners is RUNNERS else "injected-test-runner"
-            if runners is RUNNERS and s.name in RUNNERS:code_hash=digest([code_hash,sha256(Path(__file__).with_name("contracts.py"))])
-            key=digest({"stage":s.name,"version":s.version,"backend":s.backend,"implementation":code_hash,"deps":deps,"config":cfg,"input":input_hash if not s.deps else None})
+            code_hash="unavailable" if runner is None else "injected-test-runner"
+            backend=s.backend
+            if runners is RUNNERS and runner is not None:
+                backend=f"pillow@{version('Pillow')}"
+                code_hash=digest({"runner":inspect.getsource(runner),"contracts":sha256(Path(__file__).with_name("contracts.py")) if s.name=="intake" else None})
+            key=digest({"stage":s.name,"version":s.version,"backend":backend,"implementation":code_hash,"deps":deps,"config":cfg,"input":input_hash if not s.deps else None})
             ready=all(records[d]["state"] in ("succeeded","skipped") for d in s.deps)
             # Include attempt identity so corruption/recovery invalidates descendants even when bytes match.
             key=digest({"key":key,"dependency_attempts":{d:records[d].get("attempt") for d in s.deps}})
@@ -85,7 +93,7 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
                 archive(prev)
                 records[s.name]={**prev,"state":"invalidated"};persist()
             def result(status,**kw):
-                records[s.name]=asdict(StageResult(s.name,s.version,status,key,dependencies=deps,config=cfg,backend=s.backend,**kw));persist()
+                records[s.name]=asdict(StageResult(s.name,s.version,status,key,dependencies=deps,config=cfg,backend=backend,**kw));persist()
             if s.name=="rig_ready" and not m.rig_required:
                 result("skipped",cause="profile does not require rig");continue
             if not ready:

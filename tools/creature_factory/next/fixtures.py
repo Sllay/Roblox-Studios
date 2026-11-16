@@ -2,7 +2,7 @@
 from pathlib import Path
 from dataclasses import asdict
 import json,os,shutil
-from .audit import validate_output,measured_command,sha256,write_json
+from .audit import validate_output,measured_command,sha256,write_json,glb_metadata
 from .contracts import *
 from .backends import probe
 def generate(out,blender="blender",resolution=128):
@@ -16,7 +16,8 @@ def generate(out,blender="blender",resolution=128):
     run=measured_command([shutil.which(blender),"--background","--factory-startup","--threads","2","--python-exit-code","1","--python",str(worker),"--",str(out),str(resolution)],out/"worker.log",600)
     require(run["status"]=="passed","Fixture worker failed; inspect worker.log")
     kinds=("flat","wavy","convex","concave","asymmetric","articulation")
-    panel=Image.new("RGB",(resolution*4,(resolution+24)*len(kinds)),(242,242,242));draw=ImageDraw.Draw(panel)
+    panel=Image.new("RGB",(resolution*4,(resolution+24)*len(kinds)+28),(242,242,242));draw=ImageDraw.Draw(panel)
+    for i,label in enumerate(("3/4 render","Top mask","Top depth 7-9","World normals")):draw.text((i*resolution+4,8),label,fill=(20,20,20))
     summaries={}
     for k,kind in enumerate(kinds):
         p=out/kind;raw=json.loads((p/"geometry.json").read_text())
@@ -44,14 +45,26 @@ def generate(out,blender="blender",resolution=128):
             evid.append(asdict(EvidenceBundle(name,v.camera,f"mask-{name}.npy",f"depth-{name}.npy",f"normal-{name}.npy")))
         write_json(p/"evidence.json",{"schema":1,"views":evid})
         write_json(p/"artifact.json",asdict(GeometryArtifact("ground-truth.glb",sha256(p/"ground-truth.glb"),"unit",raw["vertices"],raw["triangles"])))
-        y=k*(resolution+24);draw.text((5,y+4),kind,fill=(20,20,20))
+        require(glb_metadata(p/"ground-truth.glb")["triangles"]==raw["triangles"],"GLB count differs from source")
+        bounds=raw["bounds"]
+        if kind=="asymmetric":
+            require(abs(bounds["left_marker"]["min"][0]-params["left_extent"])<1e-5 and abs(bounds["right_marker"]["max"][0]-params["right_extent"])<1e-5,"Asymmetry bounds")
+        if kind=="articulation":
+            gap=bounds["limb"]["min"][0]-bounds["torso"]["max"][0]
+            width=bounds["thin_strand"]["max"][0]-bounds["thin_strand"]["min"][0]
+            require(abs(gap-params["gap"])<1e-5 and abs(width-params["thin_width"])<1e-5,"Joint gap/strand mismatch")
+        y=28+k*(resolution+24);draw.text((5,y+4),kind,fill=(20,20,20))
         for j,name in enumerate(("color-three-quarter.png","mask-top.npy","depth-top.png","normal-top.png")):
             if name.endswith(".npy"):
                 mask=np.load(p/name);im=Image.fromarray(mask.astype("uint8")*255).convert("RGB")
+            elif name=="depth-top.png":
+                depth=np.load(p/"depth-top.npy");mask=np.load(p/"mask-top.npy")
+                rgb=np.zeros((*mask.shape,3),np.uint8);rgb[mask]=np.rint(np.clip((9-depth[mask])/2,0,1)*255).astype(np.uint8)[:,None]
+                im=Image.fromarray(rgb)
             else:
                 im=Image.open(p/name).convert("RGBA");bg=Image.new("RGBA",im.size,(220,225,230,255));bg.alpha_composite(im);im=bg.convert("RGB")
             panel.paste(im,(j*resolution,y+24))
-        summaries[kind]={"parameters":params,"views":7,"validation":valid,"triangles":raw["triangles"]}
+        summaries[kind]={"parameters":params,"views":7,"validation":valid,"triangles":raw["triangles"],"bounds":bounds}
     def compare(a,b):
         A=out/a;B=out/b;ma=np.load(A/"mask-top.npy");mb=np.load(B/"mask-top.npy");m=ma&mb
         d=np.abs(np.load(A/"depth-top.npy")[m]-np.load(B/"depth-top.npy")[m]);na=np.load(A/"normal-top.npy")[m];nb=np.load(B/"normal-top.npy")[m]
@@ -59,6 +72,6 @@ def generate(out,blender="blender",resolution=128):
     wave=compare("flat","wavy");cavity=compare("convex","concave")
     require(wave["iou"]>.999 and wave["max_depth_difference"]>.20 and wave["mean_normal_angle_degrees"]>10,"Wavy fixture distinction failed")
     require(cavity["iou"]>.999 and cavity["max_depth_difference"]>.65,"Concavity fixture distinction failed")
-    panel.save(out/"fixture-review.png")
+    panel.resize((panel.width*2,panel.height*2),Image.Resampling.NEAREST).save(out/"fixture-review.png")
     report={"schema":1,"status":"fixture_validated","fixtures":summaries,"flat_vs_wavy":wave,"convex_vs_concave":cavity,"scope":"known synthetic geometry only; no reconstruction","artistic_approval":False,"publication_allowed":False}
     write_json(out/"report.json",report);return report

@@ -146,6 +146,10 @@ class StageResult:
 class JobManifest:
     asset_id:str;manifest_path:str;config:dict;stages:dict
     schema:int=1;artistic_approval:bool=False;publication_allowed:bool=False
+    input_hash:str|None=None;status:str="incomplete"
+    def __post_init__(self):
+        require(self.schema==1 and self.status in ("incomplete","review_ready"),"Job schema/status")
+        finite(asdict(self))
 
 def validate_manifest(m,root,alpha_threshold=16):
     from PIL import Image

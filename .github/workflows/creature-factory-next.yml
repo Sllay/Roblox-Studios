@@ -28,7 +28,7 @@ jobs:
           python-version: '3.12'
       - name: Python regression suite
         run: |
-          python -m pip install Pillow==11.3.0 numpy==2.2.6
+          python -m pip install Pillow==11.3.0 numpy==2.2.6 jsonschema==4.23.0
           python -m unittest discover -s tests -v
       - name: Install pinned Blender with its bundled Python and NumPy
         run: |
@@ -54,6 +54,7 @@ jobs:
           python -m tools.creature_factory.next build --manifest dist/creature-next/c1-ci/wavy/manifest.json --out dist/creature-next/c1-job
           python -m tools.creature_factory.next resume --job dist/creature-next/c1-job
           python -m tools.creature_factory.next validate --job dist/creature-next/c1-job
+          python -m tools.creature_factory.next.schema_check dist/creature-next/c1-ci dist/creature-next/c1-job
           python -m tools.creature_factory.next legacy-rabbit --source asset-library/references/rabbit-v1
       - name: Preserve C1 evidence
         if: always()

@@ -1,0 +1,564 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "CameraCalibration": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "known",
+            "estimated",
+            "unknown"
+          ]
+        },
+        "projection": {
+          "anyOf": [
+            {
+              "enum": [
+                "orthographic",
+                "perspective"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "world_from_camera": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ortho_scale": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "intrinsics": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "projection",
+        "world_from_camera",
+        "ortho_scale",
+        "intrinsics",
+        "confidence"
+      ],
+      "additionalProperties": false
+    },
+    "ReferenceView": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "enum": [
+            "front",
+            "back",
+            "left",
+            "right",
+            "top",
+            "bottom",
+            "three-quarter"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "crop": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "camera": {
+          "$ref": "#/$defs/CameraCalibration"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "sha256",
+        "crop",
+        "camera"
+      ],
+      "additionalProperties": false
+    },
+    "AssetManifest": {
+      "type": "object",
+      "properties": {
+        "asset_id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$"
+        },
+        "profile": {
+          "enum": [
+            "creature",
+            "thin_surface",
+            "organic_prop",
+            "hard_surface"
+          ]
+        },
+        "views": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReferenceView"
+          }
+        },
+        "schema": {
+          "const": 1
+        },
+        "units": {
+          "enum": [
+            "stud",
+            "m",
+            "cm",
+            "unit"
+          ]
+        },
+        "axes": {
+          "const": "right-handed Z-up front -Y"
+        },
+        "scale": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "symmetry": {
+          "enum": [
+            "none",
+            "bilateral",
+            "intentional_asymmetry"
+          ]
+        },
+        "legacy": {
+          "type": "boolean"
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "landmarks": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "articulations": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "protected_regions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "thin_parts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "materials": {
+          "type": "object"
+        },
+        "identity": {
+          "type": "object"
+        },
+        "rig_required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "asset_id",
+        "profile",
+        "views",
+        "schema",
+        "units",
+        "axes",
+        "scale",
+        "symmetry",
+        "legacy",
+        "parts",
+        "landmarks",
+        "articulations",
+        "protected_regions",
+        "thin_parts",
+        "materials",
+        "identity",
+        "rig_required"
+      ],
+      "additionalProperties": false
+    },
+    "GeometryArtifact": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "units": {
+          "type": "string"
+        },
+        "vertices": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "triangles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "schema": {
+          "const": 1
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "units",
+        "vertices",
+        "triangles",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EvidenceBundle": {
+      "type": "object",
+      "properties": {
+        "view_id": {
+          "enum": [
+            "front",
+            "back",
+            "left",
+            "right",
+            "top",
+            "bottom",
+            "three-quarter"
+          ]
+        },
+        "camera": {
+          "$ref": "#/$defs/CameraCalibration"
+        },
+        "mask": {
+          "type": "string"
+        },
+        "depth": {
+          "type": "string"
+        },
+        "normals": {
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schema": {
+          "const": 1
+        },
+        "convention": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "view_id",
+        "camera",
+        "mask",
+        "depth",
+        "normals",
+        "confidence",
+        "schema",
+        "convention"
+      ],
+      "additionalProperties": false
+    },
+    "ExportTarget": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "format": {
+          "enum": [
+            "glb",
+            "blend",
+            "fbx",
+            "obj"
+          ]
+        },
+        "max_triangles_per_mesh": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schema": {
+          "const": 1
+        }
+      },
+      "required": [
+        "name",
+        "format",
+        "max_triangles_per_mesh",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "QualityReport": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "object"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "schema": {
+          "const": 1
+        },
+        "artistic_approval": {
+          "type": "boolean"
+        },
+        "publication_allowed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "status",
+        "metrics",
+        "limitations",
+        "schema",
+        "artistic_approval",
+        "publication_allowed"
+      ],
+      "additionalProperties": false
+    },
+    "StageResult": {
+      "type": "object",
+      "properties": {
+        "stage": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "running",
+            "succeeded",
+            "failed",
+            "blocked",
+            "skipped",
+            "invalidated"
+          ]
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "attempt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outputs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "metrics": {
+          "type": "object"
+        },
+        "dependencies": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "config": {
+          "type": "object"
+        },
+        "duration_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cause": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "backend": {
+          "type": "string"
+        },
+        "schema": {
+          "const": 1
+        }
+      },
+      "required": [
+        "stage",
+        "version",
+        "state",
+        "key",
+        "attempt",
+        "outputs",
+        "metrics",
+        "dependencies",
+        "config",
+        "duration_seconds",
+        "cause",
+        "limitations",
+        "backend",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "JobManifest": {
+      "type": "object",
+      "properties": {
+        "asset_id": {
+          "type": "string"
+        },
+        "manifest_path": {
+          "type": "string"
+        },
+        "config": {
+          "type": "object"
+        },
+        "stages": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/StageResult"
+          }
+        },
+        "schema": {
+          "const": 1
+        },
+        "artistic_approval": {
+          "type": "boolean"
+        },
+        "publication_allowed": {
+          "type": "boolean"
+        },
+        "input_hash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "incomplete",
+            "review_ready"
+          ]
+        }
+      },
+      "required": [
+        "asset_id",
+        "manifest_path",
+        "config",
+        "stages",
+        "schema",
+        "artistic_approval",
+        "publication_allowed",
+        "input_hash",
+        "status"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -75,3 +75,63 @@ class C1Tests(unittest.TestCase):
         p=self.root/"atomic.json";write_json(p,{"ok":True})
         with self.assertRaises(ValueError):write_json(p,{"bad":float("nan")})
         self.assertEqual(json.loads(p.read_text()),{"ok":True})
+
+    def test_stage_version_invalidation(self):
+        s=self.runjob();stages=tuple(Stage(x.name,x.deps,"2" if x.name=="uv_ready" else x.version,x.backend) for x in STAGES)
+        n=build(self.man,self.job,resume=True,runners={x.name:self.fake for x in stages},stages=stages)
+        self.assertEqual(s["stages"]["optimized"]["attempt"],n["stages"]["optimized"]["attempt"])
+        self.assertNotEqual(s["stages"]["uv_ready"]["attempt"],n["stages"]["uv_ready"]["attempt"])
+        self.assertEqual(s["stages"]["rig_ready"]["attempt"],n["stages"]["rig_ready"]["attempt"])
+    def test_two_processes_and_same_job_lock(self):
+        import multiprocessing
+        ctx=multiprocessing.get_context("fork");a,b=ctx.Event(),ctx.Event();release=ctx.Event()
+        def work(job,ready):
+            def pause(m,source,out,cfg):
+                ready.set()
+                if not release.wait(5):raise RuntimeError("test timeout")
+                return self.fake(m,source,out,cfg)
+            build(self.man,job,runners={"intake":pause})
+        p=ctx.Process(target=work,args=(self.job,a));q=ctx.Process(target=work,args=(self.root/"other-job",b))
+        p.start();q.start()
+        try:
+            self.assertTrue(a.wait(5) and b.wait(5))
+            with self.assertRaises(JobError):build(self.man,self.job,resume=True)
+        finally:
+            release.set();p.join(6);q.join(6)
+            for x in (p,q):
+                if x.is_alive():x.kill();x.join()
+        self.assertEqual((p.exitcode,q.exitcode),(0,0))
+        self.assertEqual(read_state(self.job)["stages"]["intake"]["state"],"succeeded")
+        self.assertEqual(read_state(self.root/"other-job")["stages"]["intake"]["state"],"succeeded")
+    def test_process_death_releases_lock_and_retains_attempt(self):
+        import multiprocessing,os
+        ctx=multiprocessing.get_context("fork")
+        def work():
+            def crash(m,source,out,cfg):
+                (out/"partial").write_text("partial");os._exit(71)
+            build(self.man,self.job,runners={"intake":crash})
+        p=ctx.Process(target=work);p.start();p.join(6)
+        if p.is_alive():p.kill();p.join()
+        self.assertEqual(p.exitcode,71)
+        s=read_state(self.job);old=s["stages"]["intake"]["attempt"]
+        self.assertEqual(s["stages"]["intake"]["state"],"running")
+        n=build(self.man,self.job,resume=True)
+        self.assertEqual(n["stages"]["intake"]["state"],"succeeded")
+        self.assertNotEqual(old,n["stages"]["intake"]["attempt"])
+        self.assertTrue((self.job/"attempts/intake"/old/"partial").exists())
+    def test_failed_atomic_replace_preserves_old_record(self):
+        from unittest.mock import patch
+        p=self.root/"record.json";write_json(p,{"old":True})
+        with patch("tools.creature_factory.next.audit.os.replace",side_effect=OSError("interrupted before rename")):
+            with self.assertRaises(OSError):write_json(p,{"new":True})
+        self.assertEqual(json.loads(p.read_text()),{"old":True})
+    def test_input_mutation_detected(self):
+        s=build(self.man,self.job)
+        self.image.write_bytes(b"changed")
+        self.assertIn("intake:source_changed",validate_job(self.job)["invalid_stages"])
+    def test_legacy_real(self):
+        from tools.creature_factory.next.audit import ROOT
+        m=legacy_rabbit(ROOT/"asset-library/references/rabbit-v1")
+        r=validate_manifest(m,ROOT/"asset-library/references/rabbit-v1")
+        self.assertEqual(set(r["missing_views"]),{"top","bottom"})
+        self.assertTrue(all(v.camera.status=="unknown" for v in m.views))
