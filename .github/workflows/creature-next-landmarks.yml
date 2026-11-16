@@ -1,0 +1,35 @@
+name: Creature Factory Next C2 semantic landmark fixture
+on:
+  pull_request:
+    paths:
+      - 'tools/creature_factory/next/landmarks.py'
+      - 'tools/creature_factory/next/landmark_fixture.py'
+      - 'tests/test_creature_next_landmarks.py'
+      - '.github/workflows/creature-next-landmarks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  landmarks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CPU fixture dependencies
+        run: python -m pip install numpy==2.2.6 Pillow==11.3.0 trimesh==4.6.8
+      - name: Test landmark contracts and independent reprojection
+        run: python -m unittest tests.test_creature_next_landmarks -v
+      - name: Render calibrated textured quadruped and validate landmarks
+        run: python -u -m tools.creature_factory.next.landmark_fixture dist/creature-next/c2landmarks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creature-next-c2landmarks
+          path: dist/creature-next/c2landmarks/
+          if-no-files-found: warn
