@@ -9,6 +9,8 @@ from .audit import sha256,write_json,validate_output
 from .contracts import *
 from .evidence import segment
 from .cameras import calibrate
+from .anatomy import validate_anatomy
+from .master_candidate import import_checkpoint
 
 class JobError(ValueError):pass
 class TransientError(RuntimeError):pass
@@ -18,7 +20,7 @@ class Stage:
     deps:tuple[str,...]
     version:str="1"
     backend:str="c1"
-STAGES=(Stage("intake",()),Stage("reference_ready",("intake",)),Stage("segmentation_ready",("reference_ready",),"2a","alpha"),Stage("calibration_ready",("segmentation_ready",),"2b","camera"),Stage("evidence_ready",("calibration_ready",)),Stage("master_ready",("evidence_ready",)),Stage("quality_checked",("master_ready",)),Stage("optimized",("quality_checked",)),Stage("uv_ready",("optimized",)),Stage("materials_ready",("uv_ready",)),Stage("rig_ready",("optimized",)),Stage("packaged",("materials_ready","rig_ready")),Stage("review_ready",("packaged",)))
+STAGES=(Stage("intake",()),Stage("reference_ready",("intake",)),Stage("segmentation_ready",("reference_ready",),"2a","alpha"),Stage("calibration_ready",("segmentation_ready",),"2b","camera"),Stage("candidate_ready",("reference_ready","calibration_ready"),"3a","checkpoint"),Stage("evidence_ready",("calibration_ready",)),Stage("master_ready",("evidence_ready",)),Stage("quality_checked",("master_ready",)),Stage("optimized",("quality_checked",)),Stage("uv_ready",("optimized",)),Stage("materials_ready",("uv_ready",)),Stage("rig_ready",("optimized",)),Stage("packaged",("materials_ready","rig_ready")),Stage("review_ready",("packaged",)))
 @contextmanager
 def lock(root):
     root.mkdir(parents=True,exist_ok=True)
@@ -40,6 +42,7 @@ def valid_outputs(root,r):
     except (ValueError,OSError,KeyError,TypeError):return False
 def intake(m,source,out,cfg):
     report=validate_manifest(m,source.parent,cfg.get("alpha_threshold",16))
+    report["anatomy"]=validate_anatomy(m)
     write_json(out/"manifest.json",asdict(m));write_json(out/"validation.json",report)
     return report
 def references(m,source,out,cfg):
@@ -55,6 +58,9 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
     require(sha256(source)==initial_manifest_hash,"Manifest changed while reading")
     require(not source.is_relative_to(root),"Source must be outside job directory")
     config=config or {};finite(config);runners=RUNNERS if runners is None else runners
+    production=runners is RUNNERS
+    if production and config.get("candidate_ready",{}).get("backend"):
+        runners={**RUNNERS,"candidate_ready":import_checkpoint}
     # Read actual input bytes, not only the digest asserted by a manifest.
     def input_digest():
         return digest({"manifest":sha256(source),"sources":{v.source:sha256(path_inside(source.parent,v.source)) for v in m.views}})
@@ -82,9 +88,13 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
             # callable test doubles, source identity is diagnostic only.
             code_hash="unavailable" if runner is None else "injected-test-runner"
             backend=s.backend
-            if runners is RUNNERS and runner is not None:
+            if production and runner is not None:
                 backend=f"{s.backend}:pillow@{version('Pillow')}"
                 code_hash=digest({"runner_module":sha256(Path(inspect.getfile(runner))),"contracts":sha256(Path(__file__).with_name("contracts.py"))})
+            if production and s.name=="candidate_ready" and runner is not None:
+                actual=sha256(path_inside(source.parent,cfg["archive"]))
+                require(actual==cfg["sha256"],"Candidate archive hash mismatch")
+                code_hash=digest([code_hash,actual])
             key=digest({"stage":s.name,"version":s.version,"backend":backend,"implementation":code_hash,"deps":deps,"config":cfg,"input":input_hash if not s.deps else None})
             ready=all(records[d]["state"] in ("succeeded","skipped") for d in s.deps)
             # Include attempt identity so corruption/recovery invalidates descendants even when bytes match.
@@ -110,7 +120,7 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
                 result("running",attempt=attempt);start=time.monotonic()
                 try:
                     if input_digest()!=input_hash:raise JobError("Inputs changed during job; resume with new manifest")
-                    if runners is RUNNERS and s.name in ("segmentation_ready","calibration_ready"):
+                    if production and s.name in ("segmentation_ready","calibration_ready","candidate_ready"):
                         inputs={d:{Path(p).name:path_inside(root,p) for p in records[d]["outputs"]} for d in s.deps}
                         metrics=runner(m,source,out,cfg,inputs) or {}
                     else:metrics=runner(m,source,out,cfg) or {}
