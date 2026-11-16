@@ -7,6 +7,8 @@ import fcntl, inspect, json, os, time, uuid
 from importlib.metadata import version
 from .audit import sha256,write_json,validate_output
 from .contracts import *
+from .evidence import segment
+from .cameras import calibrate
 
 class JobError(ValueError):pass
 class TransientError(RuntimeError):pass
@@ -16,7 +18,7 @@ class Stage:
     deps:tuple[str,...]
     version:str="1"
     backend:str="c1"
-STAGES=(Stage("intake",()),Stage("reference_ready",("intake",)),Stage("evidence_ready",("reference_ready",)),Stage("master_ready",("evidence_ready",)),Stage("quality_checked",("master_ready",)),Stage("optimized",("quality_checked",)),Stage("uv_ready",("optimized",)),Stage("materials_ready",("uv_ready",)),Stage("rig_ready",("optimized",)),Stage("packaged",("materials_ready","rig_ready")),Stage("review_ready",("packaged",)))
+STAGES=(Stage("intake",()),Stage("reference_ready",("intake",)),Stage("segmentation_ready",("reference_ready",),"2a","alpha"),Stage("calibration_ready",("segmentation_ready",),"2b","camera"),Stage("evidence_ready",("calibration_ready",)),Stage("master_ready",("evidence_ready",)),Stage("quality_checked",("master_ready",)),Stage("optimized",("quality_checked",)),Stage("uv_ready",("optimized",)),Stage("materials_ready",("uv_ready",)),Stage("rig_ready",("optimized",)),Stage("packaged",("materials_ready","rig_ready")),Stage("review_ready",("packaged",)))
 @contextmanager
 def lock(root):
     root.mkdir(parents=True,exist_ok=True)
@@ -47,7 +49,7 @@ def references(m,source,out,cfg):
         with Image.open(path_inside(source.parent,view.source)) as im:im.crop((x,y,x+w,y+h)).save(out/(view.id+".png"))
     write_json(out/"views.json",{"views":[asdict(v) for v in m.views],"visual_consistency":"not_evaluated_C2"})
     return {"views":len(m.views)}
-RUNNERS={"intake":intake,"reference_ready":references}
+RUNNERS={"intake":intake,"reference_ready":references,"segmentation_ready":segment,"calibration_ready":calibrate}
 def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
     root=validate_output(Path(root));source=Path(manifest).resolve();initial_manifest_hash=sha256(source);m=AssetManifest.read(source)
     require(sha256(source)==initial_manifest_hash,"Manifest changed while reading")
@@ -81,8 +83,8 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
             code_hash="unavailable" if runner is None else "injected-test-runner"
             backend=s.backend
             if runners is RUNNERS and runner is not None:
-                backend=f"pillow@{version('Pillow')}"
-                code_hash=digest({"runner":inspect.getsource(runner),"contracts":sha256(Path(__file__).with_name("contracts.py")) if s.name=="intake" else None})
+                backend=f"{s.backend}:pillow@{version('Pillow')}"
+                code_hash=digest({"runner_module":sha256(Path(inspect.getfile(runner))),"contracts":sha256(Path(__file__).with_name("contracts.py"))})
             key=digest({"stage":s.name,"version":s.version,"backend":backend,"implementation":code_hash,"deps":deps,"config":cfg,"input":input_hash if not s.deps else None})
             ready=all(records[d]["state"] in ("succeeded","skipped") for d in s.deps)
             # Include attempt identity so corruption/recovery invalidates descendants even when bytes match.
@@ -99,7 +101,7 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
             if not ready:
                 result("blocked",cause="Dependency incomplete");continue
             if s.name not in runners:
-                result("blocked",cause="Stage not implemented in C1");continue
+                result("blocked",cause="Stage not implemented yet");continue
             retries=cfg.get("transient_retries",0)
             require(type(retries)==int and 0<=retries<=2,"Invalid retry limit")
             for n in range(retries+1):
@@ -108,7 +110,10 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
                 result("running",attempt=attempt);start=time.monotonic()
                 try:
                     if input_digest()!=input_hash:raise JobError("Inputs changed during job; resume with new manifest")
-                    metrics=runners[s.name](m,source,out,cfg) or {}
+                    if runners is RUNNERS and s.name in ("segmentation_ready","calibration_ready"):
+                        inputs={d:{Path(p).name:path_inside(root,p) for p in records[d]["outputs"]} for d in s.deps}
+                        metrics=runner(m,source,out,cfg,inputs) or {}
+                    else:metrics=runner(m,source,out,cfg) or {}
                     if input_digest()!=input_hash:raise JobError("Inputs changed during stage; partial attempt retained")
                     outputs={}
                     for f in sorted(out.rglob("*")):
