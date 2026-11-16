@@ -11,6 +11,8 @@ from .volumetric_reconstruction import neural_occupancy,prior_candidates,surface
 from .surface_refinement import refine
 from .mesh_optimization import optimize
 from .uv_atlas import unwrap
+from .functional_gate import evaluate_functional_parts
+from .anatomy import Anatomy
 
 def read_views(inputs):
     seg=inputs["segmentation_ready"];cal=json.loads(inputs["calibration_ready"]["calibration.json"].read_text())
@@ -54,7 +56,9 @@ def volume_stage(m,source,out,cfg,inputs):
     # an organic master just because it matches external contours.
     a,b=meshes[diagnostic];save_mesh(out,"volume-diagnostic",a,b)
     a,b=meshes[selected];save_mesh(out,"volume",a,b)
-    write_json(out/"volume-report.json",{"schema":1,**decision,"metrics":reports,"depth_used":False,"production_approval":False})
+    raw=m.identity.get("anatomy");required=[p.id for p in Anatomy.read(raw).parts] if raw else []
+    functional=evaluate_functional_parts(required,{}, {}) if required else {"status":"blocked_functional_anatomy","reason":"no declared part graph","production_approval":False}
+    write_json(out/"volume-report.json",{"schema":1,**decision,"metrics":reports,"functional_gate":functional,"depth_used":False,"production_approval":False})
     return {**decision,"heldout_iou":reports[selected]["holdout_mean"]}
 def refine_stage(m,source,out,cfg,inputs):
     v,f=load_mesh(inputs["candidate_volume_ready"]["volume.npz"]);views=read_views(inputs)

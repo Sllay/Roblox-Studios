@@ -11,3 +11,10 @@ class FunctionalGateTests(unittest.TestCase):
         self.assertEqual(evaluate_functional_parts(["tail"],o,p)["status"],"functional_evidence_complete")
         p["tail"]["static_leakage"]=.1
         self.assertEqual(evaluate_functional_parts(["tail"],o,p)["status"],"blocked_functional_anatomy")
+
+    def test_gate_precedes_refinement_and_uv(self):
+        from tools.creature_factory.next.dag import STAGES
+        stages={s.name:s for s in STAGES}
+        self.assertIn("candidate_functional_ready",stages["candidate_refinement_ready"].deps)
+        self.assertIn("candidate_refinement_ready",stages["candidate_optimized_ready"].deps)
+        self.assertIn("candidate_optimized_ready",stages["candidate_uv_ready"].deps)

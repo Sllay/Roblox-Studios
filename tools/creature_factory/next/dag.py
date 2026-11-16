@@ -21,7 +21,7 @@ class Stage:
     deps:tuple[str,...]
     version:str="1"
     backend:str="c1"
-STAGES=(Stage("intake",()),Stage("reference_ready",("intake",)),Stage("segmentation_ready",("reference_ready",),"2a","alpha"),Stage("calibration_ready",("segmentation_ready",),"2b","camera"),Stage("candidate_ready",("reference_ready","calibration_ready"),"3a","checkpoint"),Stage("candidate_alignment_ready",("candidate_ready","segmentation_ready","calibration_ready"),"3b","similarity"),Stage("candidate_volume_ready",("candidate_alignment_ready","segmentation_ready","calibration_ready"),"3c.1","volume"),Stage("candidate_refinement_ready",("candidate_volume_ready","segmentation_ready","calibration_ready"),"4b","refine"),Stage("candidate_optimized_ready",("candidate_refinement_ready",),"4a","optimize"),Stage("candidate_uv_ready",("candidate_optimized_ready",),"5a","uv"),Stage("candidate_review_ready",("candidate_ready","candidate_alignment_ready","candidate_volume_ready","candidate_refinement_ready","candidate_optimized_ready","candidate_uv_ready"),"6a","review"),Stage("evidence_ready",("calibration_ready",)),Stage("master_ready",("evidence_ready",)),Stage("quality_checked",("master_ready",)),Stage("optimized",("quality_checked",)),Stage("uv_ready",("optimized",)),Stage("materials_ready",("uv_ready",)),Stage("rig_ready",("optimized",)),Stage("packaged",("materials_ready","rig_ready")),Stage("review_ready",("packaged",)))
+STAGES=(Stage("intake",()),Stage("reference_ready",("intake",)),Stage("segmentation_ready",("reference_ready",),"2a","alpha"),Stage("calibration_ready",("segmentation_ready",),"2b","camera"),Stage("candidate_ready",("reference_ready","calibration_ready"),"3a","checkpoint"),Stage("candidate_alignment_ready",("candidate_ready","segmentation_ready","calibration_ready"),"3b","similarity"),Stage("candidate_volume_ready",("candidate_alignment_ready","segmentation_ready","calibration_ready"),"3c.1","volume"),Stage("candidate_functional_ready",("candidate_volume_ready",),"1","functional-anatomy"),Stage("candidate_refinement_ready",("candidate_volume_ready","candidate_functional_ready","segmentation_ready","calibration_ready"),"4b","refine"),Stage("candidate_optimized_ready",("candidate_refinement_ready",),"4a","optimize"),Stage("candidate_uv_ready",("candidate_optimized_ready",),"5a","uv"),Stage("candidate_review_ready",("candidate_ready","candidate_alignment_ready","candidate_volume_ready","candidate_refinement_ready","candidate_optimized_ready","candidate_uv_ready"),"6a","review"),Stage("evidence_ready",("calibration_ready",)),Stage("master_ready",("evidence_ready",)),Stage("quality_checked",("master_ready",)),Stage("optimized",("quality_checked",)),Stage("uv_ready",("optimized",)),Stage("materials_ready",("uv_ready",)),Stage("rig_ready",("optimized",)),Stage("packaged",("materials_ready","rig_ready")),Stage("review_ready",("packaged",)))
 @contextmanager
 def lock(root):
     root.mkdir(parents=True,exist_ok=True)
@@ -114,7 +114,7 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
             # Include attempt identity so corruption/recovery invalidates descendants even when bytes match.
             key=digest({"key":key,"dependency_attempts":{d:records[d].get("attempt") for d in s.deps}})
             if prev and prev["key"]==key and prev["state"]=="succeeded" and ready and valid_outputs(root,prev):continue
-            if prev and prev["key"]==key and prev["state"]=="skipped" and s.name=="rig_ready" and not m.rig_required:continue
+            if prev and prev["key"]==key and prev["state"]=="skipped" and s.name in ("rig_ready","candidate_functional_ready") and not m.rig_required:continue
             if prev:
                 archive(prev)
                 records[s.name]={**prev,"state":"invalidated"};persist()
@@ -125,7 +125,10 @@ def build(manifest,root,config=None,*,resume=False,runners=None,stages=STAGES):
             if not ready:
                 result("blocked",cause="Dependency incomplete");continue
             if s.name not in runners:
-                result("blocked",cause="Stage not implemented yet");continue
+                if s.name=="candidate_functional_ready":
+                    result("blocked",cause="Functional anatomy not verified: require actual part geometry and evaluated deformation evidence before refinement/UV")
+                else:result("blocked",cause="Stage not implemented yet")
+                continue
             retries=cfg.get("transient_retries",0)
             require(type(retries)==int and 0<=retries<=2,"Invalid retry limit")
             for n in range(retries+1):
