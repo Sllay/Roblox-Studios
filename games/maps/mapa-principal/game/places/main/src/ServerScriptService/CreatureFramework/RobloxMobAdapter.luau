@@ -238,7 +238,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   return "Running"
  end
  function self:beginDeath()
-  self.alive=false;self:cancel();self:animate("",1);hitbox.CanQuery=false
+  self.alive=false;self:cancel();self:animate(if species.animations.Death then "Death" else "",1);hitbox.CanQuery=false
   self.deathPose=mesh.CFrame;self.deathReleased=false
   mesh.CanQuery=false
  end
