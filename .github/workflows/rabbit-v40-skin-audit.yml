@@ -1,0 +1,32 @@
+name: Rabbit V40 skinning audit (NO PUBLISH)
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - 'tools/creature_factory/rabbit_skin_audit_v40.py'
+      - '.github/workflows/rabbit-v40-skin-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  skin-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender
+      - name: Audit actual 19-bone mesh vertex weights
+        run: |
+          blender -b --factory-startup --python-exit-code 1 \
+            --python tools/creature_factory/rabbit_skin_audit_v40.py -- \
+            "$PWD/asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.blend" \
+            "$PWD/dist/rabbit-v40/skin-audit.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rabbit-v40-skin-audit
+          path: dist/rabbit-v40/skin-audit.json
+          if-no-files-found: warn
