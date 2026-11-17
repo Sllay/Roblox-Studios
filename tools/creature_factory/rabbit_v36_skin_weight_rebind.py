@@ -21,7 +21,7 @@ def decode_glb(source:bytes):
  assert tag==b'JSON'
  offset=20+length+8
  bin_length,bin_tag=struct.unpack_from('<I4s',source,20+length)
- assert bin_tag==b'BIN\\0' and offset+bin_length==len(source)
+ assert bin_tag==b'BIN\0' and offset+bin_length==len(source)
  return json.loads(source[20:20+length]),offset
 
 def accessor_array(glb,source:bytearray,bin_offset:int,index:int):
@@ -111,7 +111,7 @@ def rebind(source_path:Path,dest_path:Path,iterations:int=180):
   'skin_seams_preserved_by_position_welding':True,
   'note':'Visual and gameplay review required. Never auto-publish.'
  }
- (dest_path.parent/'weight-rebind-report.json').write_text(json.dumps(report,indent=2)+'\\n')
+ (dest_path.parent/'weight-rebind-report.json').write_text(json.dumps(report,indent=2)+'\n')
  print('RABBIT_V36_SKIN_CANDIDATE',json.dumps(report,sort_keys=True),flush=True)
  return report
 
