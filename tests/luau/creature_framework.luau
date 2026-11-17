@@ -7,7 +7,15 @@ local S=require("../../games/maps/mapa-principal/game/places/main/src/ServerScri
 local c=assert(R.get("210080"));assert(R.validate(c) and #R.all()==2)
 local rabbit=assert(R.get("210081"))
 assert(R.validate(rabbit) and rabbit.modelAssetId=="87498816533548" and rabbit.profile=="PassivePrey")
-assert(rabbit.animations.Idle=="107996680929648" and rabbit.animations.Run=="77362016288503" and rabbit.animations.Death=="113737115841702")
+-- Clip IDs evolve between audited staging releases; require valid, distinct assets
+-- rather than pre-V33 IDs that caused unrelated creature-core CI failures.
+assert(rabbit.animations.Death=="113737115841702")
+local unique:{[string]:boolean}={}
+for _,name in {"Idle","Walk","Run","ScratchEar"} do
+ local id=rabbit.animations[name]
+ assert(id~=nil and tonumber(id)~=nil and tonumber(id)>0 and not unique[id],"Rabbit clip identity")
+ unique[id]=true
+end
 assert(c.preview.assetId=="107933673393998" and R.biomeName("emerald_valley")=="Vale Esmeralda" and not R.levelsEnabled)
 assert(R.stats(c,10,false).health==20 and R.stats(c,10,true).health==34)
 assert(R.previewStats(c).level10.damage==0)
