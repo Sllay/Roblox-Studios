@@ -7,6 +7,7 @@ on:
       - 'tools/creature_factory/rabbit_animation_author_v2.py'
       - 'tools/creature_factory/rabbit_animation_upload_v2.py'
       - 'tests/test_rabbit_animation_v2.py'
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/RobloxMobAdapter.luau'
   workflow_dispatch:
 
 permissions:
