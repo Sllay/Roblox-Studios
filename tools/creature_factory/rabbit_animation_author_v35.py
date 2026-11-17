@@ -142,7 +142,14 @@ def groom(rig):
  # Plant the three support paws; moving hind paw is deliberately off ground.
  for kind,side,x,y,z in [('fore','L',.36,.21,-1.04),
                          ('fore','R',-.36,.21,-1.04),
-                         ('hind','R',.45,.21,.45)]:
+                         ('hind','R',None,.21,None)]:
+  if x is None:
+   # Keep planted opposite hind foot in its current horizontal spot.
+   # The torso leans to reach the ear; forcing the old XZ would
+   # overstretch the supporting hip and create visible geometry tears.
+   fk,_=rig.evaluate(contact)
+   foot=fk['HindPaw_R'][:3,3]
+   x,z=float(foot[0]),float(foot[2])
   contact,e=rig.ik(contact,kind,side,[x,y,z])
   assert e<.24,('support_contact',kind,side,e)
  keys=[];report=[]
