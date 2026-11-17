@@ -288,9 +288,9 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
    if self.blocked and not flee then self.exploreTarget=nil end
   end
   local goal=self.goal
-  if not goal then self:animate(if self.rabbitGait then "Idle" else if flee then "Run" else "Idle",1);return "Running" end
+  if not goal then self:animate(if self.rabbitGait or not flee then "Idle" else "Run",1);return "Running" end
   local speed=if flee then math.max(self.options.minimumRunSpeed or 12,self.stats.runSpeed) else self.stats.walkSpeed
-  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if self.rabbitGait then "Idle" else if flee then "Run" else "Idle",1);return "Running" end
+  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if self.rabbitGait or not flee then "Idle" else "Run",1);return "Running" end
   self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"
  end
