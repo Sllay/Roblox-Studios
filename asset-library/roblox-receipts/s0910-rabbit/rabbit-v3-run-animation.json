@@ -3,7 +3,7 @@
   "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations/run.rbxmx",
   "sha256": "79455120bc9a432ab12917b18476bbb109723e5f9fedfb74724a7f8994ef31c5",
   "bytes": 157855,
-  "state": "operation_created",
+  "state": "created",
   "noPlaceWrites": true,
   "retryAllowed": false,
   "httpStatus": 200,
@@ -12,5 +12,31 @@
     "operationId": "2072a369-e68d-41d6-ae7e-df8616b6900f",
     "done": false
   },
-  "operationPath": "operations/2072a369-e68d-41d6-ae7e-df8616b6900f"
+  "operationPath": "operations/2072a369-e68d-41d6-ae7e-df8616b6900f",
+  "operation": {
+    "path": "operations/2072a369-e68d-41d6-ae7e-df8616b6900f",
+    "operationId": "2072a369-e68d-41d6-ae7e-df8616b6900f",
+    "done": true,
+    "response": {
+      "path": "assets/77362016288503",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-17T00:13:01.887Z",
+      "assetId": "77362016288503",
+      "displayName": "Black Islands Rabbit V3 Run",
+      "description": "Original skinned 19-bone rabbit Run on asset 87498816533548",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "77362016288503"
 }
