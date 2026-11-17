@@ -230,8 +230,8 @@ print("S09.5-F: predator prey filter, melee/ranged states, windup interruption, 
 
 -- S09.10: species without chicken clips never select chicken-only routines.
 local W=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/WildlifeProfiles")
-assert(W.chicken.population+W.rabbit.population+W.cow.population+W.pig.population+W.sheep.population==64)
-assert(W.rabbit.groupKind=="Companion" and not W.rabbit.territorial and W.rabbit.groupMax==2)
+assert(W.chicken.population+W.rabbit.population+W.cow.population+W.pig.population+W.sheep.population==56)
+assert(W.rabbit.groupKind=="Solo" and not W.rabbit.territorial and W.rabbit.groupMax==1)
 assert(W.cow.groupMax==8 and W.pig.exclusiveSameSpecies and W.sheep.groupMax==2)
 local generic=M.new()
 local gs:M.Sense={dt=2,alive=true,aiEnabled=true,hit=false,threatVisible=false,threatDistance=100,approachSpeed=0,predator=false,foodAvailable=true,atFood=true,pathBlocked=false,escapeAvailable=true,stuck=false,random=0,routineFood=false,routineFlap=false}
@@ -268,7 +268,7 @@ Ecology.finish(pig,301,true);assert(pig.center.x==-100 and pig.nextMigration==60
 local rabbit=assert(Ecology.create(eco,"rabbit",WP.rabbit,{x=0,z=0},0))
 local rabbit2=assert(Ecology.create(eco,"rabbit",WP.rabbit,{x=1,z=0},0))
 assert(Ecology.join(eco,rabbit,"r1") and Ecology.join(eco,rabbit2,"r2"))
-assert(Ecology.pair(eco,"r1","r2") and rabbit.count==2)
+assert(not Ecology.pair(eco,"r1","r2") and rabbit.count==1 and rabbit2.count==1)
 assert(Ecology.force(eco,{x=0,z=0},500,400)==2)
 assert(rabbit.nextMigration==math.huge)
 print("S09.10 D group territory migration tests passed")
