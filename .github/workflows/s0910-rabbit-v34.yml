@@ -7,6 +7,7 @@ on:
     branches: [feat/creature-factory-next]
     paths:
       - '.github/workflows/s0910-rabbit-v34.yml'
+      - 'tools/s0910_rabbit_v34_release.py'
   workflow_dispatch:
 
 permissions:
