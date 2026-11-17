@@ -3,7 +3,14 @@
   "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations-v2/scratchear.rbxmx",
   "sha256": "c23fc656b40ed753ba76f9c9e335efb4066ed7b3460f6101428564f7f98e107b",
   "bytes": 270573,
-  "state": "post_intent",
+  "state": "operation_created",
   "noPlaceWrites": true,
-  "retryAllowed": false
+  "retryAllowed": false,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/8e9ac637-915b-4c61-b72a-9117f31ada83",
+    "operationId": "8e9ac637-915b-4c61-b72a-9117f31ada83",
+    "done": false
+  },
+  "operationPath": "operations/8e9ac637-915b-4c61-b72a-9117f31ada83"
 }
