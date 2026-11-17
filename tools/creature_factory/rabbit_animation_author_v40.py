@@ -7,6 +7,7 @@ from __future__ import annotations
 import numpy as np
 import rabbit_animation_author_v39 as v39
 
+ORIGINAL_GROOM = v39.groom
 CLIPS=dict(v39.CLIPS)
 CLIPS["Idle"]=(3.6,72,True,0)
 CLIPS["Walk"]=(1.02,72,True,1)
@@ -72,7 +73,7 @@ def walk(rig):
     return keys,report
 
 def groom(rig):
-    keys,report=v39.groom(rig)
+    keys,report=ORIGINAL_GROOM(rig)
     # Bow the head subtly while the forepaw approaches; do not fold torso.
     # Recompute FK evidence after the change, not from stale V39 coordinates.
     for (t,pose),row in zip(keys,report):
