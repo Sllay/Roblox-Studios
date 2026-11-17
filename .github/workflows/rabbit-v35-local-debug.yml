@@ -1,0 +1,26 @@
+name: Rabbit V35 rig debug snapshot - no upload, no publish
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths: ['.github/workflows/rabbit-v35-local-debug.yml']
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bundle exact approved rig source, pose author and proof
+        run: |
+          set -euo pipefail
+          mkdir -p dist/rabbit-v35-local-debug
+          cp tools/creature_factory/rabbit_animation_author_v35.py dist/rabbit-v35-local-debug/
+          cp tools/creature_factory/rabbit_animation_author.py dist/rabbit-v35-local-debug/
+          cp asset-library/roblox-receipts/s0910-rabbit/rabbit-native-proof.json dist/rabbit-v35-local-debug/
+          cp asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.glb dist/rabbit-v35-local-debug/
+          sha256sum dist/rabbit-v35-local-debug/* > dist/rabbit-v35-local-debug/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rabbit-v35-rig-debug-source
+          path: dist/rabbit-v35-local-debug/
+          if-no-files-found: error
