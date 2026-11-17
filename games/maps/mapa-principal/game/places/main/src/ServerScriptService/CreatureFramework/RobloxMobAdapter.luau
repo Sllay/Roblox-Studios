@@ -4,6 +4,16 @@
 local D={}
 local function horizontal(v:Vector3):Vector3 return Vector3.new(v.X,0,v.Z) end
 local function finite(v:Vector3):boolean return v.X==v.X and v.Y==v.Y and v.Z==v.Z and v.Magnitude<1e6 end
+-- Bunny V34 moves horizontally during the jump's launch/flight, with shorter
+-- planted phases. The shared route planner remains the only path authority.
+local function hopDrive(phase:number):number
+ local function smooth(x:number):number
+  x=math.clamp(x,0,1);return x*x*(3-2*x)
+ end
+ local launch=smooth((phase-.10)/.13)
+ local landing=1-smooth((phase-.69)/.16)
+ return .28+1.32*launch*landing
+end
 function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):any
  local mesh=assert(model:FindFirstChild("Rabbit_Torso",true) or model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
  local existingController=model:FindFirstChildWhichIsA("AnimationController",true)
@@ -26,6 +36,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
  end
  self.visualParts=visualParts;self.rigParts=rigParts
+ self.rabbitGait=species.id=="210081"
  assert(#visualParts>=1,"creature must contain a visible MeshPart")
  local hitbox=Instance.new("Part");hitbox.Name="CreatureHitbox";hitbox.Size=mesh.Size+Vector3.new(.6,.6,.6);hitbox.Transparency=1;hitbox.Anchored=true;hitbox.CanCollide=false;hitbox.CanTouch=false;hitbox.CanQuery=true;hitbox.CFrame=mesh.CFrame;hitbox.Parent=model
  self.hitbox=hitbox
@@ -188,7 +199,14 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local facing=CFrame.fromAxisAngle(Vector3.yAxis,turn):VectorToWorldSpace(forward)
   local alignment=math.max(0,facing:Dot(target))
   self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
-  local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
+  local stride=1
+  if self.rabbitGait and (self.lastClip=="Walk" or self.lastClip=="Run") then
+   local current=self.tracks[self.lastClip]
+   local length=if current and current.Length>0 then current.Length else (if self.lastClip=="Run" then .68 else .79)
+   local phase=if current and current.Length>0 then current.TimePosition/length else self.clock/length
+   stride=hopDrive(phase%1)
+  end
+  local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed*stride)
   local q=p+target*step;local g=self:ground(q.X,q.Z)
   if not g and self.options.steer then q=p+delta.Unit*step;g=self:ground(q.X,q.Z) end
   if not g or (not self.travelTarget and not self.options.freeRoam and self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
@@ -229,7 +247,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
      end
     elseif self.scratchAt and self.clock>=self.scratchAt then
      self.scratchAt=nil
-     self.scratchUntil=self.clock+1.55
+     self.scratchUntil=self.clock+1.70
      self.nextScratchTime=self.clock+25+self.options.random()*25
      self:animate("ScratchEar",1)
     end
