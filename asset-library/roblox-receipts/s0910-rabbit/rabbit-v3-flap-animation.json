@@ -3,7 +3,14 @@
   "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations/flap.rbxmx",
   "sha256": "05145b7a6466e5364c77c2ed80656452ac42c53bb1e35846fefa97a54368ea27",
   "bytes": 135029,
-  "state": "post_intent",
+  "state": "operation_created",
   "noPlaceWrites": true,
-  "retryAllowed": false
+  "retryAllowed": false,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/90510153-9fac-420d-af70-3107ced54284",
+    "operationId": "90510153-9fac-420d-af70-3107ced54284",
+    "done": false
+  },
+  "operationPath": "operations/90510153-9fac-420d-af70-3107ced54284"
 }
