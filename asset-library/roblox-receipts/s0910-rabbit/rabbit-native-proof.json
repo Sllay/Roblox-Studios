@@ -1,0 +1,188 @@
+{
+  "universeId": "10769712441",
+  "meshCount": 9,
+  "textureURIs": [
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    },
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    },
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    },
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    },
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    },
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    },
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    },
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    },
+    {
+      "uri": "rbxassetid://121045258062209",
+      "loaded": true
+    }
+  ],
+  "expectedBones": true,
+  "assetId": "87498816533548",
+  "scripts": 0,
+  "textureLoaded": 9,
+  "meshRows": [
+    {
+      "size": [
+        0.536666750907898,
+        1.0140745639801025,
+        0.7369509935379028
+      ],
+      "meshId": "rbxassetid://73467677846246",
+      "name": "FrontArm_L",
+      "textureId": "rbxassetid://121045258062209"
+    },
+    {
+      "size": [
+        0.5366666316986084,
+        1.0136454105377197,
+        0.737053394317627
+      ],
+      "meshId": "rbxassetid://79400209775883",
+      "name": "FrontArm_R",
+      "textureId": "rbxassetid://121045258062209"
+    },
+    {
+      "size": [
+        1.5540330410003662,
+        3.600717067718506,
+        1.7983840703964233
+      ],
+      "meshId": "rbxassetid://85481270776827",
+      "name": "Rabbit_Torso",
+      "textureId": "rbxassetid://121045258062209"
+    },
+    {
+      "size": [
+        0.5119802951812744,
+        0.05419278144836426,
+        0.05195528268814087
+      ],
+      "meshId": "rbxassetid://112833961360541",
+      "name": "Whisker_L_1",
+      "textureId": "rbxassetid://121045258062209"
+    },
+    {
+      "size": [
+        0.47257453203201294,
+        0.03781485557556152,
+        0.07435649633407593
+      ],
+      "meshId": "rbxassetid://89710002499710",
+      "name": "Whisker_L_2",
+      "textureId": "rbxassetid://121045258062209"
+    },
+    {
+      "size": [
+        0.3738079071044922,
+        0.14146196842193604,
+        0.0867273211479187
+      ],
+      "meshId": "rbxassetid://110181323195258",
+      "name": "Whisker_L_3",
+      "textureId": "rbxassetid://121045258062209"
+    },
+    {
+      "size": [
+        0.5119802355766296,
+        0.05419278144836426,
+        0.05195540189743042
+      ],
+      "meshId": "rbxassetid://110028876625505",
+      "name": "Whisker_R_1",
+      "textureId": "rbxassetid://121045258062209"
+    },
+    {
+      "size": [
+        0.47257450222969055,
+        0.03781485557556152,
+        0.07435661554336548
+      ],
+      "meshId": "rbxassetid://123936124071891",
+      "name": "Whisker_R_2",
+      "textureId": "rbxassetid://121045258062209"
+    },
+    {
+      "size": [
+        0.3738079071044922,
+        0.14146196842193604,
+        0.08672744035720825
+      ],
+      "meshId": "rbxassetid://106314852885937",
+      "name": "Whisker_R_3",
+      "textureId": "rbxassetid://121045258062209"
+    }
+  ],
+  "whiskers": 6,
+  "boneNames": [
+    "Chest",
+    "Ear_L",
+    "Ear_R",
+    "Forearm_L",
+    "Forearm_R",
+    "FrontPaw_L",
+    "FrontPaw_R",
+    "Head",
+    "HindPaw_L",
+    "HindPaw_R",
+    "Hip_L",
+    "Hip_R",
+    "Pelvis",
+    "Root",
+    "Shin_L",
+    "Shin_R",
+    "Shoulder_L",
+    "Shoulder_R",
+    "Tail"
+  ],
+  "placeId": "93428341652658",
+  "models": 1,
+  "noPlaceWrites": true,
+  "poseRoundtrip": true,
+  "boneCountExpected": 19,
+  "bones": 19,
+  "classes": {
+    "Folder": 1,
+    "Bone": 19,
+    "AnimationController": 1,
+    "Model": 1,
+    "Part": 1,
+    "MeshPart": 9,
+    "CFrameValue": 114,
+    "Motor6D": 9
+  },
+  "meshLoaded": 9,
+  "boundingSize": [
+    2,
+    4.600782871246338,
+    1.798328161239624
+  ],
+  "loadedVersion": 31,
+  "sourceSha256": "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133",
+  "runtimeValidated": false,
+  "animationPlaybackValidated": false,
+  "assetCreatedId": "87498816533548",
+  "stage": "native_import_probe"
+}
