@@ -94,13 +94,18 @@ def parse_frame(root,num):
 
 def redraw(poses):
  animated=native_global(poses)
- # Posed bone target = transformed native bind-relative change * Blender bind.
- # This is a geometry-aware retarget, not arbitrary local Euler rotation.
+ # Reset inherited channel matrices between independent poses. Blender's pose
+ # matrix setter uses the CURRENT evaluated parent state. Without updating the
+ # dependency graph after EACH parent, children silently inherit stale
+ # transforms from the previous rendered keyframe; even Idle used to distort.
+ for bone in arm.pose.bones:
+  bone.matrix_basis.identity()
+ bpy.context.view_layer.update()
  for name in sorted(joint,key=lambda n:ancestry(n)):
   d=animated[name]@native_bind_inv[name]
   goal=convert@d@convert.inverted()@arm.data.bones[name].matrix_local
   arm.pose.bones[name].matrix=goal
- bpy.context.view_layer.update()
+  bpy.context.view_layer.update()
  return animated
 
 def ancestry(n):
@@ -117,11 +122,27 @@ stills={
  'scratchear':[0,.17,.33,.43,.54,.64,.74,1.]
 }
 report={}
+idle_mesh=None
 for clip,times in stills.items():
  root=ET.parse(animation_dir/(clip+'.rbxmx')).getroot()
  rows=[]
  for i,t in enumerate(times):
   posed=redraw(parse_frame(root,t))
+  if clip=='idle':
+   # For a subtle breathing idle, the skinned torso MUST remain nearly still.
+   torso=bpy.data.objects['Rabbit_Torso']
+   depsgraph=bpy.context.evaluated_depsgraph_get()
+   evaluated=torso.evaluated_get(depsgraph)
+   mesh=evaluated.to_mesh()
+   points=[tuple(v.co) for v in mesh.vertices]
+   evaluated.to_mesh_clear()
+   if idle_mesh is None:
+    idle_mesh=points
+   else:
+    assert len(points)==len(idle_mesh)
+    displacement=max((Vector(a)-Vector(b)).length for a,b in zip(points,idle_mesh))
+    print('RABBIT_V34_IDLE_MESH_MAX_DISPLACEMENT',round(displacement,5),flush=True)
+    assert displacement<.2,('Breathing idle must not fold/skew the torso',displacement)
   for view,relative in views.items():
    cam.location=center+relative
    cam.rotation_euler=(center-cam.location).to_track_quat('-Z','Y').to_euler()
