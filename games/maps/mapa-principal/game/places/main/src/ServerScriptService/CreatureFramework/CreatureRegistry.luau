@@ -13,6 +13,18 @@ local chicken:Species={
  growth={health=0.08,damage=0.08,walkSpeed=0.01,runSpeed=0.01},
  levelCap=10,discoverable=true,
 }
+local rabbit:Species={
+ id="210081",name="Coelho",description="Coelho de floresta curioso e cauteloso. Procura alimento no solo, observa sons e movimentos e escapa com saltos rápidos quando percebe perigo.",
+ category="Animal",disposition="Passive",profile="PassivePrey",faction="animal_rabbit",prey=true,
+ biomes={"emerald_valley"},modelAssetId="87498816533548",
+ preview={source="asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/lod-front.png"},
+ -- Published native 19-bone KeyframeSequences; Flap is the rabbit alert/ears-perk reaction.
+ animations={Idle="107996680929648",Walk="86940617868965",Run="77362016288503",
+             Peck="114930368536679",Flap="116465239449329",Death="113737115841702"},
+ base={health=16,damage=0,walkSpeed=3.0,runSpeed=9.0},
+ growth={health=0.05,damage=0,walkSpeed=0.01,runSpeed=0.01},
+ levelCap=10,discoverable=true,
+}
 local R={}
 R.levelsEnabled=false
 local biomeNames:{[string]:string}={emerald_valley="Vale Esmeralda"}
@@ -43,6 +55,7 @@ local function register(s:Species)
  R.validate(s);assert(data[s.id]==nil,"duplicate species ID");data[s.id]=freezeSpecies(s)
 end
 register(chicken)
+register(rabbit)
 table.freeze(data)
 function R.get(id:string):Species? return data[id] end
 function R.all():{Species}
