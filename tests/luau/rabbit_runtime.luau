@@ -54,4 +54,40 @@ local base={dt=.1,alive=true,aiEnabled=true,hit=false,threatVisible=true,
 assert(Brain.step(memory,base,Kernel.canInterrupt).state=="Idle")
 base.jumping=true
 assert(Brain.step(memory,base,Kernel.canInterrupt).state=="Flee")
+-- A rabbit's longer idle permits a grooming one-shot to finish naturally.
+-- Survival must still interrupt a cosmetic action in the same tick.
+local groom=Brain.new()
+local calm=table.clone(base)
+calm.dt=2
+calm.threatVisible=false
+calm.hit=false
+calm.jumping=false
+calm.predator=false
+calm.routineFood=false
+calm.routineFlap=false
+calm.idleSeconds=3.25
+calm.exploreSeconds=9.5
+calm.cosmeticActionPlaying=true
+assert(Brain.step(groom,calm,Kernel.canInterrupt).state=="Idle")
+assert(Brain.step(groom,calm,Kernel.canInterrupt).state=="Idle","Groom must finish before leaving idle")
+calm.cosmeticActionPlaying=false
+assert(Brain.step(groom,calm,Kernel.canInterrupt).state=="Explore")
+for _=1,5 do Brain.step(groom,calm,Kernel.canInterrupt) end
+assert(groom.state=="Idle","Rabbit routine must return for another grooming chance")
+calm.cosmeticActionPlaying=true
+calm.threatVisible=true
+calm.predator=true
+calm.threatDistance=2
+assert(Brain.step(groom,calm,Kernel.canInterrupt).state=="Flee","Danger must interrupt any grooming")
+
+-- Chicken/other species retain the original idle duration by default.
+local normal=Brain.new()
+local regular=table.clone(calm)
+regular.threatVisible=false
+regular.predator=false
+regular.cosmeticActionPlaying=nil
+regular.idleSeconds=nil
+regular.exploreSeconds=nil
+assert(Brain.step(normal,regular,Kernel.canInterrupt).state=="Explore","Default idle stays two seconds")
+
 print("Rabbit S09.10 native-independent species/Book/spawn/AI contract PASS")
