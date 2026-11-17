@@ -63,7 +63,7 @@ jobs:
             "$PWD/asset-library/roblox-receipts/s0910-rabbit/rabbit-native-proof.json" \
             "$PWD/dist/rabbit-v36-skin-review" \
             "$PWD/dist/rabbit-v36-skin-review"
-      - name: Contact sheets: foot-ground and rear-leg-to-ear views
+      - name: 'Contact sheets - foot-ground and rear-leg-to-ear views'
         run: |
           python - <<'PY'
           from PIL import Image,ImageDraw
