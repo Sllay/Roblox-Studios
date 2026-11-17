@@ -88,7 +88,7 @@ def groom(rig):
 
 def run(rig):
     # Keep prior run as a diagnostic control until V40 skin-deformation review.
-    return v39.run(rig)
+    return v39.native.blocks(rig, "Run")
 
 def main():
     v39.CLIPS=CLIPS
