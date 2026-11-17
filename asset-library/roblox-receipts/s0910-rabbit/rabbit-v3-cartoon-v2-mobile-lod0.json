@@ -3,7 +3,7 @@
   "sha256": "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133",
   "bytes": 2359056,
   "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.glb",
-  "state": "operation_created",
+  "state": "created",
   "retryAllowed": false,
   "creatorId": "8136365379",
   "creatorType": "User",
@@ -14,5 +14,31 @@
     "operationId": "50fb1dbb-51e4-40e5-b025-d1357a32dd08",
     "done": false
   },
-  "operationPath": "operations/50fb1dbb-51e4-40e5-b025-d1357a32dd08"
+  "operationPath": "operations/50fb1dbb-51e4-40e5-b025-d1357a32dd08",
+  "operation": {
+    "path": "operations/50fb1dbb-51e4-40e5-b025-d1357a32dd08",
+    "operationId": "50fb1dbb-51e4-40e5-b025-d1357a32dd08",
+    "done": true,
+    "response": {
+      "path": "assets/87498816533548",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-17T00:04:13.629Z",
+      "assetId": "87498816533548",
+      "displayName": "Black Islands rabbit-v3-cartoon-v2-mobile-lod0",
+      "description": "S08 project asset; not a Place publication",
+      "assetType": "Model",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "87498816533548"
 }
