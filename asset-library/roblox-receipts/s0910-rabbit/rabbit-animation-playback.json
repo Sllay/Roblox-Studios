@@ -1,0 +1,65 @@
+{
+  "clips": {
+    "Idle": {
+      "bones": 19,
+      "assetId": "107996680929648",
+      "passed": true,
+      "trackLength": 3,
+      "nonRestMotion": 0.04323379695415497,
+      "frames": 19,
+      "sequenceLength": 3
+    },
+    "Death": {
+      "bones": 19,
+      "assetId": "113737115841702",
+      "passed": true,
+      "trackLength": 1,
+      "nonRestMotion": 0.10910917818546295,
+      "frames": 15,
+      "sequenceLength": 1
+    },
+    "Peck": {
+      "bones": 19,
+      "assetId": "114930368536679",
+      "passed": true,
+      "trackLength": 1.399999976158142,
+      "nonRestMotion": 0.09928280115127563,
+      "frames": 17,
+      "sequenceLength": 1.399999976158142
+    },
+    "Flap": {
+      "bones": 19,
+      "assetId": "116465239449329",
+      "passed": true,
+      "trackLength": 1.4500000476837158,
+      "nonRestMotion": 0.1275334656238556,
+      "frames": 17,
+      "sequenceLength": 1.4500000476837158
+    },
+    "Run": {
+      "bones": 19,
+      "assetId": "77362016288503",
+      "passed": true,
+      "trackLength": 0.7200000286102295,
+      "nonRestMotion": 0.33438441157341003,
+      "frames": 19,
+      "sequenceLength": 0.7200000286102295
+    },
+    "Walk": {
+      "bones": 19,
+      "assetId": "86940617868965",
+      "passed": true,
+      "trackLength": 1.2000000476837158,
+      "nonRestMotion": 0.16088849306106567,
+      "frames": 17,
+      "sequenceLength": 1.2000000476837158
+    }
+  },
+  "noPlaceWrites": true,
+  "ok": true,
+  "universeId": "10769712441",
+  "placeId": "93428341652658",
+  "modelAssetId": "87498816533548",
+  "playbackVerified": true,
+  "loadedVersion": 31
+}
