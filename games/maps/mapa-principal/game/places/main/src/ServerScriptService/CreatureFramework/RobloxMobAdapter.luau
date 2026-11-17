@@ -15,7 +15,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   ac.Parent=model
  end
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
- local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
+ local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",scratchAt=nil,scratchUntil=nil,nextScratchTime=0,goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
  local visualParts:{MeshPart}={}
  local rigParts:{BasePart}={}
  for _,part in model:GetDescendants() do
@@ -126,6 +126,12 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  function self:cancel() self.goal=nil;self.nextPlan=0 end
  function self:enter(intent:any)
   self.goal=nil;self.nextPlan=0;self.blocked=false;self.stuck=false;self.peckAge=0;self.peckConsumed=false;self.actionAge=0;self.actionComplete=false;self.motionSpeed=0
+  -- An ear scratch is a cosmetic one-shot, not a second AI state. It must
+  -- never delay a threat response or override movement/death.
+  self.scratchAt=nil;self.scratchUntil=nil
+  if intent.state=="Idle" and species.animations.ScratchEar and self.clock>=self.nextScratchTime and self.options.random()<.28 then
+   self.scratchAt=self.clock+.16
+  end
   if intent.state=="Static" or intent.state=="Dead" then self:animate("",1) else self:animate(intent.animation,1) end
  end
  function self:plan(flee:boolean):Vector3?
@@ -215,6 +221,18 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if self.travelTarget and (action=="Wander" or action=="Stop" or action=="Idle" or action=="SeekFood") and intent.state~="Static" and intent.state~="Dead" then return self:travelStep(dt) end
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
   if not moving then
+   if action=="Stop" and intent.state=="Idle" then
+    if self.scratchUntil then
+     if self.clock>=self.scratchUntil then
+      self.scratchUntil=nil;self:animate("Idle",1)
+     end
+    elseif self.scratchAt and self.clock>=self.scratchAt then
+     self.scratchAt=nil
+     self.scratchUntil=self.clock+1.55
+     self.nextScratchTime=self.clock+25+self.options.random()*25
+     self:animate("ScratchEar",1)
+    end
+   end
    if action=="Peck" or action=="Flap" then
     self.actionAge+=dt
     local track=self.tracks[intent.animation]
