@@ -1,13 +1,6 @@
 name: S09.10 Rabbit V2 - author, publish and verify 4 native clips
+# Retired V33 one-shot. V34 owns any future releases; never re-upload/re-save V33.
 on:
-  push:
-    branches: [feat/creature-factory-next]
-    paths:
-      - '.github/workflows/s0910-rabbit-animations-v2.yml'
-      - 'tools/creature_factory/rabbit_animation_author_v2.py'
-      - 'tools/creature_factory/rabbit_animation_upload_v2.py'
-      - 'tests/test_rabbit_animation_v2.py'
-      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/RobloxMobAdapter.luau'
   workflow_dispatch:
 
 permissions:
