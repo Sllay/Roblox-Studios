@@ -3,7 +3,7 @@
 local CollectionService=game:GetService("CollectionService")
 local RunService=game:GetService("RunService")
 local poses:{[BasePart]:CFrame}={}
-local offsets:{[BasePart]:{[MeshPart]:CFrame}}={}
+local offsets:{[BasePart]:{[BasePart]:CFrame}}={}
 local function remove(instance:Instance)
  if instance:IsA("BasePart") then poses[instance]=nil;offsets[instance]=nil end
 end
@@ -29,7 +29,7 @@ RunService.PreRender:Connect(function(dt:number)
   if not parts then
    parts={}
    for _,descendant in ancestor:GetDescendants() do
-    if descendant:IsA("MeshPart") then parts[descendant]=instance.CFrame:ToObjectSpace(descendant.CFrame) end
+    if descendant:IsA("BasePart") and descendant~=hitbox then parts[descendant]=instance.CFrame:ToObjectSpace(descendant.CFrame) end
    end
    offsets[instance]=parts
   end
