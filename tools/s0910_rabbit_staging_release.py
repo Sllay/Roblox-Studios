@@ -20,7 +20,8 @@ SCRIPT=ROOT/"tools/sync/s0910_rabbit_staging_release.luau"
 BRANCH="feat/creature-factory-next"
 MODEL="87498816533548"
 MODULES=("CreatureRegistry","WildlifeProfiles","SpawnPolicy","FaunaService",
-         "BookGameplay","BookServer","RobloxMobAdapter","SpawnDirector","FeatureFlags")
+         "BookGameplay","BookServer","RobloxMobAdapter","SpawnDirector","FeatureFlags",
+         "GroupEcology","LocalSeparation","LongRoute","WildlifeProfiles")
 
 def commit(paths,message):
     files=[str(Path(path).relative_to(ROOT)) for path in paths]
@@ -43,7 +44,7 @@ def sources():
         text=path.read_text(encoding="utf-8")
         rows.append(dict(name=name,scope=scope,id="s095-"+name.lower(),**{"class":cl},
                          source=text,hash=base64.b64encode(hashlib.sha256(text.encode()).digest()).decode()))
-    require(len(rows)==11 and len({x["id"] for x in rows})==11,"Fixed reviewed scope only")
+    require(len(rows)==15 and len({x["id"] for x in rows})==15,"Fixed reviewed scope only")
     return rows
 
 def main():
@@ -55,8 +56,9 @@ def main():
     previous=json.loads(V31.read_text())
     require(previous["status"]=="verified" and previous["afterVersion"]==31,"Verified V31 prerequisite")
     rows=sources()
-    expected_old={row["id"]:previous["sourceHashes"][row["id"]] for row in rows}
-    require(all(expected_old.values()),"Missing V31 source hashes")
+    existing=previous["sourceHashes"]
+    expected_old={row["id"]:existing[row["id"]] for row in rows if row["id"] in existing}
+    require(len(expected_old)==11 and len(rows)==15,"Expected 11 V31 updates and 4 new modules")
     require(not args.publish or not RECEIPT.exists(),"One-shot Rabbit V32 receipt exists; reconcile, do not replay")
     games,targets=load_all()
     target=resolve(games,targets,"mapa-principal","main","staging")
