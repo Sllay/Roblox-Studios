@@ -75,7 +75,9 @@ class NativeRig:
 def blocks(rig,clip):
  keys=[];report=[]
  for t,ch,hd,y,fy,fz,hy,hz in BLOCKS[clip]:
-  v={'Chest':[ch,0,0],'Head':[hd,0,0],'RootYOffset':y};errors=[]
+  # Distribute spine pitch over pelvis and chest: avoid a 90-degree kink.
+  v={'Pelvis':[.78*ch,0,0],'Chest':[.22*ch,0,0],
+     'Head':[hd,0,0],'RootYOffset':y};errors=[]
   for kind,py,pz,width in (('fore',fy,fz,.36),('hind',hy,hz,.45)):
    for side,sign in (('L',1),('R',-1)):
     result,e=rig.ik(v,kind,side,[width*sign,py+y,pz])
@@ -84,27 +86,42 @@ def blocks(rig,clip):
   keys.append((t,v));report.append({'phase':t,'root_y':y,'max_ik_error':max(errors)})
  return keys,report
 def groom(rig):
+ # Begin and finish in the SAME natural crouch used by Idle/Walk.
+ # Solve ONE physically reachable forepaw-to-ear contact pose, then blend to
+ # it rather than allowing the elbow solver to flip branches mid-motion.
+ rest,_=blocks(rig,'Walk')
+ home=rest[0][1]
+ b=dict(home)
+ b['Pelvis']=[-1.27*.78+.18,0,0]
+ b['Chest']=[-1.27*.22+.08,0,0]
+ b['Head']=[1.18-.14,0,0]
+ b['Ear_L']=[-.35,0,-.10]
+ fk,_=rig.evaluate(b)
+ target=fk['Ear_L'][:3,3]+np.array([.04,-.23,-.06])
+ contact,error=rig.ik(b,'fore','L',target)
+ assert error<.11,('ear_contact',error)
  keys=[];report=[]
  for t,raised,rake in [(0,0,0),(.17,.45,0),(.33,1,0),(.43,1,1),
                         (.54,1,0),(.64,1,1),(.74,1,0),(.85,.5,.4),(1,0,0)]:
-  v={'Chest':[-.58*raised,0,0],'Head':[.10*raised,0,0],
-     'Ear_L':[-.38*raised-.24*rake,0,-.10*raised],
-     'RootYOffset':-.04*raised}
-  fk,_=rig.evaluate(v)
-  contact=fk['Ear_L'][:3,3]+np.array([.04,-.23-.06*rake,-.06])
-  rest=fk['FrontPaw_L'][:3,3]
-  target=(1-raised)*rest+raised*contact
-  error=0
-  if raised>0:
-   result,error=rig.ik(v,'fore','L',target);v.update(result)
-  assert error<.11,(t,error)
-  keys.append((t,v));report.append({'phase':t,'front_paw_to_ear_error':error,'reach':raised})
+  values={}
+  for bone in JOINTS:
+   values[bone]=(1-raised)*np.asarray(home.get(bone,[0,0,0]))+raised*np.asarray(contact.get(bone,[0,0,0]))
+  values['Ear_L']=np.asarray(values['Ear_L'])+[-.24*rake,0,0]
+  values['FrontPaw_L']=np.asarray(values['FrontPaw_L'])+[.10*rake,0,0]
+  values['RootYOffset']=0.0
+  fk,_=rig.evaluate(values)
+  distance=float(np.linalg.norm(fk['FrontPaw_L'][:3,3]-fk['Ear_L'][:3,3]))
+  if raised==1:assert distance<.46,(t,distance)
+  keys.append((t,values))
+  report.append({'phase':t,'forepaw_to_ear_distance':distance,'raised':raised})
+ assert np.linalg.norm(keys[0][1]['Chest']-keys[-1][1]['Chest'])<1e-9
  return keys,report
 def idle(rig):
  base,_=blocks(rig,'Walk')
  pose=base[0][1];keys=[]
  for t,breath in [(0,0),(.25,1),(.5,0),(.75,-1),(1,0)]:
-  v=dict(pose);v['Chest']=[-1.27+.02*breath,0,0];v['Head']=[1.18-.02*breath,0,0]
+  v=dict(pose);v['Pelvis']=[-.78*1.27,0,0];v['Chest']=[-.22*1.27+.02*breath,0,0]
+  v['Head']=[1.18-.02*breath,0,0]
   v['Ear_L']=[.035*breath,0,0];v['Ear_R']=[.035*breath,0,0]
   keys.append((t,v))
  return keys,[]
