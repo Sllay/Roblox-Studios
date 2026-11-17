@@ -61,6 +61,20 @@ function F.advance(s:any,dt:number)
   if s.deps.combatWorld and s.deps.combatState then s.deps.combatWorld.step(s.deps.combatState,math.min(.2,elapsed)) end
  end
 end
+-- Resolve records across species; never assume every creature belongs to the chicken director.
+function F.find(s:any,id:string):(any,any)
+ for _,director in s.directors do
+  local record=director.agents[id]
+  if record then return director,record end
+ end
+ return nil,nil
+end
+function F.forSpecies(s:any,speciesId:string):any
+ for _,director in s.directors do
+  if director.p.speciesId==speciesId then return director end
+ end
+ return nil
+end
 function F.addSpecies(s:any,policy:any,template:Model,seed:number):any
  local director=s.deps.director.new(s.deps,policy,template,s.director.parent,seed);table.insert(s.directors,director);return director
 end
