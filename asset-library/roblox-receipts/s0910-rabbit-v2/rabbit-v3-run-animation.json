@@ -3,7 +3,14 @@
   "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations-v2/run.rbxmx",
   "sha256": "6b0a90e13d51325206bd12b2e23974c821906cb82a24bd12390ae904f1236aec",
   "bytes": 242856,
-  "state": "post_intent",
+  "state": "operation_created",
   "noPlaceWrites": true,
-  "retryAllowed": false
+  "retryAllowed": false,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/4d0250df-27ff-45eb-a097-6f5f5d0dc5e1",
+    "operationId": "4d0250df-27ff-45eb-a097-6f5f5d0dc5e1",
+    "done": false
+  },
+  "operationPath": "operations/4d0250df-27ff-45eb-a097-6f5f5d0dc5e1"
 }
