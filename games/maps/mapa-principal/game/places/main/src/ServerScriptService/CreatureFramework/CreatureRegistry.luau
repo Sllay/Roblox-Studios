@@ -19,8 +19,8 @@ local rabbit:Species={
  biomes={"emerald_valley"},modelAssetId="87498816533548",
  preview={source="asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/lod-front.png"},
  -- Published native 19-bone KeyframeSequences; Flap is the rabbit alert/ears-perk reaction.
- animations={Idle="79850655782193",Walk="108874647746646",Run="112515635181582",
-             ScratchEar="133038329562549",
+ animations={Idle="72001649291877",Walk="134027420573653",Run="115449813251543",
+             ScratchEar="71137807970101",
              Peck="114930368536679",Flap="116465239449329",Death="113737115841702"},
  base={health=16,damage=0,walkSpeed=3.0,runSpeed=9.0},
  growth={health=0.05,damage=0,walkSpeed=0.01,runSpeed=0.01},
