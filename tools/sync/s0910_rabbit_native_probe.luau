@@ -21,6 +21,11 @@ for _,o in wrap:GetDescendants() do
  if o:IsA("SurfaceAppearance") and o.ColorMap~="" then table.insert(textureURIs,o.ColorMap) end
 end
 table.sort(names)
+local boneRows={}
+for _,name in names do
+ local b=bones[name]
+ table.insert(boneRows,{name=name,parent=b.Parent.Name,parentClass=b.Parent.ClassName,localFrame={b.CFrame:GetComponents()}})
+end
 local expected={"Root","Pelvis","Chest","Head","Ear_L","Ear_R","Shoulder_L","Shoulder_R","Forearm_L","Forearm_R","FrontPaw_L","FrontPaw_R","Hip_L","Hip_R","Shin_L","Shin_R","HindPaw_L","HindPaw_R","Tail"}
 local expectedNames=true
 for _,name in expected do if not bones[name] then expectedNames=false end end
@@ -60,7 +65,7 @@ for _,uri in textureURIs do
 end
 local _,bbox=wrap:GetBoundingBox()
 local report={assetId=tostring(assetId),noPlaceWrites=true,models=1,meshCount=#parts,whiskers=whiskers,bones=unique,
- expectedBones=expectedNames,boneNames=names,poseRoundtrip=poseRoundtrip,scripts=scriptCount,
+ expectedBones=expectedNames,boneNames=names,boneRows=boneRows,poseRoundtrip=poseRoundtrip,scripts=scriptCount,
  meshLoaded=meshOK,textureLoaded=textureOK,textureURIs=inspected,meshRows=skinMeshes,classes=classes,
  boundingSize={bbox.X,bbox.Y,bbox.Z},boneCountExpected=19}
 wrap:Destroy()
