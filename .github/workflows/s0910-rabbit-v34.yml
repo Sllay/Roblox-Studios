@@ -1,0 +1,72 @@
+name: S09.10 Rabbit V38 animations and grooming -> staging V34
+# Fail closed by default. Enable a single push trigger only after visual
+# contact sheet inspection. Never replay already-saved V33 or save production.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: roblox-place-write-mapa-principal-main-staging
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pin native author and quality dependencies
+        run: |
+          python -m pip install numpy==2.2.6 scipy==1.16.2 Pillow==11.3.0
+          bash tools/install-luau.sh
+          bash tools/install-luau-lsp.sh
+      - name: Real 19-bone and groom anatomy hard gates
+        run: |
+          python tools/script_quality.py
+          python -m unittest discover -s tests -p 'test_rabbit_animation_v38.py' -v
+          luau tests/luau/rabbit_runtime.luau
+          luau tests/luau/creature_framework.luau
+      - name: Durable Git evidence identity
+        run: |
+          git config user.name 'rabbit-staging[bot]'
+          git config user.email 'rabbit-staging[bot]@users.noreply.github.com'
+      - name: Upload and replay-probe four native clips; bind only if verified
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/creature_factory/rabbit_animation_upload_v38.py
+      - name: Validate generated registry and three runtime modules
+        run: |
+          python tools/script_quality.py
+          luau tests/luau/rabbit_runtime.luau
+          luau tests/luau/creature_framework.luau
+          root=games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework
+          luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$root/CreatureRegistry.luau" "$root/RobloxMobAdapter.luau" "$root/MobBrain.luau"
+      - name: V34 detached, no-save native preview
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s0910_rabbit_v34_release.py --preview
+      - name: One-shot staging-only version33 to version34 save and readback
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python tools/s0910_rabbit_v34_release.py --publish
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s0910-rabbit-v38-native-groom-v34-staging-proof
+          path: |
+            asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations-v38/
+            asset-library/roblox-receipts/s0910-rabbit-v38/
+            dist/s0910-rabbit-v34-stage/
+            games/maps/mapa-principal/docs/s09/publication-rabbit-v34.json
+          if-no-files-found: warn
