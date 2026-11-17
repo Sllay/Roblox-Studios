@@ -140,8 +140,8 @@ def groom(rig):
  _,contact,error,point=best
  assert error<.18,('hind_paw_cannot_reach_ear_base',error,point)
  # Plant the three support paws; moving hind paw is deliberately off ground.
- for kind,side,x,y,z in [('fore','L',-.36,.21,-1.04),
-                         ('fore','R',.36,.21,-1.04),
+ for kind,side,x,y,z in [('fore','L',.36,.21,-1.04),
+                         ('fore','R',-.36,.21,-1.04),
                          ('hind','R',.45,.21,.45)]:
   contact,e=rig.ik(contact,kind,side,[x,y,z])
   assert e<.24,('support_contact',kind,side,e)
