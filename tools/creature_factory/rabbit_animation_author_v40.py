@@ -55,8 +55,13 @@ def walk(rig):
             pose["Hip_"+side]=np.array([hip,0,0])
             pose["Shin_"+side]=np.array([shin,0,0])
             pose["HindPaw_"+side]=np.array([toe,0,0])
-        pose["Shoulder_L"]=np.array([-.09*max(y,0),0,0])
-        pose["Shoulder_R"]=np.array([-.09*max(y,0),0,0])
+        # Front paws contract in flight, then relax at touchdown.
+        tuck=max(0.0,min(1.0,y/.43))
+        anticipate=max(0.0,min(1.0,-y/.055))
+        for side in ("L","R"):
+            pose["Shoulder_"+side]=np.array([-.07*tuck+.022*anticipate,0,0])
+            pose["Forearm_"+side]=np.array([.19*tuck-.035*anticipate,0,0])
+            pose["FrontPaw_"+side]=np.array([-.085*tuck,0,0])
         pose["Ear_L"]=np.array([-.11*max(y,0),0,0])
         pose["Ear_R"]=np.array([-.11*max(y,0),0,0])
         fk,_=rig.evaluate(pose)
