@@ -19,7 +19,7 @@ V31=GAME/"docs/s09/publication-v31.json"
 SCRIPT=ROOT/"tools/sync/s0910_rabbit_staging_release.luau"
 BRANCH="feat/creature-factory-next"
 MODEL="87498816533548"
-MODULES=("CreatureRegistry","WildlifeProfiles","SpawnPolicy","FaunaService",
+MODULES=("CreatureRegistry","SpawnPolicy","FaunaService",
          "BookGameplay","BookServer","RobloxMobAdapter","SpawnDirector","FeatureFlags",
          "GroupEcology","LocalSeparation","LongRoute","WildlifeProfiles")
 
@@ -44,7 +44,7 @@ def sources():
         text=path.read_text(encoding="utf-8")
         rows.append(dict(name=name,scope=scope,id="s095-"+name.lower(),**{"class":cl},
                          source=text,hash=base64.b64encode(hashlib.sha256(text.encode()).digest()).decode()))
-    require(len(rows)==15 and len({x["id"] for x in rows})==15,"Fixed reviewed scope only")
+    require(len(rows)==14 and len({x["id"] for x in rows})==14,"Fixed reviewed scope only")
     return rows
 
 def main():
@@ -58,7 +58,7 @@ def main():
     rows=sources()
     existing=previous["sourceHashes"]
     expected_old={row["id"]:existing[row["id"]] for row in rows if row["id"] in existing}
-    require(len(expected_old)==11 and len(rows)==15,"Expected 11 V31 updates and 4 new modules")
+    require(len(expected_old)==10 and len(rows)==14,"Expected 10 V31 updates and 4 new modules")
     require(not args.publish or not RECEIPT.exists(),"One-shot Rabbit V32 receipt exists; reconcile, do not replay")
     games,targets=load_all()
     target=resolve(games,targets,"mapa-principal","main","staging")
