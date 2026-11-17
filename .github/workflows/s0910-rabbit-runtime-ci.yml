@@ -1,0 +1,38 @@
+name: S09.10 Rabbit staged runtime source validation
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - '.github/workflows/s0910-rabbit-runtime-ci.yml'
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/**'
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureBootstrap.server.luau'
+      - 'games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/CreatureVisual.client.luau'
+      - 'tests/luau/creature_framework.luau'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: bash tools/install-luau-lsp.sh
+      - name: Repository Python / Lua quality and unit tests
+        run: |
+          python tools/script_quality.py
+          python -m unittest discover -s tests -v
+          luau tests/luau/creature_framework.luau
+      - name: Native Luau static analysis of multi-species runtime
+        run: |
+          base=games/maps/mapa-principal/game/places/main/src/ServerScriptService
+          for f in "$base"/CreatureFramework/*.luau; do
+            luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$f"
+          done
+          luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$base/CreatureBootstrap.server.luau"
+          luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/CreatureVisual.client.luau
