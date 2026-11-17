@@ -1,0 +1,41 @@
+{
+  "status": "VISUAL_REVIEW_REQUIRED",
+  "stagingVersionUnchanged": 33,
+  "animationAssetsUploaded": false,
+  "rabbitPlacePublished": false,
+  "originRunId": 44012208291,
+  "files": {
+    "CONTACT-idle-side.png": {
+      "sha256": "87545d7509d8cebd1cf565c6b477442006623815c0d3c12153422099201d2634",
+      "bytes": 116038
+    },
+    "CONTACT-idle-three-quarter.png": {
+      "sha256": "7085c63ee1c243ed8097136ae8584d10db7f8e59d9486f2afa91df44de7f0e74",
+      "bytes": 110178
+    },
+    "CONTACT-walk-side.png": {
+      "sha256": "5ae0faaf092b2fd47e4f31605e9df23537ed07ffcb5df11898140af28f802a40",
+      "bytes": 201725
+    },
+    "CONTACT-walk-three-quarter.png": {
+      "sha256": "e0a9c9ed1c4a46cabe6838d05d811fe7898f17cff73691bae58c3b17b5919532",
+      "bytes": 198074
+    },
+    "CONTACT-run-side.png": {
+      "sha256": "0b246f80bfea060ea0669c8fa05bd542faf2bf45c27fc6983b14549b2cd949e4",
+      "bytes": 228665
+    },
+    "CONTACT-run-three-quarter.png": {
+      "sha256": "e8732c7982e3665efba4b37de423ed8a97d259ebddb8458555e702b2c3f88372",
+      "bytes": 217625
+    },
+    "CONTACT-scratchear-side.png": {
+      "sha256": "1a0d2bf0466bd0bd3e0a5d52d05fb735f09d8af002e0b4ca92b573e0c325b4c5",
+      "bytes": 249657
+    },
+    "CONTACT-scratchear-three-quarter.png": {
+      "sha256": "50efa59c2c7bfbef61f42e774cc406768e62da5ddf0e429d6606743cc0540c2f",
+      "bytes": 223355
+    }
+  }
+}
