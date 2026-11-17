@@ -1,14 +1,7 @@
 name: S09.10 Rabbit V38 animations and grooming -> staging V34
-# V38 skinned-mesh contact sheets reviewed: no hind skin rupture, front paw
-# reaches lower ear/cheek; one staging-only V33->V34 release approved.
-# Later commits never replay this one-shot unless this workflow is modified.
+# V34 is already saved and read-back VERIFIED; historical one-shot retired.
+# Do NOT re-run after release. New candidate releases use a new version/receipt.
 on:
-  push:
-    branches: [feat/creature-factory-next]
-    paths:
-      - '.github/workflows/s0910-rabbit-v34.yml'
-      - 'tools/s0910_rabbit_v34_release.py'
-      - 'tools/creature_factory/rabbit_animation_upload_v38.py'
   workflow_dispatch:
 
 permissions:
