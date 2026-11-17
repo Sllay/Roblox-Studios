@@ -1,10 +1,7 @@
 name: S09.10 Rabbit hop and ear scratch - staging V33
+# V33 was permanently saved and read back on 2026-11-17.
+# Retired: a historical one-shot release must never run on new source commits.
 on:
-  push:
-    branches: [feat/creature-factory-next]
-    # Only the native-verified animation-ID binding may initiate a Place save.
-    paths:
-      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CreatureRegistry.luau'
   workflow_dispatch:
 
 permissions:
