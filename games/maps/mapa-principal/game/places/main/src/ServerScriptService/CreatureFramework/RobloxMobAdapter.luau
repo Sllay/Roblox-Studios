@@ -115,7 +115,12 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   if visible then self.observedThreat=t;self.lastSeen=self.clock elseif self.lastSeen and self.clock-self.lastSeen>4 then self.observedThreat=nil end
   local food=self.food
-  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,approachThreshold=if t and t.normalSpeed then math.max(1,t.normalSpeed*.6) else 4,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random(),routineFood=species.animations.Peck~=nil,routineFlap=species.animations.Flap~=nil}
+  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,approachThreshold=if t and t.normalSpeed then math.max(1,t.normalSpeed*.6) else 4,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random(),routineFood=species.animations.Peck~=nil,routineFlap=species.animations.Flap~=nil,
+   -- Only the rabbit opts into a calmer, more frequent grooming opportunity.
+   -- All other species retain their original two-second idle / 24-second roam.
+   idleSeconds=if species.animations.ScratchEar then 3.25 else nil,
+   exploreSeconds=if species.animations.ScratchEar then 9.5 else nil,
+   cosmeticActionPlaying=self.scratchUntil~=nil and self.clock<(self.scratchUntil :: number)}
   self.hit=false;return s
  end
  function self:animate(name:string,speed:number)
@@ -141,8 +146,14 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   -- An ear scratch is a cosmetic one-shot, not a second AI state. It must
   -- never delay a threat response or override movement/death.
   self.scratchAt=nil;self.scratchUntil=nil
-  if intent.state=="Idle" and species.animations.ScratchEar and self.clock>=self.nextScratchTime and self.options.random()<.28 then
-   self.scratchAt=self.clock+.16
+  if intent.state=="Idle" and species.animations.ScratchEar and self.clock>=self.nextScratchTime then
+   -- More frequent, but still a single optional grooming event per idle.
+   -- No global timers: each rabbit uses its own autonomous RNG/cooldown.
+   if self.options.random()<.82 then
+    self.scratchAt=self.clock+.14
+   else
+    self.nextScratchTime=self.clock+3+self.options.random()*2
+   end
   end
   if intent.state=="Static" or intent.state=="Dead" then self:animate("",1) else self:animate(intent.animation,1) end
  end
@@ -247,9 +258,13 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
      end
     elseif self.scratchAt and self.clock>=self.scratchAt then
      self.scratchAt=nil
-     self.scratchUntil=self.clock+1.70
-     self.nextScratchTime=self.clock+25+self.options.random()*25
      self:animate("ScratchEar",1)
+     local track=self.tracks.ScratchEar
+     -- The saved V33 clip was 1.70s; future visual-approved clips may vary.
+     -- Prefer the real asset length rather than cutting the paw movement off.
+     local duration=if track and track.Length>0 then track.Length else 2.35
+     self.scratchUntil=self.clock+duration
+     self.nextScratchTime=self.clock+8+self.options.random()*5
     end
    end
    if action=="Peck" or action=="Flap" then
