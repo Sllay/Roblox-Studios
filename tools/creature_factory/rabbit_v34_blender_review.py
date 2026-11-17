@@ -64,12 +64,18 @@ def native_global(poses):
  for n in joint:solve(n)
  return cache
 native_bind=native_global({})
-# In Blender, x right, y depth, z height. In Roblox, x right, y height, z depth.
-axis=Matrix(((1,0,0,0),(0,0,-1,0),(0,1,0,0),(0,0,0,1)))
+# Calibrated from ALL 19 actual native and Blender bind joints:
+# Blender X=-Roblox X, Blender Y=Roblox Z, Blender Z=Roblox Y.
+# Wrong handedness produced the previous grotesquely warped review images.
+axis=Matrix(((-1,0,0,0),(0,0,1,0),(0,1,0,0),(0,0,0,1)))
 base_blender=arm.data.bones['Root'].matrix_local
 origin=base_blender.translation-(axis@native_bind['Root']).translation
 axis.translation=origin
 convert=axis
+rest_error=max((convert@native_bind[name]).translation.__sub__(
+    arm.data.bones[name].matrix_local.translation).length for name in joint)
+assert rest_error<.001,('Native to Blender rest alignment invalid',rest_error)
+print('RABBIT_V34_BIND_ALIGNMENT_PASS',rest_error,flush=True)
 native_bind_inv={name:transform.inverted() for name,transform in native_bind.items()}
 
 def parse_frame(root,num):
