@@ -21,7 +21,7 @@ BLOCKS={
         (.69,-1.18,1.10,.65,.30,-1.34,.42,.68),(.85,-1.35,1.23,0,.22,-1.04,.20,.46),
         (1,-1.35,1.23,-.04,.22,-.98,.20,.43)]
 }
-CLIPS={'Idle':(3,40,True,0),'Walk':(.79,40,True,1),'Run':(.68,40,True,1),'ScratchEar':(2.35,64,False,2)}
+CLIPS={'Idle':(3,40,True,0),'Walk':(.79,40,True,1),'Run':(.68,40,True,1),'ScratchEar':(1.70,64,False,2)}
 JOINTS={'Root','Pelvis','Chest','Head','Ear_L','Ear_R','Shoulder_L','Shoulder_R',
         'Forearm_L','Forearm_R','FrontPaw_L','FrontPaw_R','Hip_L','Hip_R',
         'Shin_L','Shin_R','HindPaw_L','HindPaw_R','Tail'}
@@ -97,7 +97,7 @@ def groom(rig):
  b['Head']=[1.18-.14,0,0]
  b['Ear_L']=[-.35,0,-.10]
  fk,_=rig.evaluate(b)
- target=fk['Ear_L'][:3,3]+np.array([.04,-.23,-.06])
+ target=fk['Ear_L'][:3,3]+np.array([.04,-.16,-.06])
  contact,error=rig.ik(b,'fore','L',target)
  assert error<.11,('ear_contact',error)
  keys=[];report=[]
@@ -106,8 +106,8 @@ def groom(rig):
   values={}
   for bone in JOINTS:
    values[bone]=(1-raised)*np.asarray(home.get(bone,[0,0,0]))+raised*np.asarray(contact.get(bone,[0,0,0]))
-  values['Ear_L']=np.asarray(values['Ear_L'])+[-.24*rake,0,0]
-  values['FrontPaw_L']=np.asarray(values['FrontPaw_L'])+[.10*rake,0,0]
+  values['Ear_L']=np.asarray(values['Ear_L'])+[-.29*rake,0,-.04*rake]
+  values['FrontPaw_L']=np.asarray(values['FrontPaw_L'])+[.26*rake,0,0]
   values['RootYOffset']=0.0
   fk,_=rig.evaluate(values)
   distance=float(np.linalg.norm(fk['FrontPaw_L'][:3,3]-fk['Ear_L'][:3,3]))
