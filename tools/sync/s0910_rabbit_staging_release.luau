@@ -15,17 +15,24 @@ assert(chicken:IsA("Model") and chicken:GetAttribute("RSAssetId")=="769603316364
 local expectedOld=cfg.oldHashes
 local originalModuleCount=0
 for _,module in root:GetChildren() do if module:IsA("ModuleScript") then originalModuleCount+=1 end end
-assert(originalModuleCount==30,"V31 modules changed unexpectedly")
-local function rowInstance(row)
+assert(originalModuleCount==(if verify then 34 else 30),"CreatureFramework module count changed unexpectedly")
+local function rowInstance(row,allowMissing)
  local parent=if row.scope=="Module" then root elseif row.scope=="Server" then S else SP.StarterPlayerScripts
  local o=parent:FindFirstChild(row.name)
+ if not o and allowMissing then return nil,parent end
  assert(o and o.ClassName==row.class and o:GetAttribute("RSSceneSyncId")==row.id,"Script identity "..row.name)
- return o
+ return o,parent
 end
 for _,row in cfg.sources do
- local o=rowInstance(row)
- local h=hash(o.Source)
- assert(h==(if verify then row.hash else expectedOld[row.id]),"Source hash drift "..row.name)
+ local old=expectedOld[row.id]
+ if old or verify then
+  local o=rowInstance(row,false)
+  assert(hash(o.Source)==(if verify then row.hash else old),"Source hash drift "..row.name)
+ else
+  assert(row.scope=="Module" and row.class=="ModuleScript","Only new framework modules permitted")
+  local o=rowInstance(row,true)
+  assert(o==nil,"Unexpected preexisting script "..row.name)
+ end
 end
 local function terrain()
  local rows=terrainState()
@@ -74,12 +81,17 @@ if not verify then
  template:SetAttribute("RSOwner","S0910")
  template.Parent=assets
  for _,row in cfg.sources do
-  local o=rowInstance(row)
+  local o,parent=rowInstance(row,true)
+  if not o then
+   assert(not expectedOld[row.id] and row.scope=="Module","Unreviewed new script")
+   o=Instance.new(row.class);o.Name=row.name;o:SetAttribute("RSSceneSyncId",row.id);o.Parent=parent
+  end
   if o:IsA("BaseScript") then o.Enabled=false end
   o.Source=row.source
   if o:IsA("BaseScript") then o.Enabled=true end
   assert(hash(o.Source)==row.hash,"Script readback "..row.name)
  end
+ assert(#root:GetChildren()==34,"Expected 34 CreatureFramework modules after incremental update")
 end
 -- Use the exact updated modules in the detached native environment, not fake vectors.
 local function get(name) return require(assert(root:FindFirstChild(name),name)) end
