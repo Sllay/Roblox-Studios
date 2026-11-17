@@ -3,7 +3,14 @@
   "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations/idle.rbxmx",
   "sha256": "f1ff6bd18633d507fcb0344ffbfa0d27c2a63bb838ea84387cff7376267bd017",
   "bytes": 150302,
-  "state": "post_intent",
+  "state": "operation_created",
   "noPlaceWrites": true,
-  "retryAllowed": false
+  "retryAllowed": false,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/d4118af5-da75-4ec4-adf1-96b521d4312a",
+    "operationId": "d4118af5-da75-4ec4-adf1-96b521d4312a",
+    "done": false
+  },
+  "operationPath": "operations/d4118af5-da75-4ec4-adf1-96b521d4312a"
 }
