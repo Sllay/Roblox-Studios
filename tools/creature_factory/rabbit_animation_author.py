@@ -111,7 +111,7 @@ def main():
         for f in range(frames+1):
             t=f/frames
             frame,props=item(seq,'Keyframe',f'Frame_{f:03d}');prop(props,'float','Time',format(duration*t,'.10g'))
-            wrapper=pose(frame,'Rabbit_Torso',cframe_xyz())
+            wrapper=pose(frame,'RootPart',cframe_xyz())
             def add(node,parent):
                 nonlocal travel
                 mat=motion(clip,names[node],t)
