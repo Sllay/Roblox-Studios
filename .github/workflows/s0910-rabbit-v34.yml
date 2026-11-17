@@ -8,6 +8,7 @@ on:
     paths:
       - '.github/workflows/s0910-rabbit-v34.yml'
       - 'tools/s0910_rabbit_v34_release.py'
+      - 'tools/creature_factory/rabbit_animation_upload_v38.py'
   workflow_dispatch:
 
 permissions:
