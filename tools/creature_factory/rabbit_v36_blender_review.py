@@ -24,6 +24,13 @@ joint={r['name']:r for r in proof['boneRows']}
 assert len(joint)==19 and len(arm.pose.bones)==19
 assert set(joint)==set(arm.pose.bones.keys())
 assert len([o for o in bpy.data.objects if o.type=='MESH'])==9
+# Real contact reference: feet at rest should be near this floor, not
+# hovering without context as in the early V34 inspection sheets.
+bpy.ops.mesh.primitive_plane_add(size=20,location=(0,0,0))
+ground=bpy.context.object;ground.name='ReviewGround_ONLY'
+ground_mat=bpy.data.materials.new('Ground_Review_Neutral')
+ground_mat.diffuse_color=(.68,.70,.73,1)
+ground.data.materials.append(ground_mat)
 scene=bpy.context.scene
 scene.render.engine='BLENDER_EEVEE' if bpy.app.version<(4,2,0) else 'BLENDER_EEVEE_NEXT'
 scene.render.resolution_x=550;scene.render.resolution_y=550
