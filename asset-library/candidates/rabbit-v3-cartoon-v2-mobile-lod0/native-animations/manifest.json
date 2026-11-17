@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "source_glb_sha256": "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133",
+  "rig_bones": 19,
+  "clips": {
+    "Idle": {
+      "file": "idle.rbxmx",
+      "sha256": "f1ff6bd18633d507fcb0344ffbfa0d27c2a63bb838ea84387cff7376267bd017",
+      "bytes": 150302,
+      "frames": 19,
+      "duration": 3.0,
+      "loop": true,
+      "priority": 0,
+      "poseCount": 20,
+      "maxMotionComponent": 0.04891216514128971
+    },
+    "Walk": {
+      "file": "walk.rbxmx",
+      "sha256": "e2d06214b8af5886d28a5a2ae345d8d82215aca81beefe2d81d27416b004c901",
+      "bytes": 139398,
+      "frames": 17,
+      "duration": 1.2,
+      "loop": true,
+      "priority": 1,
+      "poseCount": 20,
+      "maxMotionComponent": 0.17902957342582418
+    },
+    "Run": {
+      "file": "run.rbxmx",
+      "sha256": "79455120bc9a432ab12917b18476bbb109723e5f9fedfb74724a7f8994ef31c5",
+      "bytes": 157855,
+      "frames": 19,
+      "duration": 0.72,
+      "loop": true,
+      "priority": 1,
+      "poseCount": 20,
+      "maxMotionComponent": 0.4167440563544083
+    },
+    "Peck": {
+      "file": "peck.rbxmx",
+      "sha256": "6b8f999ffa918114a550f4cf312709a76d6e7f237b6252f8303b5404f088fcd7",
+      "bytes": 134109,
+      "frames": 17,
+      "duration": 1.4,
+      "loop": false,
+      "priority": 2,
+      "poseCount": 20,
+      "maxMotionComponent": 0.24585883966922345
+    },
+    "Flap": {
+      "file": "flap.rbxmx",
+      "sha256": "05145b7a6466e5364c77c2ed80656452ac42c53bb1e35846fefa97a54368ea27",
+      "bytes": 135029,
+      "frames": 17,
+      "duration": 1.45,
+      "loop": false,
+      "priority": 2,
+      "poseCount": 20,
+      "maxMotionComponent": 0.17902957342582418
+    },
+    "Death": {
+      "file": "death.rbxmx",
+      "sha256": "2bd6773978b9b708c8f0145aede40c059df4f56d2d2b524057f8c19c8a2a3e75",
+      "bytes": 119065,
+      "frames": 15,
+      "duration": 1.0,
+      "loop": false,
+      "priority": 2,
+      "poseCount": 20,
+      "maxMotionComponent": 0.43496553411123023
+    }
+  },
+  "stage": "authored_unpublished"
+}
