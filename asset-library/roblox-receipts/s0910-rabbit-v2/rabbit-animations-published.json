@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "source_sha256": "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133",
+  "assetId": "87498816533548",
+  "animations": {
+    "Idle": "79850655782193",
+    "Walk": "108874647746646",
+    "Run": "112515635181582",
+    "ScratchEar": "133038329562549"
+  },
+  "playbackVerified": true,
+  "stagingPlaceWritten": false
+}
