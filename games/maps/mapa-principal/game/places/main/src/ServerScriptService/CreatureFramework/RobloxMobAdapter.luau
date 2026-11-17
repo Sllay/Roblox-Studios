@@ -126,6 +126,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  function self:cancel() self.goal=nil;self.nextPlan=0 end
  function self:enter(intent:any)
   self.goal=nil;self.nextPlan=0;self.blocked=false;self.stuck=false;self.peckAge=0;self.peckConsumed=false;self.actionAge=0;self.actionComplete=false;self.motionSpeed=0
+  self.intentState=intent.state
   -- An ear scratch is a cosmetic one-shot, not a second AI state. It must
   -- never delay a threat response or override movement/death.
   self.scratchAt=nil;self.scratchUntil=nil
@@ -221,7 +222,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if self.travelTarget and (action=="Wander" or action=="Stop" or action=="Idle" or action=="SeekFood") and intent.state~="Static" and intent.state~="Dead" then return self:travelStep(dt) end
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
   if not moving then
-   if action=="Stop" and intent.state=="Idle" then
+   if action=="Stop" and self.intentState=="Idle" then
     if self.scratchUntil then
      if self.clock>=self.scratchUntil then
       self.scratchUntil=nil;self:animate("Idle",1)
