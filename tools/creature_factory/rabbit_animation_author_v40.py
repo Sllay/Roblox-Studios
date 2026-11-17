@@ -15,15 +15,15 @@ CLIPS["ScratchEar"]=(2.35,80,False,2)
 def idle(rig):
     keys=[]
     # Slow inhale, longer exhale, with slight chest expansion and tiny ear lag.
-    for phase,breath in ((0,0),(.12,.30),(.29,.85),(.40,1),(.53,.83),(.68,.38),(.84,.08),(1,0)):
+    for phase,breath,lag in ((0,0,0),(.12,.30,.08),(.29,.85,.49),(.40,1,.82),(.53,.83,1),(.68,.38,.72),(.84,.08,.23),(1,0,0)):
         pose=v39.standing()
         pose["Chest"][0]+=.027*breath
         pose["Pelvis"][0]-=.008*breath
         pose["Head"][0]-=.014*breath
-        pose["Shoulder_L"]=np.array([-.013*breath,0,0])
-        pose["Shoulder_R"]=np.array([-.013*breath,0,0])
-        pose["Ear_L"]=np.array([-.018*breath,0,0])
-        pose["Ear_R"]=np.array([-.018*breath,0,0])
+        pose["Shoulder_L"]=np.array([-.035*breath,0,0])\n        pose["Forearm_L"]=np.array([.047*breath,0,0])\n        pose["FrontPaw_L"]=np.array([-.022*breath,0,0])
+        pose["Shoulder_R"]=np.array([-.035*breath,0,0])\n        pose["Forearm_R"]=np.array([.047*breath,0,0])\n        pose["FrontPaw_R"]=np.array([-.022*breath,0,0])
+        pose["Ear_L"]=np.array([-.058*lag,0,.012*lag])
+        pose["Ear_R"]=np.array([-.053*lag,0,-.012*lag])
         keys.append((phase,pose))
     return keys,[]
 
@@ -58,7 +58,7 @@ def walk(rig):
         fk,_=rig.evaluate(pose)
         report.append({"phase":t,"root_y":y,"hip":hip,"shin":shin,
                        "hindpaw":toe,"head_y":float(fk["Head"][1,3]),
-                       "hind_powered":True,"front_support":False})
+                       "hind_powered":True,"front_support":False,"front_tuck":round(tuck,4)})
         keys.append((t,pose))
     return keys,report
 
