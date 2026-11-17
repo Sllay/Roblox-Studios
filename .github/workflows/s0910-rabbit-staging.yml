@@ -1,16 +1,7 @@
 name: S09.10 Rabbit V3 staging installation and shared AI
+# V32 is already saved. Never replay the irreversible V31->V32 one-shot
+# automatically when creature source files change for later releases.
 on:
-  push:
-    branches: [feat/creature-factory-next]
-    paths:
-      - '.github/workflows/s0910-rabbit-staging.yml'
-      - 'tools/s0910_rabbit_staging_release.py'
-      - 'tools/sync/s0910_rabbit_staging_release.luau'
-      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/**'
-      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureBootstrap.server.luau'
-      - 'games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/CreatureVisual.client.luau'
-      - 'tests/luau/creature_framework.luau'
-      - 'tests/luau/rabbit_runtime.luau'
   workflow_dispatch:
 
 permissions:
