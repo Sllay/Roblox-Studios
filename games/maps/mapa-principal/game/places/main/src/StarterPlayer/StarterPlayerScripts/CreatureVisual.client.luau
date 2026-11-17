@@ -25,13 +25,20 @@ RunService.PreRender:Connect(function(dt:number)
    continue
   end
   local target=hitbox.CFrame
-  local parts=offsets[instance]
-  if not parts then
-   parts={}
-   for _,descendant in ancestor:GetDescendants() do
-    if descendant:IsA("BasePart") and descendant~=hitbox then parts[descendant]=instance.CFrame:ToObjectSpace(descendant.CFrame) end
+  local owner=assert(ancestor,"Hitbox parent should be resolved before visual smoothing")
+  local parts:{[BasePart]:CFrame}
+  local cached=offsets[instance]
+  if cached then
+   parts=cached
+  else
+   local created:{[BasePart]:CFrame}={}
+   for _,descendant in owner:GetDescendants() do
+    if descendant:IsA("BasePart") and descendant~=hitbox then
+     created[descendant]=instance.CFrame:ToObjectSpace(descendant.CFrame)
+    end
    end
-   offsets[instance]=parts
+   offsets[instance]=created
+   parts=created
   end
   local distance=(target.Position-camera.CFrame.Position).Magnitude
   if distance>800*math.clamp(instance.Size.Magnitude/3,1,8) then
