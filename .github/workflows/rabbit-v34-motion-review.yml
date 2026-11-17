@@ -1,0 +1,48 @@
+name: Rabbit V34 native rig motion - preview and anatomy review ONLY
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - 'tools/creature_factory/rabbit_animation_author_v34.py'
+      - 'tests/test_rabbit_animation_v34.py'
+      - '.github/workflows/rabbit-v34-motion-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: rabbit-v34-art-review
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install geometry-aware numeric IK
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.2 Pillow==11.3.0
+      - name: Validate native skeleton and all 4 clips
+        run: python -m unittest discover -s tests -p 'test_rabbit_animation_v34.py' -v
+      - name: Build deterministic source-only motions for inspection
+        run: |
+          python tools/creature_factory/rabbit_animation_author_v34.py \
+            asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.glb \
+            dist/rabbit-v34-motion-review
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('dist/rabbit-v34-motion-review/manifest.json').read_text())
+          assert m['stage']=='visual_review_required_no_roblox_upload_or_place_write'
+          for k,v in m['clips'].items():
+              print('REVIEW_ONLY',k,'frames',v['frames'],'duration',v['duration'],
+                    'maxRoot',max(row['root_y'] for row in v['samples']))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rabbit-v34-review-keyframes-DO-NOT-PUBLISH
+          path: dist/rabbit-v34-motion-review/
+          if-no-files-found: warn
