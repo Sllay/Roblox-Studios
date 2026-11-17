@@ -41,7 +41,8 @@ class RabbitV35(unittest.TestCase):
   self.assertGreater(sc['duration'],2)
   raised=[x for x in sc['blocking'] if x['raised']==1]
   self.assertGreaterEqual(len(raised),4)
-  self.assertTrue(all(x['hindpaw_to_ear_base_distance']<.40 for x in raised))
+  self.assertTrue(all(x['hindpaw_to_ear_base_distance']<.20 for x in raised))
+  self.assertTrue(all(abs(x['hip_pitch'])<=1.501 and abs(x['hip_roll'])<.75 for x in raised))
   first=sc['samples'][0]
   peak=min(sc['samples'],key=lambda z:abs(z['t']-.52))
   self.assertGreater(peak['hindpaw'][1]-first['hindpaw'][1],.30)
