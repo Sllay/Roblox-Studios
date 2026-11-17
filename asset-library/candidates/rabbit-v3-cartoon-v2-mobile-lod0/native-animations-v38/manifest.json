@@ -5,8 +5,8 @@
   "clips": {
     "Idle": {
       "file": "idle.rbxmx",
-      "sha256": "aa13ace5d24ce3935f5e595f405772351408d890a9595edde13b7d02a00bde36",
-      "bytes": 474102,
+      "sha256": "0a482c35ad0b5c3f90186b07428c591681dab5610452c947fdcf9140a4075657",
+      "bytes": 474339,
       "frames": 49,
       "duration": 3,
       "loop": true,
@@ -1685,14 +1685,14 @@
     },
     "Walk": {
       "file": "walk.rbxmx",
-      "sha256": "bdf3898863721efcb0be5c49f4baa1d904deaf0808068d56535b0e35e7a6a558",
-      "bytes": 473363,
+      "sha256": "a005d9e844a42da53ad6216c0d4944af77feef10a036c461b23c82ea69bc6823",
+      "bytes": 473356,
       "frames": 49,
       "duration": 0.91,
       "loop": true,
       "priority": 1,
       "poseCount": 20,
-      "maxMotionComponent": 0.9745933420743952,
+      "maxMotionComponent": 0.9745933447795173,
       "samples": [
         {
           "t": 0.0,
@@ -3365,65 +3365,65 @@
         {
           "phase": 0,
           "root_y": 0,
-          "max_ik_error": 0.0005741096339760319,
-          "fore_y": 0.20954611924530459,
-          "hind_y": 0.21043006092506972
+          "max_ik_error": 0.0005741096297848013,
+          "fore_y": 0.20954611923486643,
+          "hind_y": 0.2104300609327906
         },
         {
           "phase": 0.08,
           "root_y": -0.1,
-          "max_ik_error": 0.009624954821445594,
-          "fore_y": 0.09944984231054321,
-          "hind_y": 0.08688012016519892
+          "max_ik_error": 0.009624932323293414,
+          "fore_y": 0.09944984233221021,
+          "hind_y": 0.08688007648802681
         },
         {
           "phase": 0.19,
           "root_y": 0.12,
-          "max_ik_error": 0.0853012285048526,
-          "fore_y": 0.38967380447775174,
-          "hind_y": 0.4891320562848746
+          "max_ik_error": 0.08530122835423133,
+          "fore_y": 0.3896738044580893,
+          "hind_y": 0.48913205767372714
         },
         {
           "phase": 0.4,
           "root_y": 0.6,
-          "max_ik_error": 0.06986811203836428,
-          "fore_y": 1.0180113769269121,
-          "hind_y": 1.123108577748459
+          "max_ik_error": 0.06986811179942504,
+          "fore_y": 1.018011377840953,
+          "hind_y": 1.1231085781492625
         },
         {
           "phase": 0.58,
           "root_y": 0.48,
-          "max_ik_error": 0.058037419558197086,
-          "fore_y": 0.8816286645504288,
-          "hind_y": 0.9015196275236425
+          "max_ik_error": 0.058037419775222435,
+          "fore_y": 0.8816286640859365,
+          "hind_y": 0.9015196271373531
         },
         {
           "phase": 0.72,
           "root_y": 0.18,
-          "max_ik_error": 0.0006168116196212235,
-          "fore_y": 0.2504648752016719,
-          "hind_y": 0.48010783834888215
+          "max_ik_error": 0.0006168115561754657,
+          "fore_y": 0.2504648751332697,
+          "hind_y": 0.4801078383547994
         },
         {
           "phase": 0.84,
           "root_y": 0,
-          "max_ik_error": 0.0005315784451109162,
-          "fore_y": 0.21948267433971938,
-          "hind_y": 0.24032795284406908
+          "max_ik_error": 0.0005315784383112529,
+          "fore_y": 0.21948267434995827,
+          "hind_y": 0.24032795283422012
         },
         {
           "phase": 1,
           "root_y": 0,
-          "max_ik_error": 0.0005741096339760319,
-          "fore_y": 0.20954611924530459,
-          "hind_y": 0.21043006092506972
+          "max_ik_error": 0.0005741096297848013,
+          "fore_y": 0.20954611923486643,
+          "hind_y": 0.2104300609327906
         }
       ]
     },
     "Run": {
       "file": "run.rbxmx",
-      "sha256": "88a98c419b4b0890761ead5108ad14005fa6ea77276d6d187ea39d77a92e0ed3",
-      "bytes": 472691,
+      "sha256": "45137ebb440b34f3fe5403cf4a50acbc6c18197daa5ce40814171ce7d6da760c",
+      "bytes": 472638,
       "frames": 49,
       "duration": 0.64,
       "loop": true,
@@ -3815,7 +3815,7 @@
           ],
           "forepaw": [
             0.3703,
-            0.692,
+            0.6921,
             -1.2254
           ],
           "forepaw_right": [
@@ -3850,7 +3850,7 @@
           "forepaw": [
             0.3783,
             0.8044,
-            -1.2545
+            -1.2546
           ],
           "forepaw_right": [
             -0.3783,
@@ -3950,7 +3950,7 @@
             -0.9051
           ],
           "forepaw": [
-            0.3773,
+            0.3774,
             1.2934,
             -1.3584
           ],
@@ -4393,7 +4393,7 @@
           ],
           "forepaw": [
             0.3677,
-            1.5898,
+            1.5897,
             -1.58
           ],
           "forepaw_right": [
@@ -4462,12 +4462,12 @@
           "forepaw": [
             0.3701,
             1.3201,
-            -1.5526
+            -1.5525
           ],
           "forepaw_right": [
             -0.3701,
             1.3201,
-            -1.5525
+            -1.5526
           ],
           "hindpaw": [
             0.4486,
@@ -4598,7 +4598,7 @@
           "forepaw": [
             0.3656,
             0.9511,
-            -1.5097
+            -1.5098
           ],
           "forepaw_right": [
             -0.3656,
@@ -4630,8 +4630,8 @@
             -1.0117
           ],
           "forepaw": [
-            0.3675,
-            0.7218,
+            0.3676,
+            0.7219,
             -1.4829
           ],
           "forepaw_right": [
@@ -4666,10 +4666,10 @@
           "forepaw": [
             0.3667,
             0.4836,
-            -1.4465
+            -1.4466
           ],
           "forepaw_right": [
-            -0.3668,
+            -0.3667,
             0.4836,
             -1.4466
           ],
@@ -5102,78 +5102,78 @@
         {
           "phase": 0,
           "root_y": 0,
-          "max_ik_error": 0.019934888036522224,
-          "fore_y": 0.21948144432286376,
-          "hind_y": 0.21393012887889734
+          "max_ik_error": 0.019934887747347026,
+          "fore_y": 0.21948144430221372,
+          "hind_y": 0.21393012911881065
         },
         {
           "phase": 0.09,
           "root_y": -0.12,
-          "max_ik_error": 0.13445340181715035,
-          "fore_y": 0.07942345716647964,
-          "hind_y": 0.0998265020994315
+          "max_ik_error": 0.1344534020289716,
+          "fore_y": 0.07942345715436616,
+          "hind_y": 0.09982650839043589
         },
         {
           "phase": 0.19,
           "root_y": 0.24,
-          "max_ik_error": 0.08832984197177059,
-          "fore_y": 0.599704729286499,
-          "hind_y": 0.6300907101669062
+          "max_ik_error": 0.08832984176359257,
+          "fore_y": 0.5997047292905145,
+          "hind_y": 0.630090708741207
         },
         {
           "phase": 0.39,
           "root_y": 1.08,
-          "max_ik_error": 0.20059384268024574,
-          "fore_y": 1.7120687227739941,
-          "hind_y": 1.6340103082029533
+          "max_ik_error": 0.2005939187068431,
+          "fore_y": 1.7120707402149293,
+          "hind_y": 1.6340103079429253
         },
         {
           "phase": 0.54,
           "root_y": 1.2,
-          "max_ik_error": 0.10652738883259387,
-          "fore_y": 1.7308070336494341,
-          "hind_y": 1.7448563759945224
+          "max_ik_error": 0.10652736475938916,
+          "fore_y": 1.730807086120013,
+          "hind_y": 1.7448563752463309
         },
         {
           "phase": 0.68,
           "root_y": 0.75,
-          "max_ik_error": 0.1992577389481444,
-          "fore_y": 1.1040026275359363,
-          "hind_y": 1.1463719123493326
+          "max_ik_error": 0.19925773912873437,
+          "fore_y": 1.1040026401431289,
+          "hind_y": 1.146371911878292
         },
         {
           "phase": 0.79,
           "root_y": 0.18,
-          "max_ik_error": 0.0002758953251254678,
-          "fore_y": 0.240075012195354,
-          "hind_y": 0.7299084533819495
+          "max_ik_error": 0.000275895339071692,
+          "fore_y": 0.2400750122237842,
+          "hind_y": 0.7299084533825577
         },
         {
           "phase": 0.88,
           "root_y": 0,
-          "max_ik_error": 0.005063205227130516,
-          "fore_y": 0.21947899492743758,
-          "hind_y": 0.22341876597485666
+          "max_ik_error": 0.00506320460654431,
+          "fore_y": 0.2194789949070391,
+          "hind_y": 0.223418766450815
         },
         {
           "phase": 1,
           "root_y": 0,
-          "max_ik_error": 0.019934888036522224,
-          "fore_y": 0.21948144432286376,
-          "hind_y": 0.21393012887889734
+          "max_ik_error": 0.019934887747347026,
+          "fore_y": 0.21948144430221372,
+          "hind_y": 0.21393012911881065
         }
       ]
     },
     "ScratchEar": {
       "file": "scratchear.rbxmx",
-      "sha256": "9b0874960c725dead037eda0bba455c5af6ed8da01028fe1aa0d5af1be0806d6",
-      "bytes": 705783,
+      "sha256": "fdfd9756b90ee3ec6e022b4a7ae63772be1acb0aee1dcbcd36e688dbd82d8674",
+      "bytes": 705634,
       "frames": 73,
       "duration": 2.25,
       "loop": false,
       "priority": 2,
       "poseCount": 20,
-      "maxMotionComponent": 0.9769738699170563,
+      "maxMotionComponent": 0.9769738695649606,
       "samples": [
         {
           "t": 0.0,
@@ -7661,66 +7661,66 @@
       "blocking": [
         {
           "phase": 0,
-          "forepaw_to_ear_lower_edge_distance": 1.0443705013035427,
+          "forepaw_to_ear_lower_edge_distance": 1.0443705013119602,
           "raised": 0,
           "ear_dip": 0,
-          "paw_height": 0.20954611900963022
+          "paw_height": 0.20954611900293474
         },
         {
           "phase": 0.18,
-          "forepaw_to_ear_lower_edge_distance": 0.9671431351400709,
+          "forepaw_to_ear_lower_edge_distance": 0.9671431342098897,
           "raised": 0.42,
           "ear_dip": 0,
-          "paw_height": 0.5460362172085682
+          "paw_height": 0.5460362158723617
         },
         {
           "phase": 0.34,
-          "forepaw_to_ear_lower_edge_distance": 0.004513938837916626,
+          "forepaw_to_ear_lower_edge_distance": 0.004513938984812111,
           "raised": 1,
           "ear_dip": 0,
-          "paw_height": 1.2408805188937533
+          "paw_height": 1.2408805190395769
         },
         {
           "phase": 0.44,
-          "forepaw_to_ear_lower_edge_distance": 0.03038142798585171,
+          "forepaw_to_ear_lower_edge_distance": 0.030381428123449072,
           "raised": 1,
           "ear_dip": 1,
-          "paw_height": 1.2551909760003954
+          "paw_height": 1.2551909761527085
         },
         {
           "phase": 0.55,
-          "forepaw_to_ear_lower_edge_distance": 0.004513938837916626,
+          "forepaw_to_ear_lower_edge_distance": 0.004513938984812111,
           "raised": 1,
           "ear_dip": 0,
-          "paw_height": 1.2408805188937533
+          "paw_height": 1.2408805190395769
         },
         {
           "phase": 0.64,
-          "forepaw_to_ear_lower_edge_distance": 0.03038142798585171,
+          "forepaw_to_ear_lower_edge_distance": 0.030381428123449072,
           "raised": 1,
           "ear_dip": 1,
-          "paw_height": 1.2551909760003954
+          "paw_height": 1.2551909761527085
         },
         {
           "phase": 0.75,
-          "forepaw_to_ear_lower_edge_distance": 0.004513938837916626,
+          "forepaw_to_ear_lower_edge_distance": 0.004513938984812111,
           "raised": 1,
           "ear_dip": 0,
-          "paw_height": 1.2408805188937533
+          "paw_height": 1.2408805190395769
         },
         {
           "phase": 0.9,
-          "forepaw_to_ear_lower_edge_distance": 1.0007981212324488,
+          "forepaw_to_ear_lower_edge_distance": 1.000798120418649,
           "raised": 0.38,
           "ear_dip": 0,
-          "paw_height": 0.4657924773238969
+          "paw_height": 0.4657924760045574
         },
         {
           "phase": 1,
-          "forepaw_to_ear_lower_edge_distance": 1.0443705013035427,
+          "forepaw_to_ear_lower_edge_distance": 1.0443705013119602,
           "raised": 0,
           "ear_dip": 0,
-          "paw_height": 0.20954611900963022
+          "paw_height": 0.20954611900293474
         }
       ]
     }
