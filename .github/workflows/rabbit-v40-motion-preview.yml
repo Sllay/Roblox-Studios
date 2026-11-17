@@ -22,6 +22,8 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install numpy==2.2.6 scipy==1.16.2 Pillow==11.3.0
+      - name: Verify Python animation author syntax
+        run: python -m py_compile tools/creature_factory/rabbit_animation_author_v40.py
       - name: Generate candidate V40 native motion
         run: |
           python tools/creature_factory/rabbit_animation_author_v40.py \
