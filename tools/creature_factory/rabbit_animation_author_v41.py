@@ -67,13 +67,19 @@ def run(rig):
             "Chest": np.array([chest, 0, 0]),
             "Head": np.array([head, 0, 0]),
         }
+        # A root-driven quadruped has a different rear-foot rest position
+        # than V38's folded-spine rig. Set hind targets relative to the
+        # evaluated bind limb, not legacy global Z positions.
+        rest_fk, _ = rig.evaluate(pose)
         errors = []
         for kind, py, pz, width in (
             ("fore", fy, fz, .36), ("hind", hy, hz, .45)
         ):
             for side, sign in (("L", 1), ("R", -1)):
+                target_z = (float(rest_fk["HindPaw_" + side][2, 3])
+                            + .35 * (pz - .52)) if kind == "hind" else pz
                 result, error = rig.ik(
-                    pose, kind, side, [width * sign, py + hop, pz]
+                    pose, kind, side, [width * sign, py + hop, target_z]
                 )
                 pose.update(result)
                 errors.append(error)
