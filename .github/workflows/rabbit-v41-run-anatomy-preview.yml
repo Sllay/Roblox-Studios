@@ -4,7 +4,7 @@ on:
     branches: [feat/creature-factory-next]
     paths:
       - 'tools/creature_factory/rabbit_animation_author_v41.py'
-      - '.github/workflows/rabbit-v41-motion-preview.yml'
+      - '.github/workflows/rabbit-v41-run-anatomy-preview.yml'
   workflow_dispatch:
 permissions:
   contents: read
