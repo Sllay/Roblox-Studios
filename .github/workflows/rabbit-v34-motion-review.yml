@@ -1,0 +1,89 @@
+name: Rabbit V34 native rig motion - preview and anatomy review ONLY
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - 'tools/creature_factory/rabbit_animation_author_v34.py'
+      - 'tests/test_rabbit_animation_v34.py'
+      - 'tools/creature_factory/rabbit_v34_blender_review.py'
+      - '.github/workflows/rabbit-v34-motion-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: rabbit-v34-art-review
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install geometry-aware numeric IK
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.2 Pillow==11.3.0
+      - name: Validate native skeleton and all 4 clips
+        run: python -m unittest discover -s tests -p 'test_rabbit_animation_v34.py' -v
+      - name: Build deterministic source-only motions for inspection
+        run: |
+          python tools/creature_factory/rabbit_animation_author_v34.py \
+            asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.glb \
+            dist/rabbit-v34-motion-review
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('dist/rabbit-v34-motion-review/manifest.json').read_text())
+          assert m['stage']=='visual_review_required_no_roblox_upload_or_place_write'
+          for k,v in m['clips'].items():
+              print('REVIEW_ONLY',k,'frames',v['frames'],'duration',v['duration'],
+                    'maxRoot',max(row['root_y'] for row in v['samples']))
+          PY
+      - name: Install Blender for actual skinned-mesh render
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
+          blender -b --factory-startup --python-exit-code 1 --python-expr 'import numpy'
+      - name: Render real rig deforming through all key poses
+        run: |
+          xvfb-run -a blender -b --factory-startup --python-exit-code 1 \
+            --python tools/creature_factory/rabbit_v34_blender_review.py -- \
+            "$PWD/asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.blend" \
+            "$PWD/asset-library/roblox-receipts/s0910-rabbit/rabbit-native-proof.json" \
+            "$PWD/dist/rabbit-v34-motion-review" \
+            "$PWD/dist/rabbit-v34-motion-review"
+      - name: Package visual contact sheets for approval
+        run: |
+          python - <<'PY'
+          from PIL import Image,ImageDraw
+          from pathlib import Path
+          out=Path('dist/rabbit-v34-motion-review')
+          for clip in ('idle','walk','run','scratchear'):
+              for view in ('side','three-quarter'):
+                  files=sorted(out.glob(f'{clip}-{view}-*.png'))
+                  assert len(files)>=3,(clip,view,files)
+                  width=380; height=400
+                  sheet=Image.new('RGB',(width*len(files),height),(244,244,244))
+                  draw=ImageDraw.Draw(sheet)
+                  for i,p in enumerate(files):
+                      im=Image.open(p).convert('RGBA')
+                      im.thumbnail((width-10,height-45))
+                      layer=Image.new('RGBA',im.size,(244,244,244,255))
+                      layer.alpha_composite(im)
+                      sheet.paste(layer.convert('RGB'),(i*width+(width-im.width)//2,12))
+                      draw.text((i*width+12,height-27),f'{clip} {view} | pose {i+1}',fill=(25,25,25))
+                  sheet.save(out/f'CONTACT-{clip}-{view}.png')
+          print('CONTACT_SHEETS_GENERATED')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rabbit-v34-review-keyframes-DO-NOT-PUBLISH
+          path: dist/rabbit-v34-motion-review/
+          if-no-files-found: warn

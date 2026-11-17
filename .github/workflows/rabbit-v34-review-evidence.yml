@@ -1,0 +1,70 @@
+name: Rabbit V34 visual evidence - inspect actual mesh contact sheets
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - '.github/workflows/rabbit-v34-review-evidence.yml'
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+concurrency:
+  group: rabbit-v34-review-evidence
+  cancel-in-progress: false
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch ONLY approved no-publication Blender review artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: rabbit-v34-review-keyframes-DO-NOT-PUBLISH
+          run-id: 44014235839
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/v34-review
+      - name: Verify preview evidence and archive 8 real-mesh contact sheets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib,shutil
+          src=Path('dist/v34-review')
+          dst=Path('docs/benchmarks/creature-factory-next/rabbit-v34-motion-review')
+          proof=json.loads((src/'manifest.json').read_text())
+          assert proof['stage']=='visual_review_required_no_roblox_upload_or_place_write'
+          assert set(proof['clips'])=={'Idle','Walk','Run','ScratchEar'}
+          mesh=json.loads((src/'native-to-blender-posed-report.json').read_text())
+          assert set(mesh['snapshots'])=={'idle','walk','run','scratchear'}
+          dst.mkdir(parents=True,exist_ok=True)
+          rows={}
+          for clip in ('idle','walk','run','scratchear'):
+              for view in ('side','three-quarter'):
+                  name=f'CONTACT-{clip}-{view}.png'
+                  source=src/name
+                  assert source.is_file() and source.stat().st_size>10000,name
+                  shutil.copy2(source,dst/name)
+                  rows[name]={'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
+                              'bytes':source.stat().st_size}
+          shutil.copy2(src/'native-to-blender-posed-report.json',dst/'native-to-blender-posed-report.json')
+          (dst/'review-state.json').write_text(json.dumps({
+              'status':'VISUAL_REVIEW_REQUIRED','stagingVersionUnchanged':33,
+              'animationAssetsUploaded':False,'rabbitPlacePublished':False,
+              'originRunId':44014235839,'files':rows},indent=2)+'\n')
+          print('RABBIT_V34_REAL_MESH_REVIEW_ARCHIVED',json.dumps(rows))
+          PY
+      - name: Commit review images only; never touch runtime or publish Roblox
+        run: |
+          git config user.name 'review-evidence[bot]'
+          git config user.email 'review-evidence[bot]@users.noreply.github.com'
+          git add docs/benchmarks/creature-factory-next/rabbit-v34-motion-review/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'evidence(rabbit): real V34 skinning pose contact sheets for visual assessment'
+          for i in 1 2 3 4; do
+            git fetch origin feat/creature-factory-next
+            git rebase origin/feat/creature-factory-next
+            if git push origin HEAD:feat/creature-factory-next; then exit 0; fi
+            sleep 5
+          done
+          exit 1

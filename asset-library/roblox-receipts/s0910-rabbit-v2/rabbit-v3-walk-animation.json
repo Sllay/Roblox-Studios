@@ -1,0 +1,42 @@
+{
+  "id": "Walk",
+  "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations-v2/walk.rbxmx",
+  "sha256": "35b9db32862ce9c01c6339e47582b997f997351eafa79dbeaa5a656c1b2e1a0e",
+  "bytes": 207767,
+  "state": "created",
+  "noPlaceWrites": true,
+  "retryAllowed": false,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/a25a12bf-85bf-4689-afb8-368f45b64a4a",
+    "operationId": "a25a12bf-85bf-4689-afb8-368f45b64a4a",
+    "done": false
+  },
+  "operationPath": "operations/a25a12bf-85bf-4689-afb8-368f45b64a4a",
+  "operation": {
+    "path": "operations/a25a12bf-85bf-4689-afb8-368f45b64a4a",
+    "operationId": "a25a12bf-85bf-4689-afb8-368f45b64a4a",
+    "done": true,
+    "response": {
+      "path": "assets/108874647746646",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-17T02:50:20.438Z",
+      "assetId": "108874647746646",
+      "displayName": "Black Islands Rabbit V3 Walk",
+      "description": "Original skinned 19-bone rabbit Walk on asset 87498816533548",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "108874647746646"
+}

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "status": "legacy_references_preserved",
+  "images": {
+    "hero.png": {
+      "source": "asset-library/references/rabbit-v1/hero.png",
+      "sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424",
+      "format": "PNG",
+      "mode": "RGBA",
+      "size": [
+        1312,
+        1199
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "fully_transparent_pixels": 1147228,
+      "fully_opaque_pixels": 96,
+      "nonzero_alpha_bbox": [
+        0,
+        0,
+        1302,
+        1199
+      ]
+    },
+    "views.png": {
+      "source": "asset-library/references/rabbit-v1/views.png",
+      "sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4",
+      "format": "PNG",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "fully_transparent_pixels": 706934,
+      "fully_opaque_pixels": 2559,
+      "nonzero_alpha_bbox": [
+        0,
+        2,
+        1253,
+        1254
+      ]
+    }
+  },
+  "limitations": [
+    "Existing legacy hero plus four-view sheet, not the new seven-view manifest.",
+    "No known calibrated camera extrinsics or metric depth.",
+    "C1/C2 must validate cross-view consistency, landmarks and explicit missing views; do not fabricate top/bottom references."
+  ]
+}

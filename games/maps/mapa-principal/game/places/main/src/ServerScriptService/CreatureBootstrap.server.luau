@@ -1,6 +1,6 @@
 --!strict
 -- Staging-only activation; the reviewed model is stored with the Place.
-local root=script.Parent:WaitForChild("CreatureFramework")
+local root=assert(script.Parent,"Bootstrap requires ServerScriptService parent"):WaitForChild("CreatureFramework")
 local function get(name:string):any return require(root:WaitForChild(name) :: ModuleScript) end
 local flags=get("FeatureFlags")
 if not flags.Enabled then return end
@@ -20,9 +20,20 @@ local template=stored:Clone()
 assert(template.Parent==nil)
 local folder=Instance.new("Folder");folder.Name="RSCreatures";folder.Parent=workspace
 local fauna=Service.new(deps,template,folder,math.random(1,2147483646))
+local rabbitTemplate:Model?=nil
+if flags.RabbitEnabled then
+ local storedRabbit=assert(assets:WaitForChild("RabbitV3",10),"Missing approved RabbitV3 staging template")
+ assert(storedRabbit:IsA("Model") and storedRabbit:GetAttribute("RSAssetId")==Registry.get("210081").modelAssetId,"Rabbit V3 template identity")
+ local detachedRabbit=storedRabbit:Clone()
+ assert(detachedRabbit.Parent==nil)
+ rabbitTemplate=detachedRabbit
+ local rabbitPolicy=table.clone(get("SpawnPolicy").rabbit)
+ rabbitPolicy.wildlifeProfile=get("WildlifeProfiles").rabbit
+ Service.addSpecies(fauna,rabbitPolicy,rabbitTemplate,math.random(1,2147483646))
+end
 local books=BookRuntime.new({persistence=get("BookPersistence"),core=get("BookCore"),registry=Registry,store=get("BookDataStore")})
-local events=Gameplay.new(books.book,get("BookPersistence"),fauna.director,BookRuntime.validateInteraction)
+local events=Gameplay.new(books.book,get("BookPersistence"),fauna,BookRuntime.validateInteraction)
 local transport=Remote.new({registry=Registry,persistence=get("BookPersistence"),developer=get("DeveloperPolicy"),summon=get("SummonPlan"),director=Director,gameplay=Gameplay},fauna,books.book,events,flags)
 fauna.director.d.onSpawn=function(id:string,record:any)Remote.attach(transport,id,record)end
 BookRuntime.start(books);Remote.start(transport);Service.start(fauna)
-game:BindToClose(function()Remote.stop(transport);Service.stop(fauna);template:Destroy();folder:Destroy()end)
+game:BindToClose(function()Remote.stop(transport);Service.stop(fauna);template:Destroy();if rabbitTemplate then rabbitTemplate:Destroy() end;folder:Destroy()end)

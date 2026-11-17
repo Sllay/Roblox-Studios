@@ -1,0 +1,53 @@
+{
+  "warm_cache": {
+    "returncode": 0,
+    "wall_seconds": 2.370807666000019,
+    "cached": 5,
+    "rendered": 0,
+    "stdout": "rabbit-v1-43678677522-1 cached\nrabbit-v2-43679757855-1 cached\nrabbit-v3-43715596147-1 cached\nrabbit-final-uv-43725694005-1 cached\nchicken-rig-43578265487-1 cached\n"
+  },
+  "corrupt_comparison": {
+    "expected": "rejected",
+    "returncode": 1,
+    "diagnostic": "ValueError: Missing or modified baseline evidence: rabbit-v1-43678677522-1"
+  },
+  "recovery": {
+    "returncode": 0,
+    "wall_seconds": 12.129468897000152,
+    "statuses": {
+      "rabbit-v1-43678677522-1": "passed",
+      "rabbit-v2-43679757855-1": "cached",
+      "rabbit-v3-43715596147-1": "cached",
+      "rabbit-final-uv-43725694005-1": "cached",
+      "chicken-rig-43578265487-1": "cached"
+    },
+    "historical_reports": 2,
+    "source_preservation": {
+      "status": "verified",
+      "files": 97,
+      "bytes": 95278032
+    },
+    "decoded_rgba_max_channel_difference": 0,
+    "decoded_rgba_mean_absolute_difference": 0.0,
+    "rerender_note": "Rebuilt PNG bytes differ in metadata; decoded RGBA pixels are exactly identical in this probe. Cache replay performs no render. No cross-platform bit-exact render guarantee.",
+    "restored_png_byte_hash_matches_original": false,
+    "png_metadata_differences": {
+      "RenderTime": {
+        "before": "00:00.61",
+        "after": "00:00.56"
+      },
+      "Date": {
+        "before": "2026/11/15 21:42:15",
+        "after": "2026/11/15 21:44:27"
+      },
+      "cycles.ViewLayer.render_time": {
+        "before": "00:00.60",
+        "after": "00:00.56"
+      },
+      "cycles.ViewLayer.total_time": {
+        "before": "00:00.61",
+        "after": "00:00.56"
+      }
+    }
+  }
+}

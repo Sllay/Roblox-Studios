@@ -1,0 +1,38 @@
+name: Rabbit grooming cadence - native-independent behavior validation
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - '.github/workflows/rabbit-groom-frequency-review.yml'
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/MobBrain.luau'
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/RobloxMobAdapter.luau'
+      - 'tests/luau/rabbit_runtime.luau'
+      - 'tests/luau/creature_framework.luau'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: rabbit-groom-frequency-review
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install official Luau and Roblox language analyzer
+        run: |
+          bash tools/install-luau.sh
+          bash tools/install-luau-lsp.sh
+      - name: Static and runtime contracts
+        run: |
+          python tools/script_quality.py
+          luau tests/luau/rabbit_runtime.luau
+          luau tests/luau/creature_framework.luau
+          root=games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework
+          luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$root/MobBrain.luau" "$root/RobloxMobAdapter.luau"
+      - name: No Place write or Roblox upload
+        run: |
+          echo 'Behavior-only review: production and staging Places are untouched.'

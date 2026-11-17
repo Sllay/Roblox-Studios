@@ -4,6 +4,8 @@ export type Policy={speciesId:string,biomeId:string,maximum:number,initial:numbe
 export type Clock={due:number?,lastNow:number,initializing:boolean,retryAt:number}
 local S={}
 S.chicken=table.freeze({speciesId="210080",biomeId="emerald_valley",maximum=15,initial=15,respawnSeconds=300,allowedMaterials=table.freeze({Grass=true})})
+-- Rabbit: species-specific grassland rule, no fixed coordinates and no social grouping.
+S.rabbit=table.freeze({speciesId="210081",biomeId="emerald_valley",maximum=8,initial=4,perChunk=2,respawnSeconds=300,allowedMaterials=table.freeze({Grass=true})})
 function S.new():Clock return {due=nil,lastNow=0,initializing=true,retryAt=0} end
 function S.next(c:Clock,p:Policy,count:number,now:number):boolean
  assert(now>=c.lastNow and now<math.huge and count>=0 and count%1==0,"invalid spawn clock")

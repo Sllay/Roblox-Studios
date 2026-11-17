@@ -1,0 +1,47 @@
+{
+  "clips": {
+    "ScratchEar": {
+      "bones": 19,
+      "assetId": "133038329562549",
+      "passed": true,
+      "trackLength": 1.5499999523162842,
+      "nonRestMotion": 0.8901316523551941,
+      "frames": 33,
+      "sequenceLength": 1.5499999523162842
+    },
+    "Idle": {
+      "bones": 19,
+      "assetId": "79850655782193",
+      "passed": true,
+      "trackLength": 3,
+      "nonRestMotion": 0.044696610420942307,
+      "frames": 25,
+      "sequenceLength": 3
+    },
+    "Run": {
+      "bones": 19,
+      "assetId": "112515635181582",
+      "passed": true,
+      "trackLength": 0.5,
+      "nonRestMotion": 0.32429173588752747,
+      "frames": 29,
+      "sequenceLength": 0.5
+    },
+    "Walk": {
+      "bones": 19,
+      "assetId": "108874647746646",
+      "passed": true,
+      "trackLength": 0.6200000047683716,
+      "nonRestMotion": 0.16149957478046417,
+      "frames": 25,
+      "sequenceLength": 0.6200000047683716
+    }
+  },
+  "noPlaceWrites": true,
+  "ok": true,
+  "universeId": "10769712441",
+  "placeId": "93428341652658",
+  "modelAssetId": "87498816533548",
+  "playbackVerified": true,
+  "loadedVersion": 33
+}

@@ -24,3 +24,30 @@ Commit 8b14772: core 43670123917, build 43670123912, historical V31 lifecycle 43
 7d52626: core 43676270878, build 43676270877, historical lifecycle 43676270875 success. Native terrain and visual regression pending.
 ## D — Automated validation passed
 6c0492e: core 43676817802, build 43676817814, historical lifecycle 43676817807 success. GroupEcology and service integration implemented; real species registration, native group spawn/migration and visual validation remain pending. E next; locate approved chicken art template before asset production.
+
+## V39 — Rabbit motion correction (source-only, not published)
+Owner feedback on staging V34: body distorts; rabbit should idle and groom upright;
+walk upright with hind-leg-driven hops and no front-paw support; only Run is
+quadrupedal. ScratchEar is idle-only, right front paw, with the right ear bending
+forward/down toward the hand. Rear-leg grooming is prohibited.
+
+- Authored `tools/creature_factory/rabbit_animation_author_v39.py` as a
+  separate unuploaded KeyframeSequence source. Preserves the same native
+  19-bone rig, nine skinned parts, six whiskers, texture, and V38 verified IDs.
+- Separate FK/geometry assertions in `tests/test_rabbit_animation_v39.py`.
+  Runner: `.github/workflows/rabbit-v39-motion-review.yml`. It renders the
+  actual skinned Blender rabbit from native keyframes to side and three-quarter
+  contact sheets. Never upload directly from this review job.
+- Changed only rabbit transition smoothing (.27s). No-target/blocked fleeing
+  rabbits use upright Idle rather than visually Run in place; other species
+  keep the previous behavior.
+- All V39 source tests, XML generation, Blender evaluated real-mesh
+  render and two-view contact sheets succeeded on GitHub Actions:
+  https://github.com/Sllay/Roblox-Studios/actions/runs/44107771011 .
+  Review artifact:
+  https://github.com/Sllay/Roblox-Studios/actions/runs/44107771011/artifacts/14338568674 .
+  Mobile visual acceptance, actual animation uploads and staging runtime remain
+  separate gates; a successful render does not certify natural movement.
+- Staging V34 remains verified and unchanged. Do not re-run the retired V34
+  one-shot publisher. New V39 clip uploads and staging version 35 need new
+  immutable receipts, explicit art review, isolated preflight and readback.

@@ -1,0 +1,42 @@
+{
+  "id": "Idle",
+  "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations/idle.rbxmx",
+  "sha256": "f1ff6bd18633d507fcb0344ffbfa0d27c2a63bb838ea84387cff7376267bd017",
+  "bytes": 150302,
+  "state": "created",
+  "noPlaceWrites": true,
+  "retryAllowed": false,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/d4118af5-da75-4ec4-adf1-96b521d4312a",
+    "operationId": "d4118af5-da75-4ec4-adf1-96b521d4312a",
+    "done": false
+  },
+  "operationPath": "operations/d4118af5-da75-4ec4-adf1-96b521d4312a",
+  "operation": {
+    "path": "operations/d4118af5-da75-4ec4-adf1-96b521d4312a",
+    "operationId": "d4118af5-da75-4ec4-adf1-96b521d4312a",
+    "done": true,
+    "response": {
+      "path": "assets/107996680929648",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-17T00:12:51.282Z",
+      "assetId": "107996680929648",
+      "displayName": "Black Islands Rabbit V3 Idle",
+      "description": "Original skinned 19-bone rabbit Idle on asset 87498816533548",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "107996680929648"
+}

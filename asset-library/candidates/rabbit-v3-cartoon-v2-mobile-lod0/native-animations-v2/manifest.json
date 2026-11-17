@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "source_glb_sha256": "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133",
+  "rig_bones": 19,
+  "clips": {
+    "Idle": {
+      "file": "idle.rbxmx",
+      "sha256": "349e4ebb02cf52af1af367eb89014e878bbc384be9b022cc0e0144a85000a5da",
+      "bytes": 199798,
+      "frames": 25,
+      "duration": 3.0,
+      "loop": true,
+      "priority": 0,
+      "poseCount": 20,
+      "maxMotionComponent": 0.04530216299304549
+    },
+    "Walk": {
+      "file": "walk.rbxmx",
+      "sha256": "35b9db32862ce9c01c6339e47582b997f997351eafa79dbeaa5a656c1b2e1a0e",
+      "bytes": 207767,
+      "frames": 25,
+      "duration": 0.62,
+      "loop": true,
+      "priority": 1,
+      "poseCount": 20,
+      "maxMotionComponent": 0.3045275167705395
+    },
+    "Run": {
+      "file": "run.rbxmx",
+      "sha256": "6b0a90e13d51325206bd12b2e23974c821906cb82a24bd12390ae904f1236aec",
+      "bytes": 242856,
+      "frames": 29,
+      "duration": 0.5,
+      "loop": true,
+      "priority": 1,
+      "poseCount": 20,
+      "maxMotionComponent": 0.5408425214675358
+    },
+    "ScratchEar": {
+      "file": "scratchear.rbxmx",
+      "sha256": "c23fc656b40ed753ba76f9c9e335efb4066ed7b3460f6101428564f7f98e107b",
+      "bytes": 270573,
+      "frames": 33,
+      "duration": 1.55,
+      "loop": false,
+      "priority": 2,
+      "poseCount": 20,
+      "maxMotionComponent": 1.1441669686122775
+    }
+  },
+  "stage": "authored_unpublished"
+}

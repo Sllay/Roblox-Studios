@@ -1,0 +1,714 @@
+{
+  "schema": 1,
+  "files": {
+    "attempts/chicken-rig-43578265487-1-oollaobe/blender.log": {
+      "bytes": 51593,
+      "sha256": "4b8f21b138d050b0f0baa1f72dba6935da806450bbdf9f1f3e6ef7a9028eecb3"
+    },
+    "attempts/preflight-0oy4u052/preflight-blender.log": {
+      "bytes": 824,
+      "sha256": "6fa5b83fca752bda1878e4380d0231a3611289e64b241877b5272bdb1d5a7442"
+    },
+    "attempts/preflight-0oy4u052/preflight.glb": {
+      "bytes": 69684,
+      "sha256": "ef7527616e06829a6211970867338ee41c5d98e1413a6152255fd6cbfaf4565e"
+    },
+    "attempts/preflight-3ja2ru9y/preflight-blender.log": {
+      "bytes": 824,
+      "sha256": "0698c3ca31d27fc8840644ab1c146d3494ea3591e7e1a25f5ab0787be53f575a"
+    },
+    "attempts/preflight-3ja2ru9y/preflight.glb": {
+      "bytes": 69684,
+      "sha256": "ef7527616e06829a6211970867338ee41c5d98e1413a6152255fd6cbfaf4565e"
+    },
+    "attempts/preflight-8f0afsd8/preflight-blender.log": {
+      "bytes": 824,
+      "sha256": "f3e46740bded23f9c53f44ff21a295010535fe106926b86dd773783cd0bb3668"
+    },
+    "attempts/preflight-8f0afsd8/preflight.glb": {
+      "bytes": 69684,
+      "sha256": "ef7527616e06829a6211970867338ee41c5d98e1413a6152255fd6cbfaf4565e"
+    },
+    "attempts/rabbit-final-uv-43725694005-1-oeffdr8k/blender.log": {
+      "bytes": 63819,
+      "sha256": "a74bb7fe67beef1bf4eeafbe9743b9ce0f3c61d3fc5975f933b7536504e0baa4"
+    },
+    "attempts/rabbit-v1-43678677522-1-0g3sk6hj/blender.log": {
+      "bytes": 86056,
+      "sha256": "2db278c47cb62607df853188260786be81b6c324c4310b0118f9ecc53bef6a6a"
+    },
+    "attempts/rabbit-v1-43678677522-1-xaatkd4g/blender.log": {
+      "bytes": 86183,
+      "sha256": "1433c2ac9101dcb288d0e29b6aa490ed5b3f1a2b09836f1d74e33060c0408c13"
+    },
+    "attempts/rabbit-v2-43679757855-1-y9h5_2av/blender.log": {
+      "bytes": 54437,
+      "sha256": "62b12a65f3f795c2593c488dd42215e423cd606c619bca9d95547f141ccaab49"
+    },
+    "attempts/rabbit-v3-43715596147-1-5sbkcqpp/blender.log": {
+      "bytes": 54416,
+      "sha256": "984603e3de18da7bdf3a922fa912eac6888abfe6e5b7e3747178ded4d3001dd0"
+    },
+    "audit.json": {
+      "bytes": 397221,
+      "sha256": "97fadeeaff188069bfa6d95a800396d2ab21cb0d4529840c3bdcc315aad48057"
+    },
+    "chicken-rig-43578265487-1/clay-back.png": {
+      "bytes": 43322,
+      "sha256": "8d36ee167e35f9b714a2794adc6d18c0e7c2d342e4fbc77a115631007b84943b"
+    },
+    "chicken-rig-43578265487-1/clay-front.png": {
+      "bytes": 43617,
+      "sha256": "98b0a38bd5134b8e645db9a94169ddf6109dea7fd6c29e074bb7632c4729242d"
+    },
+    "chicken-rig-43578265487-1/clay-right.png": {
+      "bytes": 46151,
+      "sha256": "c310ef93bbf5a01dabaed27d664cb9b882754e26f24e34d628aa646c242743c2"
+    },
+    "chicken-rig-43578265487-1/clay-three-quarter.png": {
+      "bytes": 46406,
+      "sha256": "a25194dffc357dfa5f4a0df25bf772e8b112001843da636765587183c468e13e"
+    },
+    "chicken-rig-43578265487-1/color-back.png": {
+      "bytes": 53862,
+      "sha256": "9824fcfb26d75b31f8dccb447e693d2f5911895ac67d5a0146246f4d9a5390e7"
+    },
+    "chicken-rig-43578265487-1/color-front.png": {
+      "bytes": 53975,
+      "sha256": "ef8824ea8cc7cdb95709eeb8b27330e9a16b0f9dac38cdb4a9ce33ac0a5e15ac"
+    },
+    "chicken-rig-43578265487-1/color-right.png": {
+      "bytes": 57504,
+      "sha256": "8204cbda169867285dbbeb0a5c74e059a7e98c6cd9155b319dc38159fbaefbdb"
+    },
+    "chicken-rig-43578265487-1/color-three-quarter.png": {
+      "bytes": 58893,
+      "sha256": "bc5e2d8e2ec5f4cd56207aacd4cb4aa4faa973e6936eaf304626a6eabe515258"
+    },
+    "chicken-rig-43578265487-1/complete.json": {
+      "bytes": 3423,
+      "sha256": "9175423db63a548ab7f98cb4b9fb06d61b00c46656478302d7b87a07437ce2f3"
+    },
+    "chicken-rig-43578265487-1/depth-back.npy": {
+      "bytes": 262272,
+      "sha256": "e6de2672cc0bfdfcffee5bfa9246850a43a957b114432435ddca3fac9fb9badf"
+    },
+    "chicken-rig-43578265487-1/depth-back.png": {
+      "bytes": 9298,
+      "sha256": "7f98ee5971ded38edb89d7690e877f6e9c0d3e41796695bcb043310d5faeb650"
+    },
+    "chicken-rig-43578265487-1/depth-front.npy": {
+      "bytes": 262272,
+      "sha256": "26a2998908ac59b69d2589c98113fd4fff4b02fccbb3e5d9efe95a078a2c6994"
+    },
+    "chicken-rig-43578265487-1/depth-front.png": {
+      "bytes": 8941,
+      "sha256": "ab5edf8c9ce181401825a85bf2f7940c34422750512ebaaca6a42c0ff7dc3e87"
+    },
+    "chicken-rig-43578265487-1/depth-right.npy": {
+      "bytes": 262272,
+      "sha256": "766d23520eff970b128008f4f1a85c37b429aa87ae896133148f7b9afa3b122b"
+    },
+    "chicken-rig-43578265487-1/depth-right.png": {
+      "bytes": 11254,
+      "sha256": "2ef24674ea4c498ded43e70deeb9a5a44c596e8532d35321eeabe188de0a1917"
+    },
+    "chicken-rig-43578265487-1/depth-three-quarter.npy": {
+      "bytes": 262272,
+      "sha256": "4c6ce435cc68b40c5c3cd08bc86332838784dcf5f01b97a64e3a42a2e2d13df0"
+    },
+    "chicken-rig-43578265487-1/depth-three-quarter.png": {
+      "bytes": 11736,
+      "sha256": "ba28d0cf629f0529cfcf119dee2e93eb279f29badd3b034a8085279ac1befdea"
+    },
+    "chicken-rig-43578265487-1/mask-back.npy": {
+      "bytes": 65664,
+      "sha256": "5f4e918fa54fe92d87c4748a5424af21bc358b6129534757ba74de3926a35e85"
+    },
+    "chicken-rig-43578265487-1/mask-front.npy": {
+      "bytes": 65664,
+      "sha256": "0878f5df3c98eead40f4f60eb5ce3ddc6dbac11dbc461ba93f85b24131dac692"
+    },
+    "chicken-rig-43578265487-1/mask-right.npy": {
+      "bytes": 65664,
+      "sha256": "5b06fa73bbefc57cfc4a4a9ed6907c79859a282c1be0ef896013eb059fd272a4"
+    },
+    "chicken-rig-43578265487-1/mask-three-quarter.npy": {
+      "bytes": 65664,
+      "sha256": "87add6e8d61632487f2dbbe5d4965a2646993c1e6b4698b6a7f6d97cd0a77d71"
+    },
+    "chicken-rig-43578265487-1/metrics.json": {
+      "bytes": 47680,
+      "sha256": "4cf53cfe84debef70915381b7c702d0a2e2b3e06e360998364a8e57775296b01"
+    },
+    "chicken-rig-43578265487-1/normal-back.npy": {
+      "bytes": 786560,
+      "sha256": "feecc55e67529e056544208a22fda57323dea0819bd5612b7c058663c849c4d8"
+    },
+    "chicken-rig-43578265487-1/normal-back.png": {
+      "bytes": 9297,
+      "sha256": "f718dafd518f451522100e50f945f354e2bbb251a22b51d943cc56956090b231"
+    },
+    "chicken-rig-43578265487-1/normal-front.npy": {
+      "bytes": 786560,
+      "sha256": "add0c0a17c8da39ef0bc8ec0927cbbf10eb0375819778720eaea18511e763a59"
+    },
+    "chicken-rig-43578265487-1/normal-front.png": {
+      "bytes": 10168,
+      "sha256": "9c62f028729a7a668ac9b91d3c0cded1540a7d7e1795f8769957b4bd2e8bab13"
+    },
+    "chicken-rig-43578265487-1/normal-right.npy": {
+      "bytes": 786560,
+      "sha256": "4386d01a4320b524fb2a7dfabf8d5df87c27636088e05c7d59ed544ada648e9b"
+    },
+    "chicken-rig-43578265487-1/normal-right.png": {
+      "bytes": 11470,
+      "sha256": "68344f4d2d6111fe1399897b9bab7986f2b6142a8b6f1deda5ba54685a2993eb"
+    },
+    "chicken-rig-43578265487-1/normal-three-quarter.npy": {
+      "bytes": 786560,
+      "sha256": "91e838b7b64cd68974e305244d4cc8a95bc0211d1458a9c1ddccae5221f3e5ec"
+    },
+    "chicken-rig-43578265487-1/normal-three-quarter.png": {
+      "bytes": 13160,
+      "sha256": "78712d845db0dfc56b07e539dc9bf9342d55260c9443893540f3d0807b483156"
+    },
+    "chicken-rig-43578265487-1/pose-0.png": {
+      "bytes": 46463,
+      "sha256": "2726aae4bd6455743484e976f45440ec6cf1d0e908e45b76149f877996f03dfd"
+    },
+    "chicken-rig-43578265487-1/uv-checker.png": {
+      "bytes": 62348,
+      "sha256": "f1fadb9fc047ea3cb42b7bafb0674c6fc91c0f6a42d77019f928ffccb40a81b4"
+    },
+    "chicken-rig-43578265487-1/uv-wire.png": {
+      "bytes": 68993,
+      "sha256": "57e95c19f19fe6f920246ab9abfd5f83dee16ce9e909f6235b55e614b6e2c956"
+    },
+    "history/audit-1794789858883663180.json": {
+      "bytes": 396932,
+      "sha256": "0e3f64f26203865e2ceb5acc901ca667870494f5004bbd700729ab9cafc41032"
+    },
+    "history/audit-1794789861358922530.json": {
+      "bytes": 397290,
+      "sha256": "ac04da8eef07b5022baf4d03b5fa474991483de334d61eefc00d273adcb28ad8"
+    },
+    "rabbit-final-uv-43725694005-1/clay-back.png": {
+      "bytes": 47925,
+      "sha256": "0e7103875a58d61a29ad963f3248445d99be5a192df964a74ec2773e64f7f536"
+    },
+    "rabbit-final-uv-43725694005-1/clay-front.png": {
+      "bytes": 48593,
+      "sha256": "95aa9d008a12cf9e02f7f352c78f8dc99296cb63bd70c1e5065489484cd6dcc2"
+    },
+    "rabbit-final-uv-43725694005-1/clay-right.png": {
+      "bytes": 46357,
+      "sha256": "f97155857eca77bb4b509f34cd23ac29f42d14c3998510c1a52af5a16c6db831"
+    },
+    "rabbit-final-uv-43725694005-1/clay-three-quarter.png": {
+      "bytes": 48579,
+      "sha256": "292705d99a82e1628a7f658544933acc531a7b2c26e0c0f1e33fcedac8c49a48"
+    },
+    "rabbit-final-uv-43725694005-1/color-back.png": {
+      "bytes": 60383,
+      "sha256": "805e4aa89f51aba159e695421f3d895408712f574a17fd87ddcdd7c6ef6a8a2c"
+    },
+    "rabbit-final-uv-43725694005-1/color-front.png": {
+      "bytes": 63020,
+      "sha256": "3a112c185fc2afecd3c7e19ce42cbc2815f5e9755535fd1f5963f8d74319c5d5"
+    },
+    "rabbit-final-uv-43725694005-1/color-right.png": {
+      "bytes": 56235,
+      "sha256": "634c9e50dbe74a449d6d9f8d7eb6384426eae2c05453ae32f66c73f8b45d0e56"
+    },
+    "rabbit-final-uv-43725694005-1/color-three-quarter.png": {
+      "bytes": 62221,
+      "sha256": "a953255f39036dc6d73231186551050e7d6fdea38696ef1e6754abfb87655c10"
+    },
+    "rabbit-final-uv-43725694005-1/complete.json": {
+      "bytes": 3428,
+      "sha256": "b6c2342e991b36ba5744181fb49ceebf643216244cf2320c954aa73d70412417"
+    },
+    "rabbit-final-uv-43725694005-1/depth-back.npy": {
+      "bytes": 262272,
+      "sha256": "401cba5541d999ed5707cd8b3701a3bf0ec5e0ffe425158ad316e80565421b9f"
+    },
+    "rabbit-final-uv-43725694005-1/depth-back.png": {
+      "bytes": 12324,
+      "sha256": "d42993081b3a3cadef10f130d6c80be46ca1c6d7d79d029e6e57c97c75c7452e"
+    },
+    "rabbit-final-uv-43725694005-1/depth-front.npy": {
+      "bytes": 262272,
+      "sha256": "b33d15c818729eb32517c2080125dcad6d15bec5d0de70f988eb708e128e56b7"
+    },
+    "rabbit-final-uv-43725694005-1/depth-front.png": {
+      "bytes": 13703,
+      "sha256": "9e7f99540456a4c06a2d66004df7c177c1818c7c2d2eeb63d27df8667110827a"
+    },
+    "rabbit-final-uv-43725694005-1/depth-right.npy": {
+      "bytes": 262272,
+      "sha256": "bccbfc5c76937b0447a6ccb68b0aa1015dc79e7fbfed9d714c9239bd9bd6d043"
+    },
+    "rabbit-final-uv-43725694005-1/depth-right.png": {
+      "bytes": 12935,
+      "sha256": "077b6166549947f63364c6e6e60b34e53844a28ec27d3705d98dbbe7c643d60d"
+    },
+    "rabbit-final-uv-43725694005-1/depth-three-quarter.npy": {
+      "bytes": 262272,
+      "sha256": "9d05270b2b9b7cce82ad81e8663ee8af6bbe166ece566c298255d3999fb51c43"
+    },
+    "rabbit-final-uv-43725694005-1/depth-three-quarter.png": {
+      "bytes": 13173,
+      "sha256": "2be27beaaac0575c5d1859013bb4fab803165edf661037cdb6b11141df721b50"
+    },
+    "rabbit-final-uv-43725694005-1/mask-back.npy": {
+      "bytes": 65664,
+      "sha256": "e6267a48dc33de9b7aa487c45531b0d34000c86d14277ee060bfbf72a84b617d"
+    },
+    "rabbit-final-uv-43725694005-1/mask-front.npy": {
+      "bytes": 65664,
+      "sha256": "e6267a48dc33de9b7aa487c45531b0d34000c86d14277ee060bfbf72a84b617d"
+    },
+    "rabbit-final-uv-43725694005-1/mask-right.npy": {
+      "bytes": 65664,
+      "sha256": "70196734906e64d7d9e054118cd62724ec3329c4759865899697e4d16516a950"
+    },
+    "rabbit-final-uv-43725694005-1/mask-three-quarter.npy": {
+      "bytes": 65664,
+      "sha256": "e4a3123813494f493f4deb16c1b3e52c6131d909ffc6d9e69d2a7a665bf6ab61"
+    },
+    "rabbit-final-uv-43725694005-1/metrics.json": {
+      "bytes": 42218,
+      "sha256": "426c0f744406c81aa497f1f4b0307226830372f12fd96d376ec52ef5b9d8fc89"
+    },
+    "rabbit-final-uv-43725694005-1/normal-back.npy": {
+      "bytes": 786560,
+      "sha256": "7adad148ad69360659bf1ff1805fec3a12b54e53f128125bf23766f7221bbcb9"
+    },
+    "rabbit-final-uv-43725694005-1/normal-back.png": {
+      "bytes": 33961,
+      "sha256": "7b16d4454cadc3c945ce13467fbea7ae25350fdbba962af7262ce9f26977b797"
+    },
+    "rabbit-final-uv-43725694005-1/normal-front.npy": {
+      "bytes": 786560,
+      "sha256": "9e3b519b6c9d472f17560b2fdb1b87f8aad39ac2e2797b69f07ea8cc18fd7c01"
+    },
+    "rabbit-final-uv-43725694005-1/normal-front.png": {
+      "bytes": 34201,
+      "sha256": "a0964e7421695c54054e3bd2953cb05c174afef3121f5220e917f39af1aebd8d"
+    },
+    "rabbit-final-uv-43725694005-1/normal-right.npy": {
+      "bytes": 786560,
+      "sha256": "3d8c93b20f4cd78573c5ddcb1082562d8391ef2e01ddc0f7b6f56f5640a8d1c6"
+    },
+    "rabbit-final-uv-43725694005-1/normal-right.png": {
+      "bytes": 28830,
+      "sha256": "9aeffda3b0d97875b312a4db4c50c2eded80e0cb07276f5a1ef22fbcce885a08"
+    },
+    "rabbit-final-uv-43725694005-1/normal-three-quarter.npy": {
+      "bytes": 786560,
+      "sha256": "bbe3fc3ef8f41fc0344a6f5d04eba78a4b5366a788239c8f8613f892653f1093"
+    },
+    "rabbit-final-uv-43725694005-1/normal-three-quarter.png": {
+      "bytes": 34795,
+      "sha256": "9ab675a75dc9ae65a69ad9712c84793cd46b1404f2fde0cac9f6a5fc56333a1a"
+    },
+    "rabbit-final-uv-43725694005-1/pose-0.png": {
+      "bytes": 48363,
+      "sha256": "76872cb9bf86cb73933f8a361c3c704bf390124b1f889bb1100713c5a398afb8"
+    },
+    "rabbit-final-uv-43725694005-1/uv-checker.png": {
+      "bytes": 67499,
+      "sha256": "14261852179b0fd8327a526703c947630596f13b818367de954a300ba423266e"
+    },
+    "rabbit-final-uv-43725694005-1/uv-wire.png": {
+      "bytes": 88631,
+      "sha256": "5d628dd01057693ada01715380237623f5bf74d9f543b098350752369a2668e6"
+    },
+    "rabbit-v1-43678677522-1/clay-back.png": {
+      "bytes": 45366,
+      "sha256": "fbc8872bc939bde093196e37da2c0a3f6e1a31344b622b17e3d9f319337b7afd"
+    },
+    "rabbit-v1-43678677522-1/clay-front.png": {
+      "bytes": 47527,
+      "sha256": "c26437bb5489a531ea97b9cfd93716ef6357237dcd70a330fc22ebb45d9616b4"
+    },
+    "rabbit-v1-43678677522-1/clay-right.png": {
+      "bytes": 44530,
+      "sha256": "90c94161688370fbf9496ecc9fbe2396f9abc62f65b2b1d2c99d846606bde828"
+    },
+    "rabbit-v1-43678677522-1/clay-three-quarter.png": {
+      "bytes": 47016,
+      "sha256": "3b854ae118c821441e8f8784bbae5a16c0c87c9346a3e5793ef52315b2064a31"
+    },
+    "rabbit-v1-43678677522-1/color-back.png": {
+      "bytes": 55317,
+      "sha256": "e3adcc0349b998486efbead132e45ee6fa861c8e57a438b14055d55cb34421d7"
+    },
+    "rabbit-v1-43678677522-1/color-front.png": {
+      "bytes": 60821,
+      "sha256": "7e3f358fec6158f10b8c67dde0a7ec6dc44fd70dd509ff19dfadac8350d9d4dc"
+    },
+    "rabbit-v1-43678677522-1/color-right.png": {
+      "bytes": 53125,
+      "sha256": "fc1e5e9529156428cf90b9fdbfc6837972b5b134b66a1ff59309f79743ba7a88"
+    },
+    "rabbit-v1-43678677522-1/color-three-quarter.png": {
+      "bytes": 59446,
+      "sha256": "9383c98588bca86c29347ab218720f6180574e04c5d00d129c0a62d76e9b49a7"
+    },
+    "rabbit-v1-43678677522-1/complete.json": {
+      "bytes": 3335,
+      "sha256": "38ded4e4ddb8d874e14032f7f500c0eb0ec77f8f69f21f6306631c4c62e919a6"
+    },
+    "rabbit-v1-43678677522-1/depth-back.npy": {
+      "bytes": 262272,
+      "sha256": "ee613eed863a387f7831ab91a4e0150426b30439eff80fde4716f233aadf5071"
+    },
+    "rabbit-v1-43678677522-1/depth-back.png": {
+      "bytes": 10978,
+      "sha256": "6ebdaac9e41f1a434b7a67a9efbded110fceb57bdcc85f549189bb6d302d734c"
+    },
+    "rabbit-v1-43678677522-1/depth-front.npy": {
+      "bytes": 262272,
+      "sha256": "c3f4f4cdb65ad7abcd11ede05092991fc53c88f5b202f02426e28a079d040e5e"
+    },
+    "rabbit-v1-43678677522-1/depth-front.png": {
+      "bytes": 12040,
+      "sha256": "713a5579236c78a8759784399d5fe46cde97c72fc51e7d92edc6bc351388c91d"
+    },
+    "rabbit-v1-43678677522-1/depth-right.npy": {
+      "bytes": 262272,
+      "sha256": "973122b70446861e8de268434d0590fa5d6b2302b5721125fd4474b70fa23944"
+    },
+    "rabbit-v1-43678677522-1/depth-right.png": {
+      "bytes": 10378,
+      "sha256": "7bc8980faeaa1247bdcdef04d884f2130271131a2de3e0c5d9bc7a305ee966b0"
+    },
+    "rabbit-v1-43678677522-1/depth-three-quarter.npy": {
+      "bytes": 262272,
+      "sha256": "4f34dd89765cbde84eb405bd19fc1a13d71202fe9d3fb5127c0cf8ab23676768"
+    },
+    "rabbit-v1-43678677522-1/depth-three-quarter.png": {
+      "bytes": 11943,
+      "sha256": "f78de86bc13e97312c4271a407ce240d0650e63f4c80df8ecb3a7f4c80b32cce"
+    },
+    "rabbit-v1-43678677522-1/mask-back.npy": {
+      "bytes": 65664,
+      "sha256": "3be69954fb26e0db8823bb0a5cc3a3230756e68e937327238ee590682877a3ac"
+    },
+    "rabbit-v1-43678677522-1/mask-front.npy": {
+      "bytes": 65664,
+      "sha256": "3be69954fb26e0db8823bb0a5cc3a3230756e68e937327238ee590682877a3ac"
+    },
+    "rabbit-v1-43678677522-1/mask-right.npy": {
+      "bytes": 65664,
+      "sha256": "a5efd92b808e767c547ea57d8101e730195bd339971ea42cc5021a9569766633"
+    },
+    "rabbit-v1-43678677522-1/mask-three-quarter.npy": {
+      "bytes": 65664,
+      "sha256": "4e032293329d081a165fd44c3b6954a5cc80b81dd849042fac2e94c437df7d78"
+    },
+    "rabbit-v1-43678677522-1/metrics.json": {
+      "bytes": 90482,
+      "sha256": "5379e2f759bf02fd9c42e73e1e07b67eedf19da4e03ed69d59880f63f854d8af"
+    },
+    "rabbit-v1-43678677522-1/normal-back.npy": {
+      "bytes": 786560,
+      "sha256": "8f32d6b3485d0c6176300627e9de01f8dbd9e4ced5e0316861a9295be4a48804"
+    },
+    "rabbit-v1-43678677522-1/normal-back.png": {
+      "bytes": 11127,
+      "sha256": "210580020f1bca6c1049607021f20b31adf66e86a0188ee2682161880ef81cdb"
+    },
+    "rabbit-v1-43678677522-1/normal-front.npy": {
+      "bytes": 786560,
+      "sha256": "9117ead0b0fa9e163d08f70dd370cb33d98c4b6de9cfd53bba41ffe0ef64afe4"
+    },
+    "rabbit-v1-43678677522-1/normal-front.png": {
+      "bytes": 12860,
+      "sha256": "e95e8aa545439563f636e2911d934d8025cca7eb63468262948f27922a110908"
+    },
+    "rabbit-v1-43678677522-1/normal-right.npy": {
+      "bytes": 786560,
+      "sha256": "b485f231c43020698d45e3563c27ffd182de6e43a388ec48786b361416160aa6"
+    },
+    "rabbit-v1-43678677522-1/normal-right.png": {
+      "bytes": 9826,
+      "sha256": "cf752d06f224a9d87d519f45db6d0397b27d79e18d5d5a75fb47aa2beca73036"
+    },
+    "rabbit-v1-43678677522-1/normal-three-quarter.npy": {
+      "bytes": 786560,
+      "sha256": "5d63b774132b11f36c219d433c86400bfda56d905293cbd0ae7db17db54db2d3"
+    },
+    "rabbit-v1-43678677522-1/normal-three-quarter.png": {
+      "bytes": 13490,
+      "sha256": "ac07f1caca7901e71e9ce3abb319084770d0a246389c27a55322291e2c278c23"
+    },
+    "rabbit-v1-43678677522-1/uv-checker.png": {
+      "bytes": 66885,
+      "sha256": "e4e45c94883a0581056b3098a5c7a838e07c9562e32f8e0b358b2f8d42299faa"
+    },
+    "rabbit-v1-43678677522-1/uv-wire.png": {
+      "bytes": 76608,
+      "sha256": "e7fd5b9bfebba0ecbddf8b3969727df9c39111c3bc6bb40a6c235dede73f6c89"
+    },
+    "rabbit-v2-43679757855-1/clay-back.png": {
+      "bytes": 45614,
+      "sha256": "f0c29d8a865f78cb912f796832dd1200f9486854b4c85b4299a2b7070d68a977"
+    },
+    "rabbit-v2-43679757855-1/clay-front.png": {
+      "bytes": 46739,
+      "sha256": "c7abda84678fcee0c518e8b3a6336fd9bef772431334dda2ae306d4385b3d997"
+    },
+    "rabbit-v2-43679757855-1/clay-right.png": {
+      "bytes": 44688,
+      "sha256": "286b741a1d70631304ffcbc22d7170c208bba77a565441f5735bcd0bc20ec456"
+    },
+    "rabbit-v2-43679757855-1/clay-three-quarter.png": {
+      "bytes": 46996,
+      "sha256": "544628980fe7e59fcf37cab45cff1df2b44ac2c91fc9afa5644cca22bcf49e41"
+    },
+    "rabbit-v2-43679757855-1/color-back.png": {
+      "bytes": 55837,
+      "sha256": "97d6087280ab467d62e26c3acad7e668367a4a92d119427794348a429175a845"
+    },
+    "rabbit-v2-43679757855-1/color-front.png": {
+      "bytes": 60244,
+      "sha256": "88fe7b579a7910881695af9dd5e16b9dedf4263bc1cd4ce633207656c6916c0f"
+    },
+    "rabbit-v2-43679757855-1/color-right.png": {
+      "bytes": 55524,
+      "sha256": "2f760079034a7311c347fc338c7aec315babeacc6cba7064c94c19b7db7c1824"
+    },
+    "rabbit-v2-43679757855-1/color-three-quarter.png": {
+      "bytes": 61425,
+      "sha256": "109ce08821205837e63e399bea84be9752b6f369077bf401cef846b0d640f151"
+    },
+    "rabbit-v2-43679757855-1/complete.json": {
+      "bytes": 3336,
+      "sha256": "63ea8dc57fb5646bc189b3965408525181feb62f8855a10c164686aa404b1540"
+    },
+    "rabbit-v2-43679757855-1/depth-back.npy": {
+      "bytes": 262272,
+      "sha256": "e5828ee4fd201a17348f609ca049b6412b7b06edb8dd130bf4dffafb05345aa7"
+    },
+    "rabbit-v2-43679757855-1/depth-back.png": {
+      "bytes": 10851,
+      "sha256": "e1d3b44643961e99c3ae2098d7df47eef5a35fe4a30d1adb1a92eb4bce3fa96b"
+    },
+    "rabbit-v2-43679757855-1/depth-front.npy": {
+      "bytes": 262272,
+      "sha256": "88dff6ec77b318cdd6ccf5f01c61b2a0ed45d9bf477bd8890b7e2e46cda46d11"
+    },
+    "rabbit-v2-43679757855-1/depth-front.png": {
+      "bytes": 12599,
+      "sha256": "12f59041f4535833247154f646590d5c663b55cfd90e30c8b814a317e25c75cf"
+    },
+    "rabbit-v2-43679757855-1/depth-right.npy": {
+      "bytes": 262272,
+      "sha256": "2f44b9d1a69580231afc9baf94882b238f68b3c62f43bb4108cd1643a6c33fae"
+    },
+    "rabbit-v2-43679757855-1/depth-right.png": {
+      "bytes": 10879,
+      "sha256": "fac2116b662ab03b652a8830281609b8091d07c924a5b2745d54d7eca11a28df"
+    },
+    "rabbit-v2-43679757855-1/depth-three-quarter.npy": {
+      "bytes": 262272,
+      "sha256": "c944d8145a214422f9cb97cdec24fec4b06ad060479480673716e7dc3e1fc2bc"
+    },
+    "rabbit-v2-43679757855-1/depth-three-quarter.png": {
+      "bytes": 12122,
+      "sha256": "35e1dd561765c7354ff396b270ea4a7e09440fc495fae2c807edf36ec87e7208"
+    },
+    "rabbit-v2-43679757855-1/mask-back.npy": {
+      "bytes": 65664,
+      "sha256": "f51f0c04cb83b99c377e585a53e7b567a572e584080c00cc09a5e8b77839ef41"
+    },
+    "rabbit-v2-43679757855-1/mask-front.npy": {
+      "bytes": 65664,
+      "sha256": "20dc1632977bd3ecfe29687ded93e19f505558e6581bc699fb5181a862400b8f"
+    },
+    "rabbit-v2-43679757855-1/mask-right.npy": {
+      "bytes": 65664,
+      "sha256": "982ad303e98d51bcfafe530a6786cef5eaf3071acfa4729529e552757e25cdfe"
+    },
+    "rabbit-v2-43679757855-1/mask-three-quarter.npy": {
+      "bytes": 65664,
+      "sha256": "04278366a33a3edea868c32dc56eca8cf638cdcb8f556d1e6d613cf64ae16f61"
+    },
+    "rabbit-v2-43679757855-1/metrics.json": {
+      "bytes": 31298,
+      "sha256": "6dddf2095d150c5531874b8e0a92fa93ffa9bbe70b60113c1adf01192c1a2f1e"
+    },
+    "rabbit-v2-43679757855-1/normal-back.npy": {
+      "bytes": 786560,
+      "sha256": "8a2ceda5320a87e7d6e6c6baabf86ad93a47801d220eb396602aa1aa6abb835a"
+    },
+    "rabbit-v2-43679757855-1/normal-back.png": {
+      "bytes": 27182,
+      "sha256": "3d14e95ab016f94b6a7ea36f9ef516f414513bf411a0d16368c78d25cc9a49e9"
+    },
+    "rabbit-v2-43679757855-1/normal-front.npy": {
+      "bytes": 786560,
+      "sha256": "7e2e6bd7bb8c850c3271ebd536c90f3f34e78a511bbbe6428dcc9a2b4bf88442"
+    },
+    "rabbit-v2-43679757855-1/normal-front.png": {
+      "bytes": 28576,
+      "sha256": "920d6ec3d74b5bd2efcc058df4b7229d64c3e730c0826157cddaf48a283c67f6"
+    },
+    "rabbit-v2-43679757855-1/normal-right.npy": {
+      "bytes": 786560,
+      "sha256": "68ccb10bcab9d413bdcca5d3ea6371805416739a0b96b6b40d3af78e4bbd250b"
+    },
+    "rabbit-v2-43679757855-1/normal-right.png": {
+      "bytes": 25176,
+      "sha256": "8398789295446bcbbd2deccda52423290ebc41c891b116099d70beeb43332668"
+    },
+    "rabbit-v2-43679757855-1/normal-three-quarter.npy": {
+      "bytes": 786560,
+      "sha256": "2f65a9379c9db5ab800e42f01df0f8b03de068d2599542e12be761ad74f4e18b"
+    },
+    "rabbit-v2-43679757855-1/normal-three-quarter.png": {
+      "bytes": 30746,
+      "sha256": "bd02e761fd74809d497915acfab1102ef9870eecf90f7f776da3bb8d9c70777f"
+    },
+    "rabbit-v2-43679757855-1/uv-checker.png": {
+      "bytes": 65481,
+      "sha256": "9830e172e75c1db38481535399de0ad364c4df2c7df4b5fc237c49b9f62fcbb0"
+    },
+    "rabbit-v2-43679757855-1/uv-wire.png": {
+      "bytes": 80977,
+      "sha256": "dd10ffc35ecaeda7c311bf38d674101339916b32aea60c2826fed9c5b2849082"
+    },
+    "rabbit-v3-43715596147-1/clay-back.png": {
+      "bytes": 46746,
+      "sha256": "50fb71811d5ed8021d87079d685ccd208bdf8a1e30e87a042a9284b9b28be41e"
+    },
+    "rabbit-v3-43715596147-1/clay-front.png": {
+      "bytes": 47679,
+      "sha256": "c2c724d32f6ab9622667341552ad7a3b89e983caf8234831ba2fc15500dcdc63"
+    },
+    "rabbit-v3-43715596147-1/clay-right.png": {
+      "bytes": 46761,
+      "sha256": "4ac5b3b581161085f9b1d37f5b0e5c84e17db186862200dbc93c99e7f217c21e"
+    },
+    "rabbit-v3-43715596147-1/clay-three-quarter.png": {
+      "bytes": 47421,
+      "sha256": "2e7ac24d49f37cdac001c3481bd4e2e797ef054f60687f9772e22ecb598fca0b"
+    },
+    "rabbit-v3-43715596147-1/color-back.png": {
+      "bytes": 58100,
+      "sha256": "50152e55f9c070ac7a1a7c10c80736fb3f90f19f4262782915b0fe041137ccd0"
+    },
+    "rabbit-v3-43715596147-1/color-front.png": {
+      "bytes": 61056,
+      "sha256": "c7cfeaa478104b3f9e5684fcb96774206b975423a1e2eefa664091414328c4d0"
+    },
+    "rabbit-v3-43715596147-1/color-right.png": {
+      "bytes": 58275,
+      "sha256": "0443feefec7db0c9b8b14c316dbd992e879914b4a802f5414ee8fbde7bf323fb"
+    },
+    "rabbit-v3-43715596147-1/color-three-quarter.png": {
+      "bytes": 60407,
+      "sha256": "602d9320f345a1c5be4f2ead51e3f77d2eac3f06eb1c020b39f265418576a715"
+    },
+    "rabbit-v3-43715596147-1/complete.json": {
+      "bytes": 3336,
+      "sha256": "7c53758b85ab216a2c0d616ddd759cb1d55bb0d526de1f97e2125e478312a817"
+    },
+    "rabbit-v3-43715596147-1/depth-back.npy": {
+      "bytes": 262272,
+      "sha256": "a13e29ade5b2ae640a921bf28182c00559dfd9e14a6e72c67fae77959e187b3a"
+    },
+    "rabbit-v3-43715596147-1/depth-back.png": {
+      "bytes": 12031,
+      "sha256": "e5fd0008ed206256e126c373a423b655e54e3e5a8fc238ae4d0c24cf91f369c1"
+    },
+    "rabbit-v3-43715596147-1/depth-front.npy": {
+      "bytes": 262272,
+      "sha256": "a981d2de315ebaa9c65686aa86d600b9f6d93692ae6ab7e6a0dc4752da01e380"
+    },
+    "rabbit-v3-43715596147-1/depth-front.png": {
+      "bytes": 11809,
+      "sha256": "d3bc26d75cf0770f39bb91d4ffd6f1765a9c37937dda3194d9bfcf52cb10dc5a"
+    },
+    "rabbit-v3-43715596147-1/depth-right.npy": {
+      "bytes": 262272,
+      "sha256": "70705c868d1007beb1e7d68917f9889f86ac44c5e5b2842afad52fdad99ecff9"
+    },
+    "rabbit-v3-43715596147-1/depth-right.png": {
+      "bytes": 12829,
+      "sha256": "1cab09b06a6e0f26a238f4ee4b878cc23538fef84a74c72f0fee241ea6ba5a72"
+    },
+    "rabbit-v3-43715596147-1/depth-three-quarter.npy": {
+      "bytes": 262272,
+      "sha256": "e251910c5c9b994db33addcc36bb563aeb47ce4833670538e209d01a9e993cee"
+    },
+    "rabbit-v3-43715596147-1/depth-three-quarter.png": {
+      "bytes": 12446,
+      "sha256": "5890065e4a2e233a4f2b047b0e2e18d098bf76c68582e3561d62a3a80ff88296"
+    },
+    "rabbit-v3-43715596147-1/mask-back.npy": {
+      "bytes": 65664,
+      "sha256": "8625ee07d79cc851fe9f2b0466e859206f712134e95e6c89eb516709512ae46c"
+    },
+    "rabbit-v3-43715596147-1/mask-front.npy": {
+      "bytes": 65664,
+      "sha256": "c61f1c3a0a438c367169272227ff51e3520bfd3971c103cde37cc802c20d0bcd"
+    },
+    "rabbit-v3-43715596147-1/mask-right.npy": {
+      "bytes": 65664,
+      "sha256": "b5421fac1c87ee43bf795621dd51613533c92d74bf3e03151b2ee87f8bc1cb94"
+    },
+    "rabbit-v3-43715596147-1/mask-three-quarter.npy": {
+      "bytes": 65664,
+      "sha256": "f4cba3bb803ca18ff52a7d6c2e8c528177922437673b62bf60abab098b570d18"
+    },
+    "rabbit-v3-43715596147-1/metrics.json": {
+      "bytes": 77602,
+      "sha256": "01fa1fd454e2dc6124d3596a051186fcb1188d49e8f82522aaa29241dfff035e"
+    },
+    "rabbit-v3-43715596147-1/normal-back.npy": {
+      "bytes": 786560,
+      "sha256": "684f58bb3428617a9537573b59b1e4b294322de50d657fa17b49f91312351376"
+    },
+    "rabbit-v3-43715596147-1/normal-back.png": {
+      "bytes": 32707,
+      "sha256": "9d87e0b827f2e4c8624ac8060a58bfeba977f297b92e96e5e75888a2a169228c"
+    },
+    "rabbit-v3-43715596147-1/normal-front.npy": {
+      "bytes": 786560,
+      "sha256": "fe8d7b1f86a9084cdff4a718109d7be0b2f816aacb00f4cb05ebe7608c6613b2"
+    },
+    "rabbit-v3-43715596147-1/normal-front.png": {
+      "bytes": 32574,
+      "sha256": "84c1d61a735e7a382d14474f1c27f9e1d0a06445e223ef3820132eff0e897eee"
+    },
+    "rabbit-v3-43715596147-1/normal-right.npy": {
+      "bytes": 786560,
+      "sha256": "f51230b54cbfbfbb00c7586864b8bce5a56b1f27539ac43936c819895254230b"
+    },
+    "rabbit-v3-43715596147-1/normal-right.png": {
+      "bytes": 31559,
+      "sha256": "3d6931e029444fe3fa15a074253bf6525a89f36d9ca73cba714c97ad11e56ac7"
+    },
+    "rabbit-v3-43715596147-1/normal-three-quarter.npy": {
+      "bytes": 786560,
+      "sha256": "06ea538ec7ba0757fbe33ca881a0178453b9325c3ecbe05fa27a00f7e584df1d"
+    },
+    "rabbit-v3-43715596147-1/normal-three-quarter.png": {
+      "bytes": 33274,
+      "sha256": "7bc5d4fadd1fd223deb732988720ac1cac486b0ee077c5856ce96012d804b929"
+    },
+    "rabbit-v3-43715596147-1/uv-checker.png": {
+      "bytes": 65826,
+      "sha256": "6a1d22f418a50798906990ac1e418db88173b878dcc14d8512dead0d0315be99"
+    },
+    "rabbit-v3-43715596147-1/uv-wire.png": {
+      "bytes": 106488,
+      "sha256": "2ca930fbda315d216db1ce1d8313010eafd8421e3622876aea4f74ba66fc7869"
+    }
+  },
+  "scope": "Full raw outputs remain in the audit output directory; hashes permit exact verification of the measured run. Re-rendered Monte Carlo pixels can vary by Blender version/platform."
+}

@@ -1,0 +1,9 @@
+BUILD mapa-principal/main -> /workspace/work/creature-factory-next/dist/mapa-principal/main.rbxlx
+Building project 'mapa_principal_main'
+Built project to main.rbxlx
+BUILD sandbox-demo/lobby -> /workspace/work/creature-factory-next/dist/sandbox-demo/lobby.rbxlx
+Building project 'SandboxLobby'
+Built project to lobby.rbxlx
+BUILD sandbox-demo/arena -> /workspace/work/creature-factory-next/dist/sandbox-demo/arena.rbxlx
+Building project 'SandboxArena'
+Built project to arena.rbxlx

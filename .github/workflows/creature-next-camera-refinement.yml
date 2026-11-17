@@ -1,0 +1,45 @@
+name: Creature Factory Next C2 camera refinement
+on:
+  pull_request:
+    paths:
+      - 'tools/creature_factory/next/camera_refinement.py'
+      - 'tools/creature_factory/next/camera_refinement_benchmark.py'
+      - 'tests/test_creature_next_camera_refinement.py'
+      - '.github/workflows/creature-next-camera-refinement.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  camera-refinement:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6 Pillow==11.3.0
+      - run: python -m unittest tests.test_creature_next_camera_refinement tests.test_creature_next_landmarks -v
+      - name: Restore hash verified fixture and real concept evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for pair in "14200393798 d63603b3da05e6bbcaf98a6eb8225a54aaa6d378c470e582c379a7294bbff773 fixture" "14191062045 230dc0856c282900ab722eaf9403e51f7395e849419907ed2fe6e56404ded36b ab"; do
+            read -r id hash name <<< "$pair"
+            curl --fail --location --silent --show-error --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/Sllay/Roblox-Studios/actions/artifacts/$id/zip" -o "$RUNNER_TEMP/$name.zip"
+            echo "$hash  $RUNNER_TEMP/$name.zip" | sha256sum -c -
+            unzip -q "$RUNNER_TEMP/$name.zip" -d "$RUNNER_TEMP/$name"
+          done
+      - name: Validate bounded camera correction and holdout landmarks
+        run: python -u -m tools.creature_factory.next.camera_refinement_benchmark "$RUNNER_TEMP/fixture" "$RUNNER_TEMP/ab" dist/creature-next/c2camera
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creature-next-c2camera
+          path: dist/creature-next/c2camera/
+          if-no-files-found: warn

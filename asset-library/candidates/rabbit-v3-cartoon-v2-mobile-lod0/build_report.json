@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "asset": "rabbit-v3-cartoon-v2-mobile-lod0",
+  "source_master_sha256": "25d3f62033b9cf633bf4d458517b8f01bf5c78731dbd970859d69e017e136d05",
+  "tex_source_sha256": "ffb4e038975b1c261a7c5ed52dc09d1f0f3be16c54844970322d032a40cfe9de",
+  "triangles_original": 60968,
+  "triangles_runtime": 19524,
+  "per_mesh_before": {
+    "FrontArm_L": {
+      "triangles": 4702,
+      "verts": 2353,
+      "uv": 1
+    },
+    "FrontArm_R": {
+      "triangles": 4702,
+      "verts": 2353,
+      "uv": 1
+    },
+    "Rabbit_Torso": {
+      "triangles": 50340,
+      "verts": 25168,
+      "uv": 1
+    },
+    "Whisker_L_1": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_L_2": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_L_3": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_R_1": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_R_2": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_R_3": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    }
+  },
+  "per_mesh_after": {
+    "FrontArm_L": {
+      "triangles": 2550,
+      "verts": 1277,
+      "uv": 1
+    },
+    "FrontArm_R": {
+      "triangles": 2550,
+      "verts": 1277,
+      "uv": 1
+    },
+    "Rabbit_Torso": {
+      "triangles": 13200,
+      "verts": 6598,
+      "uv": 1
+    },
+    "Whisker_L_1": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_L_2": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_L_3": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_R_1": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_R_2": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    },
+    "Whisker_R_3": {
+      "triangles": 204,
+      "verts": 104,
+      "uv": 1
+    }
+  },
+  "bone_names": [
+    "Chest",
+    "Ear_L",
+    "Ear_R",
+    "Forearm_L",
+    "Forearm_R",
+    "FrontPaw_L",
+    "FrontPaw_R",
+    "Head",
+    "HindPaw_L",
+    "HindPaw_R",
+    "Hip_L",
+    "Hip_R",
+    "Pelvis",
+    "Root",
+    "Shin_L",
+    "Shin_R",
+    "Shoulder_L",
+    "Shoulder_R",
+    "Tail"
+  ],
+  "whisker_count": 6,
+  "weight_report": {
+    "FrontArm_L": {
+      "min": 0.9999998807907104,
+      "max": 1.0000001043081284,
+      "incomplete": 0
+    },
+    "FrontArm_R": {
+      "min": 0.9999999068677425,
+      "max": 1.0000001043081284,
+      "incomplete": 0
+    },
+    "Rabbit_Torso": {
+      "min": 0.9999998509883881,
+      "max": 1.0000001527369022,
+      "incomplete": 0
+    },
+    "Whisker_L_1": {
+      "min": 1.0,
+      "max": 1.0,
+      "incomplete": 0
+    },
+    "Whisker_L_2": {
+      "min": 1.0,
+      "max": 1.0,
+      "incomplete": 0
+    },
+    "Whisker_L_3": {
+      "min": 1.0,
+      "max": 1.0,
+      "incomplete": 0
+    },
+    "Whisker_R_1": {
+      "min": 1.0,
+      "max": 1.0,
+      "incomplete": 0
+    },
+    "Whisker_R_2": {
+      "min": 1.0,
+      "max": 1.0,
+      "incomplete": 0
+    },
+    "Whisker_R_3": {
+      "min": 1.0,
+      "max": 1.0,
+      "incomplete": 0
+    }
+  },
+  "pose_probes": {
+    "Head": {
+      "mesh": "Rabbit_Torso",
+      "angle_deg": 17,
+      "max_vertex_displacement": 0.5149564236128861
+    },
+    "Shoulder_L": {
+      "mesh": "FrontArm_L",
+      "angle_deg": 20,
+      "max_vertex_displacement": 0.35831782085561326
+    },
+    "Shoulder_R": {
+      "mesh": "FrontArm_R",
+      "angle_deg": 20,
+      "max_vertex_displacement": 0.35831782085561326
+    },
+    "Hip_L": {
+      "mesh": "Rabbit_Torso",
+      "angle_deg": 12,
+      "max_vertex_displacement": 0.2654992807063262
+    },
+    "Hip_R": {
+      "mesh": "Rabbit_Torso",
+      "angle_deg": 12,
+      "max_vertex_displacement": 0.26549929503021885
+    }
+  },
+  "roblox_studio_import_tested": false,
+  "notes": [
+    "A geometry LOD candidate; no Roblox publishing performed.",
+    "Character skin/animation, mobile client FPS and art direction require in-engine validation."
+  ]
+}

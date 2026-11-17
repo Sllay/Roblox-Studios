@@ -1,0 +1,42 @@
+{
+  "id": "Peck",
+  "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations/peck.rbxmx",
+  "sha256": "6b8f999ffa918114a550f4cf312709a76d6e7f237b6252f8303b5404f088fcd7",
+  "bytes": 134109,
+  "state": "created",
+  "noPlaceWrites": true,
+  "retryAllowed": false,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/0da7ccf2-fa40-45e8-bb6f-47d96288d298",
+    "operationId": "0da7ccf2-fa40-45e8-bb6f-47d96288d298",
+    "done": false
+  },
+  "operationPath": "operations/0da7ccf2-fa40-45e8-bb6f-47d96288d298",
+  "operation": {
+    "path": "operations/0da7ccf2-fa40-45e8-bb6f-47d96288d298",
+    "operationId": "0da7ccf2-fa40-45e8-bb6f-47d96288d298",
+    "done": true,
+    "response": {
+      "path": "assets/114930368536679",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-17T00:13:06.766Z",
+      "assetId": "114930368536679",
+      "displayName": "Black Islands Rabbit V3 Peck",
+      "description": "Original skinned 19-bone rabbit Peck on asset 87498816533548",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "114930368536679"
+}

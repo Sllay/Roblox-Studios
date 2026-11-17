@@ -1,0 +1,38 @@
+name: Creature Factory Next rabbit functional recovery
+on:
+  pull_request:
+    paths:
+      - 'tools/creature_factory/next/rabbit_functional_recovery.py'
+      - 'tools/creature_factory/next/functional_gate.py'
+      - 'tests/test_creature_next_functional.py'
+      - '.github/workflows/creature-next-functional.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  functional:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender and verify source
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
+          blender -b --factory-startup --python-exit-code 1 --python-expr 'import numpy'
+          echo "25d3f62033b9cf633bf4d458517b8f01bf5c78731dbd970859d69e017e136d05  asset-library/candidates/rabbit-final-uv-43725694005-1/asset.blend" | sha256sum -c -
+      - name: Validate generic functional gate
+        run: python -m unittest tests.test_creature_next_functional -v
+      - name: Recover articulated V3 and prove facial controls
+        run: xvfb-run -a blender -b --factory-startup --python-exit-code 1 --python tools/creature_factory/next/rabbit_functional_recovery.py -- "$PWD/asset-library/candidates/rabbit-final-uv-43725694005-1/asset.blend" "$PWD/dist/creature-next/functional"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creature-next-rabbit-functional
+          path: dist/creature-next/functional/
+          if-no-files-found: warn

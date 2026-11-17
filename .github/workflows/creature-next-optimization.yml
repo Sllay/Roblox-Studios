@@ -1,0 +1,44 @@
+name: Creature Factory Next C4 adaptive optimization
+on:
+  pull_request:
+    paths:
+      - 'tools/creature_factory/next/mesh_optimization.py'
+      - 'tools/creature_factory/next/optimization_benchmark.py'
+      - 'tests/test_creature_next_optimization.py'
+      - '.github/workflows/creature-next-optimization.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  optimize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6 scipy==1.13.1 scikit-image==0.24.0 Pillow==11.3.0 opencv-python-headless==4.11.0.86 trimesh==4.6.8 rtree==1.3.0 fast-simplification==0.1.11
+      - run: python -m unittest tests.test_creature_next_optimization -v
+      - name: Restore immutable actual neural masters
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for pair in "14208510222 64dc03dbb810cd2518d6b082920e42e7195f1a986ae7ce5e415b624f4a95b474 rabbit" "14207912279 f13996a904665c9206a77bda81edae6bbb33a7d887c602998f62a771a32f6338 fantasy"; do
+            read -r id hash name <<< "$pair"
+            curl --fail --location --silent --show-error --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/Sllay/Roblox-Studios/actions/artifacts/$id/zip" -o "$RUNNER_TEMP/$name.zip"
+            echo "$hash  $RUNNER_TEMP/$name.zip" | sha256sum -c -
+            unzip -q "$RUNNER_TEMP/$name.zip" -d "$RUNNER_TEMP/$name"
+          done
+      - run: python -u -m tools.creature_factory.next.optimization_benchmark "$RUNNER_TEMP/rabbit" "$RUNNER_TEMP/fantasy" dist/creature-next/c4optimization
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creature-next-c4optimization
+          path: dist/creature-next/c4optimization/
+          if-no-files-found: warn

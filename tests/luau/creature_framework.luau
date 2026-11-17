@@ -4,7 +4,18 @@ local B=require("../../games/maps/mapa-principal/game/places/main/src/ServerScri
 local M=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/MobBrain")
 local Q=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/SimulationBudget")
 local S=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/SummonPlan")
-local c=assert(R.get("210080"));assert(R.validate(c) and #R.all()==1)
+local c=assert(R.get("210080"));assert(R.validate(c) and #R.all()==2)
+local rabbit=assert(R.get("210081"))
+assert(R.validate(rabbit) and rabbit.modelAssetId=="87498816533548" and rabbit.profile=="PassivePrey")
+-- Clip IDs evolve between audited staging releases; require valid, distinct assets
+-- rather than pre-V33 IDs that caused unrelated creature-core CI failures.
+assert(rabbit.animations.Death=="113737115841702")
+local unique:{[string]:boolean}={}
+for _,name in {"Idle","Walk","Run","ScratchEar"} do
+ local id=rabbit.animations[name]
+ assert(id~=nil and tonumber(id)~=nil and tonumber(id)>0 and not unique[id],"Rabbit clip identity")
+ unique[id]=true
+end
 assert(c.preview.assetId=="107933673393998" and R.biomeName("emerald_valley")=="Vale Esmeralda" and not R.levelsEnabled)
 assert(R.stats(c,10,false).health==20 and R.stats(c,10,true).health==34)
 assert(R.previewStats(c).level10.damage==0)
@@ -129,6 +140,9 @@ print("S09.5 population: reservations, caps, expiration, materialization and rel
 local SP=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/SpawnPolicy")
 local BI=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/BiomeRegions")
 local FO=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/FoodSites")
+local wildlife=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/WildlifeProfiles")
+assert(wildlife.rabbit.groupKind=="Solo" and wildlife.rabbit.groupMax==1 and not wildlife.rabbit.canSwim)
+assert(SP.rabbit.speciesId==rabbit.id and SP.rabbit.maximum==8 and SP.rabbit.initial==4 and SP.rabbit.perChunk==2 and SP.rabbit.allowedMaterials.Grass)
 local clock=SP.new();local policy=SP.chicken
 for n=0,14 do assert(SP.next(clock,policy,n,n));SP.result(clock,policy,n+1,n,true) end
 assert(not SP.next(clock,policy,15,15))
@@ -160,7 +174,7 @@ getFail=false;assert(BP.load(book,session,2) and session.ledger.mobs["345678"])
 assert(not BP.flush(book,session,2) and session.dirty)
 writeFail=false;assert(BP.flush(book,session,4) and db.u_1.mobs["210080"].firstAt==20 and db.u_1.mobs["345678"])
 local b2=BP.new(B,R,store);local p2=BP.session(b2,1);assert(BP.load(b2,p2,0))
-local snap=BP.snapshot(b2,1,"Alphabetical",false);assert(snap.ready and snap.discovered==1 and snap.percent==100 and snap.rows[1].id==nil and snap.rows[1].key=="entry_1")
+local snap=BP.snapshot(b2,1,"Alphabetical",false);assert(snap.ready and snap.discovered==1 and snap.percent==50 and snap.unknown==1 and snap.rows[1].id==nil and snap.rows[1].key=="entry_1")
 assert(BP.snapshot(b2,1,"Discovery",true).rows[1].id=="210080")
 -- Unknown schema is not overwritten.
 db.u_2={schema=2,mobs={}};local p3=BP.session(book,2);assert(BP.discover(book,2,"210080","Kill","Natural",1));assert(not BP.load(book,p3,0) and not BP.flush(book,p3,0))
@@ -224,8 +238,8 @@ print("S09.5-F: predator prey filter, melee/ranged states, windup interruption, 
 
 -- S09.10: species without chicken clips never select chicken-only routines.
 local W=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/WildlifeProfiles")
-assert(W.chicken.population+W.rabbit.population+W.cow.population+W.pig.population+W.sheep.population==64)
-assert(W.rabbit.groupKind=="Companion" and not W.rabbit.territorial and W.rabbit.groupMax==2)
+assert(W.chicken.population+W.rabbit.population+W.cow.population+W.pig.population+W.sheep.population==56)
+assert(W.rabbit.groupKind=="Solo" and not W.rabbit.territorial and W.rabbit.groupMax==1)
 assert(W.cow.groupMax==8 and W.pig.exclusiveSameSpecies and W.sheep.groupMax==2)
 local generic=M.new()
 local gs:M.Sense={dt=2,alive=true,aiEnabled=true,hit=false,threatVisible=false,threatDistance=100,approachSpeed=0,predator=false,foodAvailable=true,atFood=true,pathBlocked=false,escapeAvailable=true,stuck=false,random=0,routineFood=false,routineFlap=false}
@@ -262,7 +276,7 @@ Ecology.finish(pig,301,true);assert(pig.center.x==-100 and pig.nextMigration==60
 local rabbit=assert(Ecology.create(eco,"rabbit",WP.rabbit,{x=0,z=0},0))
 local rabbit2=assert(Ecology.create(eco,"rabbit",WP.rabbit,{x=1,z=0},0))
 assert(Ecology.join(eco,rabbit,"r1") and Ecology.join(eco,rabbit2,"r2"))
-assert(Ecology.pair(eco,"r1","r2") and rabbit.count==2)
+assert(not Ecology.pair(eco,"r1","r2") and rabbit.count==1 and rabbit2.count==1)
 assert(Ecology.force(eco,{x=0,z=0},500,400)==2)
 assert(rabbit.nextMigration==math.huge)
 print("S09.10 D group territory migration tests passed")

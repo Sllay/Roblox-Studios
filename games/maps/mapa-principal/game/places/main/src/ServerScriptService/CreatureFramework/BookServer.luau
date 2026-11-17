@@ -41,6 +41,12 @@ characterRoot=function(player:Player):BasePart?
  local root=if c then c:FindFirstChild("HumanoidRootPart") else nil
  return if h and h.Health>0 and root and root:IsA("BasePart") then root else nil
 end
+local function findRecord(s:any,id:string):(any,any)
+ for _,d in s.fauna.directors do
+  local r=d.agents[id];if r then return d,r end
+ end
+ return nil,nil
+end
 local function aimedRecord(s:any,player:Player,direction:any,origin:any?):string?
  local root=characterRoot(player);local c=player.Character
  if not root or not c or typeof(direction)~="Vector3" or direction.Magnitude~=direction.Magnitude or math.abs(direction.Magnitude-1)>.05 then return nil end
@@ -53,7 +59,8 @@ local function aimedRecord(s:any,player:Player,direction:any,origin:any?):string
  if not hit then return nil end
  local m=hit.Instance:FindFirstAncestorOfClass("Model")
  while m do
-  local id=m:GetAttribute("CreatureInstanceId");local r=if type(id)=="string" then s.fauna.director.agents[id] else nil
+  local id=m:GetAttribute("CreatureInstanceId");local r=nil
+  if type(id)=="string" then local _,found=findRecord(s,id);r=found end
   if r and r.adapter.model==m and hit.Instance==r.adapter.hitbox and r.adapter.alive and (r.adapter.mesh.Position-root.Position).Magnitude<=AIM_RANGE then return id :: string end
   local parent=m.Parent;m=if parent then parent:FindFirstAncestorOfClass("Model") else nil
  end
@@ -64,15 +71,17 @@ local function kill(s:any,player:Player,selector:string?,direction:any,origin:an
  local director=s.fauna.director;local dm=s.deps.director;local ids={};local center=root.Position
  if not selector then local id=aimedRecord(s,player,direction,origin);if not id or (targetId~=nil and id~=targetId) then return {ok=false,error="no mob in crosshair"} end;table.insert(ids,id)
  elseif selector=="@e" or selector=="@a" or s.deps.registry.get(selector) then
-  for id,r in pairs(director.agents) do
+  for _,speciesDirector in s.fauna.directors do
+  for id,r in pairs(speciesDirector.agents) do
    if r.adapter.alive and (r.adapter.mesh.Position-center).Magnitude<=RADIUS and (selector=="@e" or selector=="@a" or r.speciesId==selector) then table.insert(ids,id) end
   end
-  if deleting then dm.cancelDeveloperNear(director,center,RADIUS,if selector=="@e" or selector=="@a" then nil else selector) end
+  end
+  if deleting then for _,speciesDirector in s.fauna.directors do dm.cancelDeveloperNear(speciesDirector,center,RADIUS,if selector=="@e" or selector=="@a" then nil else selector) end end
  else return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
  local count=0
  for i,id in ids do
-  local r=director.agents[id]
-  if deleting then if dm.remove(director,id,s.fauna.clock) then count+=1 end
+  local realDirector,r=findRecord(s,id)
+  if deleting then if realDirector and dm.remove(realDirector,id,s.fauna.clock) then count+=1 end
   elseif r and r.actor and r.actor.alive then r.actor.applyDamage(1e9,"developer:"..tostring(player.UserId));count+=1 end
   if i%64==0 then task.wait() end
  end
@@ -80,7 +89,8 @@ local function kill(s:any,player:Player,selector:string?,direction:any,origin:an
   local world=director.d.combatState
   if world then
    for id,a in pairs(world.actors) do
-    if a.alive and (a.getPosition()-center).Magnitude<=RADIUS and not director.agents[id] then
+    local _,known=findRecord(s,id)
+    if a.alive and (a.getPosition()-center).Magnitude<=RADIUS and not known then
      local h=a.model:FindFirstChildWhichIsA("Humanoid")
      if h and h.Health>0 and not protectedCharacter(a.model) then h.Health=0;count+=1 elseif not h then a.applyDamage(1e9,"developer:"..tostring(player.UserId));count+=1 end
     end
@@ -138,7 +148,11 @@ function S.request(s:any,player:Player,op:any,value:any):any
    if #words>2 then return {ok=false,error="usage: /kill [@e|@a|species ID]"} end
    return kill(s,player,words[2],direction,origin,words[1]=="/delete",targetId)
   elseif words[1]=="/summon" and words[2]=="status" and #words==2 then
-   local j=s.deps.director.developerStatus(s.fauna.director,uid)
+   local j=nil
+   for _,d in s.fauna.directors do
+    j=s.deps.director.developerStatus(d,uid)
+    if j and not j.done then break end
+   end
    if not j then return {ok=false,error="no summon job"} end
    return {ok=true,count=j.created,message=string.format("Criados: %d/%d %s",j.created,j.count,j.done and (j.reason or "concluído") or "em andamento")}
   end
@@ -147,6 +161,9 @@ function S.request(s:any,player:Player,op:any,value:any):any
   local exists=#args>=2 and s.deps.registry.get(args[2])~=nil
   local plan,err=s.deps.summon.parse(args,true,exists,math.huge)
   if not plan then return {ok=false,error=err} end
+  director=nil
+  for _,d in s.fauna.directors do if d.p.speciesId==plan.speciesId then director=d;break end end
+  if not director then return {ok=false,error="species runtime not installed"} end
   local pos:Vector3
   if plan.here then
    local character=player.Character;local root=if character then character:FindFirstChild("HumanoidRootPart") else nil

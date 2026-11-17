@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "source_sha256": "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133",
+  "assetId": "87498816533548",
+  "animations": {
+    "Idle": "107996680929648",
+    "Walk": "86940617868965",
+    "Run": "77362016288503",
+    "Peck": "114930368536679",
+    "Flap": "116465239449329",
+    "Death": "113737115841702"
+  },
+  "playbackVerified": true,
+  "stagingPlaceWritten": false
+}

@@ -1,0 +1,374 @@
+{
+  "schema": 1,
+  "asset_id": "rabbit-v1",
+  "definitions": [
+    {
+      "id": "nose_tip",
+      "part": "muzzle",
+      "side": "midline",
+      "kind": "surface",
+      "description": "Approximate visible nose apex; illustration proposal, not reviewed physical match."
+    },
+    {
+      "id": "ear_right_tip",
+      "part": "right_ear",
+      "side": "right",
+      "kind": "surface",
+      "description": "Approximate ear apex; apparent contour can shift with view."
+    },
+    {
+      "id": "ear_left_tip",
+      "part": "left_ear",
+      "side": "left",
+      "kind": "surface",
+      "description": "Approximate ear apex; apparent contour can shift with view."
+    },
+    {
+      "id": "eye_right_center",
+      "part": "right_eye",
+      "side": "right",
+      "kind": "region",
+      "description": "Visible eye region center, not a fixed surface vertex."
+    },
+    {
+      "id": "eye_left_center",
+      "part": "left_eye",
+      "side": "left",
+      "kind": "region",
+      "description": "Visible eye region center, not a fixed surface vertex."
+    },
+    {
+      "id": "tail_region",
+      "part": "tail",
+      "side": "midline",
+      "kind": "region",
+      "description": "Visible tail region center, not a surface anchor."
+    }
+  ],
+  "observations": [
+    {
+      "landmark_id": "nose_tip",
+      "view_id": "front",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        164.5,
+        259.5
+      ],
+      "reference_sha256": "c0a51352f8afb3979bb4604a56d0746948c8c9651fa0a9a3cb9bdaf730932671"
+    },
+    {
+      "landmark_id": "ear_right_tip",
+      "view_id": "front",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        79.5,
+        21.5
+      ],
+      "reference_sha256": "c0a51352f8afb3979bb4604a56d0746948c8c9651fa0a9a3cb9bdaf730932671"
+    },
+    {
+      "landmark_id": "ear_left_tip",
+      "view_id": "front",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        251.5,
+        24.5
+      ],
+      "reference_sha256": "c0a51352f8afb3979bb4604a56d0746948c8c9651fa0a9a3cb9bdaf730932671"
+    },
+    {
+      "landmark_id": "eye_right_center",
+      "view_id": "front",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.8,
+      "xy": [
+        123.5,
+        225.5
+      ],
+      "reference_sha256": "c0a51352f8afb3979bb4604a56d0746948c8c9651fa0a9a3cb9bdaf730932671"
+    },
+    {
+      "landmark_id": "eye_left_center",
+      "view_id": "front",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.8,
+      "xy": [
+        204.5,
+        224.5
+      ],
+      "reference_sha256": "c0a51352f8afb3979bb4604a56d0746948c8c9651fa0a9a3cb9bdaf730932671"
+    },
+    {
+      "landmark_id": "tail_region",
+      "view_id": "front",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "c0a51352f8afb3979bb4604a56d0746948c8c9651fa0a9a3cb9bdaf730932671"
+    },
+    {
+      "landmark_id": "nose_tip",
+      "view_id": "right",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        25.5,
+        255.5
+      ],
+      "reference_sha256": "15a78751e2f6ad9381c20ca16a01d9270642ad06515d1be0df85c509bf9ca874"
+    },
+    {
+      "landmark_id": "ear_right_tip",
+      "view_id": "right",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "15a78751e2f6ad9381c20ca16a01d9270642ad06515d1be0df85c509bf9ca874"
+    },
+    {
+      "landmark_id": "ear_left_tip",
+      "view_id": "right",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        177.5,
+        18.5
+      ],
+      "reference_sha256": "15a78751e2f6ad9381c20ca16a01d9270642ad06515d1be0df85c509bf9ca874"
+    },
+    {
+      "landmark_id": "eye_right_center",
+      "view_id": "right",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "15a78751e2f6ad9381c20ca16a01d9270642ad06515d1be0df85c509bf9ca874"
+    },
+    {
+      "landmark_id": "eye_left_center",
+      "view_id": "right",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.8,
+      "xy": [
+        80.5,
+        225.5
+      ],
+      "reference_sha256": "15a78751e2f6ad9381c20ca16a01d9270642ad06515d1be0df85c509bf9ca874"
+    },
+    {
+      "landmark_id": "tail_region",
+      "view_id": "right",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "15a78751e2f6ad9381c20ca16a01d9270642ad06515d1be0df85c509bf9ca874"
+    },
+    {
+      "landmark_id": "nose_tip",
+      "view_id": "left",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        290.5,
+        256.5
+      ],
+      "reference_sha256": "97847e4b3d4c59554b211293016deda8d1de7f67cbca3e7a4417ec6795ab719c"
+    },
+    {
+      "landmark_id": "ear_right_tip",
+      "view_id": "left",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        134.5,
+        18.5
+      ],
+      "reference_sha256": "97847e4b3d4c59554b211293016deda8d1de7f67cbca3e7a4417ec6795ab719c"
+    },
+    {
+      "landmark_id": "ear_left_tip",
+      "view_id": "left",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "97847e4b3d4c59554b211293016deda8d1de7f67cbca3e7a4417ec6795ab719c"
+    },
+    {
+      "landmark_id": "eye_right_center",
+      "view_id": "left",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.8,
+      "xy": [
+        233.5,
+        224.5
+      ],
+      "reference_sha256": "97847e4b3d4c59554b211293016deda8d1de7f67cbca3e7a4417ec6795ab719c"
+    },
+    {
+      "landmark_id": "eye_left_center",
+      "view_id": "left",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "97847e4b3d4c59554b211293016deda8d1de7f67cbca3e7a4417ec6795ab719c"
+    },
+    {
+      "landmark_id": "tail_region",
+      "view_id": "left",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "97847e4b3d4c59554b211293016deda8d1de7f67cbca3e7a4417ec6795ab719c"
+    },
+    {
+      "landmark_id": "nose_tip",
+      "view_id": "back",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "f52b2ee22d21a6c28a02518bc7623ad2867a025368631ee58f345d9fc66ab7aa"
+    },
+    {
+      "landmark_id": "ear_right_tip",
+      "view_id": "back",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        250.5,
+        21.5
+      ],
+      "reference_sha256": "f52b2ee22d21a6c28a02518bc7623ad2867a025368631ee58f345d9fc66ab7aa"
+    },
+    {
+      "landmark_id": "ear_left_tip",
+      "view_id": "back",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        70.5,
+        23.5
+      ],
+      "reference_sha256": "f52b2ee22d21a6c28a02518bc7623ad2867a025368631ee58f345d9fc66ab7aa"
+    },
+    {
+      "landmark_id": "eye_right_center",
+      "view_id": "back",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "f52b2ee22d21a6c28a02518bc7623ad2867a025368631ee58f345d9fc66ab7aa"
+    },
+    {
+      "landmark_id": "eye_left_center",
+      "view_id": "back",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "f52b2ee22d21a6c28a02518bc7623ad2867a025368631ee58f345d9fc66ab7aa"
+    },
+    {
+      "landmark_id": "tail_region",
+      "view_id": "back",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.8,
+      "xy": [
+        163.5,
+        435.5
+      ],
+      "reference_sha256": "f52b2ee22d21a6c28a02518bc7623ad2867a025368631ee58f345d9fc66ab7aa"
+    },
+    {
+      "landmark_id": "nose_tip",
+      "view_id": "three-quarter",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        885.5,
+        477.5
+      ],
+      "reference_sha256": "c4335e8a0f4f749bbedbcff3cf07b41fdd452f7c43c85c0f0993cd2ae2c51d36"
+    },
+    {
+      "landmark_id": "ear_right_tip",
+      "view_id": "three-quarter",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        501.5,
+        18.5
+      ],
+      "reference_sha256": "c4335e8a0f4f749bbedbcff3cf07b41fdd452f7c43c85c0f0993cd2ae2c51d36"
+    },
+    {
+      "landmark_id": "ear_left_tip",
+      "view_id": "three-quarter",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.7,
+      "xy": [
+        829.5,
+        28.5
+      ],
+      "reference_sha256": "c4335e8a0f4f749bbedbcff3cf07b41fdd452f7c43c85c0f0993cd2ae2c51d36"
+    },
+    {
+      "landmark_id": "eye_right_center",
+      "view_id": "three-quarter",
+      "visibility": "visible",
+      "source": "unreviewed_annotation",
+      "confidence": 0.8,
+      "xy": [
+        735.5,
+        398.5
+      ],
+      "reference_sha256": "c4335e8a0f4f749bbedbcff3cf07b41fdd452f7c43c85c0f0993cd2ae2c51d36"
+    },
+    {
+      "landmark_id": "eye_left_center",
+      "view_id": "three-quarter",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "c4335e8a0f4f749bbedbcff3cf07b41fdd452f7c43c85c0f0993cd2ae2c51d36"
+    },
+    {
+      "landmark_id": "tail_region",
+      "view_id": "three-quarter",
+      "visibility": "unknown",
+      "source": "unreviewed_annotation",
+      "confidence": 0,
+      "xy": null,
+      "reference_sha256": "c4335e8a0f4f749bbedbcff3cf07b41fdd452f7c43c85c0f0993cd2ae2c51d36"
+    }
+  ]
+}

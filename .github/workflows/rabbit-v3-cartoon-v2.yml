@@ -1,0 +1,114 @@
+name: Rabbit V3 Cartoon V2 - reproducible paint and binary archive
+on:
+  push:
+    branches:
+      - feat/creature-factory-next
+    paths:
+      - .github/workflows/rabbit-v3-cartoon-v2.yml
+      - tools/creature_factory/rabbit_v2_paint_v1.py
+      - tools/creature_factory/rabbit_v2_nose_fix.py
+      - tools/creature_factory/rabbit_v2_validate.py
+      - tools/creature_factory/rabbit_runtime_preflight.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rabbit-v3-cartoon-v2
+  cancel-in-progress: false
+
+jobs:
+  bake-and-persist:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      NUMBA_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pinned reproducible CPU painting dependencies
+        run: |
+          python -m pip install --disable-pip-version-check numpy==2.3.5 scipy==1.17.0 numba==0.65.1 Pillow==12.3.0
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-dejavu-core
+
+      - name: Restore source model and authoritative UV for painter
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /mnt/data/rabbit_src /mnt/data/rabbit_paint/v2
+          sudo chown -R "$USER" /mnt/data
+          src=asset-library/candidates/rabbit-final-uv-43725694005-1
+          cp "$src/asset.glb" /mnt/data/rabbit_src/asset.glb
+          cp "$src/rabbit_basecolor_4096.png" /mnt/data/rabbit_src/rabbit_basecolor_4096.png
+          cp "$src/rabbit_uv_islands_4096.png" /mnt/data/rabbit_src/rabbit_uv_islands_4096.png
+          echo '5e59738741bf983ad90067ed307f601d7b3baa2e35c012f8c5a996035ff10662  /mnt/data/rabbit_src/asset.glb' | sha256sum --check -
+
+      - name: Paint V1 baseline using true 3D positions and atlas UV
+        run: python -u tools/creature_factory/rabbit_v2_paint_v1.py
+
+      - name: Apply localized V2 muzzle painting and real mesh renders
+        run: |
+          cp tools/creature_factory/rabbit_v2_paint_v1.py /mnt/data/rabbit_paint/paint_v1.py
+          python -u tools/creature_factory/rabbit_v2_nose_fix.py
+
+      - name: Enforce exact published V2 hashes and GLB invariants
+        run: |
+          set -euo pipefail
+          echo '65d156d3c72aed244cd6a2cb9195d1fd104ef2e4d29ec56fcacefb6332be678d  /mnt/data/rabbit_paint/rabbit_stylized.glb' | sha256sum --check -
+          echo 'dec392bfdcd2a5cc87df7d477d2e675179a9db1a65f9bbb3845c1316522ad215  /mnt/data/rabbit_paint/v2/rabbit_v2_final.glb' | sha256sum --check -
+          echo '9a9a3fe75c140a1e559ead9f854ab9eb1e76c2f4c37454588efd6fc105550a5c  /mnt/data/rabbit_paint/v2/rabbit_v2_basecolor_4096.png' | sha256sum --check -
+          python tools/creature_factory/rabbit_v2_validate.py /mnt/data/rabbit_src/asset.glb /mnt/data/rabbit_paint/v2/rabbit_v2_final.glb /mnt/data/rabbit_paint/v2/rabbit_v2_basecolor_4096.png
+
+      - name: Record Roblox per-mesh budget (does not claim runtime PASS)
+        run: python tools/creature_factory/rabbit_runtime_preflight.py /mnt/data/rabbit_paint/v2/rabbit_v2_final.glb --output /mnt/data/rabbit_paint/v2/runtime_readiness.json
+
+      - name: Stage reviewed candidate without overwriting authoritative source
+        run: |
+          set -euo pipefail
+          dst=asset-library/candidates/rabbit-v3-cartoon-v2
+          mkdir -p "$dst"
+          cp /mnt/data/rabbit_paint/v2/rabbit_v2_final.glb "$dst/asset.glb"
+          cp /mnt/data/rabbit_paint/v2/rabbit_v2_basecolor_4096.png "$dst/rabbit_v2_basecolor_4096.png"
+          cp /mnt/data/rabbit_paint/v2/rabbit_v2_basecolor_2048.png "$dst/rabbit_v2_basecolor_2048.png"
+          cp /mnt/data/rabbit_paint/rabbit_uv_clean_4096.png "$dst/rabbit_uv_clean_4096.png"
+          cp /mnt/data/rabbit_paint/v2/validation_v2.json "$dst/validation_v2.json"
+          cp /mnt/data/rabbit_paint/v2/runtime_readiness.json "$dst/runtime_readiness.json"
+          for view in front left right back top three-quarter rabbit_v2_views_real comparativo_topo_real; do
+            cp "/mnt/data/rabbit_paint/v2/$view.png" "$dst/$view.png"
+          done
+          python - <<'PY'
+          import hashlib,json,pathlib
+          dest=pathlib.Path("asset-library/candidates/rabbit-v3-cartoon-v2")
+          entries={p.name:{"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(dest.iterdir()) if p.is_file()}
+          (dest/"manifest.json").write_text(json.dumps({"schema":1,"status":"paint_ready_review","mesh_source":"rabbit-final-uv-43725694005-1","geometry_unchanged":True,"uv_unchanged":True,"roblox_runtime_validated":False,"files":entries},indent=2)+"\n")
+          PY
+
+      - name: Archive exact binary candidate into feature PR branch
+        run: |
+          set -euo pipefail
+          git config user.name 'asset-factory[bot]'
+          git config user.email 'asset-factory[bot]@users.noreply.github.com'
+          git add asset-library/candidates/rabbit-v3-cartoon-v2
+          git commit -m "assets(creatures): archive exact verified rabbit V3 cartoon V2 GLB UV atlas and renders"
+          for attempt in 1 2 3; do
+            git fetch origin feat/creature-factory-next
+            git rebase origin/feat/creature-factory-next
+            if git push origin HEAD:refs/heads/feat/creature-factory-next; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rabbit-v3-cartoon-v2-verified
+          path: /mnt/data/rabbit_paint/v2/
+          if-no-files-found: warn

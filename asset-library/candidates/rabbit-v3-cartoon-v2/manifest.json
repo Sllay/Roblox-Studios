@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "status": "paint_ready_review",
+  "mesh_source": "rabbit-final-uv-43725694005-1",
+  "geometry_unchanged": true,
+  "uv_unchanged": true,
+  "roblox_runtime_validated": false,
+  "files": {
+    "asset.glb": {
+      "bytes": 5791456,
+      "sha256": "dec392bfdcd2a5cc87df7d477d2e675179a9db1a65f9bbb3845c1316522ad215"
+    },
+    "back.png": {
+      "bytes": 167211,
+      "sha256": "44bca4956b85447432780610648809d2d7a5db69ca4577f8640889328551e84d"
+    },
+    "comparativo_topo_real.png": {
+      "bytes": 118426,
+      "sha256": "060ebe3e2ff71ee51bccc72f9bbfe769563e9e3372362e320b7ec89b2f66bee9"
+    },
+    "front.png": {
+      "bytes": 182725,
+      "sha256": "e8c402f055a7891314a463abb4e73c3586e5e144459b71913dc506812f2a7358"
+    },
+    "left.png": {
+      "bytes": 145406,
+      "sha256": "95b0bf97e3c39593857479724da9437d1490609932cfac94f18b730cfa8e9158"
+    },
+    "manifest.json": {
+      "bytes": 2022,
+      "sha256": "5379fce89fa31ca05990ecaf695de18edbc090369533b1f941479d17780e3f2d"
+    },
+    "rabbit_uv_clean_4096.png": {
+      "bytes": 384746,
+      "sha256": "db18f8d43531624cfabad18b7d28725ebd30bd4a3be6aa279cb1bbfe775a1d09"
+    },
+    "rabbit_v2_basecolor_2048.png": {
+      "bytes": 1542232,
+      "sha256": "604d8dbfd6cef6bcd554cc3a3f729b0b2d5278707b0fc29faf1daead2bd62eab"
+    },
+    "rabbit_v2_basecolor_4096.png": {
+      "bytes": 1841618,
+      "sha256": "9a9a3fe75c140a1e559ead9f854ab9eb1e76c2f4c37454588efd6fc105550a5c"
+    },
+    "rabbit_v2_views_real.png": {
+      "bytes": 444567,
+      "sha256": "ae8b87a422affab4af2197d0507159256f2b59a8b1f4fed8ce4fe7d6de0805b7"
+    },
+    "right.png": {
+      "bytes": 146701,
+      "sha256": "dbae94612b817cb07daaccd4fcf3d044aa38a808e6394740b8f46cc8efb87c78"
+    },
+    "runtime_readiness.json": {
+      "bytes": 1943,
+      "sha256": "0851fc9e30a91632fd8cc424af554f28e763172f25c8f4e46f77c09bd83f92bf"
+    },
+    "three-quarter.png": {
+      "bytes": 180272,
+      "sha256": "8f0fd344077b7f393b5e6c014be358a61eec450f9213c158ee54de1b13605d9b"
+    },
+    "top.png": {
+      "bytes": 99542,
+      "sha256": "66b10f5ba678142eaa6c2c8e7b8cce98b5ea3883074a1bc8688258c12e90b488"
+    },
+    "validation_v2.json": {
+      "bytes": 958,
+      "sha256": "f8d885a64b1d06d13574e1cfb58518deade32fbf8c2e35863ab581af3424e1ea"
+    }
+  }
+}

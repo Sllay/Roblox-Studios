@@ -4,12 +4,40 @@
 local D={}
 local function horizontal(v:Vector3):Vector3 return Vector3.new(v.X,0,v.Z) end
 local function finite(v:Vector3):boolean return v.X==v.X and v.Y==v.Y and v.Z==v.Z and v.Magnitude<1e6 end
+-- Bunny V34 moves horizontally during the jump's launch/flight, with shorter
+-- planted phases. The shared route planner remains the only path authority.
+local function hopDrive(phase:number):number
+ local function smooth(x:number):number
+  x=math.clamp(x,0,1);return x*x*(3-2*x)
+ end
+ local launch=smooth((phase-.10)/.13)
+ local landing=1-smooth((phase-.69)/.16)
+ return .28+1.32*launch*landing
+end
 function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):any
- local mesh=assert(model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
- local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
+ local mesh=assert(model:FindFirstChild("Rabbit_Torso",true) or model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
+ local existingController=model:FindFirstChildWhichIsA("AnimationController",true)
+ local ac:AnimationController
+ if existingController then
+  ac=existingController
+ else
+  ac=Instance.new("AnimationController")
+  ac.Parent=model
+ end
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
- local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
- mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
+ local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",scratchAt=nil,scratchUntil=nil,nextScratchTime=0,goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
+ local visualParts:{MeshPart}={}
+ local rigParts:{BasePart}={}
+ for _,part in model:GetDescendants() do
+  if part:IsA("BasePart") then
+   part.Anchored=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false
+   table.insert(rigParts,part)
+   if part:IsA("MeshPart") then table.insert(visualParts,part) end
+  end
+ end
+ self.visualParts=visualParts;self.rigParts=rigParts
+ self.rabbitGait=species.id=="210081"
+ assert(#visualParts>=1,"creature must contain a visible MeshPart")
  local hitbox=Instance.new("Part");hitbox.Name="CreatureHitbox";hitbox.Size=mesh.Size+Vector3.new(.6,.6,.6);hitbox.Transparency=1;hitbox.Anchored=true;hitbox.CanCollide=false;hitbox.CanTouch=false;hitbox.CanQuery=true;hitbox.CFrame=mesh.CFrame;hitbox.Parent=model
  self.hitbox=hitbox
  game:GetService("CollectionService"):AddTag(mesh,"CreatureVisual")
@@ -47,9 +75,15 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   return true
  end
  function self:position():Vector3 return mesh.Position-Vector3.new(0,half,0) end
+ function self:relocate(cf:CFrame)
+  -- Every skinned MeshPart follows the same rigid root motion. Do not move one limb in isolation.
+  local delta=cf*mesh.CFrame:Inverse()
+  model:PivotTo(delta*model:GetPivot())
+  hitbox.CFrame=cf
+ end
  function self:place(p:Vector3):boolean
   local g=self:ground(p.X,p.Z);if not g then return false end
-  mesh.CFrame=CFrame.new(g+Vector3.new(0,half,0));hitbox.CFrame=mesh.CFrame;return true
+  self:relocate(CFrame.new(g+Vector3.new(0,half,0)));return true
  end
  function self:setThreat(t:any) self.threat=t end
  function self:setFood(p:Vector3?) self.food=p end
@@ -81,15 +115,19 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   end
   if visible then self.observedThreat=t;self.lastSeen=self.clock elseif self.lastSeen and self.clock-self.lastSeen>4 then self.observedThreat=nil end
   local food=self.food
-  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,approachThreshold=if t and t.normalSpeed then math.max(1,t.normalSpeed*.6) else 4,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random(),routineFood=species.animations.Peck~=nil,routineFlap=species.animations.Flap~=nil}
+  local s={dt=dt,alive=self.alive,aiEnabled=self.aiEnabled,hit=self.hit,threatVisible=visible,threatDistance=dist,approachSpeed=approach,approachThreshold=if t and t.normalSpeed then math.max(1,t.normalSpeed*.6) else 4,predator=predator,jumping=t~=nil and t.jumping==true,actionComplete=self.actionComplete,foodConsumed=self.peckConsumed,foodAvailable=food~=nil,atFood=food~=nil and horizontal((food :: Vector3)-p).Magnitude<.8,pathBlocked=self.blocked,escapeAvailable=self.goal~=nil,stuck=self.stuck,random=self.options.random(),routineFood=species.animations.Peck~=nil,routineFlap=species.animations.Flap~=nil,
+   -- Only the rabbit opts into a calmer, more frequent grooming opportunity.
+   -- All other species retain their original two-second idle / 24-second roam.
+   idleSeconds=if species.animations.ScratchEar then 3.25 else nil,
+   exploreSeconds=if species.animations.ScratchEar then 9.5 else nil,
+   cosmeticActionPlaying=self.scratchUntil~=nil and self.clock<(self.scratchUntil :: number)}
   self.hit=false;return s
  end
  function self:animate(name:string,speed:number)
   if name==self.lastClip then
    local track=self.tracks[name];if track then track:AdjustSpeed(speed) end;return
   end
-  local old=self.tracks[self.lastClip];if old then old:Stop(.2) end
-  self.lastClip=name
+  -- A longer rabbit-only crossfade hides the upright/quadrupled pose switch.\n  -- Chickens and other creatures retain their original transition duration.\n  local blend=if self.rabbitGait then .27 else .18\n  local old=self.tracks[self.lastClip];if old then old:Stop(blend) end\n  self.lastClip=name
   if name=="" then return end
   local track=self.tracks[name]
   if not track then
@@ -98,12 +136,25 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
    track=animator:LoadAnimation(anim);self.tracks[name]=track
    track.Looped=name=="Idle" or name=="Walk" or name=="Run"
   end
-  track:Play(.18,1,speed)
+  track:Play(blend,1,speed)
  end
  function self:cancel() self.goal=nil;self.nextPlan=0 end
  function self:enter(intent:any)
   self.goal=nil;self.nextPlan=0;self.blocked=false;self.stuck=false;self.peckAge=0;self.peckConsumed=false;self.actionAge=0;self.actionComplete=false;self.motionSpeed=0
-  if intent.state=="Static" or intent.state=="Dead" then self:animate("",1) else self:animate(intent.animation,1) end
+  self.intentState=intent.state
+  -- An ear scratch is a cosmetic one-shot, not a second AI state. It must
+  -- never delay a threat response or override movement/death.
+  self.scratchAt=nil;self.scratchUntil=nil
+  if intent.state=="Idle" and species.animations.ScratchEar and self.clock>=self.nextScratchTime then
+   -- More frequent, but still a single optional grooming event per idle.
+   -- No global timers: each rabbit uses its own autonomous RNG/cooldown.
+   if self.options.random()<.82 then
+    self.scratchAt=self.clock+.14
+   else
+    self.nextScratchTime=self.clock+3+self.options.random()*2
+   end
+  end
+  -- A fleeing rabbit starts its run clip only after the first valid move.\n  -- Otherwise an obstructed rabbit visibly runs on all fours in place.\n  if intent.state=="Static" or intent.state=="Dead" then self:animate("",1)\n  elseif self.rabbitGait and intent.state=="Flee" then self:animate("Idle",1)\n  else self:animate(intent.animation,1) end
  end
  function self:plan(flee:boolean):Vector3?
   self.routePlans+=1;self.nextPlan=self.clock+.15
@@ -158,11 +209,18 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local facing=CFrame.fromAxisAngle(Vector3.yAxis,turn):VectorToWorldSpace(forward)
   local alignment=math.max(0,facing:Dot(target))
   self.motionSpeed=math.min(speed,self.motionSpeed+speed*elapsed*5)
-  local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed)
+  local stride=1
+  if self.rabbitGait and (self.lastClip=="Walk" or self.lastClip=="Run") then
+   local current=self.tracks[self.lastClip]
+   local length=if current and current.Length>0 then current.Length else (if self.lastClip=="Run" then .68 else .79)
+   local phase=if current and current.Length>0 then current.TimePosition/length else self.clock/length
+   stride=hopDrive(phase%1)
+  end
+  local step=math.min(delta.Magnitude,self.motionSpeed*alignment*elapsed*stride)
   local q=p+target*step;local g=self:ground(q.X,q.Z)
   if not g and self.options.steer then q=p+delta.Unit*step;g=self:ground(q.X,q.Z) end
   if not g or (not self.travelTarget and not self.options.freeRoam and self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
-  local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);hitbox.CFrame=mesh.CFrame;self.moveDistance+=step
+  local at=g+Vector3.new(0,half,0);self:relocate(CFrame.lookAt(at,at+facing));self.moveDistance+=step
   if self.options.onMoved then self.options.onMoved() end
   return true
  end
@@ -192,6 +250,22 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if self.travelTarget and (action=="Wander" or action=="Stop" or action=="Idle" or action=="SeekFood") and intent.state~="Static" and intent.state~="Dead" then return self:travelStep(dt) end
   local moving=action=="ChooseSafeEscape" or action=="Wander" or action=="SeekFood" or action=="ReplanEscape"
   if not moving then
+   if action=="Stop" and self.intentState=="Idle" then
+    if self.scratchUntil then
+     if self.clock>=self.scratchUntil then
+      self.scratchUntil=nil;self:animate("Idle",1)
+     end
+    elseif self.scratchAt and self.clock>=self.scratchAt then
+     self.scratchAt=nil
+     self:animate("ScratchEar",1)
+     local track=self.tracks.ScratchEar
+     -- The saved V33 clip was 1.70s; future visual-approved clips may vary.
+     -- Prefer the real asset length rather than cutting the paw movement off.
+     local duration=if track and track.Length>0 then track.Length else 2.35
+     self.scratchUntil=self.clock+duration
+     self.nextScratchTime=self.clock+8+self.options.random()*5
+    end
+   end
    if action=="Peck" or action=="Flap" then
     self.actionAge+=dt
     local track=self.tracks[intent.animation]
@@ -214,14 +288,14 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
    if self.blocked and not flee then self.exploreTarget=nil end
   end
   local goal=self.goal
-  if not goal then self:animate(if flee then "Run" else "Idle",1);return "Running" end
+  if not goal then self:animate(if self.rabbitGait or not flee then "Idle" else "Run",1);return "Running" end
   local speed=if flee then math.max(self.options.minimumRunSpeed or 12,self.stats.runSpeed) else self.stats.walkSpeed
-  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if flee then "Run" else "Idle",1);return "Running" end
+  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if self.rabbitGait or not flee then "Idle" else "Run",1);return "Running" end
   self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"
  end
  function self:beginDeath()
-  self.alive=false;self:cancel();self:animate("",1);hitbox.CanQuery=false
+  self.alive=false;self:cancel();self:animate(if species.animations.Death then "Death" else "",1);hitbox.CanQuery=false
   self.deathPose=mesh.CFrame;self.deathReleased=false
   mesh.CanQuery=false
  end
@@ -254,9 +328,17 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
    return
   end
   if age<.35 then
-   mesh.CFrame=self.deathPose*CFrame.Angles(0,0,math.rad(65)*math.clamp(age/.35,0,1))
+   self:relocate(self.deathPose*CFrame.Angles(0,0,math.rad(65)*math.clamp(age/.35,0,1)))
   else
-   self.deathReleased=true;mesh.Anchored=false;mesh.CanCollide=true;mesh.CanTouch=false
+   self.deathReleased=true
+   -- Weld all rigid mesh sections to the torso during the corpse phase; limb meshes must not float.
+   for _,part in self.rigParts do
+    if part~=mesh then
+     local weld=Instance.new("WeldConstraint");weld.Part0=mesh;weld.Part1=part;weld.Parent=model
+     part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false
+    end
+   end
+   mesh.Anchored=false;mesh.CanCollide=true;mesh.CanTouch=false
    self.corpseConstraints={}
    self.nextCorpsePush=0
    mesh:SetNetworkOwner(nil);mesh.AssemblyAngularVelocity=Vector3.new(0,0,2)

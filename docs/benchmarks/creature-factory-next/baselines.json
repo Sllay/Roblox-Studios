@@ -1,0 +1,547 @@
+{
+  "schema": 1,
+  "reference_commit": "0e034b5c0c7523f4195b97a2c243a4a8b4ec6115",
+  "artistic_approval": false,
+  "publication_allowed": false,
+  "benchmarks": [
+    {
+      "id": "rabbit-v1-43678677522-1",
+      "source": "asset-library/candidates/rabbit-v1-43678677522-1/asset.glb",
+      "sha256": "5f8f06c4aee141ca03e6b253ee42370459d9feb70ef671efa84592318fb8501a",
+      "historical_report": "asset-library/candidates/rabbit-v1-43678677522-1/report.json",
+      "preserved_files": [
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/asset.blend",
+          "bytes": 1151144,
+          "sha256": "776b65ae8d730d914e49568b475cae919c029870f728edd451d1dc00dc8885ee"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/asset.glb",
+          "bytes": 206608,
+          "sha256": "5f8f06c4aee141ca03e6b253ee42370459d9feb70ef671efa84592318fb8501a"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/back.png",
+          "bytes": 408063,
+          "sha256": "4e3fe0e59af2da6394fa50156935572efc3372dd9f939a0b01bc6e1a6c50ecfa"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/bottom.png",
+          "bytes": 343883,
+          "sha256": "7ea98b123a640c1624bddd2ac206af9977044456606b8e0e79576ac98485f2d8"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/candidate-manifest.json",
+          "bytes": 1614,
+          "sha256": "60bcf4feb4659e8b800245ba1657a8367923c9bee169a999e966360409fb24a7"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/front.png",
+          "bytes": 434855,
+          "sha256": "7b2950366d9174c43118567cebb3a64ab8e322be2aa0fa723f01a704a3464dc3"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/left.png",
+          "bytes": 384395,
+          "sha256": "3f810a15940a254666cd7efbd4d7c47ebe0c6632ff6335ee48d1049f99ad295a"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/report.json",
+          "bytes": 890,
+          "sha256": "6183e16c3f4376caed3489fa41f9c40ad9e56dc32bba17a7d271bfc40a003549"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/right.png",
+          "bytes": 391472,
+          "sha256": "ff92b7242e82eb01e15a3d3d1987e98d3be03d9801b00cf2872b46d54a9a2596"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/three-quarter.png",
+          "bytes": 439819,
+          "sha256": "0f0b4da5cd435dd7e5ec8229193c47f84f057e501e465d95437862a14a56cca1"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v1-43678677522-1/top.png",
+          "bytes": 346847,
+          "sha256": "76c2b10ae391d50b496e53b204d93f3806184a87c01e7cfb2ab567b55dc21809"
+        }
+      ]
+    },
+    {
+      "id": "rabbit-v2-43679757855-1",
+      "source": "asset-library/candidates/rabbit-v2-43679757855-1/asset.glb",
+      "sha256": "875fafd739b85dc73ae5f176312c36ec59cfe72985c392bebc2ed362e20a9a4c",
+      "historical_report": "asset-library/candidates/rabbit-v2-43679757855-1/report.json",
+      "preserved_files": [
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/asset.blend",
+          "bytes": 5698292,
+          "sha256": "f305e791ee6b80632cbd4d2151303d01c4d9ad5a43e073a32d147ccaa8e8e79f"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/asset.glb",
+          "bytes": 3730448,
+          "sha256": "875fafd739b85dc73ae5f176312c36ec59cfe72985c392bebc2ed362e20a9a4c"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/back.png",
+          "bytes": 587084,
+          "sha256": "989d131ad9c8cdb7fc84bca67467bba7e158feaa97dfd456865e0863b912aca2"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/bottom.png",
+          "bytes": 516242,
+          "sha256": "f06afce6bac43af31b2c06f3b5beb4b50b34b8d4f493bf200f49d42c4de7f2b4"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/calibration.json",
+          "bytes": 1457,
+          "sha256": "a479f6a4c7058e6fda3a0a095ee75dcfb80ad6cb8e5b8a7ef41dab93cb529b26"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/candidate-manifest.json",
+          "bytes": 3152,
+          "sha256": "fdbc3ead99b6368acfd0d00907115714d0aeb1fa58ffe65aa17b3062cba20152"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/clay-front.png",
+          "bytes": 584150,
+          "sha256": "f857296a5abae91d5a363c930fe14e64de8909cde14458db12271616957ab575"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/clay-right.png",
+          "bytes": 551802,
+          "sha256": "d2f20809b5759902902683d0fd55183c6077b3802294b2c68126fa5d5bf9a311"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/clay-three-quarter.png",
+          "bytes": 605850,
+          "sha256": "dc80898a24d29fc5e40b01a4dd61e4037eff7d1ccc27d5f483a22d316c0d2cf8"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/concept-albedo.png",
+          "bytes": 2764096,
+          "sha256": "28254064dd8a305b403ba7d70cec942daa8b3a8b4fd1167988918356ad9a0641"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/front.png",
+          "bytes": 628820,
+          "sha256": "24c859e7b9df964e76dcfd236c900504a30fc98ded8cf93bbc76bfdc51258b13"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/left.png",
+          "bytes": 576475,
+          "sha256": "c77db37fd87dbfdcf252e29a6db2dc712ed851d10a394240b603d21ce33b1d22"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/overlay-back.png",
+          "bytes": 96396,
+          "sha256": "fa0b1d56cef9d9112da1a96eac287b0a0b4554c393846db1754ea4e898a2d685"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/overlay-front.png",
+          "bytes": 111609,
+          "sha256": "dcca34213e99ee8da82fef94e320cae38665efafd3559ef4b8fae6c1530405c1"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/overlay-left.png",
+          "bytes": 96577,
+          "sha256": "21322ab65e33a93148232f62110c38d731eba4bf58445f1fa7d7f169b4e513e5"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/overlay-right.png",
+          "bytes": 96863,
+          "sha256": "14e1d2d52af8ec3d840f3ff5daa057aad2abdc172c73f274062e8c5d2c29985a"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/report.json",
+          "bytes": 2052,
+          "sha256": "415b4c42ca5ac33006edfe467a75c6e1c18757f2ba3bc92f59265904e53d5828"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/right.png",
+          "bytes": 593100,
+          "sha256": "f9e235217fcd671f0d4d32086223110723cb9705b2cf2b450a95236f83911d39"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/sculpt-master.blend",
+          "bytes": 9806436,
+          "sha256": "f77e741b1c6c7ebf92d5fddb62b1728c739792775a8c72319468a1c1e7bb7041"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/three-quarter.png",
+          "bytes": 655170,
+          "sha256": "898841bcfa5c6a54714f30b090dc8936c93c87a0717cd81dafefa691f768ddd6"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v2-43679757855-1/top.png",
+          "bytes": 542406,
+          "sha256": "6b219e0f1f7c38015bb4da59a2ecb0aef91095e4ba0a14b86f3aced0c4345a41"
+        }
+      ]
+    },
+    {
+      "id": "rabbit-v3-43715596147-1",
+      "source": "asset-library/candidates/rabbit-v3-43715596147-1/asset.glb",
+      "sha256": "3414fc654f5981e55191ebc5fb5056e91ae9af565d6ed2e50a2b76bf306d083c",
+      "historical_report": "asset-library/candidates/rabbit-v3-43715596147-1/report.json",
+      "preserved_files": [
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/asset.blend",
+          "bytes": 7051568,
+          "sha256": "c107518c911d302a59c251896d6f2038321be489b3632a2c58c5e298ecfb584c"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/asset.glb",
+          "bytes": 3942896,
+          "sha256": "3414fc654f5981e55191ebc5fb5056e91ae9af565d6ed2e50a2b76bf306d083c"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/back.png",
+          "bytes": 628126,
+          "sha256": "bac451e0e908ac14794df2b57728c6fc50a6f3fa7f38d72b4d6c5c75d259685e"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/bottom.png",
+          "bytes": 570032,
+          "sha256": "a2be33ff081aea43a9854cc7f7477383bf615777312ca9829329e4042dabe437"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/candidate-manifest.json",
+          "bytes": 3459,
+          "sha256": "b6c13088c14a5f165c5219fcbdd8b9ddb20882133f685be3e2da943cfea52a43"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/clay-front.png",
+          "bytes": 529054,
+          "sha256": "330b764cc00621f7f5e0de404363a8a971dec407a8e7432b389dd4b5dad05cc3"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/clay-right.png",
+          "bytes": 515240,
+          "sha256": "6f4487f55c7e2678c50decd5f08ae2f262653e0edeaacfda0bb312efa99d6c4d"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/clay-three-quarter.png",
+          "bytes": 536524,
+          "sha256": "e39f2e3ac6454b3de4575ac09ed5b434359c0cc89de38367ca567b80ba494f98"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/conditioning.png",
+          "bytes": 97657,
+          "sha256": "9807a9de927b2df663cefb21d52aa3d8cc606c4df2af9ff4155c0f062d481a2a"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/front.png",
+          "bytes": 652104,
+          "sha256": "7f9456f5b5be2c9945176738d32ed15f0590c791935cced19f2bea386e05b6df"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/left.png",
+          "bytes": 622613,
+          "sha256": "9a290e060f85d8f162bb3d98f3fac9b6ac8ee9da62cdceb0bd3a604b5a09ed1e"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/neural-albedo.png",
+          "bytes": 2351186,
+          "sha256": "751c08714f00e90556c3eb5bff989613d65676f0bd9773bb4f1f60a24bca7044"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/neural-master.ply",
+          "bytes": 959871,
+          "sha256": "681fd8bc26e7f3b250eb27edcace7b9a41d5bb9f16039c22886ac1c8ea7b8cbb"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/neural-report.json",
+          "bytes": 2247,
+          "sha256": "76f74b210027292a5237a70eeca75cf5e977f2bdb31079f47dcc10a76046c5e7"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/overlay-back.png",
+          "bytes": 97572,
+          "sha256": "625988f2dc08ee8427d9d4735675a5175006c659e033bada160f28e42beb6a69"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/overlay-front.png",
+          "bytes": 112958,
+          "sha256": "5f3c6c615539205e90db12b8bfe046800e5b0d278df04acf5ef8368da972794d"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/overlay-left.png",
+          "bytes": 98018,
+          "sha256": "f957733d9112294eb07ece6ac46a2da4c5d6d3d9b46245d8af89b6f307a25bb0"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/overlay-right.png",
+          "bytes": 98246,
+          "sha256": "348e73062e120008d6c33c757e03ca43af46698c30b755338a584e3b04978b3e"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/report.json",
+          "bytes": 4156,
+          "sha256": "f99352e156597934e80d7fc81a4a6cf39baae6b7ae53c03720ffc0cf7e2245fe"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/right.png",
+          "bytes": 630998,
+          "sha256": "3e34425f3830317904d3040340d8e09b1f6180febfdc488ce83cfef2d5f471b3"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/sculpt-master.blend",
+          "bytes": 2867908,
+          "sha256": "a58616782547786d471edaf1eaa543d7b319a91ae40de06c3f48fb0780f58254"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/three-quarter.png",
+          "bytes": 654761,
+          "sha256": "9a1c5a36bf42a1f7e656ba14715043d760ac6233e4e1b9bc18021766d172c7ac"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-v3-43715596147-1/top.png",
+          "bytes": 566443,
+          "sha256": "45955359992676d5d1367c20559d313f7c0ce1ac79601885ce230f0551b37f3a"
+        }
+      ]
+    },
+    {
+      "id": "rabbit-final-uv-43725694005-1",
+      "source": "asset-library/candidates/rabbit-final-uv-43725694005-1/asset.glb",
+      "sha256": "5e59738741bf983ad90067ed307f601d7b3baa2e35c012f8c5a996035ff10662",
+      "historical_report": "asset-library/candidates/rabbit-final-uv-43725694005-1/report.json",
+      "preserved_files": [
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/asset.blend",
+          "bytes": 8372844,
+          "sha256": "25d3f62033b9cf633bf4d458517b8f01bf5c78731dbd970859d69e017e136d05"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/asset.glb",
+          "bytes": 3949776,
+          "sha256": "5e59738741bf983ad90067ed307f601d7b3baa2e35c012f8c5a996035ff10662"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/atlas-front.png",
+          "bytes": 611084,
+          "sha256": "2a817bf2e14fc0197be62786fd51d7be5ec92a37532512ee0bca958bd705317d"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/atlas-input.json",
+          "bytes": 1024,
+          "sha256": "2ddaf6e3243d02dc6f39a81a7d1b677536846db205b9d0886c993974ee650cdc"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/atlas-right.png",
+          "bytes": 571805,
+          "sha256": "d047d8f513c2e40f6e60076bc17ae609b07136e19dcde0ba71a006a0d0ac561e"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/atlas-three-quarter.png",
+          "bytes": 614929,
+          "sha256": "27aa320b0ac3cad28b0f52a78611a0c1138e0578371318738b2a77c95fdee66f"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/back.png",
+          "bytes": 605625,
+          "sha256": "16ccef373760118fd57ac0fbff49661f9bc9e4989cc93154b4734c2b70404cae"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/candidate-manifest.json",
+          "bytes": 4019,
+          "sha256": "ccb14e93f94257104182fc58ff3a18497cbdb5c2aa3e73f092179dc09db83acb"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/clay-three-quarter.png",
+          "bytes": 521655,
+          "sha256": "dcefd758f85c0341fbe47d48638788763e51e2e2040eda56eb91c6534e7d0bc5"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/front.png",
+          "bytes": 610459,
+          "sha256": "688a377d8f94eafd666966c29cd04b0f7a86a5161e5c4af4a646b1cee92c7413"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/polish-report.json",
+          "bytes": 990,
+          "sha256": "856cbd7aae312f866c7399fe1df04d6561bfdb105772da15fd80d9138e14299a"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/pose-front-left.png",
+          "bytes": 609799,
+          "sha256": "a5f779c87c617800093dacb1d257d6fa3a2341c7a4911f67c8cd80e83326151d"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/pose-head.png",
+          "bytes": 608653,
+          "sha256": "0102f069a894106b78d2710870d4947f4c2f34c6009014d3dadc7b98411d4ab6"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/pose-hind-right.png",
+          "bytes": 606594,
+          "sha256": "8847a0fdb8610eef81635851ab5ea04563b1b0eecdb382ecc9112933b721ce70"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/rabbit_basecolor_2048.png",
+          "bytes": 1455835,
+          "sha256": "fa39136f747658596a3b57c86007b1ac91afd86b612cd967f3dc94ca10e7d8fe"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/rabbit_basecolor_4096.png",
+          "bytes": 1600272,
+          "sha256": "98d3664cf08f52d9b9d270bd9e9b2f72af14138bcad1c14fd555210609d8db62"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/rabbit_uv_islands_2048.png",
+          "bytes": 1209021,
+          "sha256": "a43e141fc13d79d8221c7f023ec0751e8f40994d67b6e40abe24b837e1d2c9a6"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/rabbit_uv_islands_4096.png",
+          "bytes": 414623,
+          "sha256": "189e00c992a8732a6f6d323e6f87c27f6166ab0e84856fc1c95c700e8037e442"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/rabbit_uv_regions_2048.png",
+          "bytes": 1346811,
+          "sha256": "c8df6885fde1cc5eadc086761043b7961cac1393e1caa93f7fdc0266dc668c24"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/rabbit_uv_regions_4096.png",
+          "bytes": 413916,
+          "sha256": "9790363d3fd0d24f85bbca3976e3b8aea3f4dda5c74a0242ec42e4ceecea104f"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/rabbit_uv_wire_2048.png",
+          "bytes": 4735224,
+          "sha256": "8c211805e7cd311ffb9866663c62dd237f4947d274b03ebf3b068d069de5937b"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/rabbit_uv_wire_4096.png",
+          "bytes": 1588907,
+          "sha256": "7e74b985b431e8d4ccb3f0903b6324e73a838a796bc975299f35fd338ea2b583"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/report.json",
+          "bytes": 9812,
+          "sha256": "b233d36f41f79bc8b3beaadd3270c621c7b6dabfadc5c7dd1d1d72acd3366568"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/right.png",
+          "bytes": 571176,
+          "sha256": "ea71700483a71cbe287eb7cece2ed3d23f28496b7b7783a250a40799fc8e5cda"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/three-quarter.png",
+          "bytes": 613659,
+          "sha256": "c0f6dec57c72f5059ff2d8ef2f81cbcdd2415b1940df531534b68827f526982a"
+        },
+        {
+          "path": "asset-library/candidates/rabbit-final-uv-43725694005-1/uv-report.json",
+          "bytes": 7637,
+          "sha256": "04d77e755b369c47756295e7711eef44e6b9571f4dfa6e422972f0501dddaf8b"
+        }
+      ]
+    },
+    {
+      "id": "chicken-rig-43578265487-1",
+      "source": "asset-library/candidates/chicken-rig-43578265487-1/chicken-v2-rig.glb",
+      "sha256": "ea0ebd42c7ea7a6b7ec6bf7c976edb2a1e91e205f83a017b21c9e5bc48121466",
+      "historical_report": "asset-library/candidates/chicken-rig-43578265487-1/report.json",
+      "preserved_files": [
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/candidate-manifest.json",
+          "bytes": 1796,
+          "sha256": "56cce85c0422d8c816ced3b1bc22dfbbcd963ede9f499ab56c8a4f1c08e3caa7"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/checkpoint-1-atlas.json",
+          "bytes": 331,
+          "sha256": "a6947d1ead9601531828197fe2ca13493a309e6e1220b3c0aaf14932d99fa7d8"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/checkpoint-2-rig.json",
+          "bytes": 769,
+          "sha256": "1ce7b51132e1fc390950aa39f75751753545a70920f1e1d3dfdd846b0460abfb"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/chicken-albedo.png",
+          "bytes": 31343,
+          "sha256": "1c079c2d01160aa0bdde06db72731a6dee0facbc64d3ac6f43171da2190bd233"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/chicken-v2-rig.blend",
+          "bytes": 1779272,
+          "sha256": "946584052cad2943396beffade5c8caf59d1c47378b9d9e13ccad4f60bf54599"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/chicken-v2-rig.glb",
+          "bytes": 520152,
+          "sha256": "ea0ebd42c7ea7a6b7ec6bf7c976edb2a1e91e205f83a017b21c9e5bc48121466"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/flap.png",
+          "bytes": 184834,
+          "sha256": "95f05bd02a1f8c34acde0317193abd8f68e33f955a4fbb91ea4a51d5058d39d0"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/idle.png",
+          "bytes": 182106,
+          "sha256": "c13b57ace9503cafbf7dc557cd7d9cef6040c7e840b89406264dc7b4f0400bd8"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/peck.png",
+          "bytes": 172816,
+          "sha256": "6305e22f2a1b10f040922f5ebe42ef05b59a10f2df70452c0610c971f2cdd598"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/report.json",
+          "bytes": 1261,
+          "sha256": "fdb4bf65d8c75c7194ae651b55974b3cd41f62de2e9f1303a55913dfaecba8fa"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/run.png",
+          "bytes": 179905,
+          "sha256": "fbc65e411cccb05cc6502d7e985a26b11118d40ca6bcf6e9b6d1da145d81c0bf"
+        },
+        {
+          "path": "asset-library/candidates/chicken-rig-43578265487-1/walk.png",
+          "bytes": 181313,
+          "sha256": "97ddd156e65856001984bdc004b96b7d8cefa6175bd74410febf4f86ffb77e35"
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "path": "asset-library/references/rabbit-v1/concepts.zip",
+      "bytes": 2130769,
+      "sha256": "4676785890166cf8bb9b339ae5abec7d4f27cd74b751b9cbe3df6662a3fc03b6"
+    },
+    {
+      "path": "asset-library/references/rabbit-v1/hero.png",
+      "bytes": 819185,
+      "sha256": "8778c1fbc6071c39b49eec5587eccd17cee56ce740bfcd51778c2e686bdb5424"
+    },
+    {
+      "path": "asset-library/references/rabbit-v1/manifest.json",
+      "bytes": 947,
+      "sha256": "aaef2b4771a46593523ecb0cb0e85fd898d5b45d1ac622d29473d6b276f480cf"
+    },
+    {
+      "path": "asset-library/references/rabbit-v1/views.png",
+      "bytes": 1483380,
+      "sha256": "9d2cd107bc8f612c9771437049320227be2e7cfda72a0b07bff5dd23085769c4"
+    }
+  ],
+  "holdout": {
+    "status": "not_selected",
+    "policy": "Select and freeze an unseen reviewed seven-view concept before C6; never use it for tuning."
+  },
+  "fixtures": {
+    "status": "pending_C1_C2",
+    "required": [
+      "analytic_wavy_thin_sheet",
+      "sphere",
+      "concave_asymmetric_object"
+    ]
+  }
+}

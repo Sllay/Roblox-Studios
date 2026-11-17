@@ -1,7 +1,7 @@
 --!strict
 -- Hierarchical passive-prey policy; pure decision layer, engine adapters intentionally separate.
 export type State="Idle"|"Explore"|"Forage"|"Peck"|"Flee"|"Recover"|"Flap"|"Static"|"Dead"
-export type Sense={dt:number,alive:boolean,aiEnabled:boolean,hit:boolean,threatVisible:boolean,threatDistance:number,approachSpeed:number,approachThreshold:number?,predator:boolean,jumping:boolean?,actionComplete:boolean?,foodConsumed:boolean?,foodAvailable:boolean,atFood:boolean,pathBlocked:boolean,escapeAvailable:boolean,stuck:boolean,random:number,routineFood:boolean?,routineFlap:boolean?}
+export type Sense={dt:number,alive:boolean,aiEnabled:boolean,hit:boolean,threatVisible:boolean,threatDistance:number,approachSpeed:number,approachThreshold:number?,predator:boolean,jumping:boolean?,actionComplete:boolean?,foodConsumed:boolean?,foodAvailable:boolean,atFood:boolean,pathBlocked:boolean,escapeAvailable:boolean,stuck:boolean,random:number,routineFood:boolean?,routineFlap:boolean?,idleSeconds:number?,exploreSeconds:number?,cosmeticActionPlaying:boolean?}
 export type Memory={state:State,age:number,calm:number,fear:number,hunger:number,reason:string,transitions:number}
 export type Intent={state:State,branch:string,animation:string,action:string,reason:string}
 local M={}
@@ -36,9 +36,9 @@ function M.step(m:Memory,s:Sense,gate:((string,string,boolean,{[string]:number},
   elseif s.pathBlocked or s.stuck then change(m,"Idle","route blocked")
   elseif s.routineFood~=false and s.foodAvailable and m.hunger>.35 then
    change(m,if s.atFood then "Peck" else "Forage","food")
-  elseif m.state=="Idle" and m.age>=2 then
+  elseif m.state=="Idle" and m.age>=math.clamp(s.idleSeconds or 2,2,6) and s.cosmeticActionPlaying~=true then
    change(m,if s.routineFlap~=false and s.random<.12 then "Flap" else "Explore","idle complete")
-  elseif (m.state=="Explore" or m.state=="Forage") and m.age>=24 then change(m,"Idle","exploration complete")
+  elseif (m.state=="Explore" or m.state=="Forage") and m.age>=math.clamp(s.exploreSeconds or 24,6,24) then change(m,"Idle","exploration complete")
   end
  end
  local state:State=m.state :: State

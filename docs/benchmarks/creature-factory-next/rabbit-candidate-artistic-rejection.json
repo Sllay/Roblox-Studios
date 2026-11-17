@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "asset": "rabbit-v1",
+  "candidate": "creature-next-review-final",
+  "run": 43831497714,
+  "artifact": 14208688202,
+  "source_commit": "be02bf2205c6c7e3d478e3f8479568ab2c66d57d",
+  "triangles": 38514,
+  "decision": "rejected_artistic",
+  "reasons": [
+    "Forepaws no longer distinct from torso; silhouette-driven volume filled anatomical gaps.",
+    "Stone-block appearance, voxel steps and missing head definition."
+  ],
+  "publication_allowed": false,
+  "retain_for_regression": true,
+  "original_assets_unchanged": true,
+  "notes": "User visual review. Passing UV, topology and IoU are not artistic approval. Do not promote this artifact. Future candidate requires visible limb geometry and evidence of clearance, articulation readiness and comparison of independent depth/surface evidence."
+}

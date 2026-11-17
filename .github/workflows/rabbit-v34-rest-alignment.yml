@@ -1,0 +1,35 @@
+name: Rabbit V34 rig calibration - non-mutating bone rest audit
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - '.github/workflows/rabbit-v34-rest-alignment.yml'
+      - 'tools/creature_factory/rabbit_v34_alignment_probe.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install official Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender xvfb python3-numpy libgl1-mesa-dri
+      - name: Determine whether V34 review images had valid bone alignment
+        run: |
+          mkdir -p dist/rabbit-v34-rest-alignment
+          xvfb-run -a blender -b --factory-startup --python-exit-code 1 \
+            --python tools/creature_factory/rabbit_v34_alignment_probe.py -- \
+            "$PWD/asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.blend" \
+            "$PWD/asset-library/roblox-receipts/s0910-rabbit/rabbit-native-proof.json" \
+            "$PWD/dist/rabbit-v34-rest-alignment/report.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rabbit-v34-native-blender-rest-calibration
+          path: dist/rabbit-v34-rest-alignment

@@ -9,7 +9,7 @@ local function profile(p:Profile):Profile
  return table.freeze(p)
 end
 P.chicken=profile({population=16,groupKind="Solo",groupMax=1,territorial=false,exclusiveSameSpecies=false,roamRadius=100,canSwim=false})
-P.rabbit=profile({population=16,groupKind="Companion",groupMax=2,territorial=false,exclusiveSameSpecies=false,roamRadius=100,canSwim=false})
+P.rabbit=profile({population=8,groupKind="Solo",groupMax=1,territorial=false,exclusiveSameSpecies=false,roamRadius=85,canSwim=false})
 P.cow=profile({population=8,groupKind="Herd",groupMax=8,territorial=true,migrationSeconds=300,exclusiveSameSpecies=false,roamRadius=100,canSwim=false})
 P.pig=profile({population=16,groupKind="Herd",groupMax=4,territorial=true,migrationSeconds=300,exclusiveSameSpecies=true,roamRadius=100,canSwim=false})
 P.sheep=profile({population=8,groupKind="Herd",groupMax=2,territorial=true,migrationSeconds=300,exclusiveSameSpecies=false,roamRadius=100,canSwim=false})
