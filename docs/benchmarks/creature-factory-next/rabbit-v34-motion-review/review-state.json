@@ -3,39 +3,39 @@
   "stagingVersionUnchanged": 33,
   "animationAssetsUploaded": false,
   "rabbitPlacePublished": false,
-  "originRunId": 44013487213,
+  "originRunId": 44014235839,
   "files": {
     "CONTACT-idle-side.png": {
-      "sha256": "80a8fa8b7ca21ca51ac4b29ba316057351b49ae9477c9c345ec43e7562269b63",
-      "bytes": 138923
+      "sha256": "1be49106d93937fccff8d680bdb12f1a60daa696e82ddd60ff3eb261e19b4443",
+      "bytes": 59964
     },
     "CONTACT-idle-three-quarter.png": {
-      "sha256": "1b722c445200de5d4d170f0bbf3f6347df8cc77aee8266500e60197fc7120e52",
-      "bytes": 126104
+      "sha256": "4b884444dc4996d940079c229c050c49741588d9c8dccec51373e8bd6f6ce300",
+      "bytes": 60250
     },
     "CONTACT-walk-side.png": {
-      "sha256": "b0b3caef0724af1e8f741b775b999017a7ee26e054f913fd494597781927196c",
-      "bytes": 218239
+      "sha256": "340090c8523ab19c7021328b8ca74a76decd0bd1da440dea26eed4c4147c2c6b",
+      "bytes": 169434
     },
     "CONTACT-walk-three-quarter.png": {
-      "sha256": "a09956f3e29cc989f5cd5a04e89e5d86832cd02347d1fb16ab192859adc90a8a",
-      "bytes": 196493
+      "sha256": "dde73b9e938dabb92e0bdbbbc4af6a7b8fb48bf98f98056d312220ab778edba1",
+      "bytes": 162242
     },
     "CONTACT-run-side.png": {
-      "sha256": "0e01a9bc588bba40f9b67d100dcd0b2c45b8fc71aa31e300cc0b63c8fa7e3021",
-      "bytes": 238680
+      "sha256": "435c16d42b031673432c97bf5a34c42db250542b56473fb9c745402d6102989f",
+      "bytes": 192475
     },
     "CONTACT-run-three-quarter.png": {
-      "sha256": "bbbd4046696bc85c995e04dc92488c98d034142a21ad67f323b1d0ac0b60ae69",
-      "bytes": 213421
+      "sha256": "e0cb256571ffb4737e3b8e06f000aa888ea6b8fdd91f87a9d3d89c7914b32396",
+      "bytes": 181531
     },
     "CONTACT-scratchear-side.png": {
-      "sha256": "2c669f64ec6c45795331fd63faa7427575ecf086dfb8c3e03fb8f40f47a9ed51",
-      "bytes": 275858
+      "sha256": "2dc463c0b94d0908b9ecf3b0b69f84c6b4bce4527091dba9d629de6ee8a49d12",
+      "bytes": 131696
     },
     "CONTACT-scratchear-three-quarter.png": {
-      "sha256": "f5116966f787144859797ec07a8a47a1f1f0d02b81031ecdf2c14b7bd63a5077",
-      "bytes": 246636
+      "sha256": "26a293e525c4fa457a0793e100fc2e5a78935246301af400b69c410c1583ff6f",
+      "bytes": 138867
     }
   }
 }
