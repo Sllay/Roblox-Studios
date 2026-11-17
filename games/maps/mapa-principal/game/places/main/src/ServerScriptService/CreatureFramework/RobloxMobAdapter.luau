@@ -6,8 +6,14 @@ local function horizontal(v:Vector3):Vector3 return Vector3.new(v.X,0,v.Z) end
 local function finite(v:Vector3):boolean return v.X==v.X and v.Y==v.Y and v.Z==v.Z and v.Magnitude<1e6 end
 function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):any
  local mesh=assert(model:FindFirstChild("Rabbit_Torso",true) or model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
- local ac=model:FindFirstChildWhichIsA("AnimationController",true) :: AnimationController?
- if not ac then ac=Instance.new("AnimationController");ac.Parent=model end
+ local existingController=model:FindFirstChildWhichIsA("AnimationController",true)
+ local ac:AnimationController
+ if existingController then
+  ac=existingController
+ else
+  ac=Instance.new("AnimationController")
+  ac.Parent=model
+ end
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
  local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
  local visualParts:{MeshPart}={}
