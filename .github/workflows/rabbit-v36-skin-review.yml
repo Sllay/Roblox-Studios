@@ -1,0 +1,93 @@
+name: Rabbit V36 repaired skin weights and real-mesh review - NO PUBLISH
+on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - '.github/workflows/rabbit-v36-skin-review.yml'
+      - 'tools/creature_factory/rabbit_v36_skin_weight_rebind.py'
+      - 'tools/creature_factory/rabbit_v36_blender_review.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rabbit-v36-candidate-only
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install reproducible skinning/math and image dependencies
+        run: python -m pip install numpy==2.2.6 scipy==1.16.2 Pillow==11.3.0
+      - name: Preserve 19-bone source and build welded skin-weight candidate
+        run: |
+          set -euo pipefail
+          src=asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.glb
+          dest=dist/rabbit-v36-skin-review/asset.glb
+          echo "779ac4210bf77c19e8ec40f79dab9f7439a9630522ffd88f990d27c0be026133  $src" | sha256sum --check
+          python tools/creature_factory/rabbit_v36_skin_weight_rebind.py "$src" "$dest"
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          p=Path('dist/rabbit-v36-skin-review')
+          r=json.loads((p/'weight-rebind-report.json').read_text())
+          assert r['status']=='v36_skin_weight_review_only'
+          assert r['unchanged_geometry_uv_textures_and_faces']
+          assert r['skin_seams_preserved_by_position_welding']
+          assert r['changed_weight_vertices']>=2000
+          assert r['original_bone_count']==19
+          assert hashlib.sha256((p/'asset.glb').read_bytes()).hexdigest()==r['candidate_sha256']
+          PY
+      - name: Author animation poses from immutable model without uploading
+        run: |
+          python tools/creature_factory/rabbit_animation_author_v35.py \
+            asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/asset.glb \
+            dist/rabbit-v36-skin-review
+      - name: Install actual Blender evaluator and headless renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender xvfb libgl1-mesa-dri python3-numpy
+      - name: Render corrected GLB and validate native bind alignment
+        run: |
+          xvfb-run -a blender -b --factory-startup --python-exit-code 1 \
+            --python tools/creature_factory/rabbit_v36_blender_review.py -- \
+            "$PWD/dist/rabbit-v36-skin-review/asset.glb" \
+            "$PWD/asset-library/roblox-receipts/s0910-rabbit/rabbit-native-proof.json" \
+            "$PWD/dist/rabbit-v36-skin-review" \
+            "$PWD/dist/rabbit-v36-skin-review"
+      - name: Contact sheets: foot-ground and rear-leg-to-ear views
+        run: |
+          python - <<'PY'
+          from PIL import Image,ImageDraw
+          from pathlib import Path
+          out=Path('dist/rabbit-v36-skin-review')
+          for clip in ('idle','walk','run','scratchear'):
+              for view in ('side','three-quarter'):
+                  files=sorted(out.glob(f'{clip}-{view}-*.png'))
+                  assert len(files)>=3,(clip,view)
+                  width=380;height=400
+                  sheet=Image.new('RGB',(width*len(files),height),(236,237,238))
+                  draw=ImageDraw.Draw(sheet)
+                  for i,f in enumerate(files):
+                      image=Image.open(f).convert('RGBA');image.thumbnail((width-10,height-45))
+                      layer=Image.new('RGBA',image.size,(236,237,238,255))
+                      layer.alpha_composite(image)
+                      sheet.paste(layer.convert('RGB'),(i*width+(width-image.width)//2,12))
+                      draw.text((i*width+12,height-27),f'{clip} {view} | pose {i+1}',fill=(30,30,30))
+                  sheet.save(out/f'CONTACT-{clip}-{view}.png')
+          print('V36_GROUNDED_CONTACT_SHEETS_GENERATED')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rabbit-v36-fixed-skin-review-DO-NOT-PUBLISH
+          path: dist/rabbit-v36-skin-review/
+          if-no-files-found: warn
