@@ -141,9 +141,9 @@ def groom(rig):
  fk,_=rig.evaluate(contact)
  error=float(np.linalg.norm(fk['FrontPaw_R'][:3,3]-target))
  assert error<.04,('front_paw_cannot_reach_cheek_and_ear_base',error)
- # No changing the geometry. Paired hind paws and right forepaw hold the
- # original rest pose. Only the L shoulder/forearm can flex.
- for bone in ('Pelvis','Chest','Head','Hip_L','Hip_R','Shin_L','Shin_R','HindPaw_L','HindPaw_R','Shoulder_R','Forearm_R','FrontPaw_R'):
+ # No geometry change. Both hind paws and LEFT forepaw stay planted.
+ # The RIGHT shoulder and forearm provide the grooming stroke.
+ for bone in ('Pelvis','Chest','Head','Hip_L','Hip_R','Shin_L','Shin_R','HindPaw_L','HindPaw_R','Shoulder_L','Forearm_L','FrontPaw_L'):
   assert np.allclose(contact.get(bone,home.get(bone,[0,0,0])),home.get(bone,[0,0,0])),bone
  keys=[];report=[]
  # Two short brushing strokes, with a slight ear dip as the paw approaches.
