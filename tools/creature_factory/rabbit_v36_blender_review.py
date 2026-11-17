@@ -23,7 +23,14 @@ proof=json.loads(proof_path.read_text())
 joint={r['name']:r for r in proof['boneRows']}
 assert len(joint)==19 and len(arm.pose.bones)==19
 assert set(joint)==set(arm.pose.bones.keys())
-assert len([o for o in bpy.data.objects if o.type=='MESH'])==9
+mesh_objects=[o for o in bpy.data.objects if o.type=='MESH']
+print('RABBIT_V36_IMPORT_MESH_NAMES',[(o.name,len(o.data.vertices)) for o in mesh_objects],flush=True)
+# glTF importer may consolidate or material-split nodes; validate the actual
+# skinned torso and six whisker objects, not total Blender object count.
+assert any(o.name.startswith('Rabbit_Torso') for o in mesh_objects),'Missing skinned torso'
+assert sum(o.name.startswith('Whisker_') for o in mesh_objects)>=6,'Six whiskers not preserved'
+assert any(o.name.startswith('FrontArm_L') for o in mesh_objects)
+assert any(o.name.startswith('FrontArm_R') for o in mesh_objects)
 # Real contact reference: feet at rest should be near this floor, not
 # hovering without context as in the early V34 inspection sheets.
 bpy.ops.mesh.primitive_plane_add(size=20,location=(0,0,0))
