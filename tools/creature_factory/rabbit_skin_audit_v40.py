@@ -40,7 +40,26 @@ for obj in sorted((o for o in bpy.data.objects if o.type=='MESH'),key=lambda o:o
         report['errors'].append(f'{obj.name}: invalid skinning {dict(stats)}')
     if stats['more_than_four']:
         report['warnings'].append(f'{obj.name}: {stats["more_than_four"]} vertices have >4 influences')
-    report['meshes'][obj.name]={'vertices':vertex_count,'stats':dict(stats),'dominant_bones':dict(dominant),'bad_samples':bad}
+    # Adjacent vertices with sharply different influences are candidates for
+    # visible skinning seams, even when every weight sums to exactly one.
+    weight_vectors=[]
+    for vert in obj.data.vertices:
+        weight_vectors.append({names.get(g.group,'<missing>'):float(g.weight)
+                               for g in vert.groups if g.weight>1e-6})
+    abrupt=[]
+    for edge in obj.data.edges:
+        a,b=edge.vertices
+        wa,wb=weight_vectors[a],weight_vectors[b]
+        delta=sum(abs(wa.get(bone,0)-wb.get(bone,0))
+                  for bone in wa.keys()|wb.keys())/2
+        distance=(obj.data.vertices[a].co-obj.data.vertices[b].co).length
+        if delta>.65 and distance<.18:
+            abrupt.append({'edge':[int(a),int(b)],'weight_delta':round(delta,4),
+                           'length':round(distance,5)})
+    abrupt.sort(key=lambda item:-item['weight_delta'])
+    if abrupt:
+        report['warnings'].append(f'{obj.name}: {len(abrupt)} abrupt weight edges; inspect deformation')
+    report['meshes'][obj.name]={'vertices':vertex_count,'stats':dict(stats),'dominant_bones':dict(dominant),'bad_samples':bad,'abrupt_weight_edges':len(abrupt),'abrupt_samples':abrupt[:30]}
 destination.parent.mkdir(parents=True,exist_ok=True)
 destination.write_text(json.dumps(report,indent=2)+'\n')
 print('RABBIT_V40_SKIN_AUDIT',json.dumps({'errors':report['errors'],'warnings':report['warnings'],'meshes':len(report['meshes'])}),flush=True)
