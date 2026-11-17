@@ -127,8 +127,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   if name==self.lastClip then
    local track=self.tracks[name];if track then track:AdjustSpeed(speed) end;return
   end
-  local old=self.tracks[self.lastClip];if old then old:Stop(.2) end
-  self.lastClip=name
+  -- A longer rabbit-only crossfade hides the upright/quadrupled pose switch.\n  -- Chickens and other creatures retain their original transition duration.\n  local blend=if self.rabbitGait then .27 else .18\n  local old=self.tracks[self.lastClip];if old then old:Stop(blend) end\n  self.lastClip=name
   if name=="" then return end
   local track=self.tracks[name]
   if not track then
@@ -137,7 +136,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
    track=animator:LoadAnimation(anim);self.tracks[name]=track
    track.Looped=name=="Idle" or name=="Walk" or name=="Run"
   end
-  track:Play(.18,1,speed)
+  track:Play(blend,1,speed)
  end
  function self:cancel() self.goal=nil;self.nextPlan=0 end
  function self:enter(intent:any)
