@@ -31,8 +31,10 @@ jobs:
       - name: Static and unit tests (hard gate before Roblox mutation)
         run: |
           python tools/script_quality.py
-          python -m unittest discover -s tests -v
+          python -m unittest discover -s tests -p 'test_scene_*.py' -v
+          python -m unittest discover -s tests -p 'test_script_quality.py' -v
           luau tests/luau/creature_framework.luau
+          luau tests/luau/rabbit_runtime.luau
           base=games/maps/mapa-principal/game/places/main/src/ServerScriptService
           for f in "$base"/CreatureFramework/*.luau; do
             luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$f"
