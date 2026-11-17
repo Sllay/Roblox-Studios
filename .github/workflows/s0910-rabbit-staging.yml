@@ -6,6 +6,9 @@ on:
       - '.github/workflows/s0910-rabbit-staging.yml'
       - 'tools/s0910_rabbit_staging_release.py'
       - 'tools/sync/s0910_rabbit_staging_release.luau'
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/**'
+      - 'games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureBootstrap.server.luau'
+      - 'games/maps/mapa-principal/game/places/main/src/StarterPlayer/StarterPlayerScripts/CreatureVisual.client.luau'
       - 'tests/luau/creature_framework.luau'
       - 'tests/luau/rabbit_runtime.luau'
   workflow_dispatch:
