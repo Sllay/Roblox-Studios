@@ -1,7 +1,12 @@
 name: S09.10 Rabbit V38 animations and grooming -> staging V34
-# Fail closed by default. Enable a single push trigger only after visual
-# contact sheet inspection. Never replay already-saved V33 or save production.
+# V38 skinned-mesh contact sheets reviewed: no hind skin rupture, front paw
+# reaches lower ear/cheek; one staging-only V33->V34 release approved.
+# Later commits never replay this one-shot unless this workflow is modified.
 on:
+  push:
+    branches: [feat/creature-factory-next]
+    paths:
+      - '.github/workflows/s0910-rabbit-v34.yml'
   workflow_dispatch:
 
 permissions:
