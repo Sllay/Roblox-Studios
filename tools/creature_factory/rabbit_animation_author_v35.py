@@ -115,40 +115,34 @@ def blocks(rig,clip):
  return keys,report
 
 def groom(rig):
- # A rabbit scratches BEHIND the ear with a HIND paw. Never replace this
- # with the foreleg; on unreachability, fail the review instead of faking it.
+ # Skin-safe ear grooming: the ear folds back toward the foot rather than
+ # yanking a far-off hindpaw through 110 degrees of hip twist.
  rest,_=blocks(rig,'Walk')
  home=rest[0][1]
- best=None
- for pelvis_delta in (-.16,0,.16,.32):
-  for chest_delta in (-.36,-.15,.06,.24):
-   for head_delta in (-.22,0,.22):
-    for ear_pitch in (-1.08,-.75,-.45):
-     b=dict(home)
-     b['Pelvis']=np.asarray(home['Pelvis'])+[pelvis_delta,0,0]
-     b['Chest']=np.asarray(home['Chest'])+[chest_delta,0,0]
-     b['Head']=np.asarray(home['Head'])+[head_delta,0,0]
-     b['Ear_L']=[ear_pitch,0,-.17]
-     fk,_=rig.evaluate(b)
-     # Touch near the rear/lower edge of the ear; not its upper tip.
-     point=.62*fk['Ear_L'][:3,3]+.38*fk['Head'][:3,3]+[.02,-.12,.08]
-     pose,error=rig.ik(b,'hind','L',point)
-     # Keep the spine shape near the quadruped stance; no severe twisting.
-     cost=5*error+abs(pelvis_delta)*.12+abs(chest_delta)*.10+abs(head_delta)*.07
-     if best is None or cost<best[0]:best=(cost,pose,error,point)
- assert best is not None
- _,contact,error,point=best
- assert error<.18,('hind_paw_cannot_reach_ear_base',error,point)
- # Plant the three support paws; moving hind paw is deliberately off ground.
+ b=dict(home)
+ b['Chest']=np.asarray(home['Chest'])+[-.50,0,0]
+ b['Ear_L']=[-1.0,0,-.10]
+ fk,_=rig.evaluate(b)
+ # Brush the lower rear base of the folded ear, not the upper tip.
+ point=.50*fk['Ear_L'][:3,3]+.50*fk['Head'][:3,3]+[.05,-.13,.13]
+ def pose(q):
+  v=dict(b);v['Hip_L']=q[:3];v['Shin_L']=[q[3],0,q[4]]
+  return v
+ def objective(q):
+  v=pose(q);fk,_=rig.evaluate(v)
+  return np.r_[4*(fk['HindPaw_L'][:3,3]-point),.04*q]
+ bounds=([-1.50,-.40,-.75,-1.60,-.90],[1.50,.40,.75,1.60,.90])
+ opt=least_squares(objective,np.zeros(5),bounds=bounds,max_nfev=100)
+ contact=pose(opt.x)
+ fk,_=rig.evaluate(contact)
+ error=float(np.linalg.norm(fk['HindPaw_L'][:3,3]-point))
+ assert error<.07,('ear_outside_skin_safe_hind_reach',error)
+ # Replant the other three paws, leaving the left hind foot free to groom.
  for kind,side,x,y,z in [('fore','L',.36,.21,-1.04),
                          ('fore','R',-.36,.21,-1.04),
                          ('hind','R',None,.21,None)]:
   if x is None:
-   # Keep planted opposite hind foot in its current horizontal spot.
-   # The torso leans to reach the ear; forcing the old XZ would
-   # overstretch the supporting hip and create visible geometry tears.
-   fk,_=rig.evaluate(contact)
-   foot=fk['HindPaw_R'][:3,3]
+   fk,_=rig.evaluate(contact);foot=fk['HindPaw_R'][:3,3]
    x,z=float(foot[0]),float(foot[2])
   contact,e=rig.ik(contact,kind,side,[x,y,z])
   assert e<.24,('support_contact',kind,side,e)
@@ -158,18 +152,19 @@ def groom(rig):
  for t,raised,rake in phases:
   values={bone:(1-raised)*np.asarray(home.get(bone,[0,0,0]))+
               raised*np.asarray(contact.get(bone,[0,0,0])) for bone in JOINTS}
-  values['Ear_L']=np.asarray(values['Ear_L'])+[-.22*rake,0,-.10*rake]
-  values['Shin_L']=np.asarray(values['Shin_L'])+[.13*rake,0,.06*rake]
-  values['HindPaw_L']=np.asarray(values['HindPaw_L'])+[-.20*rake,0,0]
+  values['Ear_L']=np.asarray(values['Ear_L'])+[-.12*rake,0,-.03*rake]
+  values['Shin_L']=np.asarray(values['Shin_L'])+[.055*rake,0,.025*rake]
+  values['HindPaw_L']=np.asarray(values['HindPaw_L'])+[-.08*rake,0,0]
   values['RootYOffset']=0.
   fk,_=rig.evaluate(values)
-  base=fk['Ear_L'][:3,3]
-  contact_point=.62*base+.38*fk['Head'][:3,3]+[.02,-.12,.08]
+  contact_point=.50*fk['Ear_L'][:3,3]+.50*fk['Head'][:3,3]+[.05,-.13,.13]
   distance=float(np.linalg.norm(fk['HindPaw_L'][:3,3]-contact_point))
-  if raised==1:assert distance<.40,('hind_paw_ear_contact_lost',t,distance)
+  if raised==1:assert distance<.20,('hind_paw_ear_contact_lost',t,distance)
   keys.append((t,values))
   report.append({'phase':t,'hindpaw_to_ear_base_distance':distance,
-                 'raised':raised,'ear_bend':rake})
+                 'raised':raised,'ear_bend':rake,
+                 'hip_pitch':float(values['Hip_L'][0]),
+                 'hip_roll':float(values['Hip_L'][2])})
  assert all(np.allclose(keys[0][1][n],keys[-1][1][n]) for n in JOINTS)
  return keys,report
 
