@@ -57,6 +57,24 @@ def bind_verified_clips() -> None:
     print("RABBIT_V2_CLIPS_BOUND", json.dumps(ids, sort_keys=True), flush=True)
 
 
+def preserve_native_proof() -> None:
+    # Native importer evidence is immutable and tied to the SAME skinned mesh.
+    # The v2 upload journal is isolated; copy the proven ancestry with its
+    # identical bytes so the common upload entrypoint cannot read old receipts.
+    source = ROOT / "asset-library/roblox-receipts/s0910-rabbit/rabbit-native-proof.json"
+    proof = json.loads(source.read_text())
+    assert str(proof["assetId"]) == "87498816533548"
+    assert proof["bones"] == 19 and proof["meshCount"] == 9 and proof["whiskers"] == 6
+    destination = original.RECEIPTS / "rabbit-native-proof.json"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        assert destination.read_bytes() == source.read_bytes(), "Native ancestry drift"
+    else:
+        destination.write_bytes(source.read_bytes())
+        original.persist([destination], "evidence(s0910): inherit identical verified skinned-rig ancestry")
+
+
 if __name__ == "__main__":
+    preserve_native_proof()
     original.main()
     bind_verified_clips()
