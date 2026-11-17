@@ -3,39 +3,39 @@
   "stagingVersionUnchanged": 33,
   "animationAssetsUploaded": false,
   "rabbitPlacePublished": false,
-  "originRunId": 44012208291,
+  "originRunId": 44013487213,
   "files": {
     "CONTACT-idle-side.png": {
-      "sha256": "87545d7509d8cebd1cf565c6b477442006623815c0d3c12153422099201d2634",
-      "bytes": 116038
+      "sha256": "80a8fa8b7ca21ca51ac4b29ba316057351b49ae9477c9c345ec43e7562269b63",
+      "bytes": 138923
     },
     "CONTACT-idle-three-quarter.png": {
-      "sha256": "7085c63ee1c243ed8097136ae8584d10db7f8e59d9486f2afa91df44de7f0e74",
-      "bytes": 110178
+      "sha256": "1b722c445200de5d4d170f0bbf3f6347df8cc77aee8266500e60197fc7120e52",
+      "bytes": 126104
     },
     "CONTACT-walk-side.png": {
-      "sha256": "5ae0faaf092b2fd47e4f31605e9df23537ed07ffcb5df11898140af28f802a40",
-      "bytes": 201725
+      "sha256": "b0b3caef0724af1e8f741b775b999017a7ee26e054f913fd494597781927196c",
+      "bytes": 218239
     },
     "CONTACT-walk-three-quarter.png": {
-      "sha256": "e0a9c9ed1c4a46cabe6838d05d811fe7898f17cff73691bae58c3b17b5919532",
-      "bytes": 198074
+      "sha256": "a09956f3e29cc989f5cd5a04e89e5d86832cd02347d1fb16ab192859adc90a8a",
+      "bytes": 196493
     },
     "CONTACT-run-side.png": {
-      "sha256": "0b246f80bfea060ea0669c8fa05bd542faf2bf45c27fc6983b14549b2cd949e4",
-      "bytes": 228665
+      "sha256": "0e01a9bc588bba40f9b67d100dcd0b2c45b8fc71aa31e300cc0b63c8fa7e3021",
+      "bytes": 238680
     },
     "CONTACT-run-three-quarter.png": {
-      "sha256": "e8732c7982e3665efba4b37de423ed8a97d259ebddb8458555e702b2c3f88372",
-      "bytes": 217625
+      "sha256": "bbbd4046696bc85c995e04dc92488c98d034142a21ad67f323b1d0ac0b60ae69",
+      "bytes": 213421
     },
     "CONTACT-scratchear-side.png": {
-      "sha256": "1a0d2bf0466bd0bd3e0a5d52d05fb735f09d8af002e0b4ca92b573e0c325b4c5",
-      "bytes": 249657
+      "sha256": "2c669f64ec6c45795331fd63faa7427575ecf086dfb8c3e03fb8f40f47a9ed51",
+      "bytes": 275858
     },
     "CONTACT-scratchear-three-quarter.png": {
-      "sha256": "50efa59c2c7bfbef61f42e774cc406768e62da5ddf0e429d6606743cc0540c2f",
-      "bytes": 223355
+      "sha256": "f5116966f787144859797ec07a8a47a1f1f0d02b81031ecdf2c14b7bd63a5077",
+      "bytes": 246636
     }
   }
 }
