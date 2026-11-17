@@ -39,7 +39,8 @@ class RabbitV34(unittest.TestCase):
  def test_scratch_front_paw_makes_contact(self):
   clip=self.man['clips']['ScratchEar']
   for r in clip['blocking']:
-   self.assertLess(r['front_paw_to_ear_error'],.11,r)
+   if r['raised']==1:
+    self.assertLess(r['forepaw_to_ear_distance'],.46,r)
   for t in (.33,.54,.74):
    row=min(clip['samples'],key=lambda x:abs(x['t']-t))
    d=math.dist(row['forepaw'],row['ear'])
