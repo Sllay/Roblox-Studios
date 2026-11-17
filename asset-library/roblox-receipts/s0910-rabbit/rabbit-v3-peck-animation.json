@@ -3,7 +3,14 @@
   "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations/peck.rbxmx",
   "sha256": "6b8f999ffa918114a550f4cf312709a76d6e7f237b6252f8303b5404f088fcd7",
   "bytes": 134109,
-  "state": "post_intent",
+  "state": "operation_created",
   "noPlaceWrites": true,
-  "retryAllowed": false
+  "retryAllowed": false,
+  "httpStatus": 200,
+  "response": {
+    "path": "operations/0da7ccf2-fa40-45e8-bb6f-47d96288d298",
+    "operationId": "0da7ccf2-fa40-45e8-bb6f-47d96288d298",
+    "done": false
+  },
+  "operationPath": "operations/0da7ccf2-fa40-45e8-bb6f-47d96288d298"
 }
