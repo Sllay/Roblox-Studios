@@ -1,6 +1,6 @@
 --!strict
 -- Staging-only activation; the reviewed model is stored with the Place.
-local root=script.Parent:WaitForChild("CreatureFramework")
+local root=assert(script.Parent,"Bootstrap requires ServerScriptService parent"):WaitForChild("CreatureFramework")
 local function get(name:string):any return require(root:WaitForChild(name) :: ModuleScript) end
 local flags=get("FeatureFlags")
 if not flags.Enabled then return end
@@ -24,8 +24,9 @@ local rabbitTemplate:Model?=nil
 if flags.RabbitEnabled then
  local storedRabbit=assert(assets:WaitForChild("RabbitV3",10),"Missing approved RabbitV3 staging template")
  assert(storedRabbit:IsA("Model") and storedRabbit:GetAttribute("RSAssetId")==Registry.get("210081").modelAssetId,"Rabbit V3 template identity")
- rabbitTemplate=storedRabbit:Clone()
- assert(rabbitTemplate.Parent==nil)
+ local detachedRabbit=storedRabbit:Clone()
+ assert(detachedRabbit.Parent==nil)
+ rabbitTemplate=detachedRabbit
  local rabbitPolicy=table.clone(get("SpawnPolicy").rabbit)
  rabbitPolicy.wildlifeProfile=get("WildlifeProfiles").rabbit
  Service.addSpecies(fauna,rabbitPolicy,rabbitTemplate,math.random(1,2147483646))
