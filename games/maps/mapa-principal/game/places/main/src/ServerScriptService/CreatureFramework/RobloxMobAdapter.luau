@@ -154,7 +154,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
     self.nextScratchTime=self.clock+3+self.options.random()*2
    end
   end
-  if intent.state=="Static" or intent.state=="Dead" then self:animate("",1) else self:animate(intent.animation,1) end
+  -- A fleeing rabbit starts its run clip only after the first valid move.\n  -- Otherwise an obstructed rabbit visibly runs on all fours in place.\n  if intent.state=="Static" or intent.state=="Dead" then self:animate("",1)\n  elseif self.rabbitGait and intent.state=="Flee" then self:animate("Idle",1)\n  else self:animate(intent.animation,1) end
  end
  function self:plan(flee:boolean):Vector3?
   self.routePlans+=1;self.nextPlan=self.clock+.15
@@ -288,9 +288,9 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
    if self.blocked and not flee then self.exploreTarget=nil end
   end
   local goal=self.goal
-  if not goal then self:animate(if flee then "Run" else "Idle",1);return "Running" end
+  if not goal then self:animate(if self.rabbitGait then "Idle" else if flee then "Run" else "Idle",1);return "Running" end
   local speed=if flee then math.max(self.options.minimumRunSpeed or 12,self.stats.runSpeed) else self.stats.walkSpeed
-  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if flee then "Run" else "Idle",1);return "Running" end
+  if not self:moveToward(goal,speed,dt) then self.goal=nil;self.nextPlan=self.clock;self.blocked=true;self:animate(if self.rabbitGait then "Idle" else if flee then "Run" else "Idle",1);return "Running" end
   self.blocked=false;self:animate(if flee then "Run" else "Walk",math.clamp(self.motionSpeed/speed,.65,1))
   return "Running"
  end
