@@ -62,7 +62,7 @@ def hierarchy(glb,proof):
     import struct
     raw=glb.read_bytes();n=struct.unpack_from('<I',raw,12)[0];doc=json.loads(raw[20:20+n]);ids=doc['skins'][0]['joints'];nodes=doc['nodes']
     names={i:nodes[i]['name'] for i in ids}; parent={j:i for i in ids for j in nodes[i].get('children',[]) if j in ids}
-    expected={names[i]:names[parent[i]] if i in parent else 'Rabbit_Torso' for i in ids}
+    expected={names[i]:names[parent[i]] if i in parent else 'RootPart' for i in ids}
     native=proof['boneRows'];assert len(native)==19
     actual={row['name']:row['parent'] for row in native}
     assert actual==expected,{'native':actual,'source':expected}
