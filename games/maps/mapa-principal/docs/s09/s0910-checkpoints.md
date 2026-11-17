@@ -41,9 +41,13 @@ forward/down toward the hand. Rear-leg grooming is prohibited.
 - Changed only rabbit transition smoothing (.27s). No-target/blocked fleeing
   rabbits use upright Idle rather than visually Run in place; other species
   keep the previous behavior.
-- Preliminary GitHub Actions V39 test and source build steps passed at
+- All V39 source tests, XML generation, Blender evaluated real-mesh
+  render and two-view contact sheets succeeded on GitHub Actions:
   https://github.com/Sllay/Roblox-Studios/actions/runs/44107771011 .
-  The Blender render and eventual mobile live runtime remain separate gates.
+  Review artifact:
+  https://github.com/Sllay/Roblox-Studios/actions/runs/44107771011/artifacts/14338568674 .
+  Mobile visual acceptance, actual animation uploads and staging runtime remain
+  separate gates; a successful render does not certify natural movement.
 - Staging V34 remains verified and unchanged. Do not re-run the retired V34
   one-shot publisher. New V39 clip uploads and staging version 35 need new
   immutable receipts, explicit art review, isolated preflight and readback.
