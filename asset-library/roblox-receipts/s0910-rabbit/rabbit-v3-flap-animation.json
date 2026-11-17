@@ -3,7 +3,7 @@
   "source": "asset-library/candidates/rabbit-v3-cartoon-v2-mobile-lod0/native-animations/flap.rbxmx",
   "sha256": "05145b7a6466e5364c77c2ed80656452ac42c53bb1e35846fefa97a54368ea27",
   "bytes": 135029,
-  "state": "operation_created",
+  "state": "created",
   "noPlaceWrites": true,
   "retryAllowed": false,
   "httpStatus": 200,
@@ -12,5 +12,31 @@
     "operationId": "90510153-9fac-420d-af70-3107ced54284",
     "done": false
   },
-  "operationPath": "operations/90510153-9fac-420d-af70-3107ced54284"
+  "operationPath": "operations/90510153-9fac-420d-af70-3107ced54284",
+  "operation": {
+    "path": "operations/90510153-9fac-420d-af70-3107ced54284",
+    "operationId": "90510153-9fac-420d-af70-3107ced54284",
+    "done": true,
+    "response": {
+      "path": "assets/116465239449329",
+      "revisionId": "1",
+      "revisionCreateTime": "2026-11-17T00:13:11.936Z",
+      "assetId": "116465239449329",
+      "displayName": "Black Islands Rabbit V3 Flap",
+      "description": "Original skinned 19-bone rabbit Flap on asset 87498816533548",
+      "assetType": "Animation",
+      "creationContext": {
+        "creator": {
+          "userId": "8136365379"
+        }
+      },
+      "moderationResult": {
+        "moderationState": "Approved"
+      },
+      "state": "Active",
+      "isPublished": true
+    }
+  },
+  "operationHttpStatus": 200,
+  "assetId": "116465239449329"
 }
