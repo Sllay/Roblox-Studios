@@ -20,8 +20,12 @@ def idle(rig):
         pose["Chest"][0]+=.027*breath
         pose["Pelvis"][0]-=.008*breath
         pose["Head"][0]-=.014*breath
-        pose["Shoulder_L"]=np.array([-.035*breath,0,0])\n        pose["Forearm_L"]=np.array([.047*breath,0,0])\n        pose["FrontPaw_L"]=np.array([-.022*breath,0,0])
-        pose["Shoulder_R"]=np.array([-.035*breath,0,0])\n        pose["Forearm_R"]=np.array([.047*breath,0,0])\n        pose["FrontPaw_R"]=np.array([-.022*breath,0,0])
+        pose["Shoulder_L"]=np.array([-.035*breath,0,0])
+        pose["Forearm_L"]=np.array([.047*breath,0,0])
+        pose["FrontPaw_L"]=np.array([-.022*breath,0,0])
+        pose["Shoulder_R"]=np.array([-.035*breath,0,0])
+        pose["Forearm_R"]=np.array([.047*breath,0,0])
+        pose["FrontPaw_R"]=np.array([-.022*breath,0,0])
         pose["Ear_L"]=np.array([-.058*lag,0,.012*lag])
         pose["Ear_R"]=np.array([-.053*lag,0,-.012*lag])
         keys.append((phase,pose))
