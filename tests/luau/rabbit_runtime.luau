@@ -1,13 +1,12 @@
 --!strict
 -- S09.10: genuine shared ecological runtime, no duplicate AI or event system.
-local root="../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/"
-local Registry=require(root.."CreatureRegistry")
-local Fauna=require(root.."FaunaService")
-local Gameplay=require(root.."BookGameplay")
-local Profiles=require(root.."WildlifeProfiles")
-local Spawn=require(root.."SpawnPolicy")
-local Brain=require(root.."MobBrain")
-local Kernel=require(root.."AIKernel")
+local Registry=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/CreatureRegistry")
+local Fauna=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/FaunaService")
+local Gameplay=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/BookGameplay")
+local Profiles=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/WildlifeProfiles")
+local Spawn=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/SpawnPolicy")
+local Brain=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/MobBrain")
+local Kernel=require("../../games/maps/mapa-principal/game/places/main/src/ServerScriptService/CreatureFramework/AIKernel")
 
 local chicken=assert(Registry.get("210080"))
 local rabbit=assert(Registry.get("210081"))
