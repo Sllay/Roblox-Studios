@@ -11,13 +11,15 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
  local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
  local visualParts:{MeshPart}={}
+ local rigParts:{BasePart}={}
  for _,part in model:GetDescendants() do
-  if part:IsA("MeshPart") then
+  if part:IsA("BasePart") then
    part.Anchored=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false
-   table.insert(visualParts,part)
+   table.insert(rigParts,part)
+   if part:IsA("MeshPart") then table.insert(visualParts,part) end
   end
  end
- self.visualParts=visualParts
+ self.visualParts=visualParts;self.rigParts=rigParts
  assert(#visualParts>=1,"creature must contain a visible MeshPart")
  local hitbox=Instance.new("Part");hitbox.Name="CreatureHitbox";hitbox.Size=mesh.Size+Vector3.new(.6,.6,.6);hitbox.Transparency=1;hitbox.Anchored=true;hitbox.CanCollide=false;hitbox.CanTouch=false;hitbox.CanQuery=true;hitbox.CFrame=mesh.CFrame;hitbox.Parent=model
  self.hitbox=hitbox
@@ -273,7 +275,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   else
    self.deathReleased=true
    -- Weld all rigid mesh sections to the torso during the corpse phase; limb meshes must not float.
-   for _,part in self.visualParts do
+   for _,part in self.rigParts do
     if part~=mesh then
      local weld=Instance.new("WeldConstraint");weld.Part0=mesh;weld.Part1=part;weld.Parent=model
      part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false
