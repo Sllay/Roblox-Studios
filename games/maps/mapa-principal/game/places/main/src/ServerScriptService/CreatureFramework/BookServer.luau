@@ -59,7 +59,8 @@ local function aimedRecord(s:any,player:Player,direction:any,origin:any?):string
  if not hit then return nil end
  local m=hit.Instance:FindFirstAncestorOfClass("Model")
  while m do
-  local id=m:GetAttribute("CreatureInstanceId");local _,r=if type(id)=="string" then findRecord(s,id) else nil,nil
+  local id=m:GetAttribute("CreatureInstanceId");local r=nil
+  if type(id)=="string" then local _,found=findRecord(s,id);r=found end
   if r and r.adapter.model==m and hit.Instance==r.adapter.hitbox and r.adapter.alive and (r.adapter.mesh.Position-root.Position).Magnitude<=AIM_RANGE then return id :: string end
   local parent=m.Parent;m=if parent then parent:FindFirstAncestorOfClass("Model") else nil
  end
