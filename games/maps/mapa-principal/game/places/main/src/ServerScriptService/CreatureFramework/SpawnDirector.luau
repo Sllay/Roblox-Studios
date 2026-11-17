@@ -31,7 +31,7 @@ local function create(s:any,aiEnabled:boolean?):(any,any,Model,string)
  local model=s.template:Clone()
  local materials:{[Enum.Material]:boolean}={}
  for _,material in Enum.Material:GetEnumItems() do if p.allowedMaterials[material.Name] then materials[material]=true end end
- local options={contains=function(x:number,z:number)return d.biomes.regionAt(p.biomeId,x,z)~=nil end,materials=materials,random=function()return s.rng:NextNumber() end,threatProvider=d.threatProvider,longRoute=d.longRoute}
+ local options={contains=function(x:number,z:number)return d.biomes.regionAt(p.biomeId,x,z)~=nil end,materials=materials,random=function()return s.rng:NextNumber() end,threatProvider=d.threatProvider,longRoute=d.longRoute,minimumRunSpeed=if species.id=="210081" then 9 else nil}
  local adapter=d.adapter.new(workspace,model,species,d.escape,options)
  adapter.aiEnabled=aiEnabled~=false
  return species,adapter,model,game:GetService("HttpService"):GenerateGUID(false)
