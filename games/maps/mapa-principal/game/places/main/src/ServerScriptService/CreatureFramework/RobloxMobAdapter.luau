@@ -5,11 +5,20 @@ local D={}
 local function horizontal(v:Vector3):Vector3 return Vector3.new(v.X,0,v.Z) end
 local function finite(v:Vector3):boolean return v.X==v.X and v.Y==v.Y and v.Z==v.Z and v.Magnitude<1e6 end
 function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):any
- local mesh=assert(model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
- local ac=assert(model:FindFirstChildWhichIsA("AnimationController",true)) :: AnimationController
+ local mesh=assert(model:FindFirstChild("Rabbit_Torso",true) or model:FindFirstChildWhichIsA("MeshPart",true)) :: MeshPart
+ local ac=model:FindFirstChildWhichIsA("AnimationController",true) :: AnimationController?
+ if not ac then ac=Instance.new("AnimationController");ac.Parent=model end
  local animator=ac:FindFirstChildWhichIsA("Animator") or Instance.new("Animator",ac)
  local self:any={routineFood=species.animations.Peck~=nil,peckConsumed=false,peckAge=0,actionAge=0,actionComplete=false,motionSpeed=0,world=world,model=model,mesh=mesh,animator=animator,escape=escape,options=options,tracks={},animations={},lastClip="",goal=nil,clock=0,nextPlan=0,blocked=false,stuck=false,hit=false,alive=true,aiEnabled=true,threat=nil,food=nil,stats=species.base,queries=0,routePlans=0,moveDistance=0}
- mesh.Anchored=true;mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
+ local visualParts:{MeshPart}={}
+ for _,part in model:GetDescendants() do
+  if part:IsA("MeshPart") then
+   part.Anchored=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false
+   table.insert(visualParts,part)
+  end
+ end
+ self.visualParts=visualParts
+ assert(#visualParts>=1,"creature must contain a visible MeshPart")
  local hitbox=Instance.new("Part");hitbox.Name="CreatureHitbox";hitbox.Size=mesh.Size+Vector3.new(.6,.6,.6);hitbox.Transparency=1;hitbox.Anchored=true;hitbox.CanCollide=false;hitbox.CanTouch=false;hitbox.CanQuery=true;hitbox.CFrame=mesh.CFrame;hitbox.Parent=model
  self.hitbox=hitbox
  game:GetService("CollectionService"):AddTag(mesh,"CreatureVisual")
@@ -47,9 +56,15 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   return true
  end
  function self:position():Vector3 return mesh.Position-Vector3.new(0,half,0) end
+ function self:relocate(cf:CFrame)
+  -- Every skinned MeshPart follows the same rigid root motion. Do not move one limb in isolation.
+  local delta=cf*mesh.CFrame:Inverse()
+  model:PivotTo(delta*model:GetPivot())
+  hitbox.CFrame=cf
+ end
  function self:place(p:Vector3):boolean
   local g=self:ground(p.X,p.Z);if not g then return false end
-  mesh.CFrame=CFrame.new(g+Vector3.new(0,half,0));hitbox.CFrame=mesh.CFrame;return true
+  self:relocate(CFrame.new(g+Vector3.new(0,half,0)));return true
  end
  function self:setThreat(t:any) self.threat=t end
  function self:setFood(p:Vector3?) self.food=p end
@@ -162,7 +177,7 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
   local q=p+target*step;local g=self:ground(q.X,q.Z)
   if not g and self.options.steer then q=p+delta.Unit*step;g=self:ground(q.X,q.Z) end
   if not g or (not self.travelTarget and not self.options.freeRoam and self.home and horizontal(g-self.home).Magnitude>(self.options.roamRadius or 100)) or math.abs(g.Y-p.Y)>.6 or (self.options.canMove and not self.options.canMove(g)) then return false end
-  local at=g+Vector3.new(0,half,0);mesh.CFrame=CFrame.lookAt(at,at+facing);hitbox.CFrame=mesh.CFrame;self.moveDistance+=step
+  local at=g+Vector3.new(0,half,0);self:relocate(CFrame.lookAt(at,at+facing));self.moveDistance+=step
   if self.options.onMoved then self.options.onMoved() end
   return true
  end
@@ -254,9 +269,17 @@ function D.new(world:Workspace,model:Model,species:any,escape:any,options:any):a
    return
   end
   if age<.35 then
-   mesh.CFrame=self.deathPose*CFrame.Angles(0,0,math.rad(65)*math.clamp(age/.35,0,1))
+   self:relocate(self.deathPose*CFrame.Angles(0,0,math.rad(65)*math.clamp(age/.35,0,1)))
   else
-   self.deathReleased=true;mesh.Anchored=false;mesh.CanCollide=true;mesh.CanTouch=false
+   self.deathReleased=true
+   -- Weld all rigid mesh sections to the torso during the corpse phase; limb meshes must not float.
+   for _,part in self.visualParts do
+    if part~=mesh then
+     local weld=Instance.new("WeldConstraint");weld.Part0=mesh;weld.Part1=part;weld.Parent=model
+     part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false
+    end
+   end
+   mesh.Anchored=false;mesh.CanCollide=true;mesh.CanTouch=false
    self.corpseConstraints={}
    self.nextCorpsePush=0
    mesh:SetNetworkOwner(nil);mesh.AssemblyAngularVelocity=Vector3.new(0,0,2)
