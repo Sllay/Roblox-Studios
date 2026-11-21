@@ -60,4 +60,4 @@ F. **Experiência do começo:** prólogo sem infecção interna espalhada, sem s
 
 ## Revisão de escopo
 
-Temporada inicial medieval, sem ciência, ruínas tecnológicas ostensivas ou saltos para cyberpunk. Mundo originalmente avançado vira segredo da história e pesquisa tardia. PvP e guerra de reinos continuam FUTURO, com normalização de benefícios pagos.
+Temporada inicial medieval; revelações da lore futura são confidenciais e não pertencem a este repositório público. PvP e guerra de reinos continuam FUTURO, com normalização de benefícios pagos.

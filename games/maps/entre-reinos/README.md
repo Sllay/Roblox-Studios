@@ -12,3 +12,10 @@ Novo jogo Roblox com cenário integralmente 3D e câmera lateral (jogabilidade X
 Leia `AGENTS.md`, `GDD.md`, `ARCHITECTURE.md` e `docs/IMPLEMENTATION_PLAN.md` antes de implementar.
 
 A pasta foi baseada no template canônico `games/maps/_template/`, que também é usado pelo scaffold oficial `tools/scaffold.py`. IDs de Universe/Place permanecerão nulos até verificação.
+
+## Fonte da verdade (preservação entre chats)
+- Bíblia de design: [docs/VISION_MASTER.md](docs/VISION_MASTER.md)
+- Registro de mudanças: [docs/DECISION_LOG.md](docs/DECISION_LOG.md)
+- IDs recebidos, mas não validados: [docs/ROBLOX_IDS_PENDING.md](docs/ROBLOX_IDS_PENDING.md)
+- Lore confidencial: armazenada fora do repositório público, em documento privado do criador.
+Todo agente deve ler os documentos antes de implementar mudanças de gameplay.

@@ -120,7 +120,7 @@ NPC: R6, personalidade e habilidades; inventário real com slots, massa por item
 
 Infecção interna contagiosa de moradores que retornam do exterior é um sistema **posterior**, não ativado nos primeiros minutos nem no tutorial, pois pode causar derrota precoce inevitável. Quando entrar, exige introdução didática, sinais/sintomas detectáveis, cura/isolar/evacuar e janela de reação. No prólogo só existe a infecção roteirizada do duque; outras ameaças são controladas para garantir aprendizado.
 
-O mundo **não é originalmente medieval**: em lore de longo prazo, uma civilização tecnológica colapsou diante dos monstros; sobreviventes perderam ciência e infraestrutura e reconstruíram a sociedade com materiais primitivos. Não revelar isto nos primeiros episódios nem dar tecnologia futurista rapidamente. Fragmentos arqueológicos, pesquisa, energia, laboratórios, cientistas e modernização tecnológica são fases bem tardias (idealizado para temporadas futuras).
+A história tem revelações confidenciais de longo prazo em documento privado. Não expor detalhes na documentação pública.
 
 ## 17. Emenda V0.2 — monetização planejada e limites
 

@@ -1,0 +1,140 @@
+# ENTRE REINOS — BÍBLIA DE DESIGN (FONTE CANÔNICA)
+
+Versão V0.3 — 2026-11-21. Estado: PLANEJAMENTO, não funcionalidades implementadas.
+
+LEIA ESTE DOCUMENTO ANTES DE PROJETAR, PROGRAMAR, TESTAR OU PUBLICAR O ENTRE REINOS.
+Regras: [FIXADO] = definido pelo criador; [PROPOSTA] = proposta técnica/creativa; [FUTURO] = objetivo preservado, fora da primeira versão; [ABERTO] = não especificado ou não verificado. Nunca transformar exemplos em parâmetros definitivos. Toda mudança aprovada vai para o log de decisões, GDD, arquitetura e testes, sem apagar ideias anteriores silenciosamente. A lore reservada NÃO deve ser escrita em repositório público.
+
+## 1 — Identidade do jogo e desenvolvimento
+
+[FIXADO] Nome em português: Entre Reinos; tradução de trabalho em inglês: Between Kingdoms, a validar. Survival medieval de estratégia e exploração lateral, reino vivo e governável, combate direto, logística, economia, NPCs autônomos, corrupção e ataques.
+[FIXADO] Jogo Roblox separado de Black Island. Mesmo estilo stylized cartoon, reaproveitando apenas recursos próprios/aprovados, biblioteca e ferramentas do repositório Roblox-Studios. Nunca misturar scripts, save, IDs e publicação entre projetos.
+[FIXADO] Mapas staging e production independentes: staging recebe novas versões validadas por checks e é usado em testes visuais; production recebe somente atualizações estáveis com aprovação. Nenhum deploy em ID não verificado.
+[FIXADO] Jogo começa solo (no Roblox ainda depende de servidores/conexão), com seis slots de mundos independentes. Coop, PvP, guerra de jogadores e funcionalidades enormes são FUTURO.
+[FIXADO] O objetivo é criar um bom jogo capaz de gerar receita enquanto Black Island continua em desenvolvimento; não sacrificar qualidade por monetização.
+
+## 2 — Prólogo jogável e começo da campanha
+
+[FIXADO] Protagonista é um guerreiro/guarda real do nobre/duque regional, cuja administração é corrupta. O mundo sofre ameaça de monstros obscuros; alguns são infectantes.
+[FIXADO] O duque sai da proteção das muralhas, escoltado por guardas. Um monstro especial o infecta; outros guardas hesitam em atacar seu antigo senhor e morrem. O jogador vence o duque transformado.
+[FIXADO] Logo depois, grande ataque dos dois lados. Muralhas externas caem, habitantes fogem para o centro. Tutorial ensina caminhar, atacar, equipar NPCs com arcos e lanças, reforçar paredes, ordenar defesa e proteger civis. Os defensores podem lançar lanças/projéteis de posições protegidas.
+[FIXADO] Os sobreviventes veem o protagonista defender a cidade melhor do que o nobre, e ao amanhecer oferecem a coroa. Início do sandbox: reparar casas, galpões e muros, obter materiais, administrar sobreviventes e expandir.
+[PROPOSTA] Cinco momentos curtos, todos jogáveis, sem cutscene excessiva; confiança/lealdade dos NPCs precisa ser mantida depois da coroação.
+[FIXADO] Infecção do nobre é roteirizada. Infecção aleatória entre cidadãos NÃO deve devastar um save iniciante antes do jogador entender os sistemas.
+
+## 3 — Mundo 100% 3D com câmera lateral
+
+[FIXADO] ABSOLUTAMENTE TODO O CENÁRIO É 3D, com Terrain nativo Roblox e modelos 3D; não usar fundo 2D com parallax. O visual é 2.5D pela câmera, não por sprites.
+[FIXADO] Eixo X = caminhar para esquerda/direita, Y = altura e subida/descida na água, Z = profundidade visual, sem caminhar livremente para frente/trás em solo.
+[FIXADO] Quatro zonas em profundidade, todas tridimensionais:
+1. Fundo distante: montanhas, colinas, florestas, cachoeiras e natureza 3D decorativa;
+2. Fundo próximo interativo: casas, galpões, muralhas, árvores cortáveis, minérios, fazendas, oficinas, estruturas. NPCs operam por âncoras alcançáveis da faixa jogável;
+3. Faixa jogável: jogador R6, NPCs, monstros, animais, combate, grama baixa, obstáculos;
+4. Primeiro plano: rio/mar, margens e elementos decorativos como árvores, gramas e galhos em SILHUETA PRETA ABSOLUTA 3D, sem clarear pelo dia/noite; devem ser raros, leves e não ocultar jogador/UI.
+[FIXADO] Rios podem nascer nas montanhas de fundo, descer como cursos de água reais visuais, atravessar a faixa jogável e continuar na frente. O primeiro plano pode ter terra em algumas regiões.
+[FIXADO] Mundo horizontal muito grande: reinos, vilas, tribos, florestas, cavernas e/ou portais em regiões caminháveis e interligadas; um barco é opcional, não requisito para trocar de reino.
+[FIXADO] Procedural por seed, porém controlado: reinos, áreas de expansão, muralhas, cursos de água, montanhas, faixas de caminho e recursos precisam ser coerentes e navegáveis.
+[PROPOSTA] Simulação agregada e LOD para reinos muito afastados, regiões em streaming e Terrain gerado por sistema próprio auditado. Não instanciar um continente inteiro nem centenas de agentes de IA em todos os reinos.
+[ABERTO] Escalas, terreno exato e largura do corredor de navegação.
+
+## 4 — Jogador R6, controle, água e montaria
+
+[FIXADO] Jogador e NPCs humanoides R6 (roupas/acessórios medievais variados). Jogador inicia a pé; pode correr, pular, usar armas e mais tarde comprar/domesticar montarias.
+[FIXADO] Direita/esquerda em solo movem X; cima gira suavemente o avatar para o fundo, baixo gira para a câmera, SEM mover Z. Combinar orientação e movimentação sem travar, vibrar ou deslocar o personagem para fora da faixa.
+[FIXADO] Ao nadar em Terrain Water, cima faz subir em Y, baixo faz mergulhar em Y, esquerda/direita movem X, diagonais combinam X/Y suavemente. Permanece bloqueado deslocamento Z. Usar capacidades de Humanoid Swimming e animação nativa sem comprometer física; verificar no motor.
+[FIXADO] Riachos rasos podem permitir travessia a pé; águas profundas exigem natação ou pontes. NPCs e montarias terrestres incapazes de nadar só atravessam por rota adequada.
+[FIXADO] Montarias oferecem mobilidade e possivelmente atributos de vida/status. Domesticação e espécies especiais são sistema futuro ampliável.
+[PROPOSTA] Terrain Water não gera escoamento hidrológico automaticamente; volumes nadáveis, correnteza artificial e cachoeiras visuais são sistemas distintos. Evitar teleport CFrame por frame.
+
+## 5 — Pontes e logística de travessia
+
+[FIXADO] Pontes são construíveis e melhoráveis por trabalhadores.
+[FIXADO] Ponte provisória permite inicialmente apenas construtores/trabalhadores autorizados; ponte reforçada permite NPCs, transporte de recursos e montarias terrestres.
+[FIXADO] Água rasa dispensa ponte.
+[PROPOSTA] Cada ponte é aresta do grafo de deslocamento com classe permitida e capacidade; dano/destruição altera rotas imediatamente.
+
+## 6 — Castelo, galpões, muros, distritos e abrigos
+
+[FIXADO] Castelo central com tesouraria. Dois galpões grandes perto do centro no início, com capacidade finita, mais depósitos construíveis pelo mapa. Muralhas à esquerda e direita; anéis externos delimitam distritos com casas e produções. Distância entre anéis normalmente cresce quando se afasta do centro.
+[FIXADO] Paredes evoluem: madeira simples, madeira reforçada, pedra e níveis mais avançados. Custos por materiais e trabalho, NÃO pagar apenas moeda para instantaneamente materializar obra.
+[FIXADO] Casas têm níveis de resistência; moradores podem permanecer escondidos durante ataque, e sobrevivem se abrigo suportar até amanhecer. Se destruído, são expostos; fugir, resistir ou ficar são decisões influenciadas por traços/medo.
+[FIXADO] Monstros quebram casas, depósitos e muralhas; o reino requer reconstrução e recuperação de setores.
+[PROPOSTA] Distritos têm estados Seguro/Alerta/Invadido/Ocupado/Recuperado, com comportamento e rotas associados.
+[FUTURO] Conquistar e fundir reinos, reorganizar muralhas e castelos sem apagar estruturas sem justificativa.
+
+## 7 — Posicionamento livre e obra em duas etapas
+
+[FIXADO] NÃO existem slots de construção predefinidos. O jogador escolhe espaço livre onde a construção cabe; validar terreno, acesso, ocupação e condições especiais. Fazendas próximas a fontes de água/irrigação; pontes ligam margens.
+[FIXADO] A estrutura começa como placeholder/plano de obra com tabela de materiais necessários, entregues gradualmente (10 madeira, 10 pedra e 10 ferro foram apenas exemplo).
+[FIXADO] NPC que já carrega recurso no inventário pode entregá-lo DIRETAMENTE à obra, sem precisar depositar em galpão. Outros NPCs podem completar a lista depois. Materiais saem do inventário ao entregar, sem duplicação.
+[FIXADO] Só após entrega total dos materiais a obra entra em fase de trabalho/craft. Trabalhadores adequados progridem a barra; se dormirem ou fugirem de raid, o trabalho parcial continua registrado e pode ser retomado.
+[FIXADO] Multiplicadores propostos na conversa são VEZES DE VELOCIDADE, não porcentagem: carpinteiro em madeira 3x / pedra 1x; minerador em pedra 3x / madeira 1x; construtor generalista 2x em ambos; comum 1x. Proficiência, ferramenta, fadiga e dificuldade podem modificar tempo.
+[PROPOSTA] Validação contínua de footprint/declive/colisão no servidor; blueprint estado Entrega -> Trabalho -> Concluído/Danificado/Cancelado. Trabalho medido em unidades acumuladas persistidas no save.
+[ABERTO] Receitas finais, raio de fazenda, regras de cancelamento, custo de reparo e limites de colaboração.
+
+## 8 — NPCs vivos, profissões e relações
+
+[FIXADO] NPCs possuem inventário real, equipamento (armadura, arma e ferramenta), recursos carregados e limite de peso. Devem poder entregar ao depósito, obra ou usar diretamente em tarefas.
+[FIXADO] Profissões: carpinteiro/lenhador, minerador, construtor, ferreiro, artesão, fazendeiro, caçador, transportador, guarda, arqueiro, lanceiro, comércio e outras futuras. São especializações de eficiência, não personagens robóticos limitados a uma só ação.
+[FIXADO] Habilidades evoluem com trabalho, como minerador nível 10, reduzindo tempos e aumentando produtividade. Cada agente usa saúde, fome, fadiga, moradia, profissão, objetivos e segurança para decidir ações.
+[FIXADO] Trabalhos são autônomos: coletar madeira, pedra, minério, comida, caçar, construir, defender, transportar e vender. O jogador define prioridades e pode atribuir agentes manualmente.
+[FIXADO] Relação entre NPCs e entre NPC e jogador: presentear, salvar, cuidar, confiança e memórias de acontecimentos. Traços como coragem/medo podem afetar abrigo e combate.
+[PROPOSTA] Planejador leve utility + FSM, fila de jobs e controle de reservas/rotas; sem LLM para cada NPC; atualizações com LOD. Sistema social profundo mais tarde.
+[ABERTO] Quantidade de NPCs, habilidades e tipos de relação da versão inicial.
+
+## 9 — Recursos, dinheiro, comércio, depósitos e perdas
+
+[FIXADO] ÁRVORES NÃO DROPAM MOEDAS. Extração gera madeira; mineração gera pedra/minérios; agricultura alimento. Moeda surge de comércio interno/externo, venda de itens, tributos e outras operações econômicas plausíveis. Compras, impostos, salários e vendas movimentam o dinheiro.
+[FIXADO] Bolsa física de moedas, lançadas/quicando/catadas; servidor valida o valor, cliente mostra física/efeitos. Tesouro no castelo; galpões armazenam itens, capacidade finita e localização física.
+[FIXADO] Sem obrigação de armazenar no galpão para que um NPC use materiais do próprio inventário.
+[FIXADO] Se armazém for destruído, recurso é efetivamente retirado do estoque. Parte pode ser perdida ou roubada e parte fica recuperável nos destroços. Reparar ou resgatar pode devolver uma porcentagem, NUNCA duplicar 100% de material do nada.
+[PROPOSTA] Ledger autoritativo e eventos idempotentes. Particionar estoque no instante da destruição em destruído/roubado/recuperável. Simular transporte de cargas, negociação e impostos de forma estável.
+[ABERTO] Valor da moeda, preços, impostos, percentuais de recuperação e balanceamento da economia.
+
+## 10 — Monstros, infecção e raids
+
+[FIXADO] Monstros obscuros variados. Algumas classes infectam seres vivos (lobos, outros animais pacíficos ou agressivos e humanos), gerando mutações; outras cercam, destroem e atacam. Infecção é mecânica mais ampla do que uma única criatura.
+[FIXADO] Raids normalmente à noite, NÃO toda noite obrigatoriamente. Ataques/eventos diurnos são possíveis. Invasões vêm dos horizontes, de cavernas ou portais entre reinos.
+[FIXADO] Portais podem surgir/evoluir de nível, ficando perigosos se não destruídos. Portal no corredor entre dois reinos pode mandar força para um ou ambos; escolha não deve ser sempre 50/50. Reinos NPCs também se defendem e podem atacar focos.
+[FIXADO] Portais extremamente fortes podem gerar boss raids (nível 10 foi exemplo imaginado), cooperação entre reinos, duas frentes e risco de colapso.
+[PROPOSTA] RaidDirector por pressão, nível, chance, defesa, exposição, distância e objetivo (invadir, roubar, contaminar, destruir muro/galpão). Reinos distantes simulados agregadamente.
+[FIXADO] Futuramente NPC infectado em expedição poderá retornar e contagiar moradores, mas só com sinais, reação, cura/isolamento/evacuação e depois de uma curva de dificuldade JUSTA. Tutorial inicial não pode sofrer surto destrutivo livre.
+[ABERTO] Fonte definitiva dos monstros (portal, caverna ou ambas), curva de nível, periodicidade e ataques de bosses.
+
+## 11 — Reinos, tribos, diplomacia e expansão
+
+[FIXADO] Reinos e tribos habitados por NPCs com suas próprias defesas e produções. Jogador pode caminhar até outros reinos, comerciar, fazer alianças e ajudar atacar portal.
+[FUTURO] Guerra, conquistas, administrar vários reinos, fundir reinos/territórios, reorganizar estruturas e muralhas, viajar rapidamente por barco/doca/posto/portal e PvP/co-op com batalhões. Não implementar no começo.
+[PROPOSTA] Persistência de reinos distantes como dados, sem spawn de milhares de NPCs.
+
+## 12 — Menus, saves, continuidade e publicação
+
+[FIXADO] Menu inicial com Play, Options, Exit/Back. Play apresenta SEIS slots vazios ou existentes. Criar slot gera mundo procedural seed; carregar retoma construções, NPCs, inventários, tempo, portais e trabalho parcial. Renomear/deletar com confirmação são propostas de UX.
+[PROPOSTA] DataStoreService no servidor com versionamento, session-lock, migrações, controle de duplicação, orçamento de escrita, restauração e backups. Não confundir save de jogador com salvamento de IDEIAS: ideias ficam neste repositório e documentos.
+[FIXADO] Build e validação de scripts antes da publicação em staging; testes no Studio/mobile separados. Production isolada para versões estáveis.
+
+## 13 — Monetização opcional, anúncios e Robux
+
+[FIXADO] PvE solo aceita benefícios opcionais pagos/ads, mas gratuito precisa ser viável. Queremos monetizar onde útil e divertido, sem obrigar anúncio a cada ação.
+[FIXADO] Para obra cujo MATERIAL já foi entregue, anúncio recompensado poderá avançar cerca de 1/3 do TRABALHO-BASE. Máximo planejado de 3 vouchers/anúncios por obra, limitados ao trabalho que falta. Quem já construiu metade pode usar menos; não resetar tempo por anúncio.
+[FIXADO] Robux pode concluir construção; ideia de pagamento que também devolve/concede materiais equivalentes requer produto explícito e transação única para não duplicar estoque. Sistema só após validação da API oficial.
+[FIXADO] Starter pack PvE com cavalinho mais rápido, vida/status e recursos; vantagens competitivas devem ser normalizadas ou isoladas em PvP futuro.
+[PROPOSTA] Roblox Rewarded Video Ads depende de elegibilidade, inventário disponível e confirmação do sistema. Não garantir três anúncios sempre; se indisponíveis, trabalhadores terminam gratuitamente. Developer Products e receipts precisam de idempotência. Critérios comerciais e políticas devem ser reverificados na implementação.
+[ABERTO] Preços, conteúdo final do pack, decisão de recompensa entre slots, elegibilidade real e critérios de vantagem justa.
+
+## 14 — Segredos e temporadas posteriores
+
+[FIXADO] Existe lore tardia CONFIDENCIAL em documento privado fora do GitHub público. O visual e jogabilidade da primeira temporada permanecem medievais. Não publicar detalhes do segredo, nem codificá-lo em assets/scripts acessíveis ao público antes da revelação.
+[FUTURO] Evolução do mundo em várias temporadas, pesquisa, mudanças de civilização e lore gradual conforme arquivo privado autorizado. Nada de acelerar eras grandes em poucos dias.
+[NOTA] Commits públicos anteriores podem conter texto antigo; reescrever documentação atual não apaga histórico Git.
+
+## 15 — Critérios técnicos e prioridades
+
+[FIXADO] Primeiro protótipo comprova: cenário 100% 3D em quatro faixas; R6 controlado lateralmente; frente/fundo em terra sem Z; mergulho/subida/diagonal em água nativa; rio e navegação suaves no mobile.
+[PROPOSTA] Depois NPC com inventário e coleta, transporte, entrega direta à obra, blueprint com progresso salvo, muro, galpão, economia de materiais, ataque/raid e save. Evoluir NPCs, demais reinos, relações e monetização gradualmente.
+[PROPOSTA] Servidor autoritativo para saves, posse, estoque, trabalho, dinheiro, combate e raids. Cliente com preview/efeitos e física visual de moedas.
+[PROPOSTA] Testes automáticos: idempotência, save/load, obras interrompidas, perda e salvage de depósitos, pontes, seed, Profissões 3x/2x/1x, raid director. Validação real de câmera, física, Terrain e FPS em mobile.
+
+## 16 — Pontos não decididos (NÃO INVENTAR)
+
+Distâncias/escala de reinos; limite NPC e carga; regras precisas de derrota e ressurreição; tempo do mundo quando o save estiver descarregado; tipo definitivo dos portais; duração do tutorial e do ciclo noturno; receitas e durações finais; mineração especial; economia e impostos; processo de reparo de galpão; critérios de viralização e anúncio; balanceamento de barcos/montarias; política de alianças; política de fusão de reinos; ID Roblox e se destino é staging; nome comercial em inglês.
