@@ -1,2 +1,2 @@
 --!strict
-return { placeName = "entre_reinos_main", maxPlayers = 12 }
+return { placeName = "entre_reinos_main", maxPlayers = 1 }
