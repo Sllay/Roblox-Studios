@@ -208,7 +208,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "research_and_planning",
+  "programStage": "ready_to_start_T1_R1",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -220,5 +220,17 @@
     "originalArchitectureDocumented": true,
     "gameplayImplemented": false,
     "runStarted": false
+  },
+  "preflight": {
+    "status": "ready_for_implementation",
+    "date": "2026-11-21",
+    "validatedMainCommit": "cb96b9e5c508571e937ea72c84698f64c543b049",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44959789451",
+    "ciResult": "success",
+    "scope": "Scaffold, docs, plan and existing tests only; not a T1-R1 implementation pass",
+    "stagingPlaceVerified": false,
+    "stagingBlocks": "publishing only, not coding",
+    "runtimeRobloxTested": false,
+    "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   }
 }
