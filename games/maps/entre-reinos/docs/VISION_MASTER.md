@@ -1,6 +1,6 @@
 # ENTRE REINOS — BÍBLIA DE DESIGN (FONTE CANÔNICA)
 
-Versão V0.3 — 2026-11-21. Estado: PLANEJAMENTO, não funcionalidades implementadas.
+Versão V0.4 — 2026-11-21. Estado: PLANEJAMENTO, não funcionalidades implementadas.
 
 LEIA ESTE DOCUMENTO ANTES DE PROJETAR, PROGRAMAR, TESTAR OU PUBLICAR O ENTRE REINOS.
 Regras: [FIXADO] = definido pelo criador; [PROPOSTA] = proposta técnica/creativa; [FUTURO] = objetivo preservado, fora da primeira versão; [ABERTO] = não especificado ou não verificado. Nunca transformar exemplos em parâmetros definitivos. Toda mudança aprovada vai para o log de decisões, GDD, arquitetura e testes, sem apagar ideias anteriores silenciosamente. A lore reservada NÃO deve ser escrita em repositório público.
@@ -138,3 +138,11 @@ Regras: [FIXADO] = definido pelo criador; [PROPOSTA] = proposta técnica/creativ
 ## 16 — Pontos não decididos (NÃO INVENTAR)
 
 Distâncias/escala de reinos; limite NPC e carga; regras precisas de derrota e ressurreição; tempo do mundo quando o save estiver descarregado; tipo definitivo dos portais; duração do tutorial e do ciclo noturno; receitas e durações finais; mineração especial; economia e impostos; processo de reparo de galpão; critérios de viralização e anúncio; balanceamento de barcos/montarias; política de alianças; política de fusão de reinos; ID Roblox e se destino é staging; nome comercial em inglês.
+
+## 17 — Regra de producao fixada em 21/11/2026
+
+[FIXADO] A versao medieval solo completa do Entre Reinos sera entregue atraves de 3 temporadas de producao; cada temporada tera 3 runners principais, cada um com varias integracoes reais, validacao/green check e commit no repositorio antes do runner seguinte.
+[FIXADO] Apenas depois do terceiro runner da temporada sera publicada uma atualizacao no mapa de testes (staging), seguida da validacao manual do criador. Quando a avaliacao mostrar defeitos ou falta de qualidade, abrir camada extra de 3 runners da MESMA temporada para refinar, validar e republicar; nao adiantar elementos da temporada seguinte.
+[FIXADO] Ao termino de T3, o objetivo e jogo funcional completo e pronto para revisao final e lancamento, nao uma demonstracao simplificada. Arquitetura modular desde o primeiro dia: geracao, biomas, vila, estrutura, item/moeda, NPC, profissoes, inventario, montaria, combate, monstros, raids, mundo e saves. Evitar gambiarra, codigo duplicado e reconstrucoes desnecessarias.
+[PROPOSTA] Alocacao exata entre T1/T2/T3 e runners esta em docs/SEASON_RUNNERS.md, sujeita a revisao explicita sem alterar o contrato das 3 temporadas. Gates e evidencias em docs/RUNNER_PROTOCOL.md e docs/RUNNER_STATUS.json.
+[FUTURO] Modos multiplayer/PvP e revelacoes privadas de longa duracao permanecem fora da versao medieval solo inicial; nao antecipar conteudo de outra fase.

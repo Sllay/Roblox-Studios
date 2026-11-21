@@ -73,3 +73,9 @@ R6, roupas/cabelos coerentes e originais ou autorizados. `HumanoidDescription` p
 `FutureLore`: segredos narrativos tardios registrados somente em documentação privada, não publicados. Corrupção entre cidadãos do reino desligada no início, prólogo possui apenas duque infectado; sistema de surto interno progressivo e sinalizado será módulo posterior.
 
 Fontes técnicas: https://create.roblox.com/docs/reference/engine/classes/Humanoid ; https://create.roblox.com/docs/reference/engine/classes/Terrain ; https://create.roblox.com/docs/reference/engine/classes/AdService ; https://create.roblox.com/docs/production/monetization/developer-products .
+
+## Modularidade para nove runners (V0.4)
+
+O novo contrato de entrega esta em docs/SEASON_RUNNERS.md; protocolo em docs/RUNNER_PROTOCOL.md, estados em docs/RUNNER_STATUS.json. Os dominios serao implementados somente quando seus runners forem executados, mas schemas, interface de rede e formatos de persistencia precisam manter compatibilidade futura.
+Configurar biomas, itens, profissoes, receitas, estruturas, muros, monstros, montarias, portais e padroes de raids por registries declarativos/versionados, evitando duplicacao de scripts por instancia. Manter logica do jogo no servidor, visuais no cliente e dados serializaveis sem depender da existencia de Instances carregadas. Priorizar codigo modular funcional, nao frameworks abstratos vazios. Migrations/testes de compatibilidade a cada alteracao de schema.
+Nenhum runner pode ser marcado validado sem checks reais, commit correto e receipt; nenhum staging sem identity verification, workflow oficial e Scene Sync quando aplicavel.

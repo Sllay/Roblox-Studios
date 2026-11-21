@@ -19,3 +19,11 @@ A pasta foi baseada no template canônico `games/maps/_template/`, que também �
 - IDs recebidos, mas não validados: [docs/ROBLOX_IDS_PENDING.md](docs/ROBLOX_IDS_PENDING.md)
 - Lore confidencial: armazenada fora do repositório público, em documento privado do criador.
 Todo agente deve ler os documentos antes de implementar mudanças de gameplay.
+
+## Processo oficial de produção — 3 temporadas x 3 runners
+
+- Plano das tres temporadas e nove runners: docs/SEASON_RUNNERS.md
+- Passo-a-passo de qualidade, commit, staging e refinamentos: docs/RUNNER_PROTOCOL.md
+- Estado VERIFICAVEL de runners e publicacoes: docs/RUNNER_STATUS.json
+
+Cada runner entrega multiplos sistemas integrados, valida e salva no GitHub antes de avancar. Apos cada R3, versao staging e teste manual do criador. Se necessário, tres runners adicionais de refinamento da propria temporada. O final T3 e jogo completo solo medieval, nao mero prototipo.

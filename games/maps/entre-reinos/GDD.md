@@ -134,3 +134,11 @@ Jogo PvE/solo no primeiro lançamento, com comércio pago por Robux e possibilid
 - Medir retenção, impacto de aceleração, perda de receita e insatisfação antes de otimizar monetização.
 
 Fontes principais: https://create.roblox.com/docs/production/promotion/rewarded-video-ads ; https://create.roblox.com/docs/reference/engine/classes/AdService ; https://create.roblox.com/docs/production/monetization/developer-products .
+
+## 18. Contrato oficial de entrega (V0.4)
+
+A sequencia oficial de desenvolvimento e 3 temporadas, cada qual com 3 runners. Ver docs/SEASON_RUNNERS.md. A primeira temporada conclui sistema de mundo 3D, movimento/agua, seis saves, NPCs autonomos, construcao e primeiro ciclo defensivo com prologo. A segunda amplia biomas/rios/pontes/reinos/economia/sociedade/montarias. A terceira fecha combate/infecao/portais/boss, diplomacia e dominio de reinos NPCs e polimento/monetizacao/QA da versao solo completa.
+
+O recorte das versoes anteriores chamado MVP ou V0-V3 e historico ilustrativo, nao autoriza simplificar ou adiar sistemas comprometidos em T1-T3. A base deve ser modular de verdade; ativar cada sistema apenas na sua temporada. Cada runner possui gate e commit; publicacao de staging e teste do criador so depois de cada R3. Refinamentos de tres runners nao podem implementar funcionalidades de temporadas seguintes.
+
+PvP/co-op e revelacoes narrativas privadas nao sao parte do contrato de lancamento solo medieval.

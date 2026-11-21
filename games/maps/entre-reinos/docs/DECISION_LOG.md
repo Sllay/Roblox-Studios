@@ -20,3 +20,10 @@ Estados: FIXADO, PROPOSTA, FUTURO, ABERTO. Criador tem prioridade sobre sugestõ
 - Criador solicita salvar TODAS as decisões no Git como fonte principal; Drive também aceito.
 - Criados Bíblia de Design, este registro, IDs pendentes; regras AGENTS garantem consulta antes de alterações.
 - Recebidos os números 10769712413 e 90623742498445. Pela ordem, provavelmente Universe e Place do Entre Reinos, mas não verificados pela API do Roblox; nenhuma publicação deve usar os IDs sem confirmação.
+
+## 21/11/2026 — V0.4, temporadas, runners e entrega final
+- FIXADO: 3 temporadas de producao, com 3 runners por temporada. Runner = varias integracoes completas, validacao verde, commit e checklist, sem avancar se falhar.
+- FIXADO: publicar versao de STAGING apos cada R3, pedir teste do criador e, se preciso, criar camada EXTRA de tres runners de REFINAMENTO da mesma temporada. Nao adiantar a proxima temporada.
+- FIXADO: entrega final depois das tres temporadas deve ser jogo completo medieval solo, nunca MVP descartavel; sistemas modulares e extensíveis desde o começo.
+- PROPOSTA: escopo distribuido entre T1/T2/T3 e nove runners no arquivo SEASON_RUNNERS.md; protocolo RUNNER_PROTOCOL.md e estado real RUNNER_STATUS.json.
+- ESTADO: somente documentacao de planejamento criada; nenhum runner foi implementado, validado ou publicado por este commit.
