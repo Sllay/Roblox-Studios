@@ -1,120 +1,140 @@
-# ENTRE REINOS — PLANO OFICIAL DAS 3 TEMPORADAS E 9 RUNNERS
+# ENTRE REINOS — PROGRAMA OFICIAL V2: 3 TEMPORADAS, 9 RUNNERS
 
-Versao 1.0, 21/11/2026. Estado: planejamento. Fonte de escopo: VISION_MASTER.md.
-Objetivo final: jogo medieval solo completo, profundo, persistente, jogavel e comercializavel; NAO um prototipo com sistemas ficticios ou temporarios.
+21/11/2026. Estado: PLANEJADO (sem runner executado). Este arquivo SUBSTITUI a distribuição de escopo anterior. Contrato do criador: T1 FUNDACAO, T2 FINALIZACAO DOS SISTEMAS, T3 CONTEUDO + POLIMENTO. Ao fim de T2, TODOS os sistemas centrais devem estar funcionais e integrados. T3 nao pode ser usada para consertar uma arquitetura descartavel da T1/T2. Ao fim de T3, jogo medieval solo completo para lançamento com autorização.
 
-## Regras fixadas pelo criador
-- Exatamente tres temporadas principais (T1, T2, T3), cada uma com tres runners (R1, R2, R3).
-- Cada runner integra multiplas implementacoes reais e seus testes; nao representa uma unica chamada de IA, uma acao do GitHub ou um timer.
-- Resultado funcional, modular, extensivel, sem gambiarra e sem sistemas falsos que precisem ser refeitos.
-- Corrigir qualquer erro bloqueante antes de marcar runner verde e integrar sua versao validada ao repositorio. O proximo runner so comeca depois de validação real do anterior.
-- NAO implementar funcionalidades do runner seguinte antecipadamente. Contratos, schemas e pontos de extensao sao permitidos, desde que nao ativem gameplay futuro.
-- Apos o terceiro runner de uma temporada, publicar somente no Place de staging verificado; apresentar ao criador para teste visual e de gameplay.
-- Se o criador pedir ajustes, executar camada adicional de tres runners de REFINAMENTO da temporada atual, testar, publicar staging de novo e aguardar nova aprovacao. Nao utilizar refinamento para adiantar a proxima temporada.
-- Apenas depois de completar as tres temporadas e aprovar refinamentos, preparar lancamento estavel em Place production separado, com aprovacao.
-- O primeiro lancamento final e um jogo medieval SOLO; PvP/co-op e segredos futuros da narrativa nao sao requisitos escondidos da entrega inicial.
+## Regras inalteráveis
+- Cada temporada possui R1, R2 e R3. Cada runner entrega multiplos sistemas integrados de verdade, testes, correcoes, recibo e commit antes de passar ao proximo.
+- Nao adiantar gameplay de runner/temporada seguinte. E PERMITIDO desenhar interfaces versionadas para uso futuro, mas nao implementar funcionalidade secreta/prematura.
+- Runner verde precisa de testes evidenciados e versao salva no Git; CI de compilacao nao substitui testes no Roblox real/mobile.
+- Apos R3: publicar no STAGING verificado, registrar versao, chamar criador para testar, receber opiniao. Se reprovado, criar 3 runners de REFINAMENTO da temporada atual (F1 F2 F3), sem adicionar escopo novo de temporada seguinte. Somente apos aprovacao seguir adiante.
+- Publ. PRODUCTION somente depois de T3 + refinamentos + autorizacao explicita. Black Island totalmente isolado. IDs staging pendentes de verificacao e jamais presumidos.
+- O design de TODOS os sistemas nasce modular e orientado a dados (geracao, biomas, itens, receitas, estruturas, NPCs, loot, monstros, montarias, correntes, raids, comercio e save), evitando gambiarras. T1 estrutura e funcionamento do núcleo; T2 completa todos os processos e integrações; T3 amplia repertorio e experiencia.
 
-## TEMPORADA 1 — A COROA E A PRIMEIRA CIDADE
-Meta: jogador inicia um mundo, completa prologo, administra uma cidade realmente funcional, defende-a, reconstrói, salva e continua.
+## Pré-run obrigatório: pacote de pesquisa e engenharia
+1. Ler repositorio próprio: AGENTS.md, docs/architecture/GAME_TEMPLATE_ARCHITECTURE.md, docs/TERRAIN_BUILDER.md, docs/SCENE_SYNC.md, docs/DEPLOYMENT.md, docs/QUALITY_GATE_V2.md, asset-library/ e games/maps/entre-reinos/ (GDD, ARCH, VISION_MASTER, log).
+2. Ler docs/research/RESEARCH_SOURCES.md e MECHANICS_AUDIT.md, abrangendo SongZcode 2.4.2, wikis, guias, mods FredApps/abevol/minwoong, descricao oficial Raw Fury e os limites.
+3. Ler docs/research/ROBLOX_ADAPTATION.md (contratos, equacoes proprias e testes). Nao portar GameAssembly, DLL, sprites, arte, C# de mods nem formulas numericas fora do escopo.
+4. Registrar dúvidas, fontes e lacunas em docs/research/RESEARCH_GAPS.md; verificar documentacao de Roblox no momento da execução.
+5. Atualizar docs/AGENT_HANDOFF.md, docs/RUNNER_STATUS.json e evidencias ao terminar cada runner. Toda nova pesquisa precisa de link, fonte, versão, escopo, nivel de evidência e se aplica a qual runner.
 
-### T1-R1 — Fundacao jogavel do mundo
-Integracoes:
-1. Arquitetura do mundo por seed, Terrain nativo 100% 3D, fundo distante, fundo proximo interativo, faixa de personagens e primeiro plano de silhuetas pretas (sem parallax 2D).
-2. Geracao inicial de assentamento/castelo, terreno, recursos, faixas de caminhabilidade e rio pequeno.
-3. Camera lateral e inputs adaptados ao mobile/PC; personagem R6 caminha no X, gira para o fundo/camera sem caminhar em Z, corre, pula e ataca em prototipo de interacao.
-4. Agua Terrain nadavel: cima/baixo mudam Y, diagonais combinam X/Y suavemente; transicao solo-agua confiavel.
-5. Menu Play/Options/voltar, ate SEIS slots independentes, criar/carregar/excluir com confirmacao, modelo de mundo e salvamento seguro/versionado; schema orientado a evolucoes.
-Modulos: WorldSeed, RegionGraph, TerrainAdapter, CharacterLaneController, SwimController, SideCamera, InputRouter, SaveSlotService e WorldSchema.
-Aceite: seed reproduz mundo, seis slots nao interferem, personagem nao desliza em Z, nado vertical e diagonal funcionam no cliente Roblox, carregamento restaura estado, camera/UI legiveis no mobile. Registrar medidas reais e casos nao testados.
-Nao antecipar: NPCs produtivos, comercio, raids, montarias e pontes.
+# TEMPORADA 1 — FUNDAÇÃO DO JOGO (sistemas centrais reais)
 
-### T1-R2 — NPCs, recursos e construcoes de verdade
-Integracoes:
-1. NPCs R6 com aparencias e roupas coerentes/compatíveis, inventario com slots/peso, equipamentos, necessidades e proficiencia.
-2. Scheduler de trabalhos autonomeis por prioridade/utility e FSM de execucao, caminho lateral e anchors de interacao no fundo 3D.
-3. Extracao de madeira, pedra e comida; transporte real entre inventarios, galpoes e locais de obra; estoques transacionais, reservas e limites de capacidade.
-4. Posicionamento livre de casas, muralhas e galpoes com footprint e regras de solo; blueprints com entregas graduais de itens trazidos diretamente pelos NPCs.
-5. Trabalho persiste entre turno, noite, ataque e save; carpinteiro 3x madeira, minerador 3x pedra, construtor 2x ambos, outros 1x; upgrades e reparos de muros.
-Modulos: NPCRegistry, Appearance, Needs, Skills, Inventory, ResourceLedger, JobBoard, WorkScheduler, PlacementValidator, StructureRegistry, ConstructionSite, Districts.
-Aceite: NPCs coletam e transportam recursos reais; sem duplicacao em entregas simultaneas; peso impede cargas impossiveis; obra nao inicia antes de materiais; progresso pausa/retoma e persiste; profissoes medem multiplicadores esperados; galpao lotado preserva itens.
-Nao antecipar: boss/raid complexa, comercio externo, diplomacia, montaria.
+Meta: funcionamento real dos alicerces sem sistemas descartaveis: mundo 3D, movimentos, sistemas de inventario, NPC/trabalho, construcao, combat/salvar e defesa inicial. Nao fingir completar tudo em scripts monoliticos; extensibilidade testada desde R1.
 
-### T1-R3 — Prologo, combate, economia inicial e primeira raid
-Integracoes:
-1. Combate direto do guerreiro; armas basicas de guardas, arqueiros e lanceiros, defesa de muralha, ordens, evacuacao e abrigo em casas.
-2. Prologo jogavel do duque infectado, queda da primeira muralha, fuga de civis, ultima resistencia e coroacao; risco roteirizado e justo.
-3. Dia/noite, inimigos basicos e RaidDirector LOCAL inicial com aviso, variacao de lado e noites sem raid.
-4. Destruicao de edificios e galpoes com parte do estoque destruida/roubada/recuperavel sem duplicacao; salvamento e recuperacao de civis e materiais.
-5. Tesouraria, bolsa/moedas com fisica visual local e transacoes monetarias iniciais coerentes — arvore nunca dropa dinheiro; tela de administracao e save/load completo do ciclo.
-Modulos: Combat, EnemyAI, RaidDirector, ThreatClock, Evacuation, Salvage, CurrencyLedger, CoinVFX, StoryDirector, StoryFlags.
-Aceite: ciclo novo save -> prologo -> reconstrucao -> primeira defesa -> reparo -> salvar/carregar funciona ponta a ponta; raid termina; casas e estoques sofrem consequencias reais; economia nao cria moeda por madeira; desempenho testado em cliente/mobile.
-MARCO: publicar T1 em staging e pedir review do criador. Refinamento T1-F1/T1-F2/T1-F3 se necessario.
+## T1-R1 — Arquitetura real do mundo e controladores
+Ordem de integração:
+1. Estrutura Roblox/Luau por dominios e contratos de rede; schema de mundo por seed/gerador, simulacao de regioes e coordenadas X/Y/Z.
+2. Terrain nativo gerado em regiao inicial, rio cruzando trilho, background 3D distante e interativo, foreground 3D preto sem oclusao de personagens. Reservas de vilas e rotas para expansão.
+3. Camera lateral, R6 X, rotação cima/baixo em terra sem andar Z, corrida/salto, Humanoid Swimming com cima/baixo Y e diagonais X/Y naturais, transições água/terra.
+4. Interface principal Play/Options/Voltar e seis slots reais, versionamento, session locking e persistencia por mundo com recuperação de erro. Validacao de todo objeto marcado como saveable.
+5. Ferramentas de debug, benchmark de FPS/rede/memoria em cliente real e testes de mundo deterministico.
+Leitura EXTERNA: K2C-RE01 README + evidence + travel/controls, K2C-WIKI11, K2C-UX01, RBX-01, RBX-02, RBX-03/04, RBX-05/06. INTERNA: OUR-01/02/03/04/05.
+Gate: seed igual->região igual; seis slots não se cruzam; erro de save não apaga progresso; nenhuma entrada desloca Z; água funciona em runtime Roblox e mobile; visuais totalmente 3D; build e testes completos.
+FORA: NPCs produtivos, economia, raids, portal final, relações, montaria.
 
-## TEMPORADA 2 — O MUNDO VIVO
-Meta: biomas e reinos conectados, logistica de longo alcance, producao/comercio e NPCs com relacoes.
+## T1-R2 — Fundação da vida, inventários e construções
+Ordem:
+1. Identidade R6 NPC, aparência/roupa curada, registro de NPC/skill/needs/health/equipment/inventory com peso.
+2. Engine de trabalho modular por utility + FSM, ordens por proximidade/rota, prioridade/urgencia/skills/carga/fadiga/risco e agendamento/LOD por grupos.
+3. Recursos madeira/pedra/alimento/ferro e transferencias, reserva transacional, entrega direta de mochila NPC à obra e armazéns com capacidade.
+4. Placement livre (footprint, slope, espaço, terreno, rota), blueprint com entrega progressiva por material; trabalho de construção separado, cumulativo e salvo; profissões carpinteiro 3x madeira, minerador 3x pedra, construtor universal 2x, comum 1x; ferramentas e tempo real.
+5. Muralhas em niveis, abrigo/casas, galpões, danos/reparos básicos e distritos em aneis, alimentando dados da AI. Modularizar RecipeDefs, JobDefs, StructureDefs, ProfessionDefs e ItemDefs.
+Leitura EXTERNA: K2C-RE01 builders/economy + data/parameters, K2C-WIKI03/04/05/12/18, K2C-MOD01 capabilities (campos e eventos). INTERNA: OUR-02/05/06, ROBLOX_ADAPTATION.
+Gate: múltiplos NPCs cooperam sem duplicar material; local sem storage funciona; obra pausa e continua após sono/load; inventário respeita massa; nova construção/receita via registry; NPC não oscila/vibra; erros e CPU instrumentados.
+FORA: comércio avançado, montarias, boss, diplomacia.
 
-### T2-R1 — Mundo ampliado, biomas, rios, pontes e LOD
-Integracoes:
-1. BiomeRegistry configuravel e geracao 3D procedural por seed de regioes extensas, florestas, montanhas, rios, costas e recursos.
-2. Rios visuais descendo do fundo, volumes Terrain Water jogaveis e correntezas opcionais; curso atravessa faixa de personagens e primeiro plano.
-3. Riacho raso, travessias profundas, pontes provisoria e reforcada com custos, trabalho, durabilidade e permissoes por tipo de agente/montaria.
-4. Streaming de regiao e LOD de NPC/reinos distantes; estados persistidos sem milhares de Instances remotas, preservando construcoes criadas em jogo.
-Aceite: gerar mesma seed e preservar estruturas; water/swim valida no motor; grafo muda com ponte construida/destruida; nenhum NPC bloqueado atravessa rio profundo; regioes distantes mantem estado; perfil mobile medido.
-Nao antecipar: politicas de conquista, infecao sistêmica e chefes.
+## T1-R3 — Fundação de combate, defesa, moeda e prólogo
+Ordem:
+1. CombatEngine X/Y para jogador e NPCs, armas básicas e arcos com velocidade/gravidade Roblox; munição e colisão servidor.
+2. EnemyBase e primeiro comportamento de ataque/saque, danos a muros/casas/galpões e abrigo/fuga/defesa de cidadãos, perda parcial e salvage sem duplicação.
+3. Relógio dia/noite e RaidDirector LOCAL, avisos e noites sem raid, incapacidade de atravessar muralha intacta. Demais objetivos/portais completos ficam T2.
+4. CurrencyLedger/bolsa fisica com drop/pickup/colisões visuais locais mas contabilização no servidor; pequenos contratos de geração de moedas sem árvores spawnando dinheiro.
+5. Prologo jogavel do nobre infectado roteirizado, ataque dos dois lados, evacuação, último anel e coroação; UI de ordens/defesa e salvamento da crise em seis slots.
+Leitura EXTERNA: K2C-RE01 archers/greed/economy/waves, K2C-WIKI02/06/07/08/19, K2C-GUIDE01, K2C-MOD02 overlay/UI. INTERNA: ROBLOX_ADAPTATION e QUALITY_GATE_V2.
+Gate: nova campanha -> prologo -> cidade reconstruída -> raid -> recuperação -> save/load; tiro e dano verificados; saldos e loot sem duplicação; mortalidade justa, FPS mobile documentado.
+MARCO: publicar T1 somente STAGING, pedir validação do criador; eventualmente T1-F1/F2/F3. Não iniciar T2 enquanto T1 reprovada.
 
-### T2-R2 — Industria, profissões, mercado e impostos
-Integracoes:
-1. Mineracao/carpintaria evoluidas, ferreiro, artesao, agricultor, cacador e transportador, ferramentas, equipamentos e habilidades por nivel.
-2. Cadeias produtivas e receita por recursos, fazenda perto de agua, alimento e consumo da populacao.
-3. Mercadorias, producao entre distritos, rotas de transporte e comercio interno e entre reinos; salarios, tributos, impostos e tesouraria.
-4. Economia persistente com precos/oferta, reserva de estoque, producao, demanda e resposta dos NPCs.
-Aceite: cadeia de extracao->processamento->uso/venda produz valor sem moeda dropada; estoques fecham matematicamente; regras de irrigacao funcionam; habilidades afetam ritmo; save/load sem duplicar transacoes.
-Nao antecipar: guerra, bosses e sistema de eras futuras.
+# TEMPORADA 2 — FINALIZAÇÃO DOS SISTEMAS E DO LOOP COMPLETO
 
-### T2-R3 — Reinos vizinhos, relacoes e montarias
-Integracoes:
-1. Reinos e tribos NPC com habitantes, economia e defesa propria, simulados em resumo ao longe e concretos perto do jogador.
-2. Contato, comercio diplomatico, reputacao, pedidos de ajuda/alianca iniciais, impacto real das decisoes na economia.
-3. Relacoes NPC↔NPC e jogador↔NPC com traços, presentes, confianca, memoria de ajuda/resgate e conversas contextuais leves.
-4. Compra/domesticacao inicial de montarias terrestres, velocidade, saude, comportamento e limites de travessia/ponte; rotas comerciais de longa distancia.
-Aceite: reino vizinho existe e reage, relacoes persistem, montarias seguem regras fisicas, compra/estoque/rotas nao duplicam; jogo T2 testavel e administravel no mobile.
-MARCO: publicar T2 em staging e pedir review do criador. Refinamento T2-F1/T2-F2/T2-F3 se necessario.
+Meta: TODOS os sistemas de jogo prometidos para o lançamento MEDIEVAL SOLO completos e integrados, não meros esqueletos: mundo contínuo de reinos, economia produtiva, profissões, relações, montarias, pontes, portais, ameaças, estratégia, diplomacia e progresso de longo prazo. T3 não resgata funcionalidade essencial incompleta.
 
-## TEMPORADA 3 — GUERRA DA CORRUPCAO E FECHAMENTO DO JOGO
-Meta: versao medieval solo com experiencia longa, ecossistema hostil, reinos politicos e progressao final, pronta para lancamento.
+## T2-R1 — Mundo completo, biomas, logística e viagens
+Ordem:
+1. Engine procedural multi-bioma por registros com rios/cachoeiras/costas/colinas/florestas e sub-regiões caminháveis entre reinos; decoração/vegetação 3D e distribuição coerente de recursos.
+2. Rivers atravessáveis em 2.5D, fundo 3D com cursos de água, riachos rasos; pontes leves vs reforçadas com permissões, capacidade, custo real e grafo de rotas.
+3. Streaming/LOD real e persistência de regiões; reinos distantes simulados via estado agregado, reconciliação do estado quando se aproxima, NPC nunca duplicado.
+4. Montaria terrestre (compra/domesticação, vitalidade/energia, velocidade/terreno e regras água/ponte), barco/doca/fast travel em nível funcional conforme geografia aprovada.
+5. Infraestrutura para duas ou mais cidades NPC e distritos, recursos/rotas e salvamento sem apagar estrutura customizada.
+Leitura EXTERNA: K2C-RE01 mounts/travel/evidence/time, K2C-WIKI08/09/10/13, K2C-MOD01 custom-challenges + mount-modding, RBX-01/05/06. INTERNA: TERRAIN_BUILDER/SCENE_SYNC/ASSET_WORKFLOWS.
+Gate: jogador anda entre reinos sem mudar de mundo; geração por seed, biomas e movimento mobile/streaming reais; NPC não cruza rio profundo sem ponte válida; instâncias distantes não sobrecarregam.
 
-### T3-R1 — Monstros complexos, portais, infecao e boss raids
-Integracoes:
-1. EnemyRegistry com classes de ataque, saque, cerco e contaminacao; fauna e NPCs podem ser infectados progressivamente.
-2. Surtos internos com sintomas, deteccao e tempo justo de isolar, curar ou evacuar; proteger tutorial e primeiras horas.
-3. Portais/cavernas que surgem e evoluem, pressao territorial e RaidDirector global: direcao, frequencia, objetivo, defesa do reino vizinho e contra-ataque.
-4. Armas/esquadroes, batalhas, expedições para destruir focos e chefes de raids de alto nivel.
-Aceite: portal evolui/destrói-se e muda ataques; distribuicao de raids nao e sempre 50/50; infeccao nao mata sem chance de reagir; chefe/monstros obedecem rotas e fim de combate; save/load consistente; testes de stress e performance.
-Nao antecipar: PvP/co-op e segredos de lore reservada.
+## T2-R2 — Finalização da economia, profissões, sociedade e diplomacia
+Ordem:
+1. Profissões e crafting completos: ferreiro/artesão/agricultor/caçador/minerador/carpinteiro/construtor/transportador/guarda, treinamento, ferramentas, nível e prioridades.
+2. Cadeias produtivas extensíveis de madeira, pedra, minério, metal, comida, arma, galpões, entregas e construção complexa; fazenda perto de água e consumo/sustento de vila.
+3. Mercado, moedas e preços por oferta/demanda, contratos de venda/comércio entre reinos, impostos/tributos/salários, tesouraria e orçamento dos reinos NPC; consistência contábil.
+4. NPCs com estado social individual, relacionamento entre NPCs/jogador, confiança, presente, resgate, eventos e reações, sem LLM obrigatório.
+5. Reinos NPCs com economia própria, relações de facção, alianças/hostilidade, diplomacia, intercâmbio e resposta à crise; tudo persistente e operante em simulação distante.
+Leitura EXTERNA: K2C-RE01 economy/builders/travel, K2C-WIKI05/12/15/16, K2C-MOD01 capabilities, RBX-03/04, guia Steam. INTERNA: contratos de Inventory/Jobs, testes de economias do T1.
+Gate: extração -> fabricação -> distribuição -> consumo -> venda -> imposto/tesouro verificável; não há moedas brotando de árvores; NPC relações mudam decisões; reinos mantêm economias estáveis pós-save; sem inflação/duplicação.
 
-### T3-R2 — Diplomacia, conquista NPC e reinos sob comando
-Integracoes:
-1. Diplomacia mais profunda, reputacao, alianca, hostilidade, guerra contra reinos controlados por NPCs e batalhoes.
-2. Conquista e gerenciamento de multiplos reinos, economia/leis/defesas compartilhadas, centralizacao opcional e relacoes sociais que afetem governo.
-3. Fusao/reorganizacao de territorios, novos anéis de muralhas e estruturas preservando itens, proprietarios e estado real.
-4. Fast travel por estrutura/rota autorizada e viagens normais caminhando entre reinos; objetivos de longo prazo do mundo medieval.
-Aceite: reinos conquistados persistem; fusao nao apaga recursos, personagens e edificios; logistica, raids e relacoes alteram decisao estrategica; migracoes de save funcionam com reinos novos/antigos.
-Nao antecipar: PvP multiplayer ou evolucao tecnologica reservada.
+## T2-R3 — Finalização dos inimigos, portais, conquista e campanha
+Ordem:
+1. Enemy/Portal/Threat registries completos: ataques, saque, infecção de fauna e humanos, progressão da ameaça e objetivo, portais que ameaçam reinos vizinhos, boss BASE.
+2. Direção/frequência de raids e estratégia por risco/orçamento, ataque e contra-ataque de reinos vizinhos, expedições para destruir foco; inimigos diurnos onde previstos. Infecção interna só com sinais, cura/isolamento e proteção robusta de iniciantes.
+3. Sistema de comando/guarnição e exércitos solo; diplomacia hostilidade/aliança operante, combate contra reino NPC, conquista, gestão de múltiplos reinos, fusão/reorganização territorial sem apagar estruturas; rotas/fast travel persistentes.
+4. Metas de progressão do medieval completo: objetivos e encerramentos de arco de campanha, decisões e riscos reais, balanceamento amplo de tempo/raid/construção/recursos.
+5. Teste integrado de TODOS os sistemas T1 e T2 em múltiplos saves, relógios e reinos, com recuperação após morte, crash e mudança de região.
+Leitura EXTERNA: K2C-RE01 greed, archers, waves, travel, FAQ e evidence; K2C-WIKI07/08/09/10/19; K2C-MOD01 capabilities; RBX-03/05/06. INTERNA: todos os receipts T1/T2 e ROBLOX_ADAPTATION.
+Gate: todos sistemas centrais de lançamento já funcionam; nenhum módulo-base incompleto deixado para T3; portal entre dois reinos altera direções; atacar/dominar reino NPC e salvar é funcional; infecção não destrói save injustamente; boss básico e campanha completa testáveis.
+MARCO: publicar T2 STAGING, chamar criador; refinar T2-F1/F2/F3 se necessário. Não iniciar T3 enquanto T2 não estiver aprovada.
 
-### T3-R3 — Integracao final, UX, monetizacao e qualidade
-Integracoes:
-1. Balanceamento e integracao ponta-a-ponta de TODOS os sistemas das tres temporadas, progressao longa e combate, economia, social, exploracao e raids.
-2. UI/UX, acessibilidade, controles mobile/PC, animacoes, audio, VFX, equipamentos, render 3D, streaming, otimizacao real.
-3. Seis slots robustos, save/load, migracao, recuperacao de falhas, anti-exploit, stress tests, analise de memoria/FPS e licenciamento de assets.
-4. Starter pack PvE, developer products e eventualmente rewarded ads APENAS se elegiveis/autorizados; comprovantes idempotentes, progresso gratuito plenamente viavel e sem vantagem injusta em futuro PvP.
-5. Preparacao de release, teste de jornada nova->coroa->mundo aberto->outros reinos->boss->progressao final, telemetria de bugs e documentacao de entrega.
-Aceite: campanha/sandbox completo realmente jogavel sem sistemas de mentira; save nao perde dados, materiais nao duplicam; politica comercial validada; cliente real mobile medido; suite de regressao verde; autor revisa build de staging.
-MARCO: publicar T3 em staging, pedir review do criador, realizar T3-F1/T3-F2/T3-F3 se necessario; depois preparar release production com autorizacao.
+# TEMPORADA 3 — CONTEÚDO, VARIEDADE, POLIMENTO E LANÇAMENTO
 
-## Princípios de engenharia
-- Sistemas modulares com registros de definicao de biomas, itens, receitas, construcoes, NPCs, skills, montarias, monstros, portais e drops. Adicionar conteudo por dados e assets, nao duplicar scripts.
-- Server-authoritative para saldo, item, build, combate, transacoes, raid e saves; client-only para camera, UI, animacao e efeitos de moeda.
-- Schemas versionados, identificadores estaveis, API explicita entre modulos, eventos idempotentes, tests, metrica e migracao.
-- Diferenciar fundamento extensivel (permitido antes) de funcionalidade futura (proibida antes de seu runner).
-- Nao prometer datas ou testes que nao foram executados.
-- Status oficial: RUNNER_STATUS.json; rito: RUNNER_PROTOCOL.md; regras globais AGENTS.md; todas as ideias no VISION_MASTER.md.
+Meta: NÃO reescrever a fundação. Adicionar conteúdo real aos sistemas T1/T2, variantes, polimento visual/sonoro e refinamento técnico, balancear para longa vida, monetização opcional e preparar versão comercial.
+
+## T3-R1 — Conteúdo de mundo, população e construções
+Ordem:
+1. Ampliar catálogo de biomas, regiões, rios, bosques, montanhas, solos e recursos; composição visual consistente 3D e decorações de silhueta preta.
+2. Novas casas e níveis, fortes, oficinas, pontes, muros/torres, receitas e equipamentos; variantes por facção/bioma sem duplicar código.
+3. Novos tipos de NPCs, roupas R6 e variabilidade de perfis, padrões sociais, linhas de trabalho e eventos de relacionamento; novas montarias e fauna.
+4. Mapas e localidades memoráveis, vilas/tribos novas, objetivos de exploração, recompensas e pontos de interesse.
+Leitura EXTERNA: K2C-RE01 builders/mounts/economy, K2C-WIKI03/10/13, K2C-MOD01 challenge/island mods; guias de assets e performance Roblox. INTERNA: cada registry e receipts T1/T2.
+Gate: adicionar novo bioma/mob/casa por dados/catálogo é possível; não quebra seeds existentes, saves ou performance; arte estilizada consistente aprovada visualmente.
+
+## T3-R2 — Conteúdo de combate, eventos, campanhas e economia de lançamento
+Ordem:
+1. Novas espécies e variantes de monstros e corrompidos, chefes de raids com fases/ataques distintos, portais especiais, eventos raros e defensores especializados.
+2. Missões/eventos de facções, cooperação temporária de reinos NPCs, encontros, recompensas por exploração e desafios de longo prazo; variedade sem novos fundamentos de IA.
+3. Balancear picos, probabilidades, produção e progressão de campanha; ampliar conquistas e narrativa medieval SEM divulgar lore reservada.
+4. Conteúdo comercial opcional: starter pack PvE, cosméticos, montarias e Developer Products com regras justas; anúncios recompensados só após elegibilidade/documentação atual e disponibilidade. Pagar nunca permite duplicar materiais, e futuro PvP não herda vantagem competitiva.
+Leitura EXTERNA: K2C-RE01 greed/waves/archers, Wiki Portal e guias de gameplay, RBX-08/09, fontes de direitos de assets. INTERNA: Economy/Raid/Portal/Transaction receipts.
+Gate: bosses/eventos são conteúdo verdadeiro e extensível; não quebram campanha, saves ou cliente mobile; compra/recibo idempotente e sem abuso.
+
+## T3-R3 — Polimento definitivo, QA, UX, otimização e release candidate
+Ordem:
+1. Corrigir todos os defeitos encontrados na experiência completa, câmera, movimentação R6, natação, animações, IA, rota, combates, moeda física e construção; nunca mascarar falhas.
+2. Perfil/otimização real mobile/PC, streaming, render 3D, NPC scheduling, RPCs, memória, latência e UI de controle por toque, acessibilidade, áudio e VFX.
+3. QA global: testes unitários, integração, simulação de longos dias, saves antigos/nova versão, failover e corrupção de dados, antiexploit, monetização, bugs de rede e regressões visuais.
+4. Revisar documentação, fontes/assets/licenças, telemetry de funil/retention sem manipulação, política Roblox vigente, crash reporting, guarda de produção e plano de rollback.
+5. Gerar build final em staging, registrar recibos e solicitar validação presencial/manual do criador. Caso necessário abrir T3-F1/F2/F3 para polir. Só com aprovação explícita preparar Place de PRODUÇÃO separado.
+Leitura EXTERNA: Roblox Performance/Test-on-hardware/DataStores/Ads/Avatar/Terrain; revisão de K2C sources para bugs e comportamento alvo; INTERNA: todas as evidências de T1/T2/T3, Scene Sync/Deployment, VISION_MASTER e QA.
+Gate: jogo medieval solo completo, jogável, com evolução durável, sem falhas de save/duplicação, controle mobile e aspectos de gameplay/visuais aprovados pelo criador.
+
+## Ciclo de refinamento da mesma temporada (após R3)
+
+F1: inspeção de bugs e diagnóstico da temporada atual com reprodutores e testes.
+F2: correção de causa raiz, UX, animação, IA, balanceamento e desempenho APENAS do escopo existente.
+F3: regressão global, revalidação, integração e nova publicação staging, com nova revisão do criador.
+Pode repetir camada com IDs diferenciados se necessário; nenhum F adiciona feature da próxima temporada.
+
+## Testes e rastreabilidade
+
+Fonte de pesquisa: docs/research/RESEARCH_SOURCES.md.
+Matriz de observações: docs/research/MECHANICS_AUDIT.md.
+Algoritmos e contratos Luau originais: docs/research/ROBLOX_ADAPTATION.md.
+Lacunas: docs/research/RESEARCH_GAPS.md.
+Roteiro para novos agentes/modelos: docs/AGENT_HANDOFF.md.
+Protocolo de gates: docs/RUNNER_PROTOCOL.md.
+Status único da execução: docs/RUNNER_STATUS.json.
+Todos runners PLANEJADOS: não atribuir testes, commits de implementação ou publicação sem evidência.

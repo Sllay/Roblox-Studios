@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "project": "entre-reinos",
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
@@ -16,7 +16,7 @@
   "seasons": [
     {
       "id": "T1",
-      "title": "A Coroa e a Primeira Cidade",
+      "title": "Fundacao do jogo: nucleo robusto",
       "status": "planned",
       "stagingPublication": {
         "status": "not_published",
@@ -80,7 +80,7 @@
     },
     {
       "id": "T2",
-      "title": "O Mundo Vivo",
+      "title": "Finalizacao dos sistemas e campanha solo",
       "status": "planned",
       "stagingPublication": {
         "status": "not_published",
@@ -144,7 +144,7 @@
     },
     {
       "id": "T3",
-      "title": "Guerra da Corrupcao e Fechamento",
+      "title": "Conteudo, variedade, polimento e release",
       "status": "planned",
       "stagingPublication": {
         "status": "not_published",
@@ -206,5 +206,19 @@
         }
       ]
     }
-  ]
+  ],
+  "planVersion": "V2-2026-11-21",
+  "programStage": "research_and_planning",
+  "programIntent": {
+    "T1": "fundacao",
+    "T2": "finalizacao_de_todos_sistemas_centrais",
+    "T3": "conteudo_variedade_polimento"
+  },
+  "research": {
+    "sourcesRegistered": true,
+    "mechanicsAudited": 27,
+    "originalArchitectureDocumented": true,
+    "gameplayImplemented": false,
+    "runStarted": false
+  }
 }

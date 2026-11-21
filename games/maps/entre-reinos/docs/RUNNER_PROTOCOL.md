@@ -53,3 +53,11 @@ T3 termina com jogo solo medieval completo. Lancamento em production so apos T3 
 
 ## Impedimentos verdadeiros
 Se ID nao verificado, ferramenta indisponivel, token insuficiente ou CI falho, sinalizar BLOQUEADO com evidência e continuar apenas tarefas locais/independentes que nao exijam o acesso. Nunca inventar verde ou atribuir sucesso a tarefa nao executada.
+
+## Emenda 21/11/2026 — Plano V2 e research-gated workflow
+
+O cronograma V2 substitui a alocação antiga: T1 FUNDAÇÃO, T2 FINALIZAÇÃO de TODOS os sistemas principais, T3 CONTEÚDO/POLIMENTO. Não usar o plano antigo T3 para iniciar portais/infecção/conquista, pois agora devem estar prontos na T2-R3. Nenhum sistema central pode ser omitido de T2 esperando “polimento” da T3.
+
+No começo de cada runner, consultar AGENT_HANDOFF.md e fonte exata de leitura em SEASON_RUNNERS.md; pesquisar RESEARCH_SOURCES.md, MECHANICS_AUDIT.md e ROBLOX_ADAPTATION.md pertinentes. Registrar no receipt a lista de fontes realmente lidas, URL e versão, além das hipóteses testadas. Se fonte não acessível, marcar em RESEARCH_GAPS.md e não inventar suas regras.
+
+Ao terminar um runner, registrar o mesmo protocolo universal: implementação real + testes + corrigir falhas + ci green + commit + RUNNER_STATUS.json atualizado + handoff do próximo. Documentação de pesquisa não altera status planned. Nenhuma mudança de modelo deve alterar a ordem ou os critérios por interpretação própria.
