@@ -135,10 +135,11 @@ Jogo PvE/solo no primeiro lançamento, com comércio pago por Robux e possibilid
 
 Fontes principais: https://create.roblox.com/docs/production/promotion/rewarded-video-ads ; https://create.roblox.com/docs/reference/engine/classes/AdService ; https://create.roblox.com/docs/production/monetization/developer-products .
 
-## 18. Contrato oficial de entrega (V0.4)
+## 18. Divisao oficial V2 — substitui alocacao V0.4
 
-A sequencia oficial de desenvolvimento e 3 temporadas, cada qual com 3 runners. Ver docs/SEASON_RUNNERS.md. A primeira temporada conclui sistema de mundo 3D, movimento/agua, seis saves, NPCs autonomos, construcao e primeiro ciclo defensivo com prologo. A segunda amplia biomas/rios/pontes/reinos/economia/sociedade/montarias. A terceira fecha combate/infecao/portais/boss, diplomacia e dominio de reinos NPCs e polimento/monetizacao/QA da versao solo completa.
+O jogo medieval solo completo sera construido em tres temporadas de 3 runners cada:
+- T1 FUNDAÇÃO: mundo 3D, agua/controle R6, persistencia 6 saves, NPCs autonomos, inventarios com peso, construcoes com entrega progressiva, muralhas, combat basico, economia inicial, prologo e raid inicial.
+- T2 FINALIZAÇÃO: ampliar mundo e biomas/streaming, rios/pontes/montarias, mercado/cadeias completas, diplomacia e relacoes/reinos NPC, portais e contaminacao com sinais, ataques estrategicos, dominio/fusao territorial e progresso medieval completo. Nenhum sistema essencial deve ficar esperando T3 para funcionar.
+- T3 CONTEUDO E POLIMENTO: mais biomas, edificios, NPCs, monstros, montarias, eventos, bosses e localidades; equilibrio, UI mobile, acessibilidade, efeitos/animacoes, performance, tests de regressao, seguranca, monetizacao opcional (se elegivel) e release candidate.
 
-O recorte das versoes anteriores chamado MVP ou V0-V3 e historico ilustrativo, nao autoriza simplificar ou adiar sistemas comprometidos em T1-T3. A base deve ser modular de verdade; ativar cada sistema apenas na sua temporada. Cada runner possui gate e commit; publicacao de staging e teste do criador so depois de cada R3. Refinamentos de tres runners nao podem implementar funcionalidades de temporadas seguintes.
-
-PvP/co-op e revelacoes narrativas privadas nao sao parte do contrato de lancamento solo medieval.
+Ordem exata, referencias por runner e gates: docs/SEASON_RUNNERS.md. As fontes e evidencias do jogo original ficam em docs/research; nossas formulas/arquitetura original em ROBLOX_ADAPTATION.md. Depois de cada R3 publicar apenas staging verificado e pedir avaliacao do criador, com tres runners de refinamento se necessario. Sistema multi-jogador/PvP e lore privada continuam fora da versao medieval inicial.

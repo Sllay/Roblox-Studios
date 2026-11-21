@@ -67,6 +67,16 @@ U = lacuna não resolvida ou informação insuficiente.
 **K2C-WIKI11** | https://kingdomthegame.fandom.com/wiki/Controls
 **K2C-WIKI12** | https://kingdomthegame.fandom.com/wiki/Knight
 **K2C-WIKI13** | https://kingdomthegame.fandom.com/wiki/Islands_in_Two_Crowns
+
+**K2C-WIKI14** | https://kingdomthegame.fandom.com/wiki/Villager
+**K2C-WIKI15** | https://kingdomthegame.fandom.com/wiki/Farmer
+**K2C-WIKI16** | https://kingdomthegame.fandom.com/wiki/Farm
+**K2C-WIKI17** | https://kingdomthegame.fandom.com/wiki/Mounts
+**K2C-WIKI18** | https://kingdomthegame.fandom.com/wiki/Tools_and_weapons
+**K2C-WIKI19** | https://kingdomthegame.fandom.com/wiki/Defending_the_Kingdom
+**K2C-WIKI20** | https://kingdomthegame.fandom.com/wiki/Stats_board
+- Suplementos comunitários (O); não substituir por fontes de cálculo quando dados de análise estática mais específicos estiverem disponíveis.
+
 - Tipo: comunidade (O). Cruzar com RE01, editor e teste de gameplay. Fandom pode bloquear acesso automatizado; marcar indisponível e usar fontes acessíveis quando isso ocorrer.
 
 **K2C-GUIDE01** | https://steamcommunity.com/sharedfiles/filedetails/?id=1588497381

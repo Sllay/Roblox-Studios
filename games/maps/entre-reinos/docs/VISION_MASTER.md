@@ -1,6 +1,6 @@
 # ENTRE REINOS — BÍBLIA DE DESIGN (FONTE CANÔNICA)
 
-Versão V0.4 — 2026-11-21. Estado: PLANEJAMENTO, não funcionalidades implementadas.
+Versão V0.5 — 2026-11-21. Estado: PLANEJAMENTO, não funcionalidades implementadas.
 
 LEIA ESTE DOCUMENTO ANTES DE PROJETAR, PROGRAMAR, TESTAR OU PUBLICAR O ENTRE REINOS.
 Regras: [FIXADO] = definido pelo criador; [PROPOSTA] = proposta técnica/creativa; [FUTURO] = objetivo preservado, fora da primeira versão; [ABERTO] = não especificado ou não verificado. Nunca transformar exemplos em parâmetros definitivos. Toda mudança aprovada vai para o log de decisões, GDD, arquitetura e testes, sem apagar ideias anteriores silenciosamente. A lore reservada NÃO deve ser escrita em repositório público.
@@ -146,3 +146,13 @@ Distâncias/escala de reinos; limite NPC e carga; regras precisas de derrota e r
 [FIXADO] Ao termino de T3, o objetivo e jogo funcional completo e pronto para revisao final e lancamento, nao uma demonstracao simplificada. Arquitetura modular desde o primeiro dia: geracao, biomas, vila, estrutura, item/moeda, NPC, profissoes, inventario, montaria, combate, monstros, raids, mundo e saves. Evitar gambiarra, codigo duplicado e reconstrucoes desnecessarias.
 [PROPOSTA] Alocacao exata entre T1/T2/T3 e runners esta em docs/SEASON_RUNNERS.md, sujeita a revisao explicita sem alterar o contrato das 3 temporadas. Gates e evidencias em docs/RUNNER_PROTOCOL.md e docs/RUNNER_STATUS.json.
 [FUTURO] Modos multiplayer/PvP e revelacoes privadas de longa duracao permanecem fora da versao medieval solo inicial; nao antecipar conteudo de outra fase.
+
+## 18 — Decisao MAIS RECENTE: T1 Fundacao, T2 Finalizacao, T3 Conteudo/Polimento
+
+[FIXADO] O criador corrigiu a alocacao do plano no dia 21/11/2026: T1 entrega a FUNDAÇÃO modular e jogavel; T2 deve FINALIZAR todos os sistemas-base e o ciclo completo do jogo solo medieval, incluindo portais, corrupcao/infecao, raids estratégicas, montarias, economia, diplomacia e reinos NPC; T3 adiciona conteúdo, variedade e POLIMENTO, nao deve ser usada para iniciar os sistemas fundamentais que ficaram faltando.
+
+[FIXADO] Cada runner deve especificar a pesquisa do nosso repo + engenharia reversa comunitaria/observacoes externas, fonte e versao, scripts, integracoes, testes e evidencias em ordem cronológica. Mudanca de modelo deve retomar via docs/AGENT_HANDOFF.md e estado docs/RUNNER_STATUS.json, preservando feeling e fontes.
+
+[PROPOSTA] Detalhamento da alocação e testes esta em docs/SEASON_RUNNERS.md V2. Documentacao completa das fontes, fatos e formulas em docs/research/RESEARCH_SOURCES.md, MECHANICS_AUDIT.md e ROBLOX_ADAPTATION.md. Perguntas nao resolvidas em RESEARCH_GAPS.md; não inventar dados da fonte ou do gameplay para preencher lacunas.
+
+[FIXADO] Encerra T1 e T2 e T3 apenas apos cada R3 validado em CI, publicado em staging verificado e aprovado por teste manual do criador; camadas de 3 refinamentos da mesma temporada se necessario. Nenhum escopo da temporada seguinte antecipado.

@@ -79,3 +79,9 @@ Fontes técnicas: https://create.roblox.com/docs/reference/engine/classes/Humano
 O novo contrato de entrega esta em docs/SEASON_RUNNERS.md; protocolo em docs/RUNNER_PROTOCOL.md, estados em docs/RUNNER_STATUS.json. Os dominios serao implementados somente quando seus runners forem executados, mas schemas, interface de rede e formatos de persistencia precisam manter compatibilidade futura.
 Configurar biomas, itens, profissoes, receitas, estruturas, muros, monstros, montarias, portais e padroes de raids por registries declarativos/versionados, evitando duplicacao de scripts por instancia. Manter logica do jogo no servidor, visuais no cliente e dados serializaveis sem depender da existencia de Instances carregadas. Priorizar codigo modular funcional, nao frameworks abstratos vazios. Migrations/testes de compatibilidade a cada alteracao de schema.
 Nenhum runner pode ser marcado validado sem checks reais, commit correto e receipt; nenhum staging sem identity verification, workflow oficial e Scene Sync quando aplicavel.
+
+## Revisao V2 — arquitetura baseada em pesquisa rastreavel
+
+A partir de 21/11/2026 a ordem de implementação e T1 FUNDAÇÃO, T2 FINALIZAÇÃO de TODOS os sistemas centrais e T3 CONTEUDO/POLIMENTO (docs/SEASON_RUNNERS.md V2). Contratos próprios documentados em docs/research/ROBLOX_ADAPTATION.md: mundo por seed, work anchors 3D, Lane/Swim controller, ledgers transacionais, job scheduler utility/FSM, build progress em work units, projeteis balisticos X/Y, portal director por orcamento/pressao e reinos NPCs agregados.
+
+Distinguir algoritmos ORIGINAIS (H) de configuracoes/analise estatica de Kingdom (A/N), ver docs/research/RESEARCH_SOURCES.md e MECHANICS_AUDIT.md. Nenhuma licença de mod autoriza copiar recursos do Kingdom. Serviços novos apenas em runner de escopo correspondente. T3 expande conteudo por registry e nao reescreve fundamentos, corrige bugs e otimiza após testes reais.

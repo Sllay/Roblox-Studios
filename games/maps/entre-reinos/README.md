@@ -27,3 +27,11 @@ Todo agente deve ler os documentos antes de implementar mudanças de gameplay.
 - Estado VERIFICAVEL de runners e publicacoes: docs/RUNNER_STATUS.json
 
 Cada runner entrega multiplos sistemas integrados, valida e salva no GitHub antes de avancar. Apos cada R3, versao staging e teste manual do criador. Se necessário, tres runners adicionais de refinamento da propria temporada. O final T3 e jogo completo solo medieval, nao mero prototipo.
+
+## Fontes e retomada automatica (plano V2)
+- Primeiro arquivo para troca de modelo/agente: docs/AGENT_HANDOFF.md
+- Programa V2: T1 Fundacao, T2 Finalizacao dos sistemas, T3 Conteudo e Polimento em docs/SEASON_RUNNERS.md. Esta alocacao substitui roteiro V1.
+- Engenharia reversa documentada: docs/research/RESEARCH_SOURCES.md + MECHANICS_AUDIT.md.
+- Contratos, calculos e algoritmos ORIGINAIS em Luau: docs/research/ROBLOX_ADAPTATION.md.
+- Perguntas nao resolvidas: docs/research/RESEARCH_GAPS.md; registro machine readable: docs/research/SOURCE_REGISTRY.json.
+- Estado real: docs/RUNNER_STATUS.json. Hoje so houve pesquisa e planejamento, nenhum runner implementado ou publicado.

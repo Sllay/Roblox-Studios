@@ -29,3 +29,9 @@ Depois de R3 (e nunca apenas R1 ou R2), publicar SOMENTE staging verificado medi
 Se criador reprovar a versao, criar camada de exatamente 3 runners de refinamento para a mesma temporada. Repetir se preciso, sem roubar features da seguinte.
 Nao declarar "green", "validado", "publicado" ou "aprovado pelo usuario" sem evidencias objetivas e atualizacao correta do JSON de status.
 T3 deve entregar jogo medieval solo completo e jogavel; production apenas com autorizacao explicita e Place separado.
+
+## Pesquisa e handoff V2 — prioridade
+- O PRIMEIRO arquivo local que um agente novo/modelo novo deve ler é docs/AGENT_HANDOFF.md. Apos isso: VISION_MASTER, DECISION_LOG, SEASON_RUNNERS, RUNNER_STATUS, RUNNER_PROTOCOL, fontes de pesquisa e contratos Luau originais.
+- Divisao vigente de escopo: T1 FUNDAÇÃO, T2 FINALIZAÇÃO dos sistemas essenciais, T3 CONTEUDO/POLIMENTO. A alocacao V1 anterior foi substituida. Nenhuma interpretacao do plano antigo pode adiar o nucleo de portais, reinos e infecao para T3.
+- Ler docs/research/RESEARCH_SOURCES.md, docs/research/MECHANICS_AUDIT.md, docs/research/ROBLOX_ADAPTATION.md e docs/research/RESEARCH_GAPS.md, sempre registrando fonte/versao/condicao/certeza. Nunca usar engenharia reversa como permissao para copiar codigo/arte de outro jogo.
+- Antes de qualquer runner confirmar status real, gate e receipts. Arquivos de pesquisa e commits de documentacao nao contam como implementacao de gameplay nem justificam marcar runner verde.

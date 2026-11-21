@@ -27,3 +27,10 @@ Estados: FIXADO, PROPOSTA, FUTURO, ABERTO. Criador tem prioridade sobre sugestõ
 - FIXADO: entrega final depois das tres temporadas deve ser jogo completo medieval solo, nunca MVP descartavel; sistemas modulares e extensíveis desde o começo.
 - PROPOSTA: escopo distribuido entre T1/T2/T3 e nove runners no arquivo SEASON_RUNNERS.md; protocolo RUNNER_PROTOCOL.md e estado real RUNNER_STATUS.json.
 - ESTADO: somente documentacao de planejamento criada; nenhum runner foi implementado, validado ou publicado por este commit.
+
+## 21/11/2026 — V0.5, pesquisa aprofundada e realocacao das temporadas
+- FIXADO: corrigir escopo V1. T1 = Fundação. T2 = FINALIZAÇÃO de todos os sistemas essenciais e ciclo completo do jogo medieval solo. T3 = novo CONTEÚDO, variantes e POLIMENTO, sem obrigação de criar do zero portais/infecção/diplomacia que devem estar prontos na T2.
+- FIXADO: antes de executar cada runner, coletar links e mecânicas de Kingdom e do próprio Roblox-Studios, identificar números/lógicas confiáveis e lacunas, adaptar em Luau com algoritmos próprios; registrar uma cronologia que qualquer modelo/agente possa continuar.
+- PESQUISA: SongZcode/kingdom-two-crowns-mechanics 2.4.2 rev23529; mods FredApps, abevol, minwoong; Wiki e guia, oficial Raw Fury e Roblox Creator Hub. Evidência A/config, N/static, O/comunidade, P/editor, R/API, H/projeto próprio e U/sem comprovação.
+- ENTREGAS DOCUMENTAIS: docs/research/RESEARCH_SOURCES.md; MECHANICS_AUDIT.md (27 dominios); ROBLOX_ADAPTATION.md (contratos/equacoes próprias); RESEARCH_GAPS.md; SOURCE_REGISTRY.json; docs/AGENT_HANDOFF.md; SEASON_RUNNERS.md V2.
+- STATUS: nenhum runner de gameplay iniciado, integrado, validado, publicado. Git docs de pesquisa não validam jogabilidade. Receipts reais serão acrescentados por runner.
