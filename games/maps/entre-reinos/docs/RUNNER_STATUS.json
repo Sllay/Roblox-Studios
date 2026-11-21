@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "project": "entre-reinos",
+  "plan": "docs/SEASON_RUNNERS.md",
+  "protocol": "docs/RUNNER_PROTOCOL.md",
+  "recordedAt": "2026-11-21",
+  "note": "PLANEJAMENTO; nenhuma implementacao de runner validada ou publicada.",
+  "stagingVerified": false,
+  "productionVerified": false,
+  "allowedRunnerStatuses": [
+    "planned",
+    "in_progress",
+    "blocked",
+    "validated"
+  ],
+  "seasons": [
+    {
+      "id": "T1",
+      "title": "A Coroa e a Primeira Cidade",
+      "status": "planned",
+      "stagingPublication": {
+        "status": "not_published",
+        "commit": null,
+        "placeId": null,
+        "universeId": null,
+        "runUrl": null
+      },
+      "userReview": "not_requested",
+      "refinementCycles": [],
+      "runners": [
+        {
+          "id": "T1-R1",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        },
+        {
+          "id": "T1-R2",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        },
+        {
+          "id": "T1-R3",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "title": "O Mundo Vivo",
+      "status": "planned",
+      "stagingPublication": {
+        "status": "not_published",
+        "commit": null,
+        "placeId": null,
+        "universeId": null,
+        "runUrl": null
+      },
+      "userReview": "not_requested",
+      "refinementCycles": [],
+      "runners": [
+        {
+          "id": "T2-R1",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        },
+        {
+          "id": "T2-R2",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        },
+        {
+          "id": "T2-R3",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "title": "Guerra da Corrupcao e Fechamento",
+      "status": "planned",
+      "stagingPublication": {
+        "status": "not_published",
+        "commit": null,
+        "placeId": null,
+        "universeId": null,
+        "runUrl": null
+      },
+      "userReview": "not_requested",
+      "refinementCycles": [],
+      "runners": [
+        {
+          "id": "T3-R1",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        },
+        {
+          "id": "T3-R2",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        },
+        {
+          "id": "T3-R3",
+          "status": "planned",
+          "commit": null,
+          "ciRunUrl": null,
+          "receipt": null,
+          "validation": {
+            "structure": "not_run",
+            "luau": "not_run",
+            "unit": "not_run",
+            "rojo": "not_run",
+            "runtime": "not_run",
+            "mobile": "not_run"
+          },
+          "blockers": []
+        }
+      ]
+    }
+  ]
+}
