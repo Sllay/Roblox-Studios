@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "planVersion": "V2-2026-11-21",
+  "updated": "2026-11-21",
+  "sourceRegistry": "docs/research/SOURCE_REGISTRY.json",
+  "sourcesDocument": "docs/research/RESEARCH_SOURCES.md",
+  "mechanicsEvidence": "docs/research/MECHANICS_AUDIT.md",
+  "originalLogic": "docs/research/ROBLOX_ADAPTATION.md",
+  "firstRead": "docs/AGENT_HANDOFF.md",
+  "rules": "Sempre pesquisar versão/escopo/fatos, registrar lacunas, implementar só runner vigente e salvar recibo de testes",
+  "runners": [
+    {
+      "id": "T1-R1",
+      "scope": "Fundação do mundo, câmera/R6, Terrain/água, 6 saves",
+      "sourceIds": [
+        "K2C-EDITOR",
+        "K2C-RE01",
+        "K2C-WIKI",
+        "RBX-TERRAIN",
+        "RBX-HUMANOID",
+        "RBX-DATASTORES",
+        "RBX-DATA-LOCKS",
+        "RBX-PERF",
+        "RBX-HARDWARE"
+      ],
+      "internalRead": [
+        "docs/TERRAIN_BUILDER.md",
+        "docs/SCENE_SYNC.md",
+        "docs/QUALITY_GATE_V2.md"
+      ],
+      "gateFocus": "Seed consistente; sem drift Z; natação X/Y; seis saves; FPS mobile",
+      "status": "planned"
+    },
+    {
+      "id": "T1-R2",
+      "scope": "NPC, inventário/peso, jobs, materiais e construção",
+      "sourceIds": [
+        "K2C-RE01",
+        "K2C-MOD01",
+        "K2C-WIKI",
+        "RBX-AVATARS",
+        "RBX-DATASTORES"
+      ],
+      "internalRead": [
+        "docs/ASSET_AND_SCENE_WORKFLOWS.md",
+        "docs/QUALITY_GATE_V2.md"
+      ],
+      "gateFocus": "Entregas sem duplicação; peso; trabalho persistente; multiplicadores 3x/2x/1x",
+      "status": "planned"
+    },
+    {
+      "id": "T1-R3",
+      "scope": "Combate, moeda física, prólogo e raid local",
+      "sourceIds": [
+        "K2C-RE01",
+        "K2C-MOD02",
+        "K2C-WIKI",
+        "RBX-HUMANOID",
+        "RBX-PERF"
+      ],
+      "internalRead": [
+        "docs/QUALITY_GATE_V2.md",
+        "docs/DEPLOYMENT.md",
+        "docs/SCENE_SYNC.md"
+      ],
+      "gateFocus": "Jornada completa T1; server combat; saldo; perdas; staging após R3",
+      "status": "planned"
+    },
+    {
+      "id": "T2-R1",
+      "scope": "Mundo interligado, biomas, rios, pontes, montarias, LOD",
+      "sourceIds": [
+        "K2C-RE01",
+        "K2C-MOD01",
+        "K2C-WIKI",
+        "RBX-TERRAIN",
+        "RBX-PERF",
+        "RBX-HARDWARE"
+      ],
+      "internalRead": [
+        "docs/TERRAIN_BUILDER.md",
+        "docs/SCENE_SYNC.md",
+        "asset-library/"
+      ],
+      "gateFocus": "Reinos caminháveis; atravessar água; grafo de pontes; sem sobrecarregar mobile",
+      "status": "planned"
+    },
+    {
+      "id": "T2-R2",
+      "scope": "Economia/produção/profissões, relacionamentos, reinos e diplomacia",
+      "sourceIds": [
+        "K2C-RE01",
+        "K2C-MOD01",
+        "K2C-WIKI",
+        "RBX-DATASTORES",
+        "RBX-DATA-LOCKS"
+      ],
+      "internalRead": [
+        "docs/QUALITY_GATE_V2.md",
+        "games/maps/entre-reinos/ARCHITECTURE.md"
+      ],
+      "gateFocus": "Matéria-prima→produção→comércio; impostos; vínculos; sem inflação infinita",
+      "status": "planned"
+    },
+    {
+      "id": "T2-R3",
+      "scope": "Portais, infecção, raids avançadas, conquistas NPC, campanha completa",
+      "sourceIds": [
+        "K2C-RE01",
+        "K2C-MOD01",
+        "K2C-WIKI",
+        "RBX-HUMANOID",
+        "RBX-DATASTORES"
+      ],
+      "internalRead": [
+        "docs/QUALITY_GATE_V2.md",
+        "docs/DEPLOYMENT.md",
+        "docs/SCENE_SYNC.md"
+      ],
+      "gateFocus": "Sistemas essenciais concluídos; portais dois lados; infecção justa; staging após R3",
+      "status": "planned"
+    },
+    {
+      "id": "T3-R1",
+      "scope": "Mais conteúdo de biomas, estruturas, NPCs, montarias e equipamentos",
+      "sourceIds": [
+        "K2C-RE01",
+        "K2C-MOD01",
+        "K2C-WIKI",
+        "RBX-AVATARS",
+        "RBX-PERF"
+      ],
+      "internalRead": [
+        "asset-library/",
+        "docs/ASSET_IMPORT.md"
+      ],
+      "gateFocus": "Conteúdo via registries sem quebrar seeds/saves; avaliação visual",
+      "status": "planned"
+    },
+    {
+      "id": "T3-R2",
+      "scope": "Mais monstros, bosses/eventos e monetização opcional",
+      "sourceIds": [
+        "K2C-RE01",
+        "K2C-MOD03",
+        "K2C-WIKI",
+        "RBX-ADS",
+        "RBX-PRODUCTS"
+      ],
+      "internalRead": [
+        "docs/QUALITY_GATE_V2.md",
+        "docs/DEPLOYMENT.md"
+      ],
+      "gateFocus": "Boss/content sem reescrever AI; recibos sem duplicar; sem paywall",
+      "status": "planned"
+    },
+    {
+      "id": "T3-R3",
+      "scope": "Polimento, performance, QA, segurança e release candidate",
+      "sourceIds": [
+        "RBX-PERF",
+        "RBX-HARDWARE",
+        "RBX-DATASTORES",
+        "RBX-DATA-LOCKS",
+        "RBX-PRODUCTS",
+        "RBX-TERRAIN"
+      ],
+      "internalRead": [
+        "docs/SCENE_SYNC.md",
+        "docs/DEPLOYMENT.md",
+        "docs/QUALITY_GATE_V2.md"
+      ],
+      "gateFocus": "Testes reais mobile/soak; 6 saves; boa UX; staging aprovado pelo criador",
+      "status": "planned"
+    }
+  ]
+}
