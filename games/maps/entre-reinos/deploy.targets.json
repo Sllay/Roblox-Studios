@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "environments": {
+    "staging": {
+      "universeId": null,
+      "placeIds": {
+        "main": null
+      }
+    },
+    "production": {
+      "universeId": null,
+      "placeIds": {
+        "main": null
+      }
+    }
+  }
+}
