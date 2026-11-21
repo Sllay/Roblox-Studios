@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-11-21",
+  "labels": {
+    "A": "configuracao de build, nao garantia de runtime",
+    "N": "interpretacao de analise estatica, condicionada",
+    "O": "observacao comunitaria",
+    "P": "descricao do editor",
+    "R": "API Roblox oficial",
+    "H": "decisao original do projeto",
+    "U": "nao confirmado"
+  },
+  "sources": [
+    {
+      "id": "K2C-RE01",
+      "url": "https://github.com/SongZcode/kingdom-two-crowns-mechanics",
+      "kind": "community-static-analysis",
+      "build": "2.4.2 rev23529 OakAndBirch",
+      "confidence": "scoped-A-N",
+      "license": "CC BY 4.0 for original docs; NOT game"
+    },
+    {
+      "id": "K2C-MOD01",
+      "url": "https://github.com/FredApps/KingdomMod",
+      "kind": "modding-sdk",
+      "build": "2.4.0 docs",
+      "confidence": "mod-project-docs",
+      "license": "MIT own source only"
+    },
+    {
+      "id": "K2C-MOD02",
+      "url": "https://github.com/abevol/KingdomMod",
+      "kind": "mods",
+      "build": "version varies",
+      "confidence": "mod-project-docs",
+      "license": "not verified for reuse"
+    },
+    {
+      "id": "K2C-MOD03",
+      "url": "https://github.com/minwoong-seo/K2C-Mods",
+      "kind": "mods",
+      "build": "2.4.2",
+      "confidence": "mod-project-docs",
+      "license": "not verified for reuse"
+    },
+    {
+      "id": "K2C-WIKI",
+      "url": "https://kingdomthegame.fandom.com/wiki/Kingdom_Two_Crowns",
+      "kind": "community-wiki",
+      "build": "multiple",
+      "confidence": "O",
+      "license": "check per page"
+    },
+    {
+      "id": "K2C-EDITOR",
+      "url": "https://rawfury.com/games/kingdom-two-crowns/",
+      "kind": "official-product-description",
+      "build": "product",
+      "confidence": "P",
+      "license": "not for assets"
+    },
+    {
+      "id": "K2C-GUIDE",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=1588497381",
+      "kind": "community-guide",
+      "build": "multiple",
+      "confidence": "O",
+      "license": "not verified"
+    },
+    {
+      "id": "RBX-TERRAIN",
+      "url": "https://create.roblox.com/docs/reference/engine/classes/Terrain",
+      "kind": "roblox-api",
+      "confidence": "R"
+    },
+    {
+      "id": "RBX-HUMANOID",
+      "url": "https://create.roblox.com/docs/reference/engine/classes/Humanoid",
+      "kind": "roblox-api",
+      "confidence": "R"
+    },
+    {
+      "id": "RBX-DATASTORES",
+      "url": "https://create.roblox.com/docs/cloud-services/data-stores",
+      "kind": "roblox-api",
+      "confidence": "R"
+    },
+    {
+      "id": "RBX-DATA-LOCKS",
+      "url": "https://create.roblox.com/docs/cloud-services/data-stores/player-data-purchasing",
+      "kind": "roblox-api",
+      "confidence": "R"
+    },
+    {
+      "id": "RBX-PERF",
+      "url": "https://create.roblox.com/docs/performance-optimization/design",
+      "kind": "roblox-api",
+      "confidence": "R"
+    },
+    {
+      "id": "RBX-HARDWARE",
+      "url": "https://create.roblox.com/docs/performance-optimization/test-on-hardware",
+      "kind": "roblox-api",
+      "confidence": "R"
+    },
+    {
+      "id": "RBX-AVATARS",
+      "url": "https://create.roblox.com/docs/reference/engine/classes/AvatarEditorService",
+      "kind": "roblox-api",
+      "confidence": "R"
+    },
+    {
+      "id": "RBX-ADS",
+      "url": "https://create.roblox.com/docs/production/promotion/rewarded-video-ads",
+      "kind": "roblox-monetization",
+      "confidence": "R",
+      "recheckBeforeLaunch": true
+    },
+    {
+      "id": "RBX-PRODUCTS",
+      "url": "https://create.roblox.com/docs/production/monetization/developer-products",
+      "kind": "roblox-monetization",
+      "confidence": "R",
+      "recheckBeforeLaunch": true
+    }
+  ],
+  "canonicalFiles": [
+    "games/maps/entre-reinos/docs/VISION_MASTER.md",
+    "games/maps/entre-reinos/docs/SEASON_RUNNERS.md",
+    "games/maps/entre-reinos/docs/RUNNER_STATUS.json",
+    "games/maps/entre-reinos/docs/AGENT_HANDOFF.md"
+  ],
+  "noProprietaryBinaries": true,
+  "noRuntimeVerifiedForOriginalGame": true,
+  "gameplayImplemented": false
+}
