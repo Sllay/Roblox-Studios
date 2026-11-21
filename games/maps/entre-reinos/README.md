@@ -1,6 +1,6 @@
 # Between Kingdoms (Entre Reinos)
 
-Novo jogo Roblox de estratégia lateral 2.5D, reino vivo, sobrevivência medieval e defesa contra uma corrupção monstruosa.
+Novo jogo Roblox com cenário integralmente 3D e câmera lateral (jogabilidade X/Y), reino vivo, sobrevivência medieval e defesa contra corrupção monstruosa. Sem parallax 2D.
 
 - **Estado:** pré-produção / especificação inicial, sem Place Roblox associado.
 - **Escopo inicial:** campanha solo persistente (Roblox online com servidor individual, não execução offline local).

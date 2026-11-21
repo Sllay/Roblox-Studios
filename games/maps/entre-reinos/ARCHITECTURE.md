@@ -10,7 +10,7 @@ Preservar o projeto Rojo criado a partir de `games/maps/_template/` e pipeline d
 
 `WorldSeed → WorldGraph(Reinos, Corredores, Distritos, Portais) → RegionState → RegionStreaming`.
 
-- Coordenadas lógicas de jogabilidade X/Y; trilho e pequena largura Z quando explicitamente permitidos; cenário com parallax/água/silhuetas livres em Z.
+- Movimento lógico no plano X/Y (X=lateral, Y=altura/natação vertical); Z fixo para personagens durante gameplay, reservado a profundidade de mundo 3D e elementos visuais. Sem parallax 2D. Fundo distante 3D, fundo próximo 3D interativo e primeiro plano 3D.
 - Terrain nativo gerado determinística e incrementalmente por regiões. Relevo transitável validado, alturas coerentes, faixa navegável/terra com colisão controlada.
 - `WallRing` possui lado, grau de proteção, distrito interno/externo e conexões. Trilhos de NPCs e gates formam grafo local, sem pathfinding genérico 3D para cada agente.
 - LOD: full NPC simulation perto; simulação agregada por distrito/reino ao longe; snapshots determinísticos para descarregar/carregar.
@@ -51,3 +51,25 @@ R6, roupas/cabelos coerentes e originais ou autorizados. `HumanoidDescription` p
 - Simulações sem render: 100+ dias, economia infinita/negativa, NPC órfão, ataque que nunca termina, deadlock na cadeia de jobs.
 - Testes reais no Studio: camera X/Z, colisões R6/Terrain, quedas de muralha, NPC evacuação, render de moedas, save/load, streaming e 3G/mobile FPS.
 - Gate: `tools/workspace.py validate`, `tools/script_quality.py`, unittest e Rojo build; CI verde não prova jogabilidade.
+
+## Contratos V0.2 — movimento/camadas 3D
+
+`LaneController`: permitir movimento ao longo de X e Y com física natural, restringir deslocamento em Z sem teletransportar o Humanoid a cada frame. Entradas terra: X move; input vertical só orienta avatar em Yaw para fundo/frente, mantendo coordenada Z. Entradas natação: X horizontal e Y vertical; diagonal normalizada. Máquina de transição de estados Grounded/Jumping/Falling/Swimming/ExitingWater e blend de animação; evitar alternância rápida devido a water voxels marginais. Prototipar controlador e físicas Roblox antes de escolher constraints finais.
+
+`WorldDepthLayers`: distantes decorativos, próximos interativos com `WorkAnchor` acessível via corredor principal, personagens num plano lógico, primeiro plano decorativo preto. WorkAnchor conhece recurso/posição/alcance, sem caminhar Z. Visual de árvore pode ser volumétrico atrás do trilho, mas raio de trabalho liga ao corredor. Nada de invisibilidade de objeto servidor ao descarregar visual, nem silhueta cobrir elementos clicáveis.
+
+`WaterRouteGraph`: superfícies de água com limites, zonas rasas, pontos de ponte (duas margens), permissões per agent type (`CanSwim`, `CanWade`, `CanUseLightBridge`, `CanUseStrongBridge`), correnteza opcional e custo de travessia. A cachoeira visual não implica fluxo de Terrain nativo; separar visual waterfall de volume nadável e validar colisão/gravidade.
+
+## Contratos V0.2 — obras e economia
+
+`PlacementValidator` (servidor) usa footprint contínuo e volumes ocupados, escala de terreno, slopes, distâncias e regras `BuildRequirement` (incluindo acesso à água e conexão entre margens). Blueprint possui id estável e estado `MaterialDelivery | Labor | Complete | Damaged | Cancelled`.
+
+`ConstructionSite` contém `required[resource]`, `delivered[resource]`, `workRequired`, `workDone`, `baseWorkRequired`, `usedAdVouchers`, `paymentState`, `version`. Entrega `NPCInventory → site.delivered` sob uma transação atômica com idempotencyKey; NPC com material já carregado pode entregar sem passar por depósito. No momento da transferência, material muda de custódia e nunca é duplicado. `Labor` só começa após requisitos completos; progresso em unidades lógicas acumuladas, não multiplicando cronômetro em andamento. Salvar/restaurar trabalho parcial, estado do NPC, estoque e reserva.
+
+`Professions` inicial: carpinteiro madeira 3x/pedra 1x; minerador pedra 3x/madeira 1x; construtor qualquer 2x; genérico 1x. `workRate = baseRate * professionMultiplier * skillFactor * toolFactor * staminaFactor / complexityFactor` (fatores balanceáveis e limitados). Massa por item e peso total no inventário do NPC; ferramentas e armaduras são slots de equipamento. Emprego por agendamento e prioridade.
+
+`MonetizationService` (posterior): contratos de recompensas não são `os.time()` arbitrário nem diretos do client. Anúncio `AdService` somente quando elegível, disponível, com consentimento e recompensa Developer Product; `MarketplaceService.ProcessReceipt` com deduplicação persistente. Voucher `WorkCredit` resgata uma fração fixa de `baseWorkRequired`, limitando a `remainingWork` e no máximo três vouchers por site. Vouchers só podem ser aplicados no site/conta pretendida e nenhuma falha pode sumir com o que foi comprado. Para Robux, `FinishSite` finaliza trabalho, não inventa materiais sem um produto explícito `FinishAndSupply`; reembolsos tratados como concessão auditada separada sem duplicar saldo de obra. Segurança anti-exploit e limites de uso validados no servidor.
+
+`FutureLore`: pistas de tecnologia perdida guardadas fora dos sistemas de MVP. Corrupção entre cidadãos do reino desligada no início, prólogo possui apenas duque infectado; sistema de surto interno progressivo e sinalizado será módulo posterior.
+
+Fontes técnicas: https://create.roblox.com/docs/reference/engine/classes/Humanoid ; https://create.roblox.com/docs/reference/engine/classes/Terrain ; https://create.roblox.com/docs/reference/engine/classes/AdService ; https://create.roblox.com/docs/production/monetization/developer-products .
