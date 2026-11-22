@@ -1,0 +1,109 @@
+name: Entre Reinos v10 native swim and ghost NPC staging release
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/entre-reinos-v10-native-swim-npc-staging-release.yml]
+permissions:
+  actions: write
+  contents: write
+concurrency:
+  group: roblox-place-write-entre-reinos-main-staging
+  cancel-in-progress: false
+jobs:
+  validate-and-stage:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Validate game isolation, native swimming and ghost NPC contracts
+        run: |
+          python tools/workspace.py validate
+          python tools/deploy.py validate
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          g=Path("games/maps/entre-reinos")
+          src=g/"game/places/main/src"
+          lane=(src/"StarterPlayer/StarterPlayerScripts/LaneController.luau").read_text()
+          living=(src/"ServerScriptService/Services/LivingService.luau").read_text()
+          npc=(src/"StarterPlayer/StarterPlayerScripts/NPCPresentation.luau").read_text()
+          work=(src/"ReplicatedStorage/Living/WorkEngine.luau").read_text()
+          assert 'h:Move(Vector3.new(x, if swimming then y else 0, 0), false)' in lane
+          for token in ['SwimVisual', 'Water.submerged', 'ChangeState(', 'Instance.new("LinearVelocity")']:
+              assert token not in lane,token
+          assert 'o.Enabled = not swimming' in lane
+          assert not (src/"StarterPlayer/StarterPlayerScripts/R6SwimVisual.luau").exists()
+          assert not (src/"ReplicatedStorage/WaterRules.luau").exists()
+          assert 'ghostPart(item)' in living
+          assert 'CollisionGroupSetCollidable(GHOST_GROUP,"Default",false)' in living
+          assert 'CollisionGroupSetCollidable(GHOST_GROUP,GHOST_GROUP,false)' in living
+          assert 'actorX(npc),actorZ(npc)' in living
+          assert 'npc.motionX=0' in work
+          assert 'npc.motionX=(if diff>0 then 1 else -1)*travel/dt' in work
+          assert 'smoothedVelocity' in npc
+          assert 'model:PivotTo(item.render)' in npc
+          assert json.loads((g/"deploy.targets.json").read_text())["environments"]["production"]["universeId"] is None
+          print("ER_V10_NATIVE_SWIM_GHOST_NPC_SOURCE_PASS")
+          PY
+      - name: Compile and strictly analyze Luau
+        run: |
+          bash tools/install-luau.sh
+          python tools/script_quality.py
+          bash tools/install-luau-lsp.sh
+          python tools/quality_gate_v2.py
+      - uses: CompeyDev/setup-rokit@v0.2.1
+      - name: Build only Entre Reinos staging Place
+        run: python tools/workspace.py build --game entre-reinos --place main
+      - name: Verify exact existing Roblox staging revision 9 and take scoped snapshot
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          python tools/scene_sync.py --game entre-reinos --place main --environment staging --expected-version 9 --record
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('games/maps/entre-reinos/docs/sync/main/staging.summary.json')
+          s=json.loads(p.read_text())
+          assert s['loadedVersion']==9, s['loadedVersion']
+          assert str(s['universeId'])=='10769712413'
+          assert str(s['placeId'])=='90623742498445'
+          assert s['total']>=70
+          print('ER_V9_BASELINE_BEFORE_V10_VERIFIED',s['stateDigest'])
+          PY
+      - name: Save observed staging inventory to main
+        run: |
+          git config user.name "entre-reinos-v10-release[bot]"
+          git config user.email "entre-reinos-v10-release@users.noreply.github.com"
+          git add -- games/maps/entre-reinos/docs/sync/main/staging.json games/maps/entre-reinos/docs/sync/main/staging.summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "sync(entre-reinos): record staging v9 before native swimming release"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Dispatch guarded official staging publication only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head="$(gh api repos/Sllay/Roblox-Studios/git/ref/heads/main --jq .object.sha)"
+          local="$(git rev-parse HEAD)"
+          [[ "$head" == "$local" ]] || { echo "::error::main changed after inventory; abort release"; exit 1; }
+          gh api -X POST repos/Sllay/Roblox-Studios/actions/workflows/publish.yml/dispatches --input - <<'JSON'
+          {
+            "ref": "main",
+            "inputs": {
+              "game": "entre-reinos",
+              "place": "main",
+              "environment": "staging",
+              "confirm_publish": "true",
+              "confirm_full_place_replacement": "true"
+            }
+          }
+          JSON
+          echo "ER_V10_STAGING_PUBLICATION_DISPATCHED"
