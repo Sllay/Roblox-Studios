@@ -29,6 +29,11 @@ def main():
                         str(er_modules/"Living"/(module_name+".luau"))],cwd=ROOT,check=True)
     subprocess.run([vm,str(ROOT/"games/maps/entre-reinos/game/tests/living_work_r2.luau")],
                    cwd=ROOT,check=True)
+    # T1-R3: persistent raid/combat/currency contract and adversarial actions.
+    subprocess.run([lsp,"analyze",f"--definitions={definitions}",
+                    str(er_modules/"Living"/"R3Engine.luau")],cwd=ROOT,check=True)
+    subprocess.run([vm,str(ROOT/"games/maps/entre-reinos/game/tests/r3_fundamentals.luau")],
+                   cwd=ROOT,check=True)
     # Execute Entre Reinos pure Luau assertions, not merely syntax-check the test file.
     er_test=ROOT/"games/maps/entre-reinos/game/tests/region_and_slots.luau"
     subprocess.run([vm,str(er_test)],cwd=ROOT,check=True)
