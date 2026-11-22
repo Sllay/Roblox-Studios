@@ -19,7 +19,7 @@ class EntreReinosWiring(unittest.TestCase):
     def test_server_requires_live_service_paths(self):
         server = SRC/"ServerScriptService"
         boot = (server/"Boot.server.luau").read_text(encoding="utf8")
-        for name in ("WorldService", "SaveSlotService"):
+        for name in ("WorldService", "SaveSlotService", "CharacterService"):
             path = server/"Services"/f"{name}.luau"
             self.assertTrue(path.is_file(), str(path))
             self.assertIn(f'WaitForChild("{name}")', boot)
@@ -42,6 +42,18 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn("ReadVoxelChannels", service)
         self.assertIn("WriteVoxelChannels", service)
         self.assertIn("nonempty_terrain_refuses_overwrite", service)
+
+    def test_r6_is_real_server_model_not_rigtype_spoof(self):
+        service = (SRC/"ServerScriptService/Services/CharacterService.luau").read_text(encoding="utf8")
+        boot = (SRC/"ServerScriptService/Boot.server.luau").read_text(encoding="utf8")
+        self.assertIn("CreateHumanoidModelFromDescriptionAsync(", service)
+        self.assertIn("Enum.HumanoidRigType.R6", service)
+        self.assertIn("player.Character = model", service)
+        self.assertNotIn("humanoid.RigType =", service)
+        self.assertIn("CharacterService.ensureR6(player)", boot)
+        self.assertNotIn("configure_R6_avatar_in_experience_settings", boot)
+        self.assertLess(boot.index("CharacterService.ensureR6(player)"),
+                        boot.index("SaveSlotService.create(player, index)"))
 
     def test_save_is_server_authoritative_and_atomic(self):
         service = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")

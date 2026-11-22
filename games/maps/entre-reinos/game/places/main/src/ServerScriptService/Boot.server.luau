@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SaveSlotService = require(script.Parent:WaitForChild("Services"):WaitForChild("SaveSlotService"))
 local WorldService = require(script.Parent:WaitForChild("Services"):WaitForChild("WorldService"))
 local WorldProfile = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
+local CharacterService = require(script.Parent:WaitForChild("Services"):WaitForChild("CharacterService"))
 
 local gameFolder = ReplicatedStorage:WaitForChild("Game")
 local remote = Instance.new("RemoteFunction")
@@ -31,13 +32,18 @@ local inFlight: {[Player]: boolean} = {}
 local lastAction: {[Player]: number} = {}
 
 local function respawnOnLane(player: Player, character: Model)
-    if activePlayer ~= player then return end
+    if activePlayer ~= player or player.Character ~= character then return end
     local root = character:WaitForChild("HumanoidRootPart", 10)
     local humanoid = character:WaitForChild("Humanoid", 10)
     if not root or not root:IsA("BasePart") or not humanoid or not humanoid:IsA("Humanoid") then
         warn("[EntreReinos] Missing character root/humanoid")
         return
     end
+    if humanoid.RigType ~= Enum.HumanoidRigType.R6 then
+        warn("[EntreReinos] Non-R6 character reached lane setup; conversion is required.")
+        return
+    end
+    if root:FindFirstChild("ER_XYPlaneLock") then return end
     local laneAttachment = Instance.new("Attachment")
     laneAttachment.Name = "ER_LaneAttachment"
     laneAttachment.Parent = root
@@ -113,11 +119,11 @@ remote.OnServerInvoke = function(player: Player, action: any, index: any)
         if activePlayer or WorldService.isActive() or SaveSlotService.active(player) then
             return {ok = false, error = "world_already_active"}
         end
-        -- Roblox Avatar Settings must specify the R6 rig. Never change Humanoid.RigType mid-game.
-        local character = player.Character
-        local humanoid = if character then character:FindFirstChildOfClass("Humanoid") else nil
-        if not humanoid or humanoid.RigType ~= Enum.HumanoidRigType.R6 then
-            return {ok = false, error = "configure_R6_avatar_in_experience_settings"}
+        -- Convert/create a genuine server-owned R6 rig before acquiring a save lock.
+        -- Failure leaves all six saves untouched, even if the experience defaults to R15.
+        local avatarOk, avatarReason = CharacterService.ensureR6(player)
+        if not avatarOk then
+            return {ok = false, error = avatarReason}
         end
         local created, record = if action == "create"
             then SaveSlotService.create(player, index) else SaveSlotService.open(player, index)
@@ -145,7 +151,22 @@ local function register(player: Player)
     end
     player:SetAttribute("ER_WorldLoaded", false)
     player.CharacterAdded:Connect(function(char)
-        task.defer(respawnOnLane, player, char)
+        task.defer(function()
+            if activePlayer ~= player or player.Character ~= char then return end
+            local humanoid = char:WaitForChild("Humanoid", 10)
+            if humanoid and humanoid:IsA("Humanoid")
+                and humanoid.RigType ~= Enum.HumanoidRigType.R6 then
+                -- Engine respawns can honor R15 experience defaults. Convert them
+                -- back to genuine R6 before the physics lane is installed.
+                local avatarOk, avatarReason = CharacterService.ensureR6(player)
+                if not avatarOk then
+                    player:SetAttribute("ER_WorldLoaded", false)
+                    warn("[EntreReinos] R6 respawn failed: ", avatarReason)
+                end
+                return -- New R6 CharacterAdded event will attach the lane.
+            end
+            respawnOnLane(player, char)
+        end)
     end)
 end
 Players.PlayerAdded:Connect(register)
