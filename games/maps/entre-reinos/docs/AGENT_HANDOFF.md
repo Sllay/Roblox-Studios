@@ -89,3 +89,13 @@ Registrar em docs/runner-receipts/Tn-Rn.md (criar quando runner for implementado
 - se há necessidade de publicação, autorização, refinamento ou validação manual.
 
 Para perguntas sobre 'o que fazer agora', consultar primeiro status JSON em vez de adivinhar a etapa. Em cada resposta, citar o SHA e não inventar que ações anteriores ocorreram.
+
+## Histórico de execução — T1-R1 (21/11/2026)
+
+- [EM ANDAMENTO] Começou T1-R1. Não confundir com planejamento: já foram criados serviços e clientes em Luau no game/places/main/src.
+- Commit de referência de integração inicial: 36f7ddebb501877c69f423b74853c1dcfb9a8e12; consultar sempre HEAD e docs/RUNNER_STATUS.json atuais.
+- Mundo e rio: WorldProfile + WorldService; salvamento: SlotModel + SaveSlotService; servidor: Boot; câmera/controles: SideCamera + LaneController; UI: SlotMenu + ClientBoot; testes puros Luau em game/tests/region_and_slots.luau.
+- Verificar resultado real do CI deste commit: https://github.com/Sllay/Roblox-Studios/actions/runs/44964751575. O último CI já VERDE na hora da escrita foi 44964681829 para o commit 55ecb4e.
+- Avatares R6 são configurados em Avatar Settings do Place, e o código falha explicitamente caso o jogador esteja em R15. Não alterar RigType em um Humanoid R15 ao vivo.
+- Publicação staging continua BLOQUEADA por ID sem verificação, e não ocorre antes de T1-R3 e aprovação do fluxo oficial.
+- Próxima ação: corrigir eventuais falhas do novo CI que executa testes Luau, expandir testes de lock/CRUD em Roblox, capturar métricas reais e validar água/plane/câmera em cliente. NÃO iniciar T1-R2 nem marcar validated.

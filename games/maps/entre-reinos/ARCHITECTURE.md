@@ -1,6 +1,6 @@
 # Arquitetura técnica — Between Kingdoms
 
-Estado: proposta; sem módulos de gameplay implementados.
+Estado: T1-R1 EM IMPLEMENTAÇÃO; módulos reais de mundo, câmera, controle, slots e UI implementados em Git. Runtime Roblox não validado.
 
 ## Base existente
 
@@ -85,3 +85,16 @@ Nenhum runner pode ser marcado validado sem checks reais, commit correto e recei
 A partir de 21/11/2026 a ordem de implementação e T1 FUNDAÇÃO, T2 FINALIZAÇÃO de TODOS os sistemas centrais e T3 CONTEUDO/POLIMENTO (docs/SEASON_RUNNERS.md V2). Contratos próprios documentados em docs/research/ROBLOX_ADAPTATION.md: mundo por seed, work anchors 3D, Lane/Swim controller, ledgers transacionais, job scheduler utility/FSM, build progress em work units, projeteis balisticos X/Y, portal director por orcamento/pressao e reinos NPCs agregados.
 
 Distinguir algoritmos ORIGINAIS (H) de configuracoes/analise estatica de Kingdom (A/N), ver docs/research/RESEARCH_SOURCES.md e MECHANICS_AUDIT.md. Nenhuma licença de mod autoriza copiar recursos do Kingdom. Serviços novos apenas em runner de escopo correspondente. T3 expande conteudo por registry e nao reescreve fundamentos, corrige bugs e otimiza após testes reais.
+
+## Implementação real T1-R1 — 21/11/2026 (em andamento)
+
+- `ReplicatedStorage/WorldProfile.luau`: geração por seed determinística, domínio x[-128,128], y[-32,64], z[-48,48], rio e margens, centro de assentamento plano. O gerador versão 1 não admite overwrites silenciosos de regiões povoadas.
+- `ReplicatedStorage/SlotModel.luau`: contrato versionado e chave por UserId + slot 1..6.
+- `ServerScriptService/Services/WorldService.luau`: leitura de preflight para detectar terreno nativo, escrita de canais SolidMaterial/SolidOccupancy/LiquidOccupancy (4 studs), readback e decoração 3D com WorkAnchors; falha fechada diante de Terrain existente.
+- `ServerScriptService/Services/SaveSlotService.luau`: DataStore UpdateAsync, aquisição/expiração e refresh de lease, verificação de revisão/lastWriteId, upsert, leitura e tombstones; local de spawn não é gravado como progresso quando Terrain falha.
+- `ServerScriptService/Boot.server.luau`: remotes autorizados, XY PlaneConstraint, spawn quando mundo ativo, servidores solo, exigência de Avatar R6, autosave e BindToClose.
+- `StarterPlayer/StarterPlayerScripts/LaneController.luau`: input mobile/teclado/controle, Humanoid Move X, AlignOrientation para rotação, LinearVelocity XY em Swimming; não teleporta root a cada frame.
+- `SideCamera.luau`, `SlotMenu.luau`, `ClientBoot.client.luau`: câmera 3D, UI criar/entrar/excluir e opções; métricas de cliente.
+- `game/tests/region_and_slots.luau`: assertions Luau de seed, rio, chaves de slot e schema. Integradas ao quality_gate_v2.py em CI.
+- Requisitos pendentes de validação no Roblox real: física do PlaneConstraint e nado R6, compatibilidade de Avatar Settings, readback Terrain, DataStore e FPS real de dispositivos móveis.
+- STATUS: não declarar T1-R1 validado antes de confirmar runtime/mobile e corrigir eventuais erros. Escopo T1-R2 ainda não iniciado.
