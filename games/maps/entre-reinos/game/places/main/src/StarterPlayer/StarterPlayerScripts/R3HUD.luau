@@ -438,7 +438,8 @@ function UI.start(player: Player)
             showJournal(true,"workshop")
         elseif contextKind=="story" then
             local phase=player:GetAttribute("ER_R3Phase")
-            if phase=="evacuation" then request("prologue","evacuate")
+            if phase=="guard" then request("attack",nil)
+            elseif phase=="evacuation" then request("prologue","evacuate")
             elseif phase=="coronation" then request("prologue","coronation") end
         end
     end
@@ -493,9 +494,11 @@ function UI.start(player: Player)
         contextKind="none"
         contextTarget=0
         local phase=player:GetAttribute("ER_R3Phase")
-        if phase=="evacuation" or phase=="coronation" then
+        if phase=="guard" or phase=="evacuation" or phase=="coronation" then
             contextKind="story"
-            interact.Text=if phase=="evacuation" then "EVACUAR" else "ACEITAR COROA"
+            interact.Text=if phase=="guard" then "INICIAR PRÓLOGO"
+                else if phase=="evacuation" then "EVACUAR"
+                else "ACEITAR COROA"
         elseif (nearby.coinId or 0)>0 then
             contextKind="coin"
             contextTarget=nearby.coinId
