@@ -355,7 +355,7 @@ local function createSiteVisual(site: any)
         high.Parent=tree
         local prompt=Instance.new("ProximityPrompt")
         prompt.Name="MarkHarvest"
-        prompt.ActionText="Marcar corte"
+        prompt.ActionText=if site.marked==true then "Desmarcar corte" else "Marcar corte"
         prompt.ObjectText="Árvore · madeira"
         prompt.MaxActivationDistance=13
         prompt.RequiresLineOfSight=false
@@ -427,6 +427,10 @@ local function draw()
         if site.item=="wood" and visualization then
             local tree=visualization:FindFirstChild("HarvestableTree_"..tostring(site.id))
             if tree and tree:IsA("Model") then
+                local prompt=tree:FindFirstChild("MarkHarvest",true)
+                if prompt and prompt:IsA("ProximityPrompt") then
+                    prompt.Enabled=site.remaining>0
+                end
                 local high=tree:FindFirstChild("MarkedForCarpenter")
                 if high and high:IsA("Highlight") then
                     high.Enabled=site.marked==true and site.remaining>0
