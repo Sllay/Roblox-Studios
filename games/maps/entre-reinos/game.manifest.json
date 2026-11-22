@@ -7,7 +7,8 @@
     {
       "slug": "main",
       "name": "Main",
-      "project": "game/places/main/default.project.json"
+      "project": "game/places/main/default.project.json",
+      "fullPlaceBuildAuthoritative": true
     }
   ]
 }

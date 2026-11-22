@@ -29,3 +29,15 @@ Solicitação explícita de 21/11/2026: concluir o trabalho pendente do T1-R1 e 
 7. Medir FPS e oscilação de Z pelo painel no celular; enviar screenshot/log ou relato de falhas.
 
 **Não emitir check verde do T1-R1 sem teste de runtime e mobile, mesmo que staging tenha sido publicado.**
+
+## Revisão do Place e preparação concluída (21/11/2026)
+
+A checagem completa de somente leitura foi executada em https://github.com/Sllay/Roblox-Studios/actions/runs/44975381075. Snapshot versionado: `docs/sync/main/staging.json` e `staging.summary.json`.
+
+- Versão publicada observada: `1`; Universe `10769712413`; Place `90623742498445`.
+- 179 instâncias inspecionadas incluindo padrão de PlayerModule/AtomicBinding, 4 Script e 56 ModuleScript nativos da cena padrão, 1 Baseplate, 1 SpawnLocation, 1 Terrain, Camera e efeitos padrão. Sem assets ou sistemas de jogo externos identificados.
+- Hash de baseline: `0b52f3641643afdc4d547d83339161f79b57ed38dfe03eb0dc67ce0aeffa96cd`.
+- Sem região Terrain registrada como conteúdo próprio; cenário é template padrão v1.
+- Permitida a declaração `fullPlaceBuildAuthoritative: true` **somente para este Place de novo staging**, com substituição intencional da cena padrão. Nenhuma autorização de substituição no Black Island nem em produção.
+- Snapshot estrutural serve de pré-condição de Scene Sync, **não é backup binário completo**. Versão anterior permanece no histórico Roblox conforme política da plataforma, sem rollback automaticamente testado.
+- Próximo passo: `publish.yml` manual. Este arquivo não comprova publicação. O workflow precisa executar `tools/deploy.py publish --execute`, consultar a operação e confirmar `isPublished=true`.

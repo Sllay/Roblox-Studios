@@ -43,10 +43,9 @@
             "mobile": "not_run"
           },
           "blockers": [
-            "Sem runtime Roblox real validado: Terrain voxel, natação, câmera e limite Z exigem execução da experiência",
-            "DataStore Create/Open/Delete, leases e retomada após queda não testados em servidores reais",
-            "Avatar Settings R6 e par Universe/Place staging não verificados; nenhuma publicação",
-            "O controle touch e visuais precisam de aprovação no dispositivo móvel"
+            "Roblox Avatar Settings R6 still not independently verified; startup rejects R15",
+            "No real Roblox runtime/mobile tests of water, PlaneConstraint, camera, six DataStore slots",
+            "Staging upload requires manual approved workflow; not yet published"
           ]
         },
         {
@@ -234,7 +233,7 @@
     "ciResult": "success",
     "scope": "Scaffold, docs, plan and existing tests only; not a T1-R1 implementation pass",
     "stagingPlaceVerified": true,
-    "stagingBlocks": "read-only remote tree review and full replacement approval required before publishing",
+    "stagingBlocks": "manual publish workflow_dispatch required; verify Avatar R6 and runtime/mobile after upload",
     "runtimeRobloxTested": false,
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
@@ -255,6 +254,12 @@
     "verificationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975065621",
     "method": "authenticated Open Cloud read-only Luau execution",
     "ownerVerifiedByKeyAccess": true,
-    "fullPlaceAuthority": "not_yet_confirmed"
+    "fullPlaceAuthority": "reviewed_v1_default_scene",
+    "sceneSync": {
+      "version": 1,
+      "totalObjects": 179,
+      "baselineDigest": "0b52f3641643afdc4d547d83339161f79b57ed38dfe03eb0dc67ce0aeffa96cd",
+      "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975381075"
+    }
   }
 }

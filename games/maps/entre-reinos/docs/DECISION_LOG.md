@@ -34,3 +34,11 @@ Estados: FIXADO, PROPOSTA, FUTURO, ABERTO. Criador tem prioridade sobre sugestõ
 - PESQUISA: SongZcode/kingdom-two-crowns-mechanics 2.4.2 rev23529; mods FredApps, abevol, minwoong; Wiki e guia, oficial Raw Fury e Roblox Creator Hub. Evidência A/config, N/static, O/comunidade, P/editor, R/API, H/projeto próprio e U/sem comprovação.
 - ENTREGAS DOCUMENTAIS: docs/research/RESEARCH_SOURCES.md; MECHANICS_AUDIT.md (27 dominios); ROBLOX_ADAPTATION.md (contratos/equacoes próprias); RESEARCH_GAPS.md; SOURCE_REGISTRY.json; docs/AGENT_HANDOFF.md; SEASON_RUNNERS.md V2.
 - STATUS: nenhum runner de gameplay iniciado, integrado, validado, publicado. Git docs de pesquisa não validam jogabilidade. Receipts reais serão acrescentados por runner.
+
+## 21/11/2026 — T1-R1 revisão para teste antecipado em staging
+
+- Criador autorizou expressamente publicar o T1-R1 em staging para testar antes do encerramento da temporada, sem T1-R2 adiantado, sem produção.
+- Identidade do destino comprovada via API Open Cloud autenticada (versão Roblox 1): Universe 10769712413, Place 90623742498445, run 44975065621.
+- Cena remota inventariada em 44975381075, total 179 instâncias padrão, baseline 0b52f3641643afdc4d547d83339161f79b57ed38dfe03eb0dc67ce0aeffa96cd, sem conteúdo de outro jogo.
+- Aprovação de substituição da cena **padrão desse Place de testes** via manifesto `fullPlaceBuildAuthoritative` após inventário; `publish.yml` mantém confirmação manual e revisão de sync; não autoriza mexer no Black Island.
+- T1-R1 continua `in_progress` até usuário executar testes no Roblox/mobile e corrigir defeitos. Desenvolvimento T1-R2 aguarda aceite.
