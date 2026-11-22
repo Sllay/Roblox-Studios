@@ -247,11 +247,14 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             row.Parent = list
             local label = newText(row, "Mundo " .. tostring(index), UDim2.new(0.42, 0, 1, 0), UDim2.fromScale(0.012, 0), 14)
             label.TextXAlignment = Enum.TextXAlignment.Left
-            if summary.exists then
+            if summary.incompatible then
+                label.Text="Mundo "..tostring(index).." · Versão incompatível (protegido)"
+            elseif summary.exists then
                 label.Text = "Mundo " .. tostring(index) .. "  •  Dia " .. tostring(summary.worldDay or 1)
                 if type(summary.seed) == "number" then
                     label.Text ..= "  •  Seed " .. tostring(summary.seed)
                 end
+                label.Text ..= " · dados v"..tostring(summary.saveFormatVersion or 1)
                 if activeSlot == index then label.Text ..= "  •  Ativo" end
             elseif summary.corrupt then
                 label.Text = "Mundo " .. tostring(index) .. "  •  Dados incompatíveis"
@@ -266,9 +269,11 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
                 choose.Text = "Ocupado"
                 choose.Active = false
             end
-            choose.Active = not summary.corrupt and (activeSlot == nil or activeSlot == index)
+            choose.Active = not summary.corrupt and not summary.incompatible
+                and (activeSlot == nil or activeSlot == index)
+            if summary.incompatible then choose.Text="Protegido" end
             choose.Activated:Connect(function()
-                if summary.corrupt or busy then return end
+                if summary.corrupt or summary.incompatible or busy then return end
                 if activeSlot and activeSlot ~= index then
                     status.Text = "Mundo " .. tostring(activeSlot) .. " em uso neste servidor. Não abra outro."
                     return
@@ -294,8 +299,10 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             end)
             local remove = button(row, "Delete", "Excluir", UDim2.new(0.22, 0, 0, 34), UDim2.new(0.76, 0, 0.5, -17))
             remove.BackgroundColor3 = Color3.fromRGB(101, 53, 49)
-            remove.Active = summary.exists and activeSlot == nil
-            remove.Visible = summary.exists and activeSlot == nil
+            remove.Active = summary.exists and not summary.incompatible
+                and activeSlot == nil
+            remove.Visible = summary.exists and not summary.incompatible
+                and activeSlot == nil
             remove.Activated:Connect(function()
                 if busy then return end
                 if pendingDeletion ~= index then
