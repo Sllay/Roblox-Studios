@@ -35,6 +35,20 @@ assert(S.summary(nil, 1).exists == false)
 assert(S.summary({deleted = true}, 1).exists == false)
 assert(S.summary({foo = 1}, 1).corrupt)
 local legacy = S.newWorld(11, 100, {x=0,y=15,z=0})
+assert(S.SAVE_FORMAT_VERSION==1 and S.RULESET_VERSION==1)
+assert(legacy.saveFormatVersion==1 and legacy.rulesetVersion==1)
+local v1=S.newWorld(11,100,{x=0,y=15,z=0})
+v1.saveFormatVersion=nil
+v1.rulesetVersion=nil
+assert(S.validWorld(v1),"legacy slot without metadata must be readable")
+assert(S.summary(v1,1).compatibility=="legacy_compatible")
+local future=S.newWorld(11,100,{x=0,y=15,z=0})
+future.rulesetVersion=999
+assert(not S.validWorld(future))
+local protected=S.summary(future,1)
+assert(protected.exists and protected.incompatible and
+    protected.compatibility=="newer_save_protected","new save must fail closed")
+assert(S.validWorld(S.newWorld(11,100,{x=0,y=15,z=0})))
 legacy.schemaVersion = 999
 assert(not S.validWorld(legacy))
 print("ENTRE_REINOS_PURE: deterministic world, 6 independent slots and schema assertions passed")
