@@ -1,5 +1,6 @@
 --!strict
 -- T1-R1: pure persisted record contract. Every world is a separate DataStore key.
+local Living = require("./Living/LivingModel")
 local Slots = {}
 Slots.COUNT = 6
 Slots.SCHEMA_VERSION = 1
@@ -62,6 +63,12 @@ function Slots.validWorld(data: any): boolean
         return false
     end
     if type(data.regions) ~= "table" or type(data.storyFlags) ~= "table" then
+        return false
+    end
+    -- Schema 1 worlds from T1-R1 do not have living; they remain readable.
+    -- Population itself has its own migratable schema and must never silently
+    -- be discarded when a newer/unknown population record is encountered.
+    if data.living ~= nil and not Living.valid(data.living) then
         return false
     end
     return true

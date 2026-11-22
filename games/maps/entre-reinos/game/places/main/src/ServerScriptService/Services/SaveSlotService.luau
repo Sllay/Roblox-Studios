@@ -7,12 +7,19 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Slots = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("SlotModel"))
 local WorldProfile = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
 local Policy = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("SlotLeasePolicy"))
+local LivingModel = require(ReplicatedStorage:WaitForChild("Game")
+    :WaitForChild("Living"):WaitForChild("LivingModel"))
 local store = DataStoreService:GetDataStore("EntreReinos_WorldSlots_v1")
 local SaveSlotService = {}
 
 local LOCK_SECONDS = 240
 local AUTOSAVE_SECONDS = 70
 local sessions: {[Player]: any} = {}
+local livingSnapshotProvider: ((Player) -> any)? = nil
+
+function SaveSlotService.setLivingProvider(provider: (Player) -> any)
+    livingSnapshotProvider = provider
+end
 
 local function ownedToken(): string
     return game.JobId .. ":" .. HttpService:GenerateGUID(false)
@@ -23,6 +30,7 @@ local function cloneRecord(source: {[string]: any}): {[string]: any}
     if source.position then copy.position = table.clone(source.position) end
     if source.regions then copy.regions = table.clone(source.regions) end
     if source.storyFlags then copy.storyFlags = table.clone(source.storyFlags) end
+    if source.living then copy.living = LivingModel.clone(source.living) end
     return copy
 end
 
@@ -179,6 +187,19 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
     end
     s.busy = true
     if not s.pending then
+        if livingSnapshotProvider then
+            local invoked, state = pcall(livingSnapshotProvider, player)
+            if not invoked or (state ~= nil and not LivingModel.valid(state)) then
+                s.busy = false
+                warn("[EntreReinos] Refusing save of invalid population snapshot.")
+                return false, "living_snapshot_invalid"
+            end
+            if state ~= nil then
+                -- Materialize a deep copy. DataStore's UpdateAsync may retry
+                -- while the live NPC simulation is still ticking.
+                s.data.living = LivingModel.clone(state)
+            end
+        end
         trackWorld(player, s)
         local record = cloneRecord(s.data)
         record.revision = s.data.revision + 1
