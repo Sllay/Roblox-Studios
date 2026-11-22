@@ -1,0 +1,94 @@
+name: Entre Reinos T1-R1 R6 hotfix staging release (single approved repair)
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/entre-reinos-r6-staging-hotfix.yml]
+permissions:
+  actions: write
+  contents: write
+concurrency:
+  group: roblox-place-write-entre-reinos-main-staging
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Confirm exact staging destination and published R6 hotfix CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('games/maps/entre-reinos')
+          targets=json.loads((root/'deploy.targets.json').read_text())['environments']
+          assert str(targets['staging']['universeId'])=='10769712413'
+          assert str(targets['staging']['placeIds']['main'])=='90623742498445'
+          assert targets['production']['universeId'] is None
+          assert targets['production']['placeIds']['main'] is None
+          source=(root/'game/places/main/src/ServerScriptService/Boot.server.luau').read_text()
+          service=(root/'game/places/main/src/ServerScriptService/Services/CharacterService.luau').read_text()
+          assert 'CharacterService.ensureR6(player)' in source
+          assert 'CreateHumanoidModelFromDescriptionAsync' in service
+          assert 'configure_R6_avatar_in_experience_settings' not in source
+          assert json.loads((root/'game.manifest.json').read_text())['places'][0]['fullPlaceBuildAuthoritative']
+          print('R6_HOTFIX_PREVIEW_GUARD_PASS')
+          PY
+          conclusion="$(gh api repos/Sllay/Roblox-Studios/actions/runs/44976179460 --jq .conclusion)"
+          [[ "$conclusion" == success ]] || { echo "::error::R6 hotfix compile/tests CI not green"; exit 1; }
+      - name: Refresh exact v2 Scene Sync baseline before any Place write
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          python tools/scene_sync.py --game entre-reinos --place main --environment staging --expected-version 2 --record
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('games/maps/entre-reinos/docs/sync/main/staging.summary.json')
+          s=json.loads(p.read_text())
+          assert s['loadedVersion']==2
+          assert str(s['placeId'])=='90623742498445'
+          assert str(s['universeId'])=='10769712413'
+          roots={x['name'] for x in s['workspaceRoots']}
+          assert 'StartArea' in roots and 'Baseplate' not in roots
+          assert s['total']>=15
+          print('STAGING_V2_BASELINE_REFRESH_PASS',s['stateDigest'])
+          PY
+      - name: Commit new read-only observed baseline without force
+        run: |
+          git config user.name "entre-reinos-r6-release[bot]"
+          git config user.email "entre-reinos-r6-release@users.noreply.github.com"
+          git add --             games/maps/entre-reinos/docs/sync/main/staging.json             games/maps/entre-reinos/docs/sync/main/staging.summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "sync(entre-reinos): record published v2 before R6 hotfix"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Dispatch approved official staging-only Place publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head="$(git rev-parse HEAD)"
+          remote="$(gh api repos/Sllay/Roblox-Studios/git/ref/heads/main --jq .object.sha)"
+          [[ "$head" == "$remote" ]] || { echo "::error::HEAD drifted before dispatch"; exit 1; }
+          gh api -X POST repos/Sllay/Roblox-Studios/actions/workflows/publish.yml/dispatches --input - <<'JSON'
+          {
+            "ref": "main",
+            "inputs": {
+              "game": "entre-reinos",
+              "place": "main",
+              "environment": "staging",
+              "confirm_publish": "true",
+              "confirm_full_place_replacement": "true"
+            }
+          }
+          JSON
+          echo "R6_HOTFIX_PUBLISH_DISPATCHED; official publish.yml must independently confirm Roblox version"
