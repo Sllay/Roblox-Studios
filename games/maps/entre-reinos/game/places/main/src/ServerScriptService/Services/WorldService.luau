@@ -71,6 +71,19 @@ local function buildDecorations(seed: number)
             grass.Parent = folder
         end
     end
+    -- Bounded initial region: solid edge guards until regional streaming is introduced.
+    for _, side in ipairs({-1, 1}) do
+        local wall = Instance.new("Part")
+        wall.Name = "RegionEdge_" .. tostring(side)
+        wall.Anchored = true
+        wall.Size = Vector3.new(3, 120, 96)
+        wall.Position = Vector3.new(side * 126, 20, 0)
+        wall.Transparency = 1
+        wall.CanCollide = true
+        wall.CanTouch = false
+        wall.CanQuery = false
+        wall.Parent = folder
+    end
     folder.Parent = workspace
 end
 
@@ -173,7 +186,11 @@ function WorldService.activate(seed: number): (boolean, string?)
     if not seenSolid or not seenWater then
         return false, "terrain_verify_missing_channels"
     end
-    buildDecorations(seed)
+    local decorationsOk, decorationsError = pcall(buildDecorations, seed)
+    if not decorationsOk then
+        warn("[EntreReinos] Decorator failed after Terrain write; inspect before retry: ", decorationsError)
+        return false, "world_decoration_requires_new_server"
+    end
     local startArea = workspace:FindFirstChild("StartArea")
     if startArea then
         local floor = startArea:FindFirstChild("Floor")
