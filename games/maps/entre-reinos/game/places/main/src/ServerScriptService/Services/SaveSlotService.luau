@@ -223,6 +223,11 @@ function SaveSlotService.get(player: Player)
     return if s then s.data else nil
 end
 
+function SaveSlotService.index(player: Player): number?
+    local s = sessions[player]
+    return if s then s.index else nil
+end
+
 function SaveSlotService.autosave(player: Player)
     if not sessions[player] then return end
     local success, reason = SaveSlotService.save(player, false)

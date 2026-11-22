@@ -46,7 +46,19 @@ local function displayError(value: any): string
         r6_assignment_failed = "Erro ao carregar personagem R6; tente reconectar.",
         r6_spawn_in_progress = "O personagem está carregando. Aguarde alguns instantes.",
         player_disconnected = "Sua sessão foi encerrada; reabra o jogo.",
-        world_already_active = "Este servidor já tem um mundo ativo. Entre novamente para trocar.",
+        world_already_active = "Já existe um mundo ativo. Tentando recuperar a entrada...",
+        other_slot_active = "Outro mundo está ativo neste servidor. Entre novamente apenas para trocar de mundo.",
+        no_active_session = "Nenhuma sessão de mundo está ativa neste servidor.",
+        lane_setup_exception = "Falha ao conectar a física do personagem. Tente entrar no mesmo mundo novamente.",
+        lane_setup_failed = "O personagem ainda não está pronto. Tente entrar novamente.",
+        character_not_ready = "O personagem ainda está carregando. Tente novamente.",
+        character_changed = "O personagem reapareceu durante a entrada. Tente entrar novamente.",
+        r6_not_ready = "A conversão para R6 não terminou. Tente novamente.",
+        terrain_activation_exception = "Falha na inicialização do terreno. Saia do servidor e entre novamente, sem excluir o save.",
+        world_needs_new_server = "Este servidor não concluiu a geração. Feche a partida e entre novamente, sem excluir o save.",
+        server_operation_failed = "O servidor encontrou uma falha ao iniciar. O save continua preservado.",
+        character_setup_exception = "Falha ao preparar o personagem. Tente o mesmo mundo novamente.",
+        request_busy = "O mundo ainda está carregando. Aguarde e tente novamente.",
         terrain_write_uncertain = "Falha na geração do Terrain. Inspecionar antes de tentar novamente.",
         nonempty_terrain_refuses_overwrite = "Terreno existente detectado: escrita bloqueada para evitar sobrescrever o Place.",
         rate_limited = "Aguarde um instante antes da próxima ação.",
@@ -114,8 +126,8 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
         pendingDeletion = nil
     end
 
-    local function request(action: string, index: number?)
-        if busy then return nil end
+    local function request(action: string, index: number?): (any, string?)
+        if busy then return nil, "request_busy" end
         busy = true
         status.Text = "Processando " .. action .. "..."
         local transportOk, answer = pcall(function()
@@ -123,15 +135,24 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
         end)
         busy = false
         if not transportOk or type(answer) ~= "table" then
-            status.Text = "Conexão indisponível. Verifique sua rede."
-            return nil
+            status.Text = "Resposta do servidor não confirmada. Tentaremos recuperar a sessão."
+            return nil, "transport_failed"
         end
         if not answer.ok then
-            status.Text = displayError(answer.error)
-            return nil
+            local reason = tostring(answer.error)
+            local description = displayError(reason)
+            if reason == "other_slot_active" and type(answer.activeSlot) == "number" then
+                description = "O Mundo " .. tostring(answer.activeSlot) ..
+                    " está aberto. Selecione esse mesmo mundo para continuar."
+            end
+            if type(answer.stage) == "string" then
+                description ..= " (etapa: " .. answer.stage .. ")"
+            end
+            status.Text = description
+            return nil, reason
         end
         status.Text = ""
-        return answer
+        return answer, nil
     end
 
     local homeText = newText(pages.home, "Construa seu próprio reino medieval em um mundo 3D persistente.",
@@ -185,7 +206,20 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
                 if summary.corrupt or busy then return end
                 selected = index
                 local action = if summary.exists then "open" else "create"
-                local answer = request(action, index)
+                local answer, failure = request(action, index)
+                if not answer and (failure == "server_operation_failed"
+                    or failure == "lane_setup_exception"
+                    or failure == "lane_setup_failed"
+                    or failure == "character_not_ready"
+                    or failure == "character_changed"
+                    or failure == "r6_not_ready"
+                    or failure == "transport_failed"
+                    or failure == "world_already_active") then
+                    -- The server may already have persisted and activated this SAME slot.
+                    -- Recover it without creating/deleting anything or rerunning Terrain.
+                    task.wait(0.15)
+                    answer = request("resume", index)
+                end
                 if answer then
                     overlay.Visible = false
                     onWorldLoaded(answer, options)

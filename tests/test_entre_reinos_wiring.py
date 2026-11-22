@@ -55,6 +55,21 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertLess(boot.index("CharacterService.ensureR6(player)"),
                         boot.index("SaveSlotService.create(player, index)"))
 
+    def test_entrance_recovers_partial_world_without_duplicate_save(self):
+        boot = (SRC/"ServerScriptService/Boot.server.luau").read_text(encoding="utf8")
+        save = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
+        menu = (SRC/"StarterPlayer/StarterPlayerScripts/SlotMenu.luau").read_text(encoding="utf8")
+        self.assertIn('action == "resume"', boot)
+        self.assertIn('return resume(player, index)', boot)
+        self.assertIn("WorldService.isActive()", boot)
+        self.assertIn("SaveSlotService.abortActivation(player)", boot)
+        self.assertIn("completeEntry(player, index, record)", boot)
+        self.assertIn("SaveSlotService.index(player)", boot)
+        self.assertIn("function SaveSlotService.index(", save)
+        self.assertIn('request("resume", index)', menu)
+        self.assertIn("answer.stage", menu)
+        self.assertNotIn('return {ok = false, error = "world_already_active"}', boot)
+
     def test_save_is_server_authoritative_and_atomic(self):
         service = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
         self.assertIn("UpdateAsync(", service)
