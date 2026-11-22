@@ -386,18 +386,23 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
     if lastActionAt[player] and now-lastActionAt[player]<0.65 then
         return {ok=false,error="rate_limited"}
     end
-    lastActionAt[player]=now
     local character=player.Character
     local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
     if not root or not root:IsA("BasePart") then
         return {ok=false,error="character_not_ready"}
     end
-    -- Server chooses the placement position from the real character,
-    -- never from a client-supplied X coordinate.
-    local x=math.round((root.Position.X+15)/2)*2
-    if math.abs(root.Position.Z)>4 then return {ok=false,error="outside_playable_lane"} end
-    local placed,result=Work.place(state,typeId,x)
+    -- The client sends only the structure type. Search from the player's
+    -- real, server-observed position; never accept a client supplied X.
+    if math.abs(root.Position.Z-Profile.LANE_Z)>4 then
+        return {ok=false,error="outside_playable_lane"}
+    end
+    local available,site=Work.findPlacement(state,typeId,root.Position.X+15)
+    if not available then return {ok=false,error=site} end
+    local placed,result=Work.place(state,typeId,site)
     if not placed then return {ok=false,error=result} end
+    -- Failed placement is never rate limited. Only successful orders enter
+    -- cooldown, so the user may retry an unavailable spot immediately.
+    lastActionAt[player]=now
     buildVisual(result)
     return {ok=true,buildingId=result.id,x=result.x,typeId=typeId}
 end
