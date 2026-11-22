@@ -5,10 +5,13 @@ local Players=game:GetService("Players")
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local PhysicsService=game:GetService("PhysicsService")
+local Lighting=game:GetService("Lighting")
 local shared=ReplicatedStorage:WaitForChild("Game")
 local Profile=require(shared:WaitForChild("WorldProfile"))
 local Living=require(shared:WaitForChild("Living"):WaitForChild("LivingModel"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
+local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
+local Combat=require(script.Parent:WaitForChild("CombatService"))
 local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Professions=require(shared:WaitForChild("Living"):WaitForChild("ProfessionDefs"))
 local WorldService=require(script.Parent:WaitForChild("WorldService"))
@@ -260,6 +263,19 @@ local function createSiteVisual(site: any)
     label.Name="Remaining"
 end
 
+local function syncR3Hud(player: Player)
+    local data=R3.summary(state)
+    player:SetAttribute("ER_R3Wallet",data.wallet)
+    player:SetAttribute("ER_R3Arrows",data.arrows)
+    player:SetAttribute("ER_R3Day",data.day)
+    player:SetAttribute("ER_R3Night",data.night)
+    player:SetAttribute("ER_R3Raid",data.raidActive)
+    player:SetAttribute("ER_R3Enemies",data.enemies)
+    player:SetAttribute("ER_R3Phase",data.phase)
+    player:SetAttribute("ER_R3Warning",data.warning)
+    Lighting.ClockTime=((state.elapsed%R3.DAY)/10+6)%24
+end
+
 local function draw()
     if not state then return end
     for _,npc in ipairs(state.npcs) do
@@ -286,6 +302,11 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
     if owner then return false,"population_already_active" end
     local loaded=Living.restore(worldRecord.living,worldRecord.seed)
     if not loaded then return false,"population_schema_conflict" end
+    local upgraded,r3Result=pcall(R3.ensure,loaded,worldRecord.living==nil)
+    if not upgraded then
+        warn("[EntreReinos][R3] Cannot migrate existing world: ",r3Result)
+        return false,"r3_schema_conflict"
+    end
     owner=player
     state=loaded
     local folder=Instance.new("Folder")
@@ -305,7 +326,9 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         end
         if onProgress then onProgress(1,"Moradores preparados") end
         for _,b in ipairs(state.buildings) do buildVisual(b) end
+        Combat.start(player,state,folder)
         draw()
+        syncR3Hud(player)
     end)
     if not prepared then
         warn("[EntreReinos][Living] Preparation failed; rolling back visual state: ",prepareError)
@@ -315,6 +338,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         buildings={}
         siteDisplays={}
         visualization=nil
+        Combat.stop()
         folder:Destroy()
         return false,"living_visual_setup_failed"
     end
@@ -328,9 +352,19 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         local ticks=0
         while simulationAccumulator>=0.1 and ticks<3 do
             Work.step(state,0.1)
+            local currentRoot=if player.Character then
+                player.Character:FindFirstChild("HumanoidRootPart") else nil
+            local x=if currentRoot and currentRoot:IsA("BasePart")
+                then currentRoot.Position.X else 0
+            local damage=R3.step(state,0.1,x)
+            if damage>0 and player.Character then
+                local h=player.Character:FindFirstChildOfClass("Humanoid")
+                if h and h.Health>0 then h:TakeDamage(damage) end
+            end
             simulationAccumulator-=0.1
             ticks+=1
         end
+        Combat.tick(dt)
         drawAccumulator+=dt
         if drawAccumulator>=0.12 then
             -- Expose the real interval to the pose velocity estimator;
@@ -350,6 +384,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
                 end
             end
             draw()
+            syncR3Hud(player)
             drawAccumulator=0
         end
     end)
@@ -362,6 +397,7 @@ function Service.stop(player: Player)
     if owner~=player then return end
     if connection then connection:Disconnect() end
     connection=nil
+    Combat.stop()
     owner=nil
     state=nil
     figures={}
@@ -377,6 +413,11 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
     end
     if action=="status" then
         return {ok=true,data=Work.summary(state)}
+    end
+    if action=="attack" or action=="bow" or action=="drop_coin"
+        or action=="pickup_coin" or action=="arm_defender"
+        or action=="trade" or action=="prologue" or action=="r3_status" then
+        return Combat.action(player,action,typeId)
     end
     if action~="build" then return {ok=false,error="invalid_action"} end
     if type(typeId)~="string" or not Structures.get(typeId) then
