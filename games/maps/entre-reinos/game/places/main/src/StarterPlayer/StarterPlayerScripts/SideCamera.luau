@@ -3,11 +3,11 @@
 local RunService = game:GetService("RunService")
 local Camera = {}
 local enabled = false
-local currentDistance = 100
-local desiredDistance = 100
+local currentDistance = 88
+local desiredDistance = 88
 
 function Camera.setWide(wide: boolean)
-    desiredDistance = if wide then 134 else 100
+    desiredDistance = if wide then 118 else 88
 end
 
 function Camera.start(player: Player)

@@ -106,18 +106,24 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
             local z = 40
             local surface = Profile.sample(seed, x, z)
             if not surface.wet and math.abs(x) > 35 then
-                local grass = Instance.new("WedgePart")
-                grass.Name = "BlackForegroundGrass"
-                grass.Size = Vector3.new(2.7, 5 + (i % 3) * 2, 3.5)
-                grass.CFrame = CFrame.new(x, surface.height + grass.Size.Y / 2, z)
-                grass.Anchored = true
-                grass.Material = Enum.Material.SmoothPlastic
-                grass.Color = Color3.new(0, 0, 0)
-                grass.CastShadow = false
-                grass.CanCollide = false
-                grass.CanQuery = false
-                grass.CanTouch = false
-                grass.Parent = chunkFolder
+                -- Foreground silhouettes must be the SAME recognizable
+                -- stylized-tree vocabulary, not black triangular placeholders.
+                local silhouette = Instance.new("Model")
+                silhouette.Name = "DarkTreeSilhouette_" .. tostring(i)
+                silhouette:SetAttribute("ER_VisualLayer", "foreground")
+                local height = 4.5 + (i % 3) * 1.1
+                local darkWood = Color3.fromRGB(25, 36, 31)
+                local darkLeaf = Color3.fromRGB(25, 46, 39)
+                part(silhouette, "Trunk", Vector3.new(0.9, height, 0.9),
+                    Vector3.new(x, surface.height + height * 0.5, z),
+                    darkWood)
+                for k = 1, 3 do
+                    local canopyWidth = 4.5 - k * 0.45
+                    part(silhouette, "Canopy", Vector3.new(canopyWidth, 2.8, canopyWidth),
+                        Vector3.new(x, surface.height + height * 0.75 + k * 1.4, z),
+                        darkLeaf, Enum.PartType.Ball)
+                end
+                silhouette.Parent = chunkFolder
             end
         end
     end
