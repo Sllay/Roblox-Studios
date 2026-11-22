@@ -86,10 +86,11 @@ assert(R3.spawnWave(blocked,2))
 local right=nil
 for _,e in ipairs(bstate.enemies) do if e.side==1 then right=e;break end end
 assert(right~=nil)
-for _=1,500 do
+for _=1,250 do
     Work.step(blocked,0.1)
     R3.step(blocked,0.1,0)
 end
+assert(wall.health>0,"do not test intact-wall blocking after a wall is destroyed")
 assert(right.x>=wall.x-3,"wall must stop a raider while intact")
 assert(wall.health<Structures.get("wall").health,
     "real structure must lose HP when attacked")
