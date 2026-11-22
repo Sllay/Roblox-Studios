@@ -1,4 +1,8 @@
-"""Regression tests for Entre Reinos Rojo wiring; no Roblox runtime is simulated."""
+"""Regression gates for Entre Reinos Rojo lobby/reserved-world architecture.
+
+These tests inspect real source and deployment paths, not a fake Roblox runtime.
+The pure Luau routing/seed/slot assertions are executed separately in GitHub CI.
+"""
 from pathlib import Path
 import json
 import unittest
@@ -7,109 +11,129 @@ ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "games/maps/entre-reinos"
 SRC = GAME / "game/places/main/src"
 
+
+def read(relative: str) -> str:
+    return (SRC / relative).read_text(encoding="utf8")
+
+
 class EntreReinosWiring(unittest.TestCase):
-    def test_rojo_maps_real_script_roots(self):
-        project = json.loads((GAME/"game/places/main/default.project.json").read_text(encoding="utf8"))
-        tree = project["tree"]
+    def test_rojo_mounts_actual_scripts(self):
+        tree = json.loads((GAME / "game/places/main/default.project.json").read_text())["tree"]
         self.assertEqual(tree["ServerScriptService"]["$path"], "src/ServerScriptService")
         self.assertEqual(tree["StarterPlayer"]["StarterPlayerScripts"]["$path"],
                          "src/StarterPlayer/StarterPlayerScripts")
         self.assertEqual(tree["ReplicatedStorage"]["Game"]["$path"], "src/ReplicatedStorage")
+        self.assertFalse((SRC/"game/places/main/src").exists(), "duplicate Rojo source root")
 
-    def test_server_requires_live_service_paths(self):
-        server = SRC/"ServerScriptService"
-        boot = (server/"Boot.server.luau").read_text(encoding="utf8")
+    def test_server_and_client_require_all_live_modules(self):
+        boot = read("ServerScriptService/Boot.server.luau")
+        client = read("StarterPlayer/StarterPlayerScripts/ClientBoot.client.luau")
         for name in ("WorldService", "SaveSlotService", "CharacterService"):
-            path = server/"Services"/f"{name}.luau"
-            self.assertTrue(path.is_file(), str(path))
+            self.assertTrue((SRC/"ServerScriptService/Services"/f"{name}.luau").is_file())
             self.assertIn(f'WaitForChild("{name}")', boot)
-        self.assertFalse((SRC/"game/places/main/src/ServerScriptService/Services/WorldService.luau").exists(),
-                         "A repeated src/game/places/main/src prefix silently breaks Roblox require")
-
-    def test_client_scripts_have_real_targets(self):
-        client = SRC/"StarterPlayer/StarterPlayerScripts"
-        entry = (client/"ClientBoot.client.luau").read_text(encoding="utf8")
-        for name in ("LaneController", "SideCamera", "SlotMenu"):
-            self.assertTrue((client/f"{name}.luau").is_file())
-            self.assertIn(f'WaitForChild("{name}")', entry)
-        for name in ("WorldProfile", "SlotModel", "SlotLeasePolicy"):
+        for name in ("WorldProfile", "WorldRoute", "SlotModel", "SlotLeasePolicy"):
             self.assertTrue((SRC/"ReplicatedStorage"/f"{name}.luau").is_file())
+            self.assertIn(f'WaitForChild("{name}")', boot if name != "SlotLeasePolicy"
+                          else read("ServerScriptService/Services/SaveSlotService.luau"))
+        for name in ("LaneController", "SideCamera", "SlotMenu", "WorldLoadingUI"):
+            self.assertTrue((SRC/"StarterPlayer/StarterPlayerScripts"/f"{name}.luau").is_file())
+            self.assertIn(f'WaitForChild("{name}")', client)
 
-    def test_world_never_clears_unmanaged_terrain(self):
-        service = (SRC/"ServerScriptService/Services/WorldService.luau").read_text(encoding="utf8")
-        executable = " ".join(line.split("--", 1)[0] for line in service.splitlines())
-        self.assertNotIn("Terrain:Clear(", executable)
-        self.assertIn("ReadVoxelChannels", service)
-        self.assertIn("WriteVoxelChannels", service)
-        self.assertIn("nonempty_terrain_refuses_overwrite", service)
+    def test_lobby_never_generates_or_opens_world(self):
+        boot = read("ServerScriptService/Boot.server.luau")
+        self.assertIn("local worldServer = Route.isWorldServer(", boot)
+        self.assertIn('if worldServer then', boot)
+        self.assertIn("Saves.createDetached(player, index)", boot)
+        self.assertIn("Saves.inspect(player, index)", boot)
+        self.assertIn("local ok: boolean", boot)
+        self.assertIn("local record: any", boot)
+        self.assertNotIn("local success, record = if", boot)
+        self.assertNotIn("local ok, record = if", boot)
+        self.assertIn("Saves.open, player, index", boot)
+        self.assertIn("World.activate,", boot)
 
-    def test_r6_is_real_server_model_not_rigtype_spoof(self):
-        service = (SRC/"ServerScriptService/Services/CharacterService.luau").read_text(encoding="utf8")
-        boot = (SRC/"ServerScriptService/Boot.server.luau").read_text(encoding="utf8")
-        self.assertIn("CreateHumanoidModelFromDescriptionAsync(", service)
-        self.assertIn("Enum.HumanoidRigType.R6", service)
-        self.assertIn("player.Character = model", service)
-        self.assertNotIn("humanoid.RigType =", service)
-        self.assertIn("CharacterService.ensureR6(player)", boot)
-        self.assertNotIn("configure_R6_avatar_in_experience_settings", boot)
-        self.assertLess(boot.index("CharacterService.ensureR6(player)"),
-                        boot.index("SaveSlotService.create(player, index)"))
+    def test_each_world_gets_its_own_reserved_server(self):
+        boot = read("ServerScriptService/Boot.server.luau")
+        route = read("ReplicatedStorage/WorldRoute.luau")
+        self.assertIn("options.ReservedServerId = id", boot)
+        self.assertIn("TeleportService:TeleportAsync(game.PlaceId, {player}, options)", boot)
+        self.assertIn("Route.validArrival(ticket, player.UserId", boot)
+        self.assertIn("ticket.reservedId == privateServerId", route)
+        self.assertIn("ticket.ownerUserId == userId", route)
+        self.assertIn("ticket.sourcePlaceId == placeId", route)
+        self.assertIn("Saves.open, player, index", boot)
+        self.assertNotIn("ReserveServerAsync(", boot)
+        self.assertNotIn("ShouldReserveServer =", boot)
 
-    def test_entrance_recovers_partial_world_without_duplicate_save(self):
-        boot = (SRC/"ServerScriptService/Boot.server.luau").read_text(encoding="utf8")
-        save = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
-        menu = (SRC/"StarterPlayer/StarterPlayerScripts/SlotMenu.luau").read_text(encoding="utf8")
-        self.assertIn('action == "resume"', boot)
-        self.assertIn('return resume(player, index)', boot)
-        self.assertIn("WorldService.isActive()", boot)
-        self.assertIn("SaveSlotService.abortActivation(player)", boot)
-        self.assertIn("completeEntry(player, index, record)", boot)
-        self.assertIn("SaveSlotService.index(player)", boot)
-        self.assertIn("function SaveSlotService.index(", save)
-        self.assertIn('request("resume", index)', menu)
-        self.assertIn("answer.stage", menu)
-        self.assertNotIn('return {ok = false, error = "world_already_active"}', boot)
+    def test_single_player_is_enforced_without_changing_read_only_maxplayers(self):
+        boot = read("ServerScriptService/Boot.server.luau")
+        self.assertIn("#Players:GetPlayers() > 1", boot)
+        self.assertIn("player:Kick(", boot)
+        self.assertNotIn("Players.MaxPlayers =", boot)
+        self.assertIn('action == "return"', boot)
+        self.assertIn("options.ForcePublicServer = true", boot)
 
-    def test_terrain_failure_preserves_reason_and_releases_only_lease(self):
-        boot = (SRC/"ServerScriptService/Boot.server.luau").read_text(encoding="utf8")
-        world = (SRC/"ServerScriptService/Services/WorldService.luau").read_text(encoding="utf8")
-        saves = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
-        menu = (SRC/"StarterPlayer/StarterPlayerScripts/SlotMenu.luau").read_text(encoding="utf8")
-        self.assertIn("WorldService.getFailure()", boot)
-        self.assertIn("WorldService.getPhase()", boot)
-        self.assertIn('local reason = WorldService.getFailure() or "terrain_incomplete"', boot)
-        self.assertIn("generationFailure", world)
-        self.assertIn('generationPhase = "write_voxels"', world)
-        self.assertIn('generationPhase = "verify_voxels"', world)
-        self.assertIn("lastWriteId ~= s.data.lastWriteId", saves)
-        self.assertIn("for attempt = 1, 3 do", saves)
-        self.assertIn('local answer, failure, details = request(action, index)', menu)
-        self.assertNotIn('if not answer and (failure == "server_operation_failed"', menu)
-        self.assertIn("answer.terrainPhase", menu)
+    def test_initial_chunk_streaming_and_seed_preservation(self):
+        world = read("ServerScriptService/Services/WorldService.luau")
+        profile = read("ReplicatedStorage/WorldProfile.luau")
+        boot = read("ServerScriptService/Boot.server.luau")
+        self.assertIn("WorldProfile.CHUNK_STUDS = 64", profile)
+        self.assertIn("WorldProfile.CHUNK_COUNT = 4", profile)
+        self.assertIn("WorldProfile.INITIAL_CHUNKS = {2, 3, 4}", profile)
+        self.assertIn("for order, id in ipairs(Profile.INITIAL_CHUNKS)", world)
+        self.assertIn("function World.ensureNear(seed: number, x: number)", world)
+        self.assertIn("World.ensureNear(record.seed, root.Position.X)", boot)
+        self.assertIn("ReadVoxelChannels(", world)
+        self.assertIn("WriteVoxelChannels(", world)
+        self.assertIn("nonempty_terrain_refuses_overwrite", world)
+        self.assertNotIn("Terrain:Clear(", "\n".join(
+            line.split("--", 1)[0] for line in world.splitlines()))
 
-    def test_menu_knows_actual_live_version_and_active_slot(self):
-        boot = (SRC/"ServerScriptService/Boot.server.luau").read_text(encoding="utf8")
-        menu = (SRC/"StarterPlayer/StarterPlayerScripts/SlotMenu.luau").read_text(encoding="utf8")
-        self.assertIn("serverRevision = game.PlaceVersion", boot)
-        self.assertIn("activeSlot = SaveSlotService.index(player)", boot)
-        self.assertIn("response.serverRevision", menu)
-        self.assertIn("activeSlot = response.activeSlot", menu)
-        self.assertIn("summary.seed", menu)
-        self.assertIn("choose.Text = \"Retomar\"", menu)
-        self.assertIn("remove.Active = summary.exists and activeSlot == nil", menu)
+    def test_different_server_owns_the_slot_lease(self):
+        saves = read("ServerScriptService/Services/SaveSlotService.luau")
+        boot = read("ServerScriptService/Boot.server.luau")
+        self.assertIn("function SaveSlotService.createDetached(", saves)
+        self.assertIn("function SaveSlotService.inspect(", saves)
+        self.assertIn("record.lastWriteId = token .. \":create_detached\"", saves)
+        self.assertIn("then s.lastClock = now", saves.replace("\n", " "))
+        self.assertIn("DataStoreService:GetDataStore(", saves)
+        self.assertIn("UpdateAsync(", saves)
+        self.assertNotIn("SetAsync(", saves)
+        self.assertNotIn("RemoveAsync(", saves)
+        self.assertIn("Saves.createDetached(player, index)", boot)
+        self.assertIn("Saves.open, player, index", boot)
+        self.assertIn("player.UserId", saves)
 
-    def test_failed_world_entry_does_not_persist_menu_position(self):
-        save = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
-        self.assertIn('player:GetAttribute("ER_WorldLoaded") ~= true', save)
-        self.assertIn("s.lastClock = now", save)
+    def test_opaque_lobby_and_real_progress_loading(self):
+        lobby = read("StarterPlayer/StarterPlayerScripts/SlotMenu.luau")
+        loading = read("StarterPlayer/StarterPlayerScripts/WorldLoadingUI.luau")
+        client = read("StarterPlayer/StarterPlayerScripts/ClientBoot.client.luau")
+        self.assertIn("overlay.BackgroundTransparency = 0", lobby)
+        self.assertIn("transit.BackgroundTransparency = 0", lobby)
+        self.assertIn("shade.BackgroundTransparency = 0", loading)
+        self.assertIn('player:GetAttribute("ER_LoadProgress")', loading)
+        self.assertIn('player:GetAttribute("ER_LoadStage")', loading)
+        self.assertIn('player:GetAttribute("ER_WorldLoaded") == true', loading)
+        self.assertIn('mode == "world"', client)
+        self.assertIn("Loading.start(player, slots,", client)
+        self.assertIn("Menu.start(slots,", client)
+        self.assertIn('startTransfer(index, not summary.exists)', lobby)
 
-    def test_save_is_server_authoritative_and_atomic(self):
-        service = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
-        self.assertIn("UpdateAsync(", service)
-        self.assertIn("Policy.writeDecision", service)
-        self.assertIn("abortActivation", service)
-        self.assertNotIn("SetAsync(", service)
-        self.assertNotIn("RemoveAsync(", service)
+    def test_no_client_authoritative_teleport_or_save(self):
+        client = read("StarterPlayer/StarterPlayerScripts/ClientBoot.client.luau")
+        loading = read("StarterPlayer/StarterPlayerScripts/WorldLoadingUI.luau")
+        lobby = read("StarterPlayer/StarterPlayerScripts/SlotMenu.luau")
+        self.assertNotIn("TeleportAsync(", client+loading+lobby)
+        self.assertNotIn("UpdateAsync(", client+loading+lobby)
+        self.assertIn('remote:InvokeServer("return")', loading)
+
+    def test_user_production_target_is_unset(self):
+        targets = json.loads((GAME / "deploy.targets.json").read_text())["environments"]
+        self.assertEqual(str(targets["staging"]["universeId"]), "10769712413")
+        self.assertEqual(str(targets["staging"]["placeIds"]["main"]), "90623742498445")
+        self.assertIsNone(targets["production"]["universeId"])
+        self.assertIsNone(targets["production"]["placeIds"]["main"])
+
 
 if __name__ == "__main__":
     unittest.main()
