@@ -64,7 +64,8 @@ function Living.valid(state: any): boolean
     for _,b in ipairs(state.buildings) do
         if type(b)~="table" or not finite(b.id) or not finite(b.x)
             or type(b.typeId)~="string" or type(b.delivered)~="table"
-            or not finite(b.progress) or not finite(b.health) then return false end
+            or not finite(b.progress) or not finite(b.health)
+            or (b.stored~=nil and not Inventory.valid(b.stored)) then return false end
     end
     return true
 end
