@@ -30,6 +30,7 @@ jobs:
           local before=os.clock()
           local ok,result,reason=pcall(svc.activate,seed)
           local outcome={
+            universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
             seed=seed,callOk=ok,active=svc.isActive(),worldOk=if ok then result else false,
             reason=if ok then tostring(reason or "") else tostring(result),
             elapsedMs=math.floor((os.clock()-before)*1000),
