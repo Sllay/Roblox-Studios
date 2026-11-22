@@ -20,15 +20,20 @@ local d=R3.ensure(fresh,true)
 assert(d.prologue.stage=="guard" and #d.enemies==0 and d.wallet==0)
 assert(R3.command(fresh,"evacuate")==false)
 assert(R3.command(fresh,"training"))
-assert(d.prologue.stage=="crisis" and #d.enemies==4)
-assert(R3.spawnWave(fresh,2)==false, "no duplicate raid wave")
+assert(d.prologue.stage=="duke_fight" and #d.enemies==1)
+assert(d.enemies[1].typeId=="infected_duke")
+assert(R3.spawnWave(fresh,2)==false,"duke cannot be bypassed")
 local originalId=d.enemies[1].id
-local leftX=d.enemies[1].x
-assert(R3.hit(fresh,leftX-1,20,1,6,99))
-assert(d.stats.killed==1 and d.enemies[1].id~=originalId)
+local dukeX=d.enemies[1].x
+assert(R3.hit(fresh,dukeX-1,75,1,6,99)==false,"different vertical layer")
+assert(R3.hit(fresh,dukeX-1,20,1,6,99))
+assert(d.stats.killed==1 and #d.enemies==0)
+R3.step(fresh,0.1,0)
+assert(d.prologue.stage=="crisis" and #d.enemies==4)
+assert(d.enemies[1].id~=originalId)
 
--- Removing defeated enemies transitions the interactive script into civilian
--- evacuation and then the final defensive ring; no coin grant until coronation.
+-- Removing the actual raiders transitions the playable script into civilian
+-- evacuation, then a last defensive ring; no grant until coronation.
 for _,e in ipairs(d.enemies) do e.hp=0 end
 R3.step(fresh,0.1,0)
 assert(d.prologue.stage=="evacuation" and #d.enemies==0 and d.wallet==0)
