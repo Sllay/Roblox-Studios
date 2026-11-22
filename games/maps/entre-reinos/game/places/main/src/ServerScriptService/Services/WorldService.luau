@@ -1,138 +1,148 @@
 --!strict
--- T1-R1: bounded runtime Terrain for a NEW, empty Entre Reinos Place.
--- Uses native solid/material/liquid voxel channels; refuses to overwrite existing Terrain.
+-- T1-R1. Deterministic 3D Terrain in four isolated X-chunks.
+-- The private world server generates the central/eastern 3 chunks before spawning;
+-- the western chunk streams when the player approaches. Lobby NEVER calls this service.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local WorldProfile = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
+local Profile = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
 local Terrain = workspace.Terrain
+local World = {}
+local active = false
+local generating = false
+local failure: string? = nil
+local phase = "idle"
+local currentSeed: number? = nil
+local generated: {[number]: boolean} = {}
+local voxelCount = 0
+local waterCount = 0
+local scene: Folder? = nil
 
-local WorldService = {}
-local activated = false
-local generationFailure: string? = nil
-local generationPhase = "idle"
-
-local function fail(code: string): (boolean, string?)
-    generationFailure = code
-    generationPhase = "failed"
-    return false, code
+local function fail(reason: string): (boolean, string?)
+    failure = reason
+    phase = "failed"
+    warn("[EntreReinos][Terrain] " .. reason)
+    return false, reason
+end
+function World.getFailure(): string? return failure end
+function World.getPhase(): string return phase end
+function World.isActive(): boolean return active end
+function World.getChunkCount(): number
+    local n = 0
+    for _, present in pairs(generated) do if present then n += 1 end end
+    return n
+end
+function World.reportException()
+    failure = "terrain_activation_exception"
+    phase = "failed"
 end
 
-function WorldService.getFailure(): string?
-    return generationFailure
+local function part(parent: Instance, name: string, size: Vector3, pos: Vector3, color: Color3, shape: Enum.PartType?)
+    local obj = Instance.new("Part")
+    obj.Name = name
+    obj.Anchored = true
+    obj.Size = size
+    obj.Position = pos
+    obj.Color = color
+    obj.Material = Enum.Material.SmoothPlastic
+    obj.CastShadow = false
+    obj.CanCollide = false
+    obj.CanQuery = false
+    obj.CanTouch = false
+    if shape then obj.Shape = shape end
+    obj.Parent = parent
+    return obj
 end
 
-function WorldService.getPhase(): string
-    return generationPhase
-end
-
-function WorldService.reportException()
-    -- Called only by the server bootstrap when the engine interrupts generation.
-    generationFailure = "terrain_activation_exception"
-    generationPhase = "failed"
-end
-
-local function part(parent: Instance, name: string, size: Vector3, position: Vector3, color: Color3, shape: Enum.PartType?)
-    local p = Instance.new("Part")
-    p.Name = name
-    p.Anchored = true
-    p.Size = size
-    p.Position = position
-    p.Material = Enum.Material.SmoothPlastic
-    p.Color = color
-    p.CastShadow = false
-    p.CanCollide = false
-    p.CanQuery = false
-    p.CanTouch = false
-    if shape then p.Shape = shape end
-    p.Parent = parent
-    return p
-end
-
-local function buildDecorations(seed: number)
-    local folder = Instance.new("Folder")
-    folder.Name = "ER_World_3D"
-    folder:SetAttribute("GeneratorVersion", WorldProfile.GENERATOR_VERSION)
-    folder:SetAttribute("Seed", seed)
+local function decoratedChunk(seed: number, id: number, xmin: number, xmax: number)
+    if not scene then
+        local f = Instance.new("Folder")
+        f.Name = "ER_World_3D"
+        f:SetAttribute("GeneratorVersion", Profile.GENERATOR_VERSION)
+        f:SetAttribute("Seed", seed)
+        f.Parent = workspace
+        scene = f
+        for _, side in ipairs({-1, 1}) do
+            local wall = Instance.new("Part")
+            wall.Name = "RegionEdge_" .. tostring(side)
+            wall.Anchored = true
+            wall.Size = Vector3.new(3, 120, 96)
+            wall.Position = Vector3.new(side * 126, 20, 0)
+            wall.Transparency = 1
+            wall.CanCollide = true
+            wall.CanTouch = false
+            wall.CanQuery = false
+            wall.Parent = f
+        end
+    end
+    local chunkFolder = Instance.new("Folder")
+    chunkFolder.Name = "Chunk_" .. tostring(id)
     for i = 1, 18 do
         local x = -119 + i * 12
-        local z = -22 - (i % 3) * 7
-        local surface = WorldProfile.sample(seed, x, z)
-        if not surface.wet and surface.riverDist > 20 then
-            local model = Instance.new("Model")
-            model.Name = "TreeSite_" .. tostring(i)
-            model:SetAttribute("Seed", seed)
-            local y = surface.height
-            part(model, "Trunk", Vector3.new(1.7, 8.8, 1.7), Vector3.new(x, y + 4.4, z), Color3.fromRGB(89, 61, 51))
-            for k = 1, 3 do
-                part(model, "Canopy", Vector3.new(7 - k, 4.2, 7 - k),
-                    Vector3.new(x, y + 5 + k * 2.2, z), Color3.fromRGB(62, 118, 80), Enum.PartType.Ball)
+        if x >= xmin and x < xmax then
+            local z = -22 - (i % 3) * 7
+            local surface = Profile.sample(seed, x, z)
+            if not surface.wet and surface.riverDist > 20 then
+                local model = Instance.new("Model")
+                model.Name = "TreeSite_" .. tostring(i)
+                model:SetAttribute("Seed", seed)
+                local y = surface.height
+                part(model, "Trunk", Vector3.new(1.7, 8.8, 1.7),
+                    Vector3.new(x, y + 4.4, z), Color3.fromRGB(89, 61, 51))
+                for k = 1, 3 do
+                    part(model, "Canopy", Vector3.new(7 - k, 4.2, 7 - k),
+                        Vector3.new(x, y + 5 + k * 2.2, z),
+                        Color3.fromRGB(62, 118, 80), Enum.PartType.Ball)
+                end
+                local anchor = part(model, "WorkAnchor", Vector3.new(2, 3, 2),
+                    Vector3.new(x, Profile.sample(seed, x, 0).height + 2, 0), Color3.new(0, 0, 0))
+                anchor.Transparency = 1
+                anchor:SetAttribute("InteractionKind", "Tree")
+                model.Parent = chunkFolder
             end
-            local anchor = part(model, "WorkAnchor", Vector3.new(2, 3, 2),
-                Vector3.new(x, WorldProfile.sample(seed, x, 0).height + 2, 0), Color3.new(0,0,0))
-            anchor.Transparency = 1
-            anchor:SetAttribute("InteractionKind", "Tree")
-            model.Parent = folder
         end
     end
-    -- Strict black 3D models, kept away from the important playable center.
     for i = 1, 10 do
         local x = -120 + i * 23
-        local z = 40
-        local surface = WorldProfile.sample(seed, x, z)
-        if not surface.wet and math.abs(x) > 35 then
-            local grass = Instance.new("WedgePart")
-            grass.Name = "BlackForegroundGrass"
-            grass.Size = Vector3.new(2.7, 5 + (i % 3) * 2, 3.5)
-            grass.CFrame = CFrame.new(x, surface.height + grass.Size.Y / 2, z)
-            grass.Anchored = true
-            grass.Material = Enum.Material.SmoothPlastic
-            grass.Color = Color3.new(0, 0, 0)
-            grass.CastShadow = false
-            grass.CanCollide = false
-            grass.CanQuery = false
-            grass.CanTouch = false
-            grass.Parent = folder
+        if x >= xmin and x < xmax then
+            local z = 40
+            local surface = Profile.sample(seed, x, z)
+            if not surface.wet and math.abs(x) > 35 then
+                local grass = Instance.new("WedgePart")
+                grass.Name = "BlackForegroundGrass"
+                grass.Size = Vector3.new(2.7, 5 + (i % 3) * 2, 3.5)
+                grass.CFrame = CFrame.new(x, surface.height + grass.Size.Y / 2, z)
+                grass.Anchored = true
+                grass.Material = Enum.Material.SmoothPlastic
+                grass.Color = Color3.new(0, 0, 0)
+                grass.CastShadow = false
+                grass.CanCollide = false
+                grass.CanQuery = false
+                grass.CanTouch = false
+                grass.Parent = chunkFolder
+            end
         end
     end
-    -- Bounded initial region: solid edge guards until regional streaming is introduced.
-    for _, side in ipairs({-1, 1}) do
-        local wall = Instance.new("Part")
-        wall.Name = "RegionEdge_" .. tostring(side)
-        wall.Anchored = true
-        wall.Size = Vector3.new(3, 120, 96)
-        wall.Position = Vector3.new(side * 126, 20, 0)
-        wall.Transparency = 1
-        wall.CanCollide = true
-        wall.CanTouch = false
-        wall.CanQuery = false
-        wall.Parent = folder
-    end
-    folder.Parent = workspace
+    chunkFolder.Parent = scene
 end
 
-function WorldService.activate(seed: number): (boolean, string?)
-    if activated then
-        return false, "world_already_active"
-    end
-    if generationFailure then
-        return false, generationFailure
-    end
-    if not WorldProfile.validSeed(seed) then
-        return fail("invalid_world_seed")
-    end
-    generationPhase = "preflight"
-    local b = WorldProfile.BOUNDS
-    local region = Region3.new(Vector3.new(b.xMin, b.yMin, b.zMin), Vector3.new(b.xMax, b.yMax, b.zMax))
-    local resolution = WorldProfile.CELL
-    -- Fail closed. Never Terrain:Clear() or overwrite someone else's map.
-    local successRead, existing = pcall(function()
-        return Terrain:ReadVoxelChannels(region, resolution, {"SolidOccupancy", "LiquidOccupancy"})
-    end)
-    if not successRead or type(existing) ~= "table" then
-        return fail("terrain_read_failed")
-    end
-    local sx = (b.xMax - b.xMin) / resolution
+local function createChunk(seed: number, id: number): (boolean, string?)
+    if generated[id] then return true, nil end
+    if id < 1 or id > Profile.CHUNK_COUNT then return fail("invalid_chunk") end
+    if failure then return false, failure end
+    local b = Profile.BOUNDS
+    local resolution = Profile.CELL
+    local xmin = b.xMin + (id - 1) * Profile.CHUNK_STUDS
+    local xmax = xmin + Profile.CHUNK_STUDS
+    local region = Region3.new(
+        Vector3.new(xmin, b.yMin, b.zMin),
+        Vector3.new(xmax, b.yMax, b.zMax))
+    local sx = Profile.CHUNK_STUDS / resolution
     local sy = (b.yMax - b.yMin) / resolution
     local sz = (b.zMax - b.zMin) / resolution
+    phase = "read_chunk_" .. tostring(id)
+    local readOk, existing = pcall(function()
+        return Terrain:ReadVoxelChannels(region, resolution, {"SolidOccupancy", "LiquidOccupancy"})
+    end)
+    if not readOk or type(existing) ~= "table" then return fail("terrain_read_failed") end
     for ix = 1, sx do
         for iy = 1, sy do
             for iz = 1, sz do
@@ -143,109 +153,135 @@ function WorldService.activate(seed: number): (boolean, string?)
             end
         end
     end
-
-    generationPhase = "prepare_voxels"
+    phase = "prepare_chunk_" .. tostring(id)
     local solids, liquids, materials = {}, {}, {}
-    local liquidCells = 0
     local solidCells = 0
+    local liquidCells = 0
     for ix = 1, sx do
         solids[ix], liquids[ix], materials[ix] = {}, {}, {}
-        local x = b.xMin + (ix - 0.5) * resolution
+        local x = xmin + (ix - 0.5) * resolution
         for iy = 1, sy do
             solids[ix][iy], liquids[ix][iy], materials[ix][iy] = {}, {}, {}
             local bottom = b.yMin + (iy - 1) * resolution
             for iz = 1, sz do
                 local z = b.zMin + (iz - 0.5) * resolution
-                local sample = WorldProfile.sample(seed, x, z)
+                local sample = Profile.sample(seed, x, z)
                 local solid = math.clamp((sample.height - bottom) / resolution, 0, 1)
-                local waterCandidate = if sample.riverDist < 23 then
-                    math.clamp((WorldProfile.WATER_SURFACE - bottom) / resolution, 0, 1)
-                    else 0
-                local liquid = math.min(1 - solid, waterCandidate)
-                local material = if solid > 0 then Enum.Material[sample.material] else Enum.Material.Air
+                local candidate = if sample.riverDist < 23 then
+                    math.clamp((Profile.WATER_SURFACE - bottom) / resolution, 0, 1) else 0
+                local liquid = math.min(1 - solid, candidate)
                 solids[ix][iy][iz] = solid
                 liquids[ix][iy][iz] = liquid
-                materials[ix][iy][iz] = material
+                materials[ix][iy][iz] = if solid > 0 then Enum.Material[sample.material] else Enum.Material.Air
                 if solid > 0.5 then solidCells += 1 end
                 if liquid > 0.5 then liquidCells += 1 end
             end
         end
     end
-    if liquidCells == 0 or solidCells == 0 then
-        return fail("invalid_world_geometry")
-    end
-    generationPhase = "write_voxels"
-    local okWrite, writeError = pcall(function()
+    if solidCells == 0 then return fail("invalid_world_geometry") end
+    phase = "write_chunk_" .. tostring(id)
+    local writeOk, writeError = pcall(function()
         Terrain:WriteVoxelChannels(region, resolution, {
             SolidMaterial = materials,
             SolidOccupancy = solids,
             LiquidOccupancy = liquids,
         })
     end)
-    if not okWrite then
-        -- Result is potentially partially written. Never blind-retry without inspection.
-        warn("[EntreReinos] Terrain write failed (review required): ", writeError)
+    if not writeOk then
+        warn("[EntreReinos][Terrain] WriteVoxelChannels failed: ", writeError)
         return fail("terrain_write_uncertain")
     end
-    generationPhase = "verify_voxels"
-    local okVerify, readback = pcall(function()
-        return Terrain:ReadVoxelChannels(region, resolution, {"SolidOccupancy", "LiquidOccupancy", "SolidMaterial"})
+    phase = "verify_chunk_" .. tostring(id)
+    local verifyOk, verified = pcall(function()
+        return Terrain:ReadVoxelChannels(region, resolution,
+            {"SolidOccupancy", "LiquidOccupancy", "SolidMaterial"})
     end)
-    if not okVerify or type(readback) ~= "table" then
-        return fail("terrain_readback_failed")
-    end
-    local seenWater = false
-    local seenSolid = false
+    if not verifyOk or type(verified) ~= "table" then return fail("terrain_readback_failed") end
     for ix = 1, sx do
         for iy = 1, sy do
             for iz = 1, sz do
-                if math.abs(readback.SolidOccupancy[ix][iy][iz] - solids[ix][iy][iz]) > 0.02
-                    or math.abs(readback.LiquidOccupancy[ix][iy][iz] - liquids[ix][iy][iz]) > 0.02 then
+                if math.abs(verified.SolidOccupancy[ix][iy][iz] - solids[ix][iy][iz]) > 0.02
+                    or math.abs(verified.LiquidOccupancy[ix][iy][iz] - liquids[ix][iy][iz]) > 0.02 then
                     return fail("terrain_readback_diff")
                 end
                 if solids[ix][iy][iz] > 0.01
-                    and readback.SolidMaterial[ix][iy][iz] ~= materials[ix][iy][iz] then
+                    and verified.SolidMaterial[ix][iy][iz] ~= materials[ix][iy][iz] then
                     return fail("terrain_material_readback_diff")
                 end
-                if readback.SolidOccupancy[ix][iy][iz] > 0.5 then seenSolid = true end
-                if readback.LiquidOccupancy[ix][iy][iz] > 0.5 then seenWater = true end
             end
         end
     end
-    if not seenSolid or not seenWater then
-        return fail("terrain_verify_missing_channels")
-    end
-    generationPhase = "decorate"
-    local decorationsOk, decorationsError = pcall(buildDecorations, seed)
-    if not decorationsOk then
-        warn("[EntreReinos] Decorator failed after Terrain write; inspect before retry: ", decorationsError)
+    phase = "decorate_chunk_" .. tostring(id)
+    local decorated, reason = pcall(decoratedChunk, seed, id, xmin, xmax)
+    if not decorated then
+        warn("[EntreReinos][Terrain] Decoration error: ", reason)
         return fail("world_decoration_requires_new_server")
     end
-    local startArea = workspace:FindFirstChild("StartArea")
-    if startArea then
-        local floor = startArea:FindFirstChild("Floor")
+    generated[id] = true
+    voxelCount += sx * sy * sz
+    waterCount += liquidCells
+    workspace:SetAttribute("ER_WorldVoxelCount", voxelCount)
+    workspace:SetAttribute("ER_WorldWaterCells", waterCount)
+    workspace:SetAttribute("ER_WorldChunkCount", World.getChunkCount())
+    return true, nil
+end
+
+function World.activate(seed: number, progress: ((number, string) -> ())?): (boolean, string?)
+    if active then return false, "world_already_active" end
+    if generating then return false, "world_generation_in_progress" end
+    if failure then return false, failure end
+    if not Profile.validSeed(seed) then return fail("invalid_world_seed") end
+    generating = true
+    currentSeed = seed
+    for order, id in ipairs(Profile.INITIAL_CHUNKS) do
+        if progress then progress((order - 1) / #Profile.INITIAL_CHUNKS,
+            "Gerando região " .. tostring(order) .. "/" .. tostring(#Profile.INITIAL_CHUNKS)) end
+        local ok, reason = createChunk(seed, id)
+        if not ok then
+            generating = false
+            return false, reason
+        end
+        -- Yield to the network and render pipeline between independent regions.
+        task.wait()
+    end
+    phase = "spawn"
+    local start = workspace:FindFirstChild("StartArea")
+    if start then
+        local floor = start:FindFirstChild("Floor")
         if floor and floor:IsA("BasePart") then
             floor.CanCollide = false
             floor.Transparency = 1
         end
-        local spawn = startArea:FindFirstChild("Spawn")
+        local spawn = start:FindFirstChild("Spawn")
         if spawn and spawn:IsA("SpawnLocation") then
-            local pos = WorldProfile.spawn(seed)
+            local pos = Profile.spawn(seed)
             spawn.Position = Vector3.new(pos.x, pos.y - 2, pos.z)
             spawn.Transparency = 1
             spawn.CanCollide = false
         end
     end
-    workspace:SetAttribute("ER_WorldSignature", WorldProfile.signature(seed))
-    workspace:SetAttribute("ER_WorldVoxelCount", sx * sy * sz)
-    workspace:SetAttribute("ER_WorldWaterCells", liquidCells)
-    activated = true
-    generationPhase = "ready"
+    workspace:SetAttribute("ER_WorldSignature", Profile.signature(seed))
+    phase = "ready"
+    active = true
+    generating = false
+    if progress then progress(1, "Terreno inicial pronto") end
     return true, nil
 end
 
-function WorldService.isActive(): boolean
-    return activated
+function World.ensureNear(seed: number, x: number): (boolean, string?)
+    if not active or currentSeed ~= seed then return false, "world_not_ready" end
+    if failure then return false, failure end
+    if generating then return false, "world_generation_in_progress" end
+    -- Only the far-west chunk is deferred in T1-R1. The river (east) is ready
+    -- before spawn, so swimming can be tested immediately.
+    if x < -24 and not generated[1] then
+        generating = true
+        local ok, reason = createChunk(seed, 1)
+        generating = false
+        if ok then phase = "ready" end
+        return ok, reason
+    end
+    return true, nil
 end
 
-return WorldService
+return World

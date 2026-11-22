@@ -297,4 +297,43 @@ function SaveSlotService.abortActivation(player: Player): (boolean, string?)
     return false, lastError
 end
 
+
+-- Lobby-owned creation does not open or lock a gameplay session. The world
+-- reserved server independently acquires the lease after teleport validation.
+function SaveSlotService.createDetached(player: Player, index: number): (boolean, any)
+    if not Slots.validIndex(index) or sessions[player] then
+        return false, "bad_slot_or_session_active"
+    end
+    local token = ownedToken()
+    local now = os.time()
+    local seed = seedValue()
+    local record = Slots.newWorld(seed, now, WorldProfile.spawn(seed))
+    record.lastWriteId = token .. ":create_detached"
+    -- Intentionally no lock: lobby never owns a world or a live simulation.
+    local success, value = pcall(function()
+        return store:UpdateAsync(Slots.key(player.UserId, index), function(old)
+            if old ~= nil and (type(old) ~= "table" or old.deleted ~= true) then
+                return nil
+            end
+            return record
+        end)
+    end)
+    if not success then return false, "datastore_unavailable" end
+    if not Slots.validWorld(value) or value.lastWriteId ~= record.lastWriteId then
+        return false, "slot_not_empty"
+    end
+    return true, cloneRecord(value)
+end
+
+function SaveSlotService.inspect(player: Player, index: number): (boolean, any)
+    if not Slots.validIndex(index) then return false, "invalid_slot" end
+    local success, value = pcall(function()
+        return store:GetAsync(Slots.key(player.UserId, index))
+    end)
+    if not success then return false, "datastore_unavailable" end
+    if not Slots.validWorld(value) then return false, "slot_missing_corrupt_or_locked" end
+    -- Access is always computed from the Player.UserId; never from client data.
+    return true, Slots.summary(value, index)
+end
+
 return SaveSlotService

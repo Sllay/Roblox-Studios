@@ -4,6 +4,9 @@
 local WorldProfile = {}
 WorldProfile.GENERATOR_VERSION = 1
 WorldProfile.CELL = 4
+WorldProfile.CHUNK_STUDS = 64
+WorldProfile.CHUNK_COUNT = 4
+WorldProfile.INITIAL_CHUNKS = {2, 3, 4}
 WorldProfile.BOUNDS = {
     xMin = -128, xMax = 128,
     yMin = -32, yMax = 64,
