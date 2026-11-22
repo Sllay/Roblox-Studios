@@ -416,7 +416,8 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
     end
     if action=="attack" or action=="bow" or action=="drop_coin"
         or action=="pickup_coin" or action=="arm_defender"
-        or action=="trade" or action=="prologue" or action=="r3_status" then
+        or action=="trade" or action=="craft_arrows"
+        or action=="prologue" or action=="r3_status" then
         return Combat.action(player,action,typeId)
     end
     if action~="build" then return {ok=false,error="invalid_action"} end
