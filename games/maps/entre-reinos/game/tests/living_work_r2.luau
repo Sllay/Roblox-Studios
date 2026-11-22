@@ -60,6 +60,35 @@ assert(not Slots.validWorld(old)) -- fail closed on unknown population revision
 old.living=nil
 assert(Slots.validWorld(old)) -- original R1 save remains valid
 
+-- v11: choose the closest valid free plot, without touching the saved
+-- work world until the order is actually accepted.
+local planned=S.new(seed)
+local okSite,siteX=W.findPlacement(planned,"shelter",18)
+assert(okSite and siteX==18)
+assert(#planned.buildings==0 and planned.nextBuildingId==1)
+local builtFirst,firstBlueprint=W.place(planned,"shelter",siteX)
+assert(builtFirst and firstBlueprint.x==18)
+local pickedAgain,nextX=W.findPlacement(planned,"shelter",18)
+assert(pickedAgain and math.abs(nextX-firstBlueprint.x)>=D.get("shelter").footprint+2)
+assert(#planned.buildings==1 and planned.nextBuildingId==2,
+    "search must never create a construction or charge resources")
+local builtSecond,secondBlueprint=W.place(planned,"shelter",nextX)
+assert(builtSecond and secondBlueprint.x~=firstBlueprint.x)
+assert(not W.canPlace(planned,"shelter",18))
+assert(W.findPlacement(planned,"shelter",999)==false)
+assert(W.findPlacement(planned,"invalid",18)==false)
+assert(W.findPlacement(planned,"shelter",0/0)==false)
+local persisted=S.restore(S.clone(planned),seed)
+assert(persisted and #persisted.buildings==2)
+local foundBefore,candidateBefore=W.findPlacement(planned,"house",18)
+local foundAfter,candidateAfter=W.findPlacement(persisted,"house",18)
+assert(foundBefore==foundAfter and candidateBefore==candidateAfter,
+    "plot search must remain deterministic across save/load")
+for _,b in ipairs(planned.buildings) do
+    assert(b.progress==0 and next(b.delivered)==nil)
+end
+print("ENTRE_REINOS_V11_PLOTS: server-only nearest free site, overlap, no side effects and save/load passed")
+
 local state=S.new(seed)
 assert(W.place(state,"invalid",12)==false)
 assert(W.place(state,"shelter",76)==false) -- river / slope
