@@ -90,6 +90,15 @@ end
 print("ENTRE_REINOS_V11_PLOTS: server-only nearest free site, overlap, no side effects and save/load passed")
 
 local state=S.new(seed)
+-- v13 UX: the village UI may only show real finite resource custody.
+local initial=W.summary(state)
+assert(initial.resources.sources.wood==144)
+assert(initial.resources.sources.stone==132)
+assert(initial.resources.sources.iron==40)
+assert(initial.resources.sources.food==70)
+assert(initial.resources.carried.wood==0)
+assert(initial.resources.reserved.wood==0)
+assert(initial.resources.committed.wood==0)
 assert(W.place(state,"invalid",12)==false)
 assert(W.place(state,"shelter",76)==false) -- river / slope
 assert(W.place(state,"shelter",999)==false)
@@ -110,6 +119,13 @@ assert(b.delivered.wood==D.get("shelter").cost.wood)
 assert(b.delivered.stone==D.get("shelter").cost.stone)
 assert(state.stats.delivered==11,"no duplicate material delivery")
 assert(state.stats.built==1,"one building completion per building")
+local snapshot=W.summary(state)
+assert(snapshot.resources.sources.wood<=144 and snapshot.resources.sources.stone<=132)
+assert(snapshot.resources.committed.wood==8 and snapshot.resources.committed.stone==3)
+assert(snapshot.resources.sources.wood+snapshot.resources.carried.wood+
+    snapshot.resources.committed.wood<=144,"UI material ledger must conserve wood")
+assert(snapshot.resources.sources.stone+snapshot.resources.carried.stone+
+    snapshot.resources.committed.stone<=132,"UI material ledger must conserve stone")
 local wood=0
 local stone=0
 for _,site in ipairs(state.sites) do
