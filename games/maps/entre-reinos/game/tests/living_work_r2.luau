@@ -150,4 +150,41 @@ for i=1,500 do W.step(reopened,0.1) end
 assert(reopened.buildings[1].state=="complete")
 assert(reopened.stats.repaired>=1)
 assert(reopened.stats.built==1,"repair must not increment construction completion")
+-- A complete galpão creates a real autonomous logistics cycle with
+-- finite sources, bags, storage and recipes, not virtual map-wide crafting.
+local warehouseWorld=S.new(seed)
+local started,warehouse=W.place(warehouseWorld,"stockpile",18)
+assert(started)
+warehouseWorld.sites[1].marked=true
+assert(W.summary(warehouseWorld).resources.markedTrees==1)
+for i=1,5000 do W.step(warehouseWorld,0.1) end
+assert(warehouse.state=="complete","warehouse must be truly finished first")
+assert(I.valid(warehouse.stored))
+local inventory=I.count(warehouse.stored,"wood")
+assert(inventory>=2,"idle NPCs must actually deliver spare wood to the galpão")
+local summaryBefore=W.summary(warehouseWorld)
+local totalWood=summaryBefore.resources.sources.wood+
+    summaryBefore.resources.carried.wood+
+    summaryBefore.resources.committed.wood+
+    summaryBefore.resources.stored.wood
+assert(totalWood==144,"no wooden resources may be minted by warehouse")
+local R3=require("../places/main/src/ReplicatedStorage/Living/R3Engine")
+local d=R3.ensure(warehouseWorld,false)
+local ammo=d.arrows
+assert(R3.craftArrows(warehouseWorld,warehouse.x))
+assert(I.count(warehouse.stored,"wood")==inventory-2)
+assert(d.arrows==ammo+6)
+local after=W.summary(warehouseWorld)
+assert(after.resources.stored.wood==inventory-2)
+assert(after.resources.sources.wood+after.resources.carried.wood+
+    after.resources.committed.wood+after.resources.stored.wood==142,
+    "crafting may consume exactly two stored pieces and nothing else")
+local reload=S.restore(S.clone(warehouseWorld),seed)
+assert(reload and I.valid(reload.buildings[1].stored))
+assert(reload.buildings[1].stored.items.wood==inventory-2)
+local damaged=S.clone(warehouseWorld)
+damaged.buildings[1].stored.maxMass=1
+assert(not S.valid(damaged),"invalid stored mass must fail closed")
+print("ENTRE_REINOS_T1_R3_STOCK: marked timber, deposit, crafting and saved inventories passed")
+
 print("ENTRE_REINOS_T1_R2: weighted atomic transfer, professions, finite sites, deliveries, build, repair, save/load passed")
