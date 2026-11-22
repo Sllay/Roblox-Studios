@@ -63,6 +63,10 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
     hint.Size=UDim2.new(1,-12,0,48)
     hint.LayoutOrder=1
 
+    local activeInfo=text(list,"OBRAS DA VILA  ·  nenhum projeto registrado",12,cream)
+    activeInfo.LayoutOrder=2
+    activeInfo.Size=UDim2.new(1,-12,0,72)
+    activeInfo.TextWrapped=true
     local snapshot: any=nil
     local busy=false
     local cards: {[string]: {button: TextButton,materials: TextLabel}}={}
@@ -70,7 +74,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         local def=Structures.get(id)
         local card=Instance.new("TextButton")
         card.Name="Construct_"..id
-        card.LayoutOrder=i+1
+        card.LayoutOrder=i+2
         card.Size=UDim2.new(1,-12,0,78)
         card.BackgroundColor3=Color3.fromRGB(50,64,54)
         card.BorderSizePixel=0
@@ -125,6 +129,27 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
     local api={}
     function api.update(data: any)
         snapshot=data
+        local buildings=if snapshot then snapshot.buildings else nil
+        if buildings and #buildings>0 then
+            local parts={}
+            local shown=0
+            for _,b in ipairs(buildings) do
+                if b.state~="complete" then
+                    shown+=1
+                    if shown<=3 then
+                        table.insert(parts,b.name.." #"..tostring(b.id)..
+                            " · "..tostring(b.progress).."%")
+                    end
+                end
+            end
+            activeInfo.Text=if shown==0 then
+                "OBRAS DA VILA  ·  "..tostring(#buildings).." concluídas"
+                else "EM ANDAMENTO ("..tostring(shown)..")\n"..
+                    table.concat(parts,"   ·   ")..
+                    (if shown>3 then "  e mais "..tostring(shown-3) else "")
+        else
+            activeInfo.Text="OBRAS DA VILA  ·  nenhuma encomendada"
+        end
         local stocks=if snapshot and snapshot.resources then snapshot.resources.sources else nil
         local bags=if snapshot and snapshot.resources then snapshot.resources.carried else nil
         local reserved=if snapshot and snapshot.resources then snapshot.resources.reserved else nil
