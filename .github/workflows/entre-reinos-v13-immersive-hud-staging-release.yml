@@ -1,0 +1,146 @@
+name: Entre Reinos v13 T1-R3 immersive game UI and village resources staging
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/entre-reinos-v13-immersive-hud-staging-release.yml]
+permissions:
+  actions: write
+  contents: write
+concurrency:
+  group: roblox-place-write-entre-reinos-main-staging
+  cancel-in-progress: false
+jobs:
+  validate-and-stage:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Validate game isolation, native swimming and ghost NPC contracts
+        run: |
+          python tools/workspace.py validate
+          python tools/deploy.py validate
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          g=Path("games/maps/entre-reinos")
+          src=g/"game/places/main/src"
+          lane=(src/"StarterPlayer/StarterPlayerScripts/LaneController.luau").read_text()
+          living=(src/"ServerScriptService/Services/LivingService.luau").read_text()
+          npc=(src/"StarterPlayer/StarterPlayerScripts/NPCPresentation.luau").read_text()
+          work=(src/"ReplicatedStorage/Living/WorkEngine.luau").read_text()
+          assert 'h:Move(Vector3.new(x, if swimming then y else 0, 0), false)' in lane
+          for token in ['SwimVisual', 'Water.submerged', 'ChangeState(', 'Instance.new("LinearVelocity")']:
+              assert token not in lane,token
+          assert 'o.Enabled = not swimming' in lane
+          assert not (src/"StarterPlayer/StarterPlayerScripts/R6SwimVisual.luau").exists()
+          assert not (src/"ReplicatedStorage/WaterRules.luau").exists()
+          assert 'ghostPart(item)' in living
+          assert 'CollisionGroupSetCollidable(GHOST_GROUP,"Default",false)' in living
+          assert 'CollisionGroupSetCollidable(GHOST_GROUP,GHOST_GROUP,false)' in living
+          assert 'actorX(npc),actorZ(npc)' in living
+          assert 'npc.motionX=0' in work
+          assert 'npc.motionX=(if diff>0 then 1 else -1)*travel/dt' in work
+          assert 'smoothedVelocity' in npc
+          assert 'model:PivotTo(item.render)' in npc
+          r3=(src/"ReplicatedStorage/Living/R3Engine.luau").read_text()
+          combat=(src/"ServerScriptService/Services/CombatService.luau").read_text()
+          hud=(src/"StarterPlayer/StarterPlayerScripts/R3HUD.luau").read_text()
+          assert 'function R3.command(' in r3
+          assert 'function R3.step(' in r3
+          assert 'function R3.valid(' in r3
+          assert 'function R3.craftArrows(' in r3
+          assert 'R3.step(state,0.1,x)' in living
+          assert 'Combat.start(player,state,folder)' in living
+          assert 'workspace:Raycast(a.p,nextPos-a.p,cast)' in combat
+          assert 'RunService:BindToRenderStep("ER_CoinVFX"' in hud
+          assert 'if state.r3~=nil and not R3.valid(state.r3)' in (src/"ReplicatedStorage/Living/LivingModel.luau").read_text()
+          engine=(src/"ReplicatedStorage/Living/WorkEngine.luau").read_text()
+          menu=(src/"StarterPlayer/StarterPlayerScripts/BuildMenu.luau").read_text()
+          assert 'function Engine.findPlacement(' in engine
+          assert 'function Engine.canPlace(' in engine
+          assert 'return false,"no_available_build_site"' in engine
+          assert 'Work.findPlacement(state,typeId,root.Position.X+15)' in living
+          assert living.index('lastActionAt[player]=now')>living.index('Work.place(state,typeId,site)')
+          assert 'if busy then return end' in menu
+          client=(src/"StarterPlayer/StarterPlayerScripts/ClientBoot.client.luau").read_text()
+          lobby=(src/"StarterPlayer/StarterPlayerScripts/SlotMenu.luau").read_text()
+          assert 'BuildMenu.mount(content,remote,notify,' in hud
+          assert 'local journal=panel(gui,"VillageJournal"' in hud
+          assert 'local stockBar=panel(gui,"VillageStock"' in hud
+          assert 'local interact=button(gui,"ContextAction","INTERAGIR")' in hud
+          assert 'pages.workshop=workshop' in hud and 'pages.resources=resourcesPage' in hud
+          assert 'UIGridLayout' not in hud
+          assert 'Instance.new("ScreenGui")' not in menu
+          assert 'function Menu.mount(' in menu
+          assert 'return {ok=true,data=overview,hud=R3.summary(state),nearby=nearby}' in living
+          assert 'resources={sources=sources,carried=carried,reserved=reserved,' in work
+          assert 'BuildMenu.start(player)' not in client
+          assert 'savedOptions = {wide = false, debug = false}' in client
+          assert 'local options = {wide = false, debug = false}' in lobby
+          assert json.loads((g/"deploy.targets.json").read_text())["environments"]["production"]["universeId"] is None
+          print("ER_V13_GAME_UI_SOURCE_PASS")
+          PY
+      - name: Install pinned official Luau
+        run: bash tools/install-luau.sh
+      - name: Compile-check all Luau sources
+        run: python tools/script_quality.py
+      - name: Install pinned Roblox Luau LSP
+        run: bash tools/install-luau-lsp.sh
+      - name: Strict type analysis and executable Luau regression tests
+        run: python tools/quality_gate_v2.py
+      - uses: CompeyDev/setup-rokit@v0.2.1
+      - name: Build only Entre Reinos staging Place
+        run: python tools/workspace.py build --game entre-reinos --place main
+      - name: Verify exact existing Roblox staging revision 12 and take scoped snapshot
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          python tools/scene_sync.py --game entre-reinos --place main --environment staging --expected-version 12 --record
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('games/maps/entre-reinos/docs/sync/main/staging.summary.json')
+          s=json.loads(p.read_text())
+          assert s['loadedVersion']==12, s['loadedVersion']
+          assert str(s['universeId'])=='10769712413'
+          assert str(s['placeId'])=='90623742498445'
+          assert s['total']>=70
+          print('ER_V12_BASELINE_BEFORE_V13_VERIFIED',s['stateDigest'])
+          PY
+      - name: Save observed staging inventory to main
+        run: |
+          git config user.name "entre-reinos-v13-release[bot]"
+          git config user.email "entre-reinos-v13-release@users.noreply.github.com"
+          git add -- games/maps/entre-reinos/docs/sync/main/staging.json games/maps/entre-reinos/docs/sync/main/staging.summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "sync(entre-reinos): record staging v12 before immersive gameplay UI"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Dispatch guarded official staging publication only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head="$(gh api repos/Sllay/Roblox-Studios/git/ref/heads/main --jq .object.sha)"
+          local="$(git rev-parse HEAD)"
+          [[ "$head" == "$local" ]] || { echo "::error::main changed after inventory; abort release"; exit 1; }
+          gh api -X POST repos/Sllay/Roblox-Studios/actions/workflows/publish.yml/dispatches --input - <<'JSON'
+          {
+            "ref": "main",
+            "inputs": {
+              "game": "entre-reinos",
+              "place": "main",
+              "environment": "staging",
+              "confirm_publish": "true",
+              "confirm_full_place_replacement": "true"
+            }
+          }
+          JSON
+          echo "ER_V13_STAGING_PUBLICATION_DISPATCHED"
