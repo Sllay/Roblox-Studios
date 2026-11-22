@@ -1,6 +1,7 @@
 --!strict
 -- T1-R1. Functional six-world selector. No fake offline saves or silent deletion.
 local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
 local SlotMenu = {}
 
 local function newText(parent: Instance, text: string, size: UDim2, pos: UDim2, fontSize: number)
@@ -68,6 +69,11 @@ local function displayError(value: any): string
         server_operation_failed = "O servidor encontrou uma falha ao iniciar. O save continua preservado.",
         character_setup_exception = "Falha ao preparar o personagem. Tente o mesmo mundo novamente.",
         request_busy = "O mundo ainda está carregando. Aguarde e tente novamente.",
+        teleport_request_failed = "O Roblox recusou a transferência de servidor. O save continua intacto.",
+        teleport_init_failed = "A conexão com o servidor privado falhou. Tente entrar novamente.",
+        teleport_in_progress = "Já existe uma transferência em andamento.",
+        slot_record_invalid = "O servidor não confirmou o registro do mundo.",
+        already_in_world_server = "Este servidor já é uma partida privada.",
         terrain_write_uncertain = "Falha na geração do Terrain. Inspecionar antes de tentar novamente.",
         nonempty_terrain_refuses_overwrite = "Terreno existente detectado: escrita bloqueada para evitar sobrescrever o Place.",
         rate_limited = "Aguarde um instante antes da próxima ação.",
@@ -88,7 +94,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
     overlay.Name = "Backdrop"
     overlay.Size = UDim2.fromScale(1, 1)
     overlay.BackgroundColor3 = Color3.fromRGB(15, 23, 19)
-    overlay.BackgroundTransparency = 0.08
+    overlay.BackgroundTransparency = 0
     overlay.BorderSizePixel = 0
     overlay.Parent = gui
 
@@ -129,6 +135,39 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
     local selected: number? = nil
     local activeSlot: number? = nil
     local pendingDeletion: number? = nil
+
+    -- This curtain is visible before InvokeServer yields and stays up through
+    -- the Roblox teleport. In the destination, WorldLoadingUI displays actual
+    -- per-chunk progress. Both backgrounds are fully opaque.
+    local transit = Instance.new("Frame")
+    transit.Name = "PrivateServerTransfer"
+    transit.Size = UDim2.fromScale(1, 1)
+    transit.BackgroundColor3 = Color3.fromRGB(18, 28, 23)
+    transit.BackgroundTransparency = 0
+    transit.BorderSizePixel = 0
+    transit.Visible = false
+    transit.ZIndex = 20
+    transit.Parent = gui
+    local transitTitle = newText(transit, "ENTRE REINOS", UDim2.new(0.9, 0, 0, 70),
+        UDim2.fromScale(0.05, 0.31), 30)
+    transitTitle.ZIndex = 21
+    transitTitle.Font = Enum.Font.GothamBold
+    local transitInfo = newText(transit, "Conectando...", UDim2.new(0.9, 0, 0, 85),
+        UDim2.fromScale(0.05, 0.46), 19)
+    transitInfo.ZIndex = 21
+    local function startTransfer(index: number, creating: boolean)
+        transit.Visible = true
+        transitInfo.Text = if creating then
+            "Salvando seu novo mundo " .. tostring(index) .. " e abrindo servidor privado..."
+            else "Conectando ao servidor privado do Mundo " .. tostring(index) .. "..."
+    end
+    player:GetAttributeChangedSignal("ER_TeleportError"):Connect(function()
+        local failure = player:GetAttribute("ER_TeleportError")
+        if type(failure) == "string" and failure ~= "" then
+            transit.Visible = false
+            status.Text = displayError(failure)
+        end
+    end)
 
     local function page(name: string)
         for key, frame in pairs(pages) do frame.Visible = key == name end
@@ -237,19 +276,20 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
                 selected = index
                 local action = if activeSlot == index then "resume"
                     elseif summary.exists then "open" else "create"
-                local answer, failure, details = request(action, index)
-                local recoverCharacter = details and details.recoverable == true
-                    and (details.stage == "character" or details.stage == "lane")
-                if not answer and (recoverCharacter or failure == "transport_failed"
-                    or failure == "world_already_active") then
-                    -- Resume only a potentially ready session. Never overwrite a
-                    -- Terrain failure with "world_needs_new_server".
-                    task.wait(0.15)
-                    answer = request("resume", index)
+                TeleportService:SetTeleportSetting("ER_Options", {
+                    wide = options.wide, debug = options.debug,
+                })
+                startTransfer(index, not summary.exists)
+                -- A fresh reserved server owns the game session. Never auto-resume
+                -- anything in the public lobby or regenerate terrain here.
+                local answer = request(action, index)
+                if answer and answer.teleporting then
+                    transitInfo.Text = "Servidor privado reservado. Conectando..."
+                    return
                 end
+                transit.Visible = false
                 if answer then
-                    overlay.Visible = false
-                    onWorldLoaded(answer, options)
+                    status.Text = "Transferência não confirmada. Abra o menu novamente."
                 end
             end)
             local remove = button(row, "Delete", "Excluir", UDim2.new(0.22, 0, 0, 34), UDim2.new(0.76, 0, 0.5, -17))
