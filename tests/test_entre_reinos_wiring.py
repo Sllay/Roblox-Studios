@@ -37,7 +37,8 @@ class EntreReinosWiring(unittest.TestCase):
 
     def test_world_never_clears_unmanaged_terrain(self):
         service = (SRC/"ServerScriptService/Services/WorldService.luau").read_text(encoding="utf8")
-        self.assertNotIn("Terrain:Clear(", service)
+        executable = " ".join(line.split("--", 1)[0] for line in service.splitlines())
+        self.assertNotIn("Terrain:Clear(", executable)
         self.assertIn("ReadVoxelChannels", service)
         self.assertIn("WriteVoxelChannels", service)
         self.assertIn("nonempty_terrain_refuses_overwrite", service)
