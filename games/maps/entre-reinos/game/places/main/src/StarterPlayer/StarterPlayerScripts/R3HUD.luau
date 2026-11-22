@@ -6,6 +6,8 @@ local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local UserInputService=game:GetService("UserInputService")
 local BuildMenu=require(script.Parent:WaitForChild("BuildMenu"))
+local Professions=require(ReplicatedStorage:WaitForChild("Game")
+    :WaitForChild("Living"):WaitForChild("ProfessionDefs"))
 local UI={}
 local started=false
 
@@ -522,9 +524,9 @@ function UI.start(player: Player)
             stock.Text="FONTES DA VILA  ·  consultando..."
         else
             stock.Text="FONTES  ·  MAD "..tostring(sources.wood or 0)..
-                "   PED "..tostring(sources.stone or 0)..
-                "   FER "..tostring(sources.iron or 0)..
-                "   ALI "..tostring(sources.food or 0)
+                "   PEDRA "..tostring(sources.stone or 0)..
+                "   FERRO "..tostring(sources.iron or 0)..
+                "   COMIDA "..tostring(sources.food or 0)
         end
         for _,item in ipairs(resourceOrder) do
             local t=resourceCards[item]
@@ -559,9 +561,11 @@ function UI.start(player: Player)
                     idle="disponível",rest="descansando"}
                 local role=if w.defense=="bow" then " · arqueiro"
                     else if w.defense=="spear" then " · lanceiro" else ""
-                b.Text=w.name.."  ·  "..w.profession..role..
+                local profession=Professions.get(w.profession)
+                local roleLabel=if profession then profession.label else w.profession
+                b.Text=w.name.."  ·  "..roleLabel..role..
                     "\n"..(stateName[w.state] or tostring(w.state))..
-                    "  ·  carga "..tostring(math.floor(w.carryWeight)).." kg"
+                    "  ·  carga "..tostring(math.floor(w.carryWeight)).." u."
                 b.TextColor3=if w.id==selectedNpcId then C.gold else C.paper
                 b.Visible=true
             end
