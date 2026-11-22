@@ -95,6 +95,26 @@ assert(right.x>=wall.x-3,"wall must stop a raider while intact")
 assert(wall.health<Structures.get("wall").health,
     "real structure must lose HP when attacked")
 assert(wall.state=="damaged")
+-- Destroyed defenses cannot protect forever. Salvage is emitted ONCE from
+-- previously delivered material, then NPCs must re-deliver to rebuild.
+wall.delivered={wood=10,stone=12}
+local sitesBefore=#blocked.sites
+for _=1,950 do R3.step(blocked,0.1,0) end
+assert(wall.ruined==true and wall.state=="ruined" and wall.health==0)
+assert(#blocked.sites==sitesBefore+2,"one wood and one stone salvage site")
+local siteCount=#blocked.sites
+for _=1,100 do R3.step(blocked,0.1,0) end
+assert(#blocked.sites==siteCount,"ruins must never mint salvage repeatedly")
+blocked.r3.enemies={}
+blocked.r3.raidActive=false
+for _,npc in ipairs(blocked.npcs) do npc.underAttack=false end
+for _=1,6500 do
+    Work.step(blocked,0.1)
+    if wall.state=="complete" then break end
+end
+assert(wall.state=="complete" and wall.ruined==false)
+assert(wall.health==Structures.get("wall").health)
+assert(Living.valid(blocked),"repaired and salvaged world must remain saveable")
 -- Raid conditions do not roll every night and preserve existing snapshots.
 local saved=Living.clone(fresh)
 assert(Living.valid(saved))
