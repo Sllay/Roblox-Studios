@@ -143,6 +143,12 @@ end
 
 local function trackWorld(player: Player, s: any)
     local now = os.clock()
+    -- A failed world load must never record the menu spawn as game progress,
+    -- nor advance the world's simulation clock while there is no active world.
+    if player:GetAttribute("ER_WorldLoaded") ~= true then
+        s.lastClock = now
+        return
+    end
     local elapsed = math.clamp(now - s.lastClock, 0, 180)
     s.lastClock = now
     s.data.clockSeconds += elapsed
