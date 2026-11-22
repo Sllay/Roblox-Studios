@@ -52,7 +52,10 @@ local function availableSource(state: any, item: string, x: number): any
     local bestDist=math.huge
     for _,site in ipairs(state.sites) do
         if site.item==item and site.remaining>0 then
+            -- Player-marked harvest trees are preferred by carpenters.
+            -- Marking never duplicates wood or bypasses the NPC bag.
             local distance=math.abs(x-site.x)
+                -(if item=="wood" and site.marked==true then 80 else 0)
             if distance<bestDist then
                 best=site
                 bestDist=distance
@@ -417,12 +420,16 @@ function Engine.summary(state: any): any
     -- Real inventory custody. Sources are NOT the player's backpack, and
     -- resources already delivered to structures are NOT free stock.
     local sources={wood=0,stone=0,iron=0,food=0}
+    local markedTrees=0
     local carried={wood=0,stone=0,iron=0,food=0}
     local reserved={wood=0,stone=0,iron=0,food=0}
     local committed={wood=0,stone=0,iron=0,food=0}
     local deposited={wood=0,stone=0,iron=0,food=0}
     for _,site in ipairs(state.sites) do
         sources[site.item]=(sources[site.item] or 0)+site.remaining
+        if site.item=="wood" and site.marked==true and site.remaining>0 then
+            markedTrees+=1
+        end
     end
     for _,npc in ipairs(state.npcs) do
         for item,count in pairs(npc.inventory.items) do
@@ -460,6 +467,6 @@ function Engine.summary(state: any): any
     end
     return {buildings=buildings,workers=workers,stats=table.clone(state.stats),
         resources={sources=sources,carried=carried,reserved=reserved,
-            committed=committed,stored=deposited}}
+            committed=committed,stored=deposited,markedTrees=markedTrees}}
 end
 return Engine
