@@ -135,8 +135,8 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
         pendingDeletion = nil
     end
 
-    local function request(action: string, index: number?): (any, string?)
-        if busy then return nil, "request_busy" end
+    local function request(action: string, index: number?): (any, string?, any)
+        if busy then return nil, "request_busy", nil end
         busy = true
         status.Text = "Processando " .. action .. "..."
         local transportOk, answer = pcall(function()
@@ -145,7 +145,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
         busy = false
         if not transportOk or type(answer) ~= "table" then
             status.Text = "Resposta do servidor não confirmada. Tentaremos recuperar a sessão."
-            return nil, "transport_failed"
+            return nil, "transport_failed", nil
         end
         if not answer.ok then
             local reason = tostring(answer.error)
@@ -167,7 +167,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             return nil, reason, answer
         end
         status.Text = ""
-        return answer, nil
+        return answer, nil, nil
     end
 
     local homeText = newText(pages.home, "Construa seu próprio reino medieval em um mundo 3D persistente.",
