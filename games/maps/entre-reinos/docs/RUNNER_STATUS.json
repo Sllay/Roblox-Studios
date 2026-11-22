@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-22",
-  "note": "T1-R1 STAGING ROBLOX v6: lobby solo e mundo em servidor reservado do mesmo Place; retorno duplo nil record corrigido. 155 Python tests, pure Luau, Rojo, Open Cloud render engine 3+1 chunks and water PASS. Teste de teleport real e mobile pendente; T1-R2 segue planejado.",
+  "note": "Entre Reinos staging v7 publicado: joystick+pulo nativos Roblox sem CAS custom, joystick projetado em terra X e na água X/Y, painel dev no CoreUISafeInsets direito; CI + readback engine todos PASS. R1 continua in_progress à espera do criador confirmar o mobile e save.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -22,12 +22,12 @@
         "status": "preview_published",
         "previewRunner": "T1-R1",
         "isSeasonFinal": false,
-        "commit": "d8b821eb6fddfa9a0b9ba2d14a36d62049d95922",
+        "commit": "d9370726",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 6,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488"
+        "revisionId": 7,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031576169",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031693274"
       },
       "userReview": "not_requested",
       "refinementCycles": [],
@@ -35,30 +35,31 @@
         {
           "id": "T1-R1",
           "status": "in_progress",
-          "commit": "ad55c0176a9d2adf63f954ee124a584b1f550e28",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030168933",
+          "commit": "4c5ce8ed31c1ade777b80feff5e98e4b5e062311",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031416589",
           "receipt": "docs/runner-receipts/T1-R1.md",
           "validation": {
             "structure": "pass",
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "unsaved_engine_seed_516639272_3+1_chunks_and_water_pass",
-            "mobile": "awaiting_creator_real_teleport_test"
+            "runtime": "published_v7_control_projection_engine_pass_11_checks",
+            "mobile": "awaiting_creator_native_joystick_jump_test"
           },
           "blockers": [
-            "A transferência real via TeleportAsync para ReservedServerId ainda não foi observada com um Player em partida; exige teste no Roblox publicado",
-            "Persistência após reentrar, física R6, camera e natação mobile ainda necessitam validação do criador",
-            "Não completar T1-R1 nem começar T1-R2 até partida real passar"
+            "No jogo real, validar joystick e botão pulo nativos sem botões sobrepostos, posição do FPS top-right fora do Core UI",
+            "Validar movimento X-only em terra e rotação frente/fundo; em rio joystick sobe/desce/diagonal com nado fluido e pulo nativo normal",
+            "Validar save/reentrada Mundo 1, FPS e controle touch antes de fechar T1-R1"
           ],
           "previewPublication": {
-            "status": "published_v6",
+            "status": "published_v7",
             "placeId": "90623742498445",
             "universeId": "10769712413",
-            "revision": 6,
-            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476",
-            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488",
-            "fix": "Luau two-result collapse (Boot:101), separate lobby/private world server; 3 initial chunks + 1 streamed; opaque loading; solo gate."
+            "revision": 7,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031576169",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031693274",
+            "verifiedChecks": 11,
+            "fix": "Remove five custom CAS touchscreen bindings, keep Roblox PlayerModule movement+native jump, project thumbstick to XY swimming, place HUD outside topbar via CoreUISafeInsets."
           }
         },
         {
@@ -94,7 +95,7 @@
           "blockers": []
         }
       ],
-      "previewUserReview": "awaiting_creator_retest_after_v6"
+      "previewUserReview": "awaiting_creator_mobile_v7_native_controls"
     },
     {
       "id": "T2",
@@ -226,7 +227,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R1_staging_v6_lobby_reserved_world_awaiting_playtest",
+  "programStage": "T1_R1_staging_v7_native_mobile_controls_awaiting_creator_retest",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -252,21 +253,22 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "ad55c0176a9d2adf63f954ee124a584b1f550e28",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030168933",
+    "codeCommit": "4c5ce8ed31c1ade777b80feff5e98e4b5e062311",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031416589",
     "ciConclusion": "success",
-    "publishedVersion": 6,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488",
-    "verifiedModules": 17,
+    "publishedVersion": 7,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031576169",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031693274",
+    "readbackChecks": 11,
+    "publishedNativeModuleExecuted": true,
+    "publishedAnalogDiagonalPass": true,
     "observedMaxPlayers": 1,
     "knownUserWorldSeed": 516639272,
-    "engineInitialChunks": 3,
-    "engineStreamedChunks": 4,
-    "engineWaterCells": 596,
-    "liveTeleport": "not_tested",
-    "mobile": "awaiting_creator_retest",
-    "staging": "published_v6"
+    "liveJoystick": "awaiting_creator",
+    "liveJump": "awaiting_creator",
+    "cameraAndMobileFPS": "awaiting_creator",
+    "staging": "published_v7",
+    "scope": "CI + executable pure Luau input tests + Place v7 source readback + actual Roblox Luau InputProjection runtime; physical mobile input not simulated"
   },
   "remoteIdentity": {
     "status": "verified",

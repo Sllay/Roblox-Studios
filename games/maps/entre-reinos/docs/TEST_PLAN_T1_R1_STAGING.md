@@ -94,3 +94,16 @@ A revisão anterior v5 tinha bug `Boot:101 record.seed nil`; não usar seus erro
 - [ ] Player cap real na engine publicado já retornou `Players.MaxPlayers=1` no teste remoto; hard gate do servidor impede segundo jogador mesmo se configurarem outro valor.
 
 Release https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476; readback https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488. Continuar T1-R1 `in_progress` até reteste real.
+
+## v7 — teste obrigatório de controle nativo Roblox (22/11)
+
+- [ ] Fechar totalmente sessão v6 e abrir nova no Place do Entre Reinos, v7.
+- [ ] Entrar no Mundo 1, seed **516639272**; ver os controles originais Roblox **joystick e pular**, sem as cinco setas customizadas que se sobrepunham.
+- [ ] HUD dev de FPS no **canto superior direito abaixo do topbar**, sem ficar atrás de qualquer ícone do Roblox.
+- [ ] Joystick direita/esquerda movimenta proporcionalmente à inclinação; joystick frente/trás apenas gira avatar no solo (sem andar livre em Z).
+- [ ] Pulo padrão Roblox funciona, inclusive durante movimento horizontal.
+- [ ] Na água, joystick vertical sobe/desce, e diagonal combina X/Y; sem drift lateral fora da água.
+- [ ] Enviar foto caso os botões não apareçam ou o movimento tenha regressão; mandar FPS se cair.
+- [ ] Saída e reconexão preservam seed/posição. T1-R1 continua in_progress até confirmação.
+
+CI https://github.com/Sllay/Roblox-Studios/actions/runs/45031416589; Place v7 https://github.com/Sllay/Roblox-Studios/actions/runs/45031576169; engine readback https://github.com/Sllay/Roblox-Studios/actions/runs/45031693274.

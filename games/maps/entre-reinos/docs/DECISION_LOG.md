@@ -95,3 +95,18 @@ Criador enviou Developer Console v5 comprovando `Boot:101 attempt to index nil w
 - **FIXADO**: GUI lobby+teleporte+loading totalmente opacos e progresso real por atributos; chunks iniciais 2,3,4 e chunk1 quando exploração avança.
 - **Observado via Open Cloud readback da publicação v6**: `Players.MaxPlayers=1`. Não foi necessário alterar limite; hard gate 1/servidor também foi implementado. Capacidade futura multiplayer fora de T1-R1.
 - **Prova**: CI https://github.com/Sllay/Roblox-Studios/actions/runs/45030168933, release https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476, readback https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488. Teste de teleporte com Player no app Roblox ainda pendente; runner não finalizado.
+
+## 22/11/2026 — staging v7: correção do joystick e painel de diagnóstico mobile
+
+O criador enviou screenshot da versão 6 mostrando os cinco botões `ContextActionService` sobrepostos (◀ ▶ ▲ ▼ Pular), painel FPS à esquerda atrás do menu superior e confirmou que **a entrada no mundo estava funcionando** (avatar visível, seed 516639272 e Terrain renderizado). Pediu usar **joystick e botão de pulo nativos do Roblox**, mudando apenas a movimentação, e reposicionar o HUD dev.
+
+Implementado:
+- `StarterPlayerScripts/LaneController.luau` deixa de usar `ContextActionService:BindActionAtPriority(...,true,...)`, remove todos os botões inventados e não desabilita `PlayerModule`. Lê `controls:GetMoveVector()` em Input+1 e projeta joystick analógico em X terreno (Z bloqueado pelo plano físico); joystick frente/trás gira personagem no solo e se torna subir/descer na água; pulo continua controlado pelo módulo Roblox.
+- Novo módulo puro tipado `ReplicatedStorage/InputProjection.luau`, inclui deadzone analógica, normalização de diagonais, conversão nativa `-Z -> +Y`, yaw esquerda/direita/frente/trás. Testado de modo executável no Quality Gate Luau, não apenas inspeção de string.
+- `ClientBoot.client.luau`: GUI dev usa `IgnoreGuiInset=false` e `ScreenInsets=CoreUISafeInsets`, com `AnchorPoint=(1,0)` e posição à direita, abaixo das áreas nativas Roblox, em vez de colidir com topbar esquerda.
+- CI https://github.com/Sllay/Roblox-Studios/actions/runs/45031416589 com Python, Luau LSP, pure tests, Rojo `success`.
+- Publicação via Open Cloud Roblox https://github.com/Sllay/Roblox-Studios/actions/runs/45031576169, Place staging `90623742498445`, versão **7**.
+- Leitura independente do Place salvo no motor Roblox https://github.com/Sllay/Roblox-Studios/actions/runs/45031693274: 11/11 checks incluindo ausência dos botões custom, presença PlayerModule:GetMoveVector, HUD CoreUI safe, código de água e execução real de `InputProjection.toLane(1,-1)` resultando em diagonal normalizada. `maxPlayers=1` continua configurado.
+- **Ainda não é teste do touchscreen real**: teste mobile do criador ainda necessário. O runner T1-R1 permanece `in_progress`; T1-R2 `planned`. Saves existentes/Black Island/produção intocados.
+
+Reteste: fechar v6, abrir servidor v7, Mundo 1, verificar joystick e pulo padrão sem sobreposição, FPS direito fora do CoreUI, X movimento em terra, giro frente/trás sem andar profundidade, diagonal/nado vertical em água. Reportar print/FPS e comportamento.
