@@ -1,0 +1,104 @@
+name: Entre Reinos v7 native mobile controls and HUD staging release (one shot)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/entre-reinos-v7-native-mobile-controls-release.yml
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: roblox-place-write-entre-reinos-main-staging
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Strict staging mapping, native controls source and successful CI guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('games/maps/entre-reinos')
+          cfg=json.loads((root/'deploy.targets.json').read_text())['environments']
+          assert str(cfg['staging']['universeId'])=='10769712413'
+          assert str(cfg['staging']['placeIds']['main'])=='90623742498445'
+          assert cfg['production']['universeId'] is None
+          assert cfg['production']['placeIds']['main'] is None
+          assert json.loads((root/'game.manifest.json').read_text())['places'][0]['fullPlaceBuildAuthoritative']
+          client=(root/'game/places/main/src/StarterPlayer/StarterPlayerScripts/ClientBoot.client.luau').read_text()
+          controller=(root/'game/places/main/src/StarterPlayer/StarterPlayerScripts/LaneController.luau').read_text()
+          projection=(root/'game/places/main/src/ReplicatedStorage/InputProjection.luau').read_text()
+          assert 'controls:GetMoveVector()' in controller
+          assert 'Projection.toLane(vector.X, vector.Z)' in controller
+          assert 'ContextActionService' not in controller
+          assert 'BindActionAtPriority' not in controller
+          assert 'SetPosition(' not in controller
+          assert 'controls:Disable()' not in '\n'.join(x for x in controller.splitlines() if not x.lstrip().startswith('--'))
+          assert 'gui.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets' in client
+          assert 'stats.AnchorPoint = Vector2.new(1, 0)' in client
+          assert 'math.clamp(-z, -1, 1)' in projection
+          print('V7_NATIVE_ROBLOX_CONTROLS_RELEASE_REVIEW_PASS')
+          PY
+          conclusion="$(gh api repos/Sllay/Roblox-Studios/actions/runs/45031416589 --jq .conclusion)"
+          [[ "$conclusion" == success ]] || { echo "::error::Native-controls CI not green"; exit 1; }
+      - name: Observe exact existing Roblox v6 Place before any replacement
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          python tools/scene_sync.py --game entre-reinos --place main --environment staging --expected-version 6 --record
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('games/maps/entre-reinos/docs/sync/main/staging.summary.json').read_text())
+          assert data['loadedVersion']==6
+          assert str(data['universeId'])=='10769712413'
+          assert str(data['placeId'])=='90623742498445'
+          assert data['total']>=65
+          roots={r['name'] for r in data['workspaceRoots']}
+          assert 'StartArea' in roots and 'Baseplate' not in roots
+          print('V7_BASELINE_V6_READBACK_PASS',data['stateDigest'])
+          PY
+      - name: Commit observed staging v6 inventory without modifying player data
+        run: |
+          git config user.name "entre-reinos-v7-release[bot]"
+          git config user.email "entre-reinos-v7-release@users.noreply.github.com"
+          git add -- games/maps/entre-reinos/docs/sync/main/staging.json games/maps/entre-reinos/docs/sync/main/staging.summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "sync(entre-reinos): verify and record published staging v6 before native mobile controls v7"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Dispatch guarded official staging-only publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current="$(gh api repos/Sllay/Roblox-Studios/git/ref/heads/main --jq .object.sha)"
+          local="$(git rev-parse HEAD)"
+          [[ "$current" == "$local" ]] || { echo "::error::main advanced, refusing stale release"; exit 1; }
+          gh api -X POST repos/Sllay/Roblox-Studios/actions/workflows/publish.yml/dispatches --input - <<'JSON'
+          {
+            "ref": "main",
+            "inputs": {
+              "game": "entre-reinos",
+              "place": "main",
+              "environment": "staging",
+              "confirm_publish": "true",
+              "confirm_full_place_replacement": "true"
+            }
+          }
+          JSON
+          echo "V7_NATIVE_MOBILE_CONTROLS_STAGING_DISPATCHED"
