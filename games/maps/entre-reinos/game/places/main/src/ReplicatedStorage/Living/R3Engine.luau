@@ -93,6 +93,23 @@ function R3.drop(state: any,x: number,value: number): (boolean, any)
     return true,drop.id
 end
 
+function R3.craftArrows(state: any,x: number): (boolean, any)
+    if not finite(x) then return false,"invalid_position" end
+    local d=state.r3
+    if d.arrows>24 then return false,"ammo_capacity" end
+    -- The player must stand beside an existing finite timber stock. Each
+    -- bundle consumes two real units of wood and produces six arrows.
+    for _,site in ipairs(state.sites) do
+        if site.item=="wood" and site.remaining>=2 and math.abs(site.x-x)<=9 then
+            site.remaining-=2
+            d.arrows+=6
+            ledger(d,"arrow_crafting",0,tostring(site.id))
+            return true,d.arrows
+        end
+    end
+    return false,"wood_stock_required"
+end
+
 function R3.trade(state: any,item: string,x: number): (boolean, any)
     -- Small local exchange backed by a finite village stock AND the
     -- persisted ducal treasury; no infinite coins from trees or kills.
