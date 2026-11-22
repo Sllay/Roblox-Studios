@@ -1,0 +1,153 @@
+name: Entre Reinos v14 galpaos trees saves and second-night raid Roblox engine readback
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/entre-reinos-v14-galpaos-saves-readback.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Check published v14 modules and execute independent galpao raid and save probes
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import json,os
+          from cloud_tasks import run_task
+          lua=r'''
+          local H=game:GetService("HttpService")
+          local RS=game:GetService("ReplicatedStorage")
+          local SP=game:GetService("StarterPlayer")
+          local SS=game:GetService("ServerScriptService")
+          local scripts=SP:WaitForChild("StarterPlayerScripts")
+          local gameScripts=RS:WaitForChild("Game")
+          local living=gameScripts:WaitForChild("Living")
+          local services=SS:WaitForChild("Services")
+          local function sourceHas(parent,name,needle)
+              local item=parent:FindFirstChild(name)
+              if not item then return false end
+              local ok,source=pcall(function() return item.Source end)
+              return ok and type(source)=="string" and
+                  string.find(source,needle,1,true)~=nil
+          end
+          local checks={
+              oneHUD=sourceHas(scripts,"ClientBoot","R3HUD.start(player)"),
+              nativeSwim=sourceHas(scripts,"LaneController","if swimming then y else 0"),
+              hideDebugDefault=sourceHas(scripts,"ClientBoot","savedOptions = {wide = false, debug = false}"),
+              buildNested=sourceHas(scripts,"BuildMenu","function Menu.mount("),
+              topVitals=sourceHas(scripts,"R3HUD",'panel(gui,"KingdomVitals"'),
+              topStock=sourceHas(scripts,"R3HUD",'panel(gui,"VillageStock"'),
+              journal=sourceHas(scripts,"R3HUD",'panel(gui,"VillageJournal"'),
+              contextual=sourceHas(scripts,"R3HUD",'button(gui,"ContextAction","INTERAGIR")'),
+              workshop=sourceHas(scripts,"R3HUD",'pages.workshop=workshop'),
+              quietUpdates=sourceHas(scripts,"R3HUD","task.wait(3)"),
+              sourceBreakdown=sourceHas(living,"WorkEngine","resources={sources=sources,carried=carried,reserved=reserved,"),
+              serverOverview=sourceHas(services,"LivingService","return {ok=true,data=overview,hud=R3.summary(state),nearby=nearby}"),
+              proximitySource=sourceHas(services,"LivingService","nearby.wood=math.max(nearby.wood,site.remaining)"),
+              treeMark=sourceHas(services,"LivingService","prompt.ActionText=if site.marked==true"),
+              newVisuals=sourceHas(services,"LivingService",'"Battlement"'),
+              deposit=sourceHas(living,"WorkEngine",'npc.state="store_deliver"'),
+              crafting=sourceHas(living,"R3Engine",'Inventory.count(b.stored,"wood")>=2'),
+              nightWarning=sourceHas(living,"R3Engine",'local scheduled=day>=1 and (day-1)%3==0'),
+              safeSave=sourceHas(gameScripts,"SlotModel","function Slots.compatibility("),
+          }
+          local probe={executed=false,mounted=false,realSources=false,
+              buildCosts=false,legacyPreserved=false,
+              marked=false,warehouse=false,stockCraft=false,
+              secondNight=false,protectedSave=false,issue=""}
+          local ok,err=pcall(function()
+              local M=require(living:WaitForChild("LivingModel"))
+              local W=require(living:WaitForChild("WorkEngine"))
+              local R3=require(living:WaitForChild("R3Engine"))
+              local seed=516639272
+              local state=M.new(seed)
+              local copy=M.clone(state)
+              local r3=R3.ensure(state,false)
+              probe.legacyPreserved=M.valid(state) and copy.r3==nil
+                  and r3.prologue.stage=="sandbox"
+              local summary=W.summary(state)
+              probe.realSources=summary.resources.sources.wood==144
+                  and summary.resources.sources.stone==132
+                  and summary.resources.sources.food==70
+                  and summary.resources.sources.iron==40
+                  and summary.resources.carried.wood==0
+                  and summary.resources.committed.wood==0
+              local module=require(scripts:WaitForChild("BuildMenu"))
+              local frame=Instance.new("Frame")
+              local remote=Instance.new("RemoteFunction")
+              local mounted=module.mount(frame,remote,function(_message) end,
+                  function() end)
+              mounted.update(summary)
+              mounted.setVisible(true)
+              local catalog=frame:FindFirstChild("ConstructionCatalog")
+              local shelter=catalog and catalog:FindFirstChild("Construct_shelter")
+              local labels=if shelter then shelter:GetChildren() else {}
+              local materials=false
+              for _,item in ipairs(labels) do
+                  if item:IsA("TextLabel") and string.find(item.Text,"Madeira 8",1,true) then
+                      materials=true
+                      break
+                  end
+              end
+              probe.mounted=catalog~=nil and catalog:IsA("ScrollingFrame")
+                  and catalog.Visible==true and shelter~=nil
+              probe.buildCosts=materials
+              local Slots=require(gameScripts:WaitForChild("SlotModel"))
+              local world=Slots.newWorld(seed,100,{x=0,y=20,z=0})
+              local legacy=table.clone(world)
+              legacy.saveFormatVersion=nil
+              legacy.rulesetVersion=nil
+              local future=table.clone(world)
+              future.rulesetVersion=999
+              probe.protectedSave=Slots.validWorld(legacy) and
+                  not Slots.validWorld(future) and
+                  Slots.summary(future,1).incompatible==true
+              state.sites[1].marked=true
+              probe.marked=W.summary(state).resources.markedTrees==1
+              local placed,stockpile=W.place(state,"stockpile",18)
+              assert(placed)
+              for _=1,5000 do W.step(state,0.1) end
+              probe.warehouse=stockpile.state=="complete"
+                  and W.summary(state).resources.stored.wood>=2
+              if probe.warehouse then
+                  local old=stockpile.stored.items.wood
+                  local bullets=r3.arrows
+                  local made=R3.craftArrows(state,stockpile.x)
+                  probe.stockCraft=made and stockpile.stored.items.wood==old-2
+                      and r3.arrows==bullets+6
+              end
+              local night=M.new(seed)
+              local nightState=R3.ensure(night,false)
+              night.elapsed=R3.NIGHT_START+0.1
+              R3.step(night,0.1,0)
+              local first=#nightState.enemies==0
+              night.elapsed=R3.DAY+R3.NIGHT_START+0.1
+              R3.step(night,0.1,0)
+              probe.secondNight=first and #nightState.enemies==4
+              frame:Destroy()
+              remote:Destroy()
+              probe.executed=true
+          end)
+          if not ok then probe.issue=tostring(err):sub(1,300) end
+          return H:JSONEncode({universeId=tostring(game.GameId),
+              placeId=tostring(game.PlaceId),version=game.PlaceVersion,
+              checks=checks,probe=probe})
+          '''
+          result=run_task("10769712413","90623742498445",
+              os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],lua,read_version=14)
+          print("ER_V14_GAMEPLAY_READBACK",json.dumps(result,sort_keys=True))
+          assert result["loadedVersion"]==14
+          assert all(result["checks"].values()),result["checks"]
+          assert all(result["probe"][key] for key in [
+              "executed","mounted","realSources","buildCosts","legacyPreserved",
+              "marked","warehouse","stockCraft","secondNight","protectedSave"]),result["probe"]
+          print("ER_V14_GAMEPLAY_READBACK_PASS")
+          PY
