@@ -3,11 +3,13 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
 
 local player = Players.LocalPlayer
 local Lane = require(script.Parent:WaitForChild("LaneController"))
 local Camera = require(script.Parent:WaitForChild("SideCamera"))
 local Menu = require(script.Parent:WaitForChild("SlotMenu"))
+local Loading = require(script.Parent:WaitForChild("WorldLoadingUI"))
 local slots = ReplicatedStorage:WaitForChild("Game"):WaitForChild("ER_WorldSlots")
 
 local function startDiagnostics()
@@ -45,10 +47,22 @@ local function startDiagnostics()
     end)
 end
 
-Menu.start(slots, function(result, options)
-    Camera.setWide(options.wide)
-    Lane.start(player)
-    Camera.start(player)
-    if options.debug then startDiagnostics() end
-    print("[EntreReinos] World loaded, seed " .. tostring(result.seed))
-end)
+local mode = player:GetAttribute("ER_ServerMode")
+if type(mode) ~= "string" then
+    player:GetAttributeChangedSignal("ER_ServerMode"):Wait()
+    mode = player:GetAttribute("ER_ServerMode")
+end
+if mode == "world" then
+    Loading.start(player, slots, function()
+        local savedOptions = TeleportService:GetTeleportSetting("ER_Options")
+        if type(savedOptions) ~= "table" then savedOptions = {wide = false, debug = true} end
+        Camera.setWide(savedOptions.wide == true)
+        Lane.start(player)
+        Camera.start(player)
+        if savedOptions.debug ~= false then startDiagnostics() end
+        print("[EntreReinos] Reserved world ready, seed ", player:GetAttribute("ER_Seed"))
+    end)
+else
+    -- A public server is lobby only: no camera/gameplay controller/terrain.
+    Menu.start(slots, function(_result, _options) end)
+end
