@@ -137,6 +137,10 @@ local function walk(npc: any, destX: number, dt: number): boolean
     local speed=Professions.get(npc.profession).moveSpeed
     local travel=math.min(math.abs(diff),speed*dt)
     npc.x+=if diff>0 then travel else -travel
+    -- Stable per-tick walking intent for client presentation: unlike
+    -- snapshot-distance / irregular network-interval estimates, this does
+    -- not alternate fast and slow merely because 1 or 2 ticks elapsed.
+    npc.motionX=(if diff>0 then 1 else -1)*travel/dt
     npc.fatigue=math.min(100,npc.fatigue+dt*0.03)
     return math.abs(destX-npc.x)<=NEAR
 end
@@ -184,6 +188,7 @@ function Engine.step(state: any, dt: number)
     dt=math.min(dt,0.25)
     state.elapsed+=dt
     for _,npc in ipairs(state.npcs) do
+        npc.motionX=0
         npc.hunger=math.min(100,npc.hunger+dt*0.045)
         if npc.hunger>70 and Inventory.count(npc.inventory,"food")>0 then
             if Inventory.take(npc.inventory,"food",1) then npc.hunger-=45 end
