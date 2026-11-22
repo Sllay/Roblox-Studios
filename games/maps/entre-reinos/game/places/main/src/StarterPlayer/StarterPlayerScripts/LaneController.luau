@@ -5,6 +5,8 @@
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Projection = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("InputProjection"))
+local Water = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WaterRules"))
+local SwimVisual = require(script.Parent:WaitForChild("R6SwimVisual"))
 local Controller = {}
 
 local active = false
@@ -15,6 +17,9 @@ local turn: AlignOrientation? = nil
 local swim: LinearVelocity? = nil
 local swimFiltered = Vector2.zero
 local lastSwimming = -1e9
+local lastStateRequest = -1e9
+local currentSeed: number? = nil
+local swimmingVisual=false
 local lastFacing = -math.pi / 2
 
 local function cleanCharacter()
@@ -23,6 +28,8 @@ local function cleanCharacter()
     turn = nil
     swim = nil
     swimFiltered = Vector2.zero
+    swimmingVisual=false
+    SwimVisual.setActive(false)
 end
 
 local function attachCharacter(character: Model)
@@ -37,6 +44,7 @@ local function attachCharacter(character: Model)
     end
     humanoid = h
     root = r
+    SwimVisual.attach(character)
     h.AutoRotate = false
     h.WalkSpeed = 13
 
@@ -88,9 +96,27 @@ local function update(dt: number)
     local v = swim
     if not h or not r or not o or not v or h.Health <= 0 then return end
     local x, y = readNativeInput(h)
-    local inWaterNow = h:GetState() == Enum.HumanoidStateType.Swimming
-    if inWaterNow then lastSwimming = os.clock() end
-    local swimming = inWaterNow or (os.clock() - lastSwimming < 0.22)
+    local now=os.clock()
+    local state=h:GetState()
+    local inWaterNow=state==Enum.HumanoidStateType.Swimming
+    if currentSeed==nil then
+        local id=game:GetService("Players").LocalPlayer:GetAttribute("ER_Seed")
+        if type(id)=="number" then currentSeed=id end
+    end
+    local volumeWet=currentSeed~=nil
+        and Water.submerged(currentSeed,r.Position.X,r.Position.Y,r.Position.Z)
+    if inWaterNow or volumeWet then lastSwimming=now end
+    local swimming=inWaterNow or volumeWet or (now-lastSwimming<0.18)
+    -- Humanoid state can transition to Freefall at voxel boundaries.
+    -- Request the real Roblox Swimming state only while actually submerged.
+    if volumeWet and not inWaterNow and now-lastStateRequest>0.55 then
+        lastStateRequest=now
+        h:ChangeState(Enum.HumanoidStateType.Swimming)
+    end
+    if swimmingVisual~=swimming then
+        swimmingVisual=swimming
+        SwimVisual.setActive(swimming)
+    end
     if swimming then
         -- Native joystick up/down becomes upward/downward water movement.
         -- A diagonal thumbstick gesture is a normalized diagonal X/Y swim.
@@ -138,7 +164,7 @@ end
 
 function Controller.mode(): string
     if not active then return "Menu" end
-    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Swimming then
+    if swimmingVisual then
         return "Swim"
     end
     return "Ground"
