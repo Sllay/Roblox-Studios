@@ -16,19 +16,26 @@ local function startDiagnostics()
     local gui = Instance.new("ScreenGui")
     gui.Name = "ER_PerformanceMetrics"
     gui.ResetOnSpawn = false
-    gui.IgnoreGuiInset = true
+    -- Respect the Roblox topbar and phone notch / CoreGui touch-safe area.
+    gui.IgnoreGuiInset = false
+    gui.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets
     gui.DisplayOrder = 6
     gui.Parent = player:WaitForChild("PlayerGui")
     local stats = Instance.new("TextLabel")
     stats.Name = "ClientFPSAndLane"
-    stats.Position = UDim2.fromOffset(12, 16)
-    stats.Size = UDim2.fromOffset(245, 48)
+    -- Right-aligned, beneath the native topbar, away from the mobile joystick.
+    stats.AnchorPoint = Vector2.new(1, 0)
+    stats.Position = UDim2.new(1, -12, 0, 10)
+    stats.Size = UDim2.fromOffset(246, 58)
     stats.TextSize = 12
     stats.Font = Enum.Font.Code
     stats.TextColor3 = Color3.new(1, 1, 1)
     stats.BackgroundColor3 = Color3.fromRGB(15, 24, 19)
-    stats.BackgroundTransparency = 0.3
+    stats.BackgroundTransparency = 0.12
+    stats.BorderSizePixel = 0
+    stats.TextWrapped = true
     stats.TextXAlignment = Enum.TextXAlignment.Left
+    stats.TextYAlignment = Enum.TextYAlignment.Center
     stats.Parent = gui
     local elapsed = 0
     local frames = 0
