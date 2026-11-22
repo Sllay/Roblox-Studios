@@ -138,3 +138,13 @@ Roteiro para novos agentes/modelos: docs/AGENT_HANDOFF.md.
 Protocolo de gates: docs/RUNNER_PROTOCOL.md.
 Status único da execução: docs/RUNNER_STATUS.json.
 Todos runners PLANEJADOS: não atribuir testes, commits de implementação ou publicação sem evidência.
+
+## Matriz de encerramento obrigatória (auditoria 22/11/2026)
+
+**Fonte executável de rastreabilidade:** `docs/FEATURE_COMPLETENESS_AUDIT.md`, ER-001…ER-058, verificada por `tests/test_entre_reinos_feature_completeness.py`. Cada requisito tem runner fixo, status e condição de aprovação. Essa matriz COMPLEMENTA os 9 runners sem substituí-los; a experiência só termina quando o usuário consegue executar o loop inteiro com controle real e save seguro.
+
+**Gaps de T1 explicitamente não fechados por código v14:** NPCs devem consumir estoque do galpão nas obras, destruição/salvage de estoque depositado, construção escolhida pelo jogador, castelo + 2 galpões de início, encenação completa do duque/prologo, morte/recovery e diferença visual/funcional das fontes/árvores. Tratar em camada F1/F2/F3 antes da T2; não aprovar apenas com CI.
+
+**Gaps que T2 TEM de resolver:** rotas/ponte, viagens/montaria, regiões e reinos vivos, profissões completas, economia/cadeias reais, evolução e relações NPCs, corrupção, portais, diplomacia, conquista solo, exércitos, campanha e save de longo prazo. Nenhum fica para T3 começar como módulo vazio.
+
+**Gaps de T3:** conteúdo extenso/variações, áudio/visuais/UI/UX finais, balanceamento, acessibilidade, monetização justa e opcional, perf/segurança, lançamento somente após teste cumulativo ER-001…058 e aprovação explícita do criador.
