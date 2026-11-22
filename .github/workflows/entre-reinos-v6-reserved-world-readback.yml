@@ -56,7 +56,7 @@ jobs:
               menuOpaque=sourceContains(client,"SlotMenu","overlay.BackgroundTransparency = 0"),
               loadingOpaque=sourceContains(client,"WorldLoadingUI","shade.BackgroundTransparency = 0"),
               loadingProgress=sourceContains(client,"WorldLoadingUI",'ER_LoadProgress'),
-              clientMode=sourceContains(client,"ClientBoot","mode == \"world\""),
+              clientMode=sourceContains(client,"ClientBoot","ER_ServerMode"),
               lane=sourceContains(client,"LaneController"),
               camera=sourceContains(client,"SideCamera"),
               start=sourceContains(workspace,"StartArea"),
