@@ -30,8 +30,10 @@ assert(not I.take(one,"stone",1))
 assert(not I.transfer(one,two,"wood",5))
 assert(I.transfer(one,two,"wood",3))
 assert(I.weight(one)==2 and I.weight(two)==6)
-assert(not I.transfer(one,two,"wood",1))
-assert(I.count(one,"wood")==1 and I.count(two,"wood")==3)
+assert(I.transfer(one,two,"wood",1)) -- exact remaining capacity is allowed
+assert(I.weight(two)==8)
+assert(not I.add(two,"food",1)) -- now full by mass
+assert(I.count(one,"wood")==0 and I.count(two,"wood")==4)
 assert(I.valid(one) and I.valid(two))
 assert(not I.valid({maxMass=1,items={wood=2}}))
 assert(not I.valid({maxMass=40,items={fake=1}}))
