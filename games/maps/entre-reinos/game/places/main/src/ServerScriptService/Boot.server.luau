@@ -10,6 +10,7 @@ local services = script.Parent:WaitForChild("Services")
 local Saves = require(services:WaitForChild("SaveSlotService"))
 local World = require(services:WaitForChild("WorldService"))
 local Characters = require(services:WaitForChild("CharacterService"))
+local LivingService = require(services:WaitForChild("LivingService"))
 local shared = ReplicatedStorage:WaitForChild("Game")
 local Profile = require(shared:WaitForChild("WorldProfile"))
 local Slots = require(shared:WaitForChild("SlotModel"))
@@ -202,7 +203,18 @@ local function startWorld(player: Player)
         return
     end
 
-    -- Simulation only starts after the world and R6 are both ready.
+    -- T1-R2 lives in this reserved server and in the SAME leased world record.
+    -- Do not proceed if the optional population schema is unknown/corrupt.
+    stage(player, "population", 0.96, "Carregando moradores e trabalhos...")
+    local livingInvoked, livingOk, livingError = pcall(LivingService.start, player, record)
+    if not livingInvoked or not livingOk then
+        local reason = if livingInvoked then livingError else "living_start_exception"
+        player:SetAttribute("ER_LoadError", reason or "living_start_failed")
+        stage(player, "failed", nil, "Falha ao carregar moradores; save preservado.")
+        warn("[EntreReinos][Living] Startup failed: ", livingError or livingOk)
+        return
+    end
+    -- Simulation only starts after terrain, R6 and living state are ready.
     player:SetAttribute("ER_WorldLoaded", true)
     stage(player, "ready", 1, "Mundo carregado")
     task.spawn(function()
@@ -346,6 +358,7 @@ Players.PlayerRemoving:Connect(function(player)
         local ok, reason = Saves.save(player, true)
         if not ok then warn("[EntreReinos][World] Exit save not confirmed: ", reason) end
     end
+    if worldServer then LivingService.stop(player) end
     if activePlayer == player then
         activePlayer = nil
         activeSlot = nil
@@ -360,6 +373,11 @@ game:BindToClose(function()
         end
     end
 end)
-if worldServer then Saves.startAutosave() end
+if worldServer then
+    Saves.setLivingProvider(function(player: Player)
+        return LivingService.snapshot(player)
+    end)
+    Saves.startAutosave()
+end
 print("[EntreReinos] Role=", if worldServer then "reserved-world" else "lobby",
     " Place=", game.PlaceId, " Rev=", game.PlaceVersion)
