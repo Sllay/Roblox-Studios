@@ -1,28 +1,14 @@
 --!strict
--- T1-R1: physics-driven XY lane, context actions for keyboard/gamepad/touch.
--- The server creates a PlaneConstraint with Z-normal; no per-frame CFrame teleport.
+-- T1-R1: use Roblox's ORIGINAL joystick, jump button, keyboard and gamepad.
+-- Do not bind touch buttons, disable PlayerModule, or override native jump.
+-- Only project the standard movement vector onto our physics-driven XY lane.
 local RunService = game:GetService("RunService")
-local ContextActionService = game:GetService("ContextActionService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Projection = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("InputProjection"))
 local Controller = {}
 
-local actions = {
-    ER_Left = {Enum.KeyCode.A, Enum.KeyCode.Left, Enum.KeyCode.DPadLeft},
-    ER_Right = {Enum.KeyCode.D, Enum.KeyCode.Right, Enum.KeyCode.DPadRight},
-    ER_Up = {Enum.KeyCode.W, Enum.KeyCode.Up, Enum.KeyCode.DPadUp},
-    ER_Down = {Enum.KeyCode.S, Enum.KeyCode.Down, Enum.KeyCode.DPadDown},
-    ER_Jump = {Enum.KeyCode.Space, Enum.KeyCode.ButtonA},
-}
-local labels = {ER_Left = "◀", ER_Right = "▶", ER_Up = "▲", ER_Down = "▼", ER_Jump = "Pular"}
-local positions = {
-    ER_Left = UDim2.new(0, 65, 1, -112),
-    ER_Right = UDim2.new(0, 155, 1, -112),
-    ER_Up = UDim2.new(1, -176, 1, -196),
-    ER_Down = UDim2.new(1, -176, 1, -106),
-    ER_Jump = UDim2.new(1, -82, 1, -118),
-}
-local pressed: {[string]: boolean} = {}
 local active = false
-local playerRef: Player? = nil
+local controls: any = nil
 local root: BasePart? = nil
 local humanoid: Humanoid? = nil
 local turn: AlignOrientation? = nil
@@ -44,8 +30,8 @@ local function attachCharacter(character: Model)
     local h = character:WaitForChild("Humanoid", 10)
     local r = character:WaitForChild("HumanoidRootPart", 10)
     if not h or not h:IsA("Humanoid") or not r or not r:IsA("BasePart") then return end
-    local laneAttachment = r:WaitForChild("ER_LaneAttachment", 10)
-    if not laneAttachment or not laneAttachment:IsA("Attachment") then
+    local attachment = r:WaitForChild("ER_LaneAttachment", 10)
+    if not attachment or not attachment:IsA("Attachment") then
         warn("[EntreReinos] Missing server-owned XY lane constraint")
         return
     end
@@ -57,7 +43,7 @@ local function attachCharacter(character: Model)
     local orientation = Instance.new("AlignOrientation")
     orientation.Name = "ER_TurnSmooth"
     orientation.Mode = Enum.OrientationAlignmentMode.OneAttachment
-    orientation.Attachment0 = laneAttachment
+    orientation.Attachment0 = attachment
     orientation.RigidityEnabled = false
     orientation.Responsiveness = 20
     orientation.MaxTorque = 100000
@@ -67,7 +53,7 @@ local function attachCharacter(character: Model)
 
     local velocity = Instance.new("LinearVelocity")
     velocity.Name = "ER_SwimXY"
-    velocity.Attachment0 = laneAttachment
+    velocity.Attachment0 = attachment
     velocity.RelativeTo = Enum.ActuatorRelativeTo.World
     velocity.VelocityConstraintMode = Enum.VelocityConstraintMode.Plane
     velocity.PrimaryTangentAxis = Vector3.xAxis
@@ -80,25 +66,19 @@ local function attachCharacter(character: Model)
     swim = velocity
 end
 
-local function handleAction(name: string, input: Enum.UserInputState, _inputObject: InputObject)
-    if not active then return Enum.ContextActionResult.Pass end
-    if input == Enum.UserInputState.Begin then
-        pressed[name] = true
-        if name == "ER_Jump" and humanoid then
-            humanoid.Jump = true
+local function readNativeInput(h: Humanoid): (number, number)
+    if controls and type(controls.GetMoveVector) == "function" then
+        local ok, vector = pcall(function()
+            return controls:GetMoveVector()
+        end)
+        if ok and typeof(vector) == "Vector3" then
+            return Projection.toLane(vector.X, vector.Z)
         end
-    elseif input == Enum.UserInputState.End or input == Enum.UserInputState.Cancel then
-        pressed[name] = false
     end
-    return Enum.ContextActionResult.Sink
-end
-
-local function startBindings()
-    for name, keys in pairs(actions) do
-        ContextActionService:BindActionAtPriority(name, handleAction, true, 2200, table.unpack(keys))
-        ContextActionService:SetTitle(name, labels[name])
-        ContextActionService:SetPosition(name, positions[name])
-    end
+    -- Robust fallback for changed/missing PlayerModule implementations:
+    -- the Roblox default controller still drives Humanoid.MoveDirection.
+    local motion = h.MoveDirection
+    return Projection.toLane(motion.X, motion.Z)
 end
 
 local function update(dt: number)
@@ -107,15 +87,14 @@ local function update(dt: number)
     local o = turn
     local v = swim
     if not h or not r or not o or not v or h.Health <= 0 then return end
-    local x = (if pressed.ER_Right then 1 else 0) - (if pressed.ER_Left then 1 else 0)
-    local y = (if pressed.ER_Up then 1 else 0) - (if pressed.ER_Down then 1 else 0)
+    local x, y = readNativeInput(h)
     local inWaterNow = h:GetState() == Enum.HumanoidStateType.Swimming
     if inWaterNow then lastSwimming = os.clock() end
     local swimming = inWaterNow or (os.clock() - lastSwimming < 0.22)
     if swimming then
-        local raw = Vector2.new(x, y)
-        if raw.Magnitude > 1 then raw = raw.Unit end
-        local target = raw * 12
+        -- Native joystick up/down becomes upward/downward water movement.
+        -- A diagonal thumbstick gesture is a normalized diagonal X/Y swim.
+        local target = Vector2.new(x, y) * 12
         swimFiltered = swimFiltered:Lerp(target, 1 - math.exp(-8 * math.min(dt, 0.1)))
         v.PlaneVelocity = swimFiltered
         v.Enabled = true
@@ -123,43 +102,45 @@ local function update(dt: number)
     else
         v.Enabled = false
         swimFiltered = Vector2.zero
+        -- On land, X moves and Y only turns the character toward/away from
+        -- the 3D background. Never allow an independent Z walking direction.
         h:Move(Vector3.new(x, 0, 0), false)
     end
-    if x > 0 then
-        lastFacing = -math.pi / 2
-    elseif x < 0 then
-        lastFacing = math.pi / 2
-    elseif not swimming and y > 0 then
-        lastFacing = 0
-    elseif not swimming and y < 0 then
-        lastFacing = math.pi
-    end
+    lastFacing = Projection.facing(x, y, swimming, lastFacing)
     o.CFrame = CFrame.Angles(0, lastFacing, 0)
+    -- Native Roblox TouchJump/spacebar/gamepad jump are handled by PlayerModule.
+    -- We deliberately do not write Humanoid.Jump here.
 end
 
 function Controller.start(player: Player)
     if active then return end
     active = true
-    playerRef = player
     local scripts = player:WaitForChild("PlayerScripts")
     local playerModule = scripts:WaitForChild("PlayerModule", 8)
     if playerModule then
-        local success, module = pcall(require, playerModule)
-        if success and module and type(module.GetControls) == "function" then
-            module:GetControls():Disable()
+        local ok, module = pcall(require, playerModule)
+        if ok and module and type(module.GetControls) == "function" then
+            controls = module:GetControls()
+            -- NEVER call controls:Disable(): that hides Roblox joystick/jump.
+            -- The native control module remains enabled.
         else
-            warn("[EntreReinos] Default PlayerModule could not be disabled")
+            warn("[EntreReinos] PlayerModule unavailable; using Humanoid.MoveDirection")
         end
+    else
+        warn("[EntreReinos] PlayerModule missing; using native Humanoid.MoveDirection")
     end
-    startBindings()
     player.CharacterAdded:Connect(attachCharacter)
     if player.Character then task.spawn(attachCharacter, player.Character) end
+    -- PlayerModule's normal control step runs at Input priority. Project its
+    -- analog movement one step later, while retaining its jump handling.
     RunService:BindToRenderStep("ER_Lane", Enum.RenderPriority.Input.Value + 1, update)
 end
 
 function Controller.mode(): string
     if not active then return "Menu" end
-    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Swimming then return "Swim" end
+    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Swimming then
+        return "Swim"
+    end
     return "Ground"
 end
 
