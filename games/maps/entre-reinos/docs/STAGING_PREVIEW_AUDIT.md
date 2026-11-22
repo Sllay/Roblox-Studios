@@ -41,3 +41,10 @@ A checagem completa de somente leitura foi executada em https://github.com/Sllay
 - Permitida a declaração `fullPlaceBuildAuthoritative: true` **somente para este Place de novo staging**, com substituição intencional da cena padrão. Nenhuma autorização de substituição no Black Island nem em produção.
 - Snapshot estrutural serve de pré-condição de Scene Sync, **não é backup binário completo**. Versão anterior permanece no histórico Roblox conforme política da plataforma, sem rollback automaticamente testado.
 - Próximo passo: `publish.yml` manual. Este arquivo não comprova publicação. O workflow precisa executar `tools/deploy.py publish --execute`, consultar a operação e confirmar `isPublished=true`.
+
+## Resultado efetivo de publicação e prova de reabertura
+
+- `published=true` confirmado em https://github.com/Sllay/Roblox-Studios/actions/runs/44975639993; retorno de publicação `revision 2`, Place ID corresponde ao alvo.
+- Readback independente de versão 2 e 11/11 scripts/componentes Rojo presentes: https://github.com/Sllay/Roblox-Studios/actions/runs/44975725822.
+- **Não** publicar produção, **não** declarar R6/avatar/água funcional antes do teste do dono, **não** antecipar T1-R2.
+- A primeira checagem de movimento deve inspecionar R6 e possível mensagem de Avatar Settings. Sem a opção correta, o servidor rejeita iniciar um mundo, mesmo com scripts publicados.

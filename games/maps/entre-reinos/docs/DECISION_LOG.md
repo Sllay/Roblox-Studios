@@ -42,3 +42,9 @@ Estados: FIXADO, PROPOSTA, FUTURO, ABERTO. Criador tem prioridade sobre sugestõ
 - Cena remota inventariada em 44975381075, total 179 instâncias padrão, baseline 0b52f3641643afdc4d547d83339161f79b57ed38dfe03eb0dc67ce0aeffa96cd, sem conteúdo de outro jogo.
 - Aprovação de substituição da cena **padrão desse Place de testes** via manifesto `fullPlaceBuildAuthoritative` após inventário; `publish.yml` mantém confirmação manual e revisão de sync; não autoriza mexer no Black Island.
 - T1-R1 continua `in_progress` até usuário executar testes no Roblox/mobile e corrigir defeitos. Desenvolvimento T1-R2 aguarda aceite.
+
+## 21/11/2026 — Staging T1-R1 publicado para playtest do criador
+- Confirmado `SUCCESS: Place 90623742498445, revision 2` do upload via API do workflow oficial https://github.com/Sllay/Roblox-Studios/actions/runs/44975639993.
+- Leitura independente da versão salva retornou v2 e todos os 11 nós de T1-R1, https://github.com/Sllay/Roblox-Studios/actions/runs/44975725822.
+- Baseline da cena padrão anterior v1 foi capturado e auditado, sem alterações no Black Island ou produção.
+- O T1-R1 **não** está validado; testagem real de física/água/câmera/R6 e seis DataStore slots no mobile pendente.

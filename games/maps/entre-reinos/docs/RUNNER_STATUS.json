@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-21",
-  "note": "PLANEJAMENTO; nenhuma implementacao de runner validada ou publicada.",
+  "note": "T1-R1 possui código real e teste antecipado publicado em staging (revision 2); automatizado PASS, runtime/mobile pendente; T1-R2 ainda planejado.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -19,11 +19,15 @@
       "title": "Fundacao do jogo: nucleo robusto",
       "status": "in_progress",
       "stagingPublication": {
-        "status": "not_published",
-        "commit": null,
-        "placeId": null,
-        "universeId": null,
-        "runUrl": null
+        "status": "preview_published",
+        "previewRunner": "T1-R1",
+        "isSeasonFinal": false,
+        "commit": "bc45d584c547d2e397989b7e9f796d4f7b2a0863",
+        "placeId": "90623742498445",
+        "universeId": "10769712413",
+        "revisionId": 2,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975639993",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975725822"
       },
       "userReview": "not_requested",
       "refinementCycles": [],
@@ -40,13 +44,22 @@
             "unit": "pass",
             "rojo": "pass",
             "runtime": "not_run",
-            "mobile": "not_run"
+            "mobile": "awaiting_creator_test"
           },
           "blockers": [
-            "Roblox Avatar Settings R6 still not independently verified; startup rejects R15",
-            "No real Roblox runtime/mobile tests of water, PlaneConstraint, camera, six DataStore slots",
-            "Staging upload requires manual approved workflow; not yet published"
-          ]
+            "Aguarda teste real no cliente Roblox: R6, criacao de world com Terrain, piscina de agua, camera e controles X/Y/Z",
+            "Aguarda teste real mobile de FPS e persistência dos seis DataStore slots após reconexao",
+            "R6 Avatar Settings da experiência ainda não verificada independentemente"
+          ],
+          "previewPublication": {
+            "status": "published_v2",
+            "placeId": "90623742498445",
+            "universeId": "10769712413",
+            "revision": 2,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975639993",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975725822",
+            "verifiedObjects": 11
+          }
         },
         {
           "id": "T1-R2",
@@ -80,7 +93,8 @@
           },
           "blockers": []
         }
-      ]
+      ],
+      "previewUserReview": "awaiting_creator_mobile_test"
     },
     {
       "id": "T2",
@@ -212,7 +226,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R1_in_progress",
+  "programStage": "T1_R1_staging_preview_published_awaiting_mobile",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -238,13 +252,18 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "commit": "ce50d163e8978623fa944da27b4b41cc6e58c072",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44965276453",
-    "conclusion": "success",
-    "scope": "GitHub Actions automated tests, 150 Python unit tests, Luau compiler + strict analysis + VM assertions and Rojo builds; not Roblox Studio/live gameplay",
+    "codeCommit": "ce50d163e8978623fa944da27b4b41cc6e58c072",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975531400",
+    "ciConclusion": "success",
+    "releaseCommit": "bc45d584c547d2e397989b7e9f796d4f7b2a0863",
+    "publishedVersion": 2,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975639993",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975725822",
+    "robloxObjectsPresent": 11,
+    "scope": "CI + official Open Cloud publish + independent saved tree read; no live gameplay/mobile test",
     "runtime": "not_run",
-    "mobile": "not_run",
-    "staging": "not_published"
+    "mobile": "awaiting_creator",
+    "staging": "published_v2"
   },
   "remoteIdentity": {
     "status": "verified",

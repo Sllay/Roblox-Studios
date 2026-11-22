@@ -42,3 +42,9 @@ Ambiente: **Universe 10769712413, Place 90623742498445**, somente após confirma
 ## Critério de avaliação
 
 Uma falha crítica de save, spawn, R6 ou nado bloqueia `T1-R1 validated`, mesmo com CI verde. Enviar comportamento observado em cada item que falhou; para bugs de movimento descrever se foi andando, parado, pulando ou nadando, e qual direção. Não validar o runner automaticamente só por publicar.
+
+## Teste antecipado oficialmente publicado
+
+- Place confirmado no Roblox revisão 2: https://www.roblox.com/games/90623742498445
+- Se surgir `configure_R6_avatar_in_experience_settings`, não excluir o mundo: corrigir Avatar Settings R6 para esta experiência. Fonte: https://create.roblox.com/docs/studio/avatar-settings.
+- Readback remoto do código foi validado; isso NÃO garante que gameplay/render e DataStore passem no celular.

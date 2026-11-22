@@ -115,3 +115,12 @@ Arquivos relevantes:
 Diagnóstico do bug já corrigido: WorldService estava sob `src/game/places/main/src/...` duplicado e Boot não o carregaria. Corrigido e protegido por unittest. Gerador possui limites de região x, readback de voxels sólidos/líquidos/materiais e cancela geração se a região tiver Terrain preexistente.
 
 **NÃO declarar validated, NÃO iniciar T1-R2:** runtime Roblox e mobile nunca foram executados neste turno, Avatar R6 e IDs staging não verificados. Próximo checkpoint obrigatório é teste real do servidor (criar/abrir/excluir 6 slots, locks, queda/reconexão, Terrain + água e input Z) e correções. Status oficial docs/RUNNER_STATUS.json.
+
+## Staging de teste PUBLICADO — 21/11/2026, revisão Roblox 2
+
+- Oficial publish.yml `https://github.com/Sllay/Roblox-Studios/actions/runs/44975639993` concluiu SUCCESS Place 90623742498445 revision 2.
+- Independent Open Cloud Luau readback `https://github.com/Sllay/Roblox-Studios/actions/runs/44975725822` carregou versão 2 e encontrou 11/11 scripts/módulos/StartArea.
+- Original code commit do preview: `bc45d584c547d2e397989b7e9f796d4f7b2a0863`; arquivo de workflow de readback criado em `def96b47a05bafde2afed593808ed9c34e2108d2`. Consultar HEAD atual sempre.
+- Marcado somente **preview publicado para teste**, NÃO runner validado. T1-R1 runtime/mobile pendente. No próximo chat, pedir relato de R6, Terrain, travessia e 6 saves; corrigir bug de causa raiz e testar.
+- Plano da validação: `docs/TEST_PLAN_T1_R1_STAGING.md`; não confundir com publicação final da temporada depois de T1-R3.
+- Plano físico do personagem: normal do PlaneConstraint corresponde ao eixo **X** do Attachment0, transformado para Z pela rotação Y de pi/2; consistente com corredor X/Y. Fonte Roblox oficial: https://create.roblox.com/docs/physics/constraints/plane.
