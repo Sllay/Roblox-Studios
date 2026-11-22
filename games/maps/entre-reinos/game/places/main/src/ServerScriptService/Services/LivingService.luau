@@ -325,21 +325,72 @@ end
 local function createSiteVisual(site: any)
     if not visualization then return end
     local pos=Profile.sample(state.seed,site.x,0)
-    local p=makePart(visualization,"Resource_"..site.id,
-        Vector3.new(2.4,1.6,2.4),
-        if site.item=="wood" then Color3.fromRGB(92,68,46)
-        else if site.item=="stone" then Color3.fromRGB(111,113,120)
-        else if site.item=="iron" then Color3.fromRGB(90,100,121)
-        else Color3.fromRGB(94,143,83))
-    p.Position=Vector3.new(site.x,pos.height+0.8,0)
-    p.Shape=Enum.PartType.Ball
-    p:SetAttribute("ResourceType",site.item)
-    p:SetAttribute("SourceId",site.id)
-    local gui,label=textTag(p,site.item.." | "..tostring(site.remaining))
+    local anchor: BasePart
+    if site.item=="wood" then
+        -- Distinct harvestable tree; background trees remain decoration.
+        local tree=Instance.new("Model")
+        tree.Name="HarvestableTree_"..tostring(site.id)
+        tree:SetAttribute("ER_Harvestable",true)
+        tree:SetAttribute("ER_SourceId",site.id)
+        local trunk=makePart(tree,"Trunk",
+            Vector3.new(2.1,7.2,2.1),Color3.fromRGB(112,75,47))
+        trunk.Position=Vector3.new(site.x,pos.height+3.6,-6)
+        for k=1,3 do
+            local leaves=makePart(tree,"LeafCrown",
+                Vector3.new(7.5-k*1.1,3.8,7.5-k*1.1),
+                Color3.fromRGB(63,116,77))
+            leaves.Shape=Enum.PartType.Ball
+            leaves.Position=Vector3.new(site.x,pos.height+7.1+k*1.8,-6)
+        end
+        tree.Parent=visualization
+        anchor=trunk
+        local high=Instance.new("Highlight")
+        high.Name="MarkedForCarpenter"
+        high.Adornee=tree
+        high.FillColor=Color3.fromRGB(230,189,85)
+        high.OutlineColor=Color3.fromRGB(255,222,120)
+        high.FillTransparency=0.85
+        high.OutlineTransparency=0.1
+        high.Enabled=site.marked==true and site.remaining>0
+        high.Parent=tree
+        local prompt=Instance.new("ProximityPrompt")
+        prompt.Name="MarkHarvest"
+        prompt.ActionText="Marcar corte"
+        prompt.ObjectText="Árvore · madeira"
+        prompt.MaxActivationDistance=13
+        prompt.RequiresLineOfSight=false
+        prompt.HoldDuration=0.35
+        prompt.Parent=trunk
+        prompt.Triggered:Connect(function(player: Player)
+            if owner~=player or not state or site.remaining<=0
+                or player:GetAttribute("ER_WorldLoaded")~=true then return end
+            local char=player.Character
+            local root=if char then char:FindFirstChild("HumanoidRootPart") else nil
+            if not root or not root:IsA("BasePart")
+                or (root.Position-trunk.Position).Magnitude>16 then return end
+            site.marked=not (site.marked==true)
+            high.Enabled=site.marked and site.remaining>0
+            prompt.ActionText=if site.marked then "Desmarcar corte" else "Marcar corte"
+        end)
+    else
+        -- Each resource has its own recognizable shape and palette.
+        local color=if site.item=="stone" then Color3.fromRGB(126,131,130)
+            else if site.item=="iron" then Color3.fromRGB(97,116,132)
+            else Color3.fromRGB(96,151,88)
+        local block=makePart(visualization,"Resource_"..site.id,
+            if site.item=="food" then Vector3.new(3.7,2.6,3.7)
+            else Vector3.new(3.8,3,3.4),color)
+        block.Shape=if site.item=="food" then Enum.PartType.Ball else Enum.PartType.Block
+        block.Position=Vector3.new(site.x,pos.height+1.4,-4)
+        anchor=block
+    end
+    anchor:SetAttribute("ResourceType",site.item)
+    anchor:SetAttribute("SourceId",site.id)
+    local gui,caption=textTag(anchor,site.item.." | "..tostring(site.remaining))
     gui.MaxDistance=23
-    gui.Size=UDim2.fromOffset(110,24)
+    gui.Size=UDim2.fromOffset(124,26)
+    caption.Name="Remaining"
     siteDisplays[site.id]=gui
-    label.Name="Remaining"
 end
 
 local function syncR3Hud(player: Player)
@@ -367,7 +418,29 @@ local function draw()
         local g=siteDisplays[site.id]
         local info=if g then g:FindFirstChild("Remaining") else nil
         if info and info:IsA("TextLabel") then
-            info.Text=site.item.." | "..tostring(site.remaining)
+            info.Text=if site.item=="wood" then
+                "MADEIRA "..tostring(site.remaining)
+                    ..(if site.marked then " · CORTE MARCADO" else "")
+                else site.item.." | "..tostring(site.remaining)
+        end
+        if site.item=="wood" and visualization then
+            local tree=visualization:FindFirstChild("HarvestableTree_"..tostring(site.id))
+            if tree and tree:IsA("Model") then
+                local high=tree:FindFirstChild("MarkedForCarpenter")
+                if high and high:IsA("Highlight") then
+                    high.Enabled=site.marked==true and site.remaining>0
+                end
+                -- A depleted tree visibly disappears; no visual fake stock.
+                local prior=tree:GetAttribute("ER_Depleted")
+                if prior~=(site.remaining<=0) then
+                    tree:SetAttribute("ER_Depleted",site.remaining<=0)
+                    for _,part in ipairs(tree:GetChildren()) do
+                        if part:IsA("BasePart") and part.Name~="Trunk" then
+                            part.Transparency=if site.remaining<=0 then 1 else 0
+                        end
+                    end
+                end
+            end
         end
     end
 end
