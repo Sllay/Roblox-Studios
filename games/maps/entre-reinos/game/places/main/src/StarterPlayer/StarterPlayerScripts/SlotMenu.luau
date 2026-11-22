@@ -210,7 +210,10 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             label.TextXAlignment = Enum.TextXAlignment.Left
             if summary.exists then
                 label.Text = "Mundo " .. tostring(index) .. "  •  Dia " .. tostring(summary.worldDay or 1)
-                if activeSlot == index then label.Text ..= "  •  Sessão ativa" end
+                if type(summary.seed) == "number" then
+                    label.Text ..= "  •  Seed " .. tostring(summary.seed)
+                end
+                if activeSlot == index then label.Text ..= "  •  Ativo" end
             elseif summary.corrupt then
                 label.Text = "Mundo " .. tostring(index) .. "  •  Dados incompatíveis"
             else
