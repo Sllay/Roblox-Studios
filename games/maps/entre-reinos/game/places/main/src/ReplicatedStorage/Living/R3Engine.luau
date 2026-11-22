@@ -81,6 +81,11 @@ function R3.drop(state: any,x: number,value: number): (boolean, any)
     local d=state.r3
     if not finite(x) or not finite(value) or value%1~=0 or value<1 or value>d.wallet
         or math.abs(x)>120 then return false,"invalid_coin_drop" end
+    if #d.drops>=R3.MAX_DROPS then
+        for i=#d.drops,1,-1 do
+            if d.drops[i].claimed then table.remove(d.drops,i) end
+        end
+    end
     if #d.drops>=R3.MAX_DROPS then return false,"too_many_drops" end
     d.wallet-=value
     local drop=makeDrop(d,x,value,"player_drop")
@@ -163,7 +168,11 @@ function R3.hit(state: any,x: number,y: number,direction: number,
     for i,e in ipairs(d.enemies) do
         local delta=e.x-x
         local dist=math.abs(delta)
-        if delta*direction>= -0.5 and dist<=range and dist<shortest then
+        local ground=World.sample(state.seed,e.x,0).height
+        -- Server validates vertical proximity too; a swimmer below the
+        -- riverbed must not slash a monster on an unrelated height layer.
+        if delta*direction>= -0.5 and dist<=range and dist<shortest
+            and math.abs(y-(ground+3.4))<=8 then
             nearest=i
             shortest=dist
         end
@@ -229,9 +238,16 @@ function R3.command(state: any,command: string): (boolean, any)
         d.raidWarning="A cidade agora depende de suas decisões."
         return true,stipend
     elseif command=="training" and stage=="guard" then
-        d.prologue.stage="crisis"
-        R3.spawnWave(state,2)
-        return true,"crisis"
+        -- Scripted infection, NEVER a random newbie-save infection. The
+        -- infected duke is a distinct real target, defeated by player hits
+        -- before the two-front invasion begins.
+        d.prologue.stage="duke_fight"
+        table.insert(d.enemies,{id=d.nextEnemyId,x=18,hp=64,side=1,
+            loot=0,attackClock=0,typeId="infected_duke"})
+        d.nextEnemyId+=1
+        d.raidActive=true
+        d.raidWarning="O duque foi infectado! Derrote-o e proteja os guardas."
+        return true,"duke_fight"
     end
     return false,"action_unavailable"
 end
@@ -353,7 +369,10 @@ function R3.step(state: any,dt: number,playerX: number): number
         d.raidActive=false
         d.stats.repelled+=1
         d.raidWarning="A invasão terminou. As obras podem continuar."
-        if d.prologue.stage=="crisis" then
+        if d.prologue.stage=="duke_fight" then
+            d.prologue.stage="crisis"
+            R3.spawnWave(state,2)
+        elseif d.prologue.stage=="crisis" then
             d.prologue.stage="evacuation"
             d.raidWarning="Evacue os moradores para o último anel."
         else
