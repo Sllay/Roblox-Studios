@@ -73,6 +73,14 @@ assert(equipped and npcId==1)
 assert(fresh.sites[1].remaining==woodAfterTrade-3)
 assert(R3.arm(fresh,1,"bow")==false)
 assert(R3.arm(fresh,999,"spear")==false)
+local timber=fresh.sites[1]
+local timberBefore=timber.remaining
+assert(R3.craftArrows(fresh,0)==false,"do not conjure arrows from distant timber")
+assert(R3.craftArrows(fresh,timber.x))
+assert(timber.remaining==timberBefore-2 and d.arrows==18)
+for _=1,2 do assert(R3.craftArrows(fresh,timber.x)) end
+assert(d.arrows==30 and R3.craftArrows(fresh,timber.x)==false,
+    "finite ammo capacity blocks excess inventory")
 
 -- Wall exists as a true collision gate in the 2.5D raid lane.
 local blocked=Living.new(seed)
