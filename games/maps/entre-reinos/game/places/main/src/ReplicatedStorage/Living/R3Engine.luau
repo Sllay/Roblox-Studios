@@ -63,6 +63,13 @@ local function ledger(d: any,kind: string,value: number,reference: string)
 end
 
 local function makeDrop(d: any,x: number,value: number,reason: string): any
+    -- Reap claimed items, while never recycling their unique IDs. Double
+    -- pickup remains impossible even after old tombstones are pruned.
+    if #d.drops>=R3.MAX_DROPS then
+        for i=#d.drops,1,-1 do
+            if d.drops[i].claimed then table.remove(d.drops,i) end
+        end
+    end
     if value<=0 or #d.drops>=R3.MAX_DROPS then return nil end
     local drop={id=d.nextDropId,x=x,value=value,claimed=false,reason=reason}
     d.nextDropId+=1
@@ -79,6 +86,27 @@ function R3.drop(state: any,x: number,value: number): (boolean, any)
     local drop=makeDrop(d,x,value,"player_drop")
     ledger(d,"drop",-value,tostring(drop.id))
     return true,drop.id
+end
+
+function R3.trade(state: any,item: string,x: number): (boolean, any)
+    -- Small local exchange backed by a finite village stock AND the
+    -- persisted ducal treasury; no infinite coins from trees or kills.
+    if not finite(x) or math.abs(x)>24 then return false,"too_far_from_market" end
+    local price=if item=="wood" then 1 else if item=="stone" then 2
+        else if item=="iron" then 3 else if item=="food" then 1 else 0
+    if price==0 then return false,"unknown_trade_item" end
+    local d=state.r3
+    if d.treasury<price then return false,"treasury_empty" end
+    for _,site in ipairs(state.sites) do
+        if site.item==item and site.remaining>=1 then
+            site.remaining-=1
+            d.treasury-=price
+            d.wallet+=price
+            ledger(d,"trade_income",price,item)
+            return true,price
+        end
+    end
+    return false,"resource_unavailable"
 end
 
 function R3.pickup(state: any,id: any,x: number): (boolean, any)
@@ -300,6 +328,11 @@ function R3.step(state: any,dt: number,playerX: number): number
             if delta<dist then nearest=e; dist=delta end
         end
         npc.underAttack=nearest~=nil and dist<12
+        if npc.underAttack and nearest and npc.defense==nil then
+            local away=if npc.x>=nearest.x then 1 else -1
+            npc.x=math.clamp(npc.x+away*5*dt,-116,116)
+            npc.motionX=away*5
+        end
         if nearest then
             if npc.defense=="bow" and (npc.arrows or 0)>0 and dist<30
                 and (npc.defenseClock or 0)<=0 then
