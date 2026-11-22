@@ -55,7 +55,16 @@ local function displayError(value: any): string
         character_changed = "O personagem reapareceu durante a entrada. Tente entrar novamente.",
         r6_not_ready = "A conversão para R6 não terminou. Tente novamente.",
         terrain_activation_exception = "Falha na inicialização do terreno. Saia do servidor e entre novamente, sem excluir o save.",
-        world_needs_new_server = "Este servidor não concluiu a geração. Feche a partida e entre novamente, sem excluir o save.",
+        world_needs_new_server = "A geração não terminou neste servidor.",
+        terrain_incomplete = "O terreno não terminou de carregar neste servidor.",
+        terrain_read_failed = "Falha na leitura inicial do Terrain.",
+        terrain_readback_failed = "Falha ao verificar o Terrain após a escrita.",
+        terrain_readback_diff = "O motor retornou voxels diferentes dos gerados.",
+        terrain_material_readback_diff = "O material dos voxels não corresponde ao esperado.",
+        terrain_verify_missing_channels = "Água ou terreno não apareceram na verificação.",
+        world_decoration_requires_new_server = "Falha na decoração do mundo após gerar o Terrain.",
+        terrain_activation_exception = "O motor interrompeu a geração do Terrain.",
+        session_conflict = "A sessão do save foi modificada por outra operação.",
         server_operation_failed = "O servidor encontrou uma falha ao iniciar. O save continua preservado.",
         character_setup_exception = "Falha ao preparar o personagem. Tente o mesmo mundo novamente.",
         request_busy = "O mundo ainda está carregando. Aguarde e tente novamente.",
@@ -148,8 +157,14 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             if type(answer.stage) == "string" then
                 description ..= " (etapa: " .. answer.stage .. ")"
             end
+            if type(answer.terrainPhase) == "string" then
+                description ..= " [geração: " .. answer.terrainPhase .. "]"
+            end
+            if answer.retryInNewServer then
+                description ..= " | Saia do servidor. Não exclua o save."
+            end
             status.Text = description
-            return nil, reason
+            return nil, reason, answer
         end
         status.Text = ""
         return answer, nil
@@ -206,17 +221,13 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
                 if summary.corrupt or busy then return end
                 selected = index
                 local action = if summary.exists then "open" else "create"
-                local answer, failure = request(action, index)
-                if not answer and (failure == "server_operation_failed"
-                    or failure == "lane_setup_exception"
-                    or failure == "lane_setup_failed"
-                    or failure == "character_not_ready"
-                    or failure == "character_changed"
-                    or failure == "r6_not_ready"
-                    or failure == "transport_failed"
+                local answer, failure, details = request(action, index)
+                local recoverCharacter = details and details.recoverable == true
+                    and (details.stage == "character" or details.stage == "lane")
+                if not answer and (recoverCharacter or failure == "transport_failed"
                     or failure == "world_already_active") then
-                    -- The server may already have persisted and activated this SAME slot.
-                    -- Recover it without creating/deleting anything or rerunning Terrain.
+                    -- Resume only a potentially ready session. Never overwrite a
+                    -- Terrain failure with "world_needs_new_server".
                     task.wait(0.15)
                     answer = request("resume", index)
                 end

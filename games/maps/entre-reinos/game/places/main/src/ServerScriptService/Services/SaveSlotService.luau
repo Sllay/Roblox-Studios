@@ -248,28 +248,47 @@ function SaveSlotService.startAutosave()
 end
 
 function SaveSlotService.abortActivation(player: Player): (boolean, string?)
-    -- Release a lease when Terrain generation fails, WITHOUT saving the menu spawn
-    -- as the location of the player's new world.
+    -- Release ONLY the lease, preserving the world seed and the last good position.
+    -- A transient datastore throttle cannot permanently trap an in-memory session.
     local s = sessions[player]
-    if not s or s.busy or s.pending then return false, "session_busy_or_missing" end
+    if not s then return true, nil end
+    if s.busy or s.pending then return false, "session_busy_or_missing" end
     s.busy = true
-    local success, result = pcall(function()
-        return store:UpdateAsync(Slots.key(player.UserId, s.index), function(old)
-            if not Slots.validWorld(old) or not old.lock or old.lock.token ~= s.token then
-                return nil
-            end
-            local unlocked = cloneRecord(old)
-            unlocked.lock = nil
-            return unlocked
+    local lastError = "datastore_unavailable"
+    for attempt = 1, 3 do
+        local success, result = pcall(function()
+            return store:UpdateAsync(Slots.key(player.UserId, s.index), function(old)
+                if not Slots.validWorld(old) then return nil end
+                if old.revision ~= s.data.revision
+                    or old.lastWriteId ~= s.data.lastWriteId then return nil end
+                if old.lock == nil then
+                    -- Idempotent retry after a response was lost.
+                    return old
+                end
+                if type(old.lock) ~= "table" or old.lock.token ~= s.token then
+                    return nil
+                end
+                local unlocked = cloneRecord(old)
+                unlocked.lock = nil
+                return unlocked
+            end)
         end)
-    end)
-    s.busy = false
-    if not success then return false, "datastore_unavailable" end
-    if not Slots.validWorld(result) or result.lock ~= nil then
-        return false, "session_conflict"
+        if success then
+            if Slots.validWorld(result) and result.lock == nil
+                and result.revision == s.data.revision
+                and result.lastWriteId == s.data.lastWriteId then
+                sessions[player] = nil
+                s.busy = false
+                return true, nil
+            end
+            lastError = "session_conflict"
+            break -- Never clear a newer or foreign lock.
+        end
+        lastError = "datastore_unavailable"
+        if attempt < 3 then task.wait(attempt) end
     end
-    sessions[player] = nil
-    return true, nil
+    s.busy = false
+    return false, lastError
 end
 
 return SaveSlotService

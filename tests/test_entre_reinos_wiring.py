@@ -70,6 +70,23 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn("answer.stage", menu)
         self.assertNotIn('return {ok = false, error = "world_already_active"}', boot)
 
+    def test_terrain_failure_preserves_reason_and_releases_only_lease(self):
+        boot = (SRC/"ServerScriptService/Boot.server.luau").read_text(encoding="utf8")
+        world = (SRC/"ServerScriptService/Services/WorldService.luau").read_text(encoding="utf8")
+        saves = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
+        menu = (SRC/"StarterPlayer/StarterPlayerScripts/SlotMenu.luau").read_text(encoding="utf8")
+        self.assertIn("WorldService.getFailure()", boot)
+        self.assertIn("WorldService.getPhase()", boot)
+        self.assertIn('local reason = WorldService.getFailure() or "terrain_incomplete"', boot)
+        self.assertIn("generationFailure", world)
+        self.assertIn('generationPhase = "write_voxels"', world)
+        self.assertIn('generationPhase = "verify_voxels"', world)
+        self.assertIn("lastWriteId ~= s.data.lastWriteId", saves)
+        self.assertIn("for attempt = 1, 3 do", saves)
+        self.assertIn('local answer, failure, details = request(action, index)', menu)
+        self.assertNotIn('if not answer and (failure == "server_operation_failed"', menu)
+        self.assertIn("answer.terrainPhase", menu)
+
     def test_save_is_server_authoritative_and_atomic(self):
         service = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
         self.assertIn("UpdateAsync(", service)

@@ -7,6 +7,28 @@ local Terrain = workspace.Terrain
 
 local WorldService = {}
 local activated = false
+local generationFailure: string? = nil
+local generationPhase = "idle"
+
+local function fail(code: string): (boolean, string?)
+    generationFailure = code
+    generationPhase = "failed"
+    return false, code
+end
+
+function WorldService.getFailure(): string?
+    return generationFailure
+end
+
+function WorldService.getPhase(): string
+    return generationPhase
+end
+
+function WorldService.reportException()
+    -- Called only by the server bootstrap when the engine interrupts generation.
+    generationFailure = "terrain_activation_exception"
+    generationPhase = "failed"
+end
 
 local function part(parent: Instance, name: string, size: Vector3, position: Vector3, color: Color3, shape: Enum.PartType?)
     local p = Instance.new("Part")
@@ -91,9 +113,13 @@ function WorldService.activate(seed: number): (boolean, string?)
     if activated then
         return false, "world_already_active"
     end
-    if not WorldProfile.validSeed(seed) then
-        return false, "invalid_world_seed"
+    if generationFailure then
+        return false, generationFailure
     end
+    if not WorldProfile.validSeed(seed) then
+        return fail("invalid_world_seed")
+    end
+    generationPhase = "preflight"
     local b = WorldProfile.BOUNDS
     local region = Region3.new(Vector3.new(b.xMin, b.yMin, b.zMin), Vector3.new(b.xMax, b.yMax, b.zMax))
     local resolution = WorldProfile.CELL
@@ -102,7 +128,7 @@ function WorldService.activate(seed: number): (boolean, string?)
         return Terrain:ReadVoxelChannels(region, resolution, {"SolidOccupancy", "LiquidOccupancy"})
     end)
     if not successRead or type(existing) ~= "table" then
-        return false, "terrain_read_failed"
+        return fail("terrain_read_failed")
     end
     local sx = (b.xMax - b.xMin) / resolution
     local sy = (b.yMax - b.yMin) / resolution
@@ -112,12 +138,13 @@ function WorldService.activate(seed: number): (boolean, string?)
             for iz = 1, sz do
                 if existing.SolidOccupancy[ix][iy][iz] > 0.001
                     or existing.LiquidOccupancy[ix][iy][iz] > 0.001 then
-                    return false, "nonempty_terrain_refuses_overwrite"
+                    return fail("nonempty_terrain_refuses_overwrite")
                 end
             end
         end
     end
 
+    generationPhase = "prepare_voxels"
     local solids, liquids, materials = {}, {}, {}
     local liquidCells = 0
     local solidCells = 0
@@ -145,8 +172,9 @@ function WorldService.activate(seed: number): (boolean, string?)
         end
     end
     if liquidCells == 0 or solidCells == 0 then
-        return false, "invalid_world_geometry"
+        return fail("invalid_world_geometry")
     end
+    generationPhase = "write_voxels"
     local okWrite, writeError = pcall(function()
         Terrain:WriteVoxelChannels(region, resolution, {
             SolidMaterial = materials,
@@ -157,13 +185,14 @@ function WorldService.activate(seed: number): (boolean, string?)
     if not okWrite then
         -- Result is potentially partially written. Never blind-retry without inspection.
         warn("[EntreReinos] Terrain write failed (review required): ", writeError)
-        return false, "terrain_write_uncertain"
+        return fail("terrain_write_uncertain")
     end
+    generationPhase = "verify_voxels"
     local okVerify, readback = pcall(function()
         return Terrain:ReadVoxelChannels(region, resolution, {"SolidOccupancy", "LiquidOccupancy", "SolidMaterial"})
     end)
     if not okVerify or type(readback) ~= "table" then
-        return false, "terrain_readback_failed"
+        return fail("terrain_readback_failed")
     end
     local seenWater = false
     local seenSolid = false
@@ -172,11 +201,11 @@ function WorldService.activate(seed: number): (boolean, string?)
             for iz = 1, sz do
                 if math.abs(readback.SolidOccupancy[ix][iy][iz] - solids[ix][iy][iz]) > 0.02
                     or math.abs(readback.LiquidOccupancy[ix][iy][iz] - liquids[ix][iy][iz]) > 0.02 then
-                    return false, "terrain_readback_diff"
+                    return fail("terrain_readback_diff")
                 end
                 if solids[ix][iy][iz] > 0.01
                     and readback.SolidMaterial[ix][iy][iz] ~= materials[ix][iy][iz] then
-                    return false, "terrain_material_readback_diff"
+                    return fail("terrain_material_readback_diff")
                 end
                 if readback.SolidOccupancy[ix][iy][iz] > 0.5 then seenSolid = true end
                 if readback.LiquidOccupancy[ix][iy][iz] > 0.5 then seenWater = true end
@@ -184,12 +213,13 @@ function WorldService.activate(seed: number): (boolean, string?)
         end
     end
     if not seenSolid or not seenWater then
-        return false, "terrain_verify_missing_channels"
+        return fail("terrain_verify_missing_channels")
     end
+    generationPhase = "decorate"
     local decorationsOk, decorationsError = pcall(buildDecorations, seed)
     if not decorationsOk then
         warn("[EntreReinos] Decorator failed after Terrain write; inspect before retry: ", decorationsError)
-        return false, "world_decoration_requires_new_server"
+        return fail("world_decoration_requires_new_server")
     end
     local startArea = workspace:FindFirstChild("StartArea")
     if startArea then
@@ -210,6 +240,7 @@ function WorldService.activate(seed: number): (boolean, string?)
     workspace:SetAttribute("ER_WorldVoxelCount", sx * sy * sz)
     workspace:SetAttribute("ER_WorldWaterCells", liquidCells)
     activated = true
+    generationPhase = "ready"
     return true, nil
 end
 

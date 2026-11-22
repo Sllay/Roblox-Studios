@@ -101,18 +101,23 @@ local function completeEntry(player: Player, index: number, record: any): any
         local invoked, worldOk, reason = pcall(WorldService.activate, record.seed)
         if not invoked or not worldOk then
             if not invoked then
-                warn("[EntreReinos][terrain] World activation exception: ", worldOk)
+                warn("[EntreReinos][terrain] Engine exception at ", WorldService.getPhase(), ": ", worldOk)
+                WorldService.reportException()
             else
-                warn("[EntreReinos][terrain] World activation refused: ", reason)
+                warn("[EntreReinos][terrain] Generation failed: ", reason)
             end
+            -- The recorded lease can survive a partial terrain write.
+            -- Only release the lease; NEVER remove, recreate or modify the world seed.
             local released, releaseError = SaveSlotService.abortActivation(player)
             if not released then
                 warn("[EntreReinos][terrain] Lease release not confirmed: ", releaseError)
             end
             player:SetAttribute("ER_WorldLoaded", false)
             setStage(player, "terrain_failed")
-            return {ok = false, error = if invoked then (reason or "terrain_failed")
-                else "terrain_activation_exception", stage = "terrain", retryInNewServer = true}
+            local safeCode = WorldService.getFailure() or "terrain_activation_exception"
+            return {ok = false, error = safeCode, stage = "terrain",
+                terrainPhase = WorldService.getPhase(),
+                retryInNewServer = true, leaseReleased = released}
         end
     end
     -- Do not rerun Terrain generation on retries: it may have already succeeded.
@@ -162,9 +167,19 @@ local function resume(player: Player, index: any): any
         return {ok = false, error = "other_slot_active", activeSlot = actual, stage = "slot"}
     end
     if not WorldService.isActive() then
-        -- Unknown partial Terrain writes are NEVER retried inside the same server.
-        return {ok = false, error = "world_needs_new_server",
-            stage = stages[player] or "terrain", retryInNewServer = true}
+        -- The first diagnostic must never be replaced with a generic resume error.
+        -- A broken session releases only its lease. A partially written Terrain
+        -- is not retried on this same server.
+        local reason = WorldService.getFailure() or "terrain_incomplete"
+        local released, releaseError = SaveSlotService.abortActivation(player)
+        if not released then
+            warn("[EntreReinos][terrain] Recovery lease release not confirmed: ", releaseError)
+        end
+        player:SetAttribute("ER_WorldLoaded", false)
+        setStage(player, "terrain_failed")
+        return {ok = false, error = reason, stage = "terrain",
+            terrainPhase = WorldService.getPhase(),
+            retryInNewServer = true, leaseReleased = released}
     end
     if activePlayer and activePlayer ~= player then
         return {ok = false, error = "another_player_world_active"}
@@ -191,7 +206,11 @@ remote.OnServerInvoke = function(player: Player, action: any, index: any)
         if action == "list" then
             stage = "list"
             local success, slots = SaveSlotService.list(player)
-            return if success then {ok = true, slots = slots} else {ok = false, error = slots}
+            return if success then {
+                ok = true, slots = slots, activeSlot = SaveSlotService.index(player),
+                worldActive = WorldService.isActive(),
+                serverRevision = game.PlaceVersion,
+            } else {ok = false, error = slots}
         end
         if action == "save" then
             stage = "save"
