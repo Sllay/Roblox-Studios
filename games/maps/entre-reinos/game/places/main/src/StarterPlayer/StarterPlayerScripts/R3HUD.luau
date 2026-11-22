@@ -377,12 +377,14 @@ function UI.start(player: Player)
         tabsUI[key].Activated:Connect(function() showTab(key) end)
     end
     showTab("build")
+    local refreshContext: ()->()=function() end
 
     local function showJournal(value: boolean,nextTab: string?)
         journal.Visible=value
         openJournal.Text=if value then "FECHAR" else "VILA"
         if nextTab then showTab(nextTab) end
         if value then task.defer(function() refreshStatus() end) end
+        refreshContext()
     end
     openJournal.Activated:Connect(function()
         showJournal(not journal.Visible,if not journal.Visible then "build" else nil)
@@ -508,6 +510,7 @@ function UI.start(player: Player)
         end
         interact.Visible=contextKind~="none" and not journal.Visible
     end
+    refreshContext=updateContext
 
     function updateVillage()
         local resources=if snapshot then snapshot.resources else nil
