@@ -10,6 +10,7 @@ local Living=require(shared:WaitForChild("Living"):WaitForChild("LivingModel"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
 local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Professions=require(shared:WaitForChild("Living"):WaitForChild("ProfessionDefs"))
+local WorldService=require(script.Parent:WaitForChild("WorldService"))
 local Service={}
 local owner: Player?=nil
 local state: any=nil
@@ -222,17 +223,31 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
     folder:SetAttribute("ER_Saveable",true)
     folder.Parent=workspace
     visualization=folder
-    for _,site in ipairs(state.sites) do createSiteVisual(site) end
-    for i,npc in ipairs(state.npcs) do
-        if onProgress then
-            onProgress((i-1)/#state.npcs,"Preparando morador "..tostring(i).."/"..tostring(#state.npcs))
+    local prepared, prepareError=pcall(function()
+        for _,site in ipairs(state.sites) do createSiteVisual(site) end
+        for i,npc in ipairs(state.npcs) do
+            if onProgress then
+                onProgress((i-1)/#state.npcs,
+                    "Preparando morador "..tostring(i).."/"..tostring(#state.npcs))
+            end
+            local model=createActor(npc)
+            if model then figures[npc.id]=model end
         end
-        local model=createActor(npc)
-        if model then figures[npc.id]=model end
+        if onProgress then onProgress(1,"Moradores preparados") end
+        for _,b in ipairs(state.buildings) do buildVisual(b) end
+        draw()
+    end)
+    if not prepared then
+        warn("[EntreReinos][Living] Preparation failed; rolling back visual state: ",prepareError)
+        owner=nil
+        state=nil
+        figures={}
+        buildings={}
+        siteDisplays={}
+        visualization=nil
+        folder:Destroy()
+        return false,"living_visual_setup_failed"
     end
-    if onProgress then onProgress(1,"Moradores preparados") end
-    for _,b in ipairs(state.buildings) do buildVisual(b) end
-    draw()
 
     -- A fixed, bounded tick keeps worker jobs deterministic and avoids
     -- a heavy per-frame task per NPC; presentation is LOD-throttled.
@@ -249,6 +264,17 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         drawAccumulator+=dt
         if drawAccumulator>=0.12 then
             drawAccumulator=0
+            -- Workers can reach the west before the player; the same
+            -- deterministic streaming contract must apply to NPC movement.
+            for _,npc in ipairs(state.npcs) do
+                if npc.x < -24 then
+                    local streamed,reason=WorldService.ensureNear(state.seed,npc.x)
+                    if not streamed and reason~="world_generation_in_progress" then
+                        warn("[EntreReinos][Living] Worker chunk load: ",reason)
+                    end
+                    break
+                end
+            end
             draw()
         end
     end)
