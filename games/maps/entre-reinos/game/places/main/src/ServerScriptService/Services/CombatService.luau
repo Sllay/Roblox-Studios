@@ -226,6 +226,12 @@ function Combat.action(player: Player,action: string,arg: any): any
         local ok,result=R3.pickup(state,arg,root.Position.X)
         if ok then syncViews() end
         return {ok=ok,result=result,error=if not ok then result else nil}
+    elseif action=="craft_arrows" then
+        if not allowed("craft_arrows",0.65) then
+            return {ok=false,error="rate_limited"}
+        end
+        local ok,result=R3.craftArrows(state,root.Position.X)
+        return {ok=ok,result=result,error=if not ok then result else nil}
     elseif action=="trade" then
         if type(arg)~="string" then return {ok=false,error="unknown_trade_item"} end
         if not allowed("trade",0.7) then return {ok=false,error="rate_limited"} end
