@@ -127,6 +127,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
     local options = {wide = false, debug = true}
     local busy = false
     local selected: number? = nil
+    local activeSlot: number? = nil
     local pendingDeletion: number? = nil
 
     local function page(name: string)
@@ -209,6 +210,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             label.TextXAlignment = Enum.TextXAlignment.Left
             if summary.exists then
                 label.Text = "Mundo " .. tostring(index) .. "  •  Dia " .. tostring(summary.worldDay or 1)
+                if activeSlot == index then label.Text ..= "  •  Sessão ativa" end
             elseif summary.corrupt then
                 label.Text = "Mundo " .. tostring(index) .. "  •  Dados incompatíveis"
             else
@@ -216,11 +218,22 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             end
             local choose = button(row, "Choose", if summary.exists then "Entrar" else "Criar",
                 UDim2.new(0.25, 0, 0, 34), UDim2.new(0.49, 0, 0.5, -17))
-            choose.Active = not summary.corrupt
+            if activeSlot == index then
+                choose.Text = "Retomar"
+            elseif activeSlot then
+                choose.Text = "Ocupado"
+                choose.Active = false
+            end
+            choose.Active = not summary.corrupt and (activeSlot == nil or activeSlot == index)
             choose.Activated:Connect(function()
                 if summary.corrupt or busy then return end
+                if activeSlot and activeSlot ~= index then
+                    status.Text = "Mundo " .. tostring(activeSlot) .. " em uso neste servidor. Não abra outro."
+                    return
+                end
                 selected = index
-                local action = if summary.exists then "open" else "create"
+                local action = if activeSlot == index then "resume"
+                    elseif summary.exists then "open" else "create"
                 local answer, failure, details = request(action, index)
                 local recoverCharacter = details and details.recoverable == true
                     and (details.stage == "character" or details.stage == "lane")
@@ -238,8 +251,8 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             end)
             local remove = button(row, "Delete", "Excluir", UDim2.new(0.22, 0, 0, 34), UDim2.new(0.76, 0, 0.5, -17))
             remove.BackgroundColor3 = Color3.fromRGB(101, 53, 49)
-            remove.Active = summary.exists
-            remove.Visible = summary.exists
+            remove.Active = summary.exists and activeSlot == nil
+            remove.Visible = summary.exists and activeSlot == nil
             remove.Activated:Connect(function()
                 if busy then return end
                 if pendingDeletion ~= index then
@@ -260,7 +273,17 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
     play.Activated:Connect(function()
         page("slots")
         local response = request("list", nil)
-        if response then buildRows(response.slots) end
+        if response then
+            activeSlot = response.activeSlot
+            if type(response.serverRevision) == "number" then
+                title.Text = "ENTRE REINOS  •  v" .. tostring(response.serverRevision)
+            end
+            buildRows(response.slots)
+            if activeSlot and not response.worldActive then
+                status.Text = "Uma sessão do Mundo " .. tostring(activeSlot) ..
+                    " não concluiu o terreno neste servidor. Não exclua o save."
+            end
+        end
     end)
 
     local optText = newText(pages.options, "Ajustes visuais locais. Seu progresso é salvo no servidor.",
