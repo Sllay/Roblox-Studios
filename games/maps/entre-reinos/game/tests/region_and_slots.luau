@@ -80,3 +80,27 @@ local wrongProtocol = table.clone(accepted)
 wrongProtocol.protocol = 2
 assert(not R.validArrival(wrongProtocol,421,90623742498445,"reserved-guid"))
 print("ENTRE_REINOS_ROUTE: lobby-to-reserved server auth contract passed")
+
+-- Use the stock Roblox control system, but project thumbstick X/Z onto
+-- the 2.5D character's X/Y lane. These are executable pure Luau tests.
+local Input = require("../places/main/src/ReplicatedStorage/InputProjection")
+local ix,iy=Input.toLane(1,0)
+assert(ix==1 and iy==0)
+ix,iy=Input.toLane(-0.5,0)
+assert(ix==-0.5 and iy==0)
+ix,iy=Input.toLane(0,-1) -- Roblox native up = negative Z
+assert(ix==0 and iy==1)
+ix,iy=Input.toLane(0,1)
+assert(ix==0 and iy==-1)
+ix,iy=Input.toLane(1,-1)
+assert(math.abs(ix-0.70710678)<0.00001 and math.abs(iy-0.70710678)<0.00001)
+ix,iy=Input.toLane(0.02,-0.02)
+assert(ix==0 and iy==0)
+ix,iy=Input.toLane(math.huge,0)
+assert(ix==0 and iy==0)
+assert(Input.facing(1,0,false,0)==-math.pi/2)
+assert(Input.facing(-1,0,false,0)==math.pi/2)
+assert(Input.facing(0,1,false,0)==0)
+assert(Input.facing(0,-1,false,0)==math.pi)
+assert(Input.facing(0,1,true,math.pi/2)==math.pi/2)
+print("ENTRE_REINOS_NATIVE_INPUT: analog X/Y, swim Z-to-height, diagonal and facing tests passed")

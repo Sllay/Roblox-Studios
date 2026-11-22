@@ -128,6 +128,34 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertNotIn("UpdateAsync(", client+loading+lobby)
         self.assertIn('remote:InvokeServer("return")', loading)
 
+    def test_native_mobile_joystick_and_original_jump_not_replaced(self):
+        lane = read("StarterPlayer/StarterPlayerScripts/LaneController.luau")
+        pure = read("ReplicatedStorage/InputProjection.luau")
+        self.assertIn('controls:GetMoveVector()', lane)
+        self.assertIn('Projection.toLane(vector.X, vector.Z)', lane)
+        self.assertIn('h:Move(Vector3.new(x, 0, 0), false)', lane)
+        self.assertIn('h:Move(Vector3.zero, false)', lane)
+        self.assertIn('Projection.facing(x, y, swimming, lastFacing)', lane)
+        self.assertIn('RunService:BindToRenderStep("ER_Lane"', lane)
+        self.assertNotIn('ContextActionService', lane)
+        self.assertNotIn('BindActionAtPriority(', lane)
+        self.assertNotIn('SetPosition(', lane)
+        self.assertNotIn('SetTitle(', lane)
+        self.assertNotIn('true, 2200', lane)
+        self.assertNotIn('controls:Disable()\n', lane.replace('-- NEVER call controls:Disable():', ''))
+        self.assertNotIn('Humanoid.Jump =', lane)
+        self.assertNotIn('h.Jump =', lane)
+        self.assertIn('math.clamp(-z, -1, 1)', pure)
+
+    def test_debug_panel_respects_coreui_safe_area_and_native_controls(self):
+        client = read("StarterPlayer/StarterPlayerScripts/ClientBoot.client.luau")
+        self.assertIn('gui.IgnoreGuiInset = false', client)
+        self.assertIn('gui.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets', client)
+        self.assertIn('stats.AnchorPoint = Vector2.new(1, 0)', client)
+        self.assertIn('stats.Position = UDim2.new(1, -12, 0, 10)', client)
+        self.assertNotIn('stats.Position = UDim2.fromOffset(12, 16)', client)
+        self.assertNotIn('gui.IgnoreGuiInset = true', client)
+
     def test_user_production_target_is_unset(self):
         targets = json.loads((GAME / "deploy.targets.json").read_text())["environments"]
         self.assertEqual(str(targets["staging"]["universeId"]), "10769712413")

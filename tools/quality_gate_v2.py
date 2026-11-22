@@ -20,7 +20,7 @@ def main():
     subprocess.run([vm,str(ROOT/"tests/luau/surface_fields.luau")],cwd=ROOT,check=True)
     # Strict analyze the portable Entre Reinos core as well as executing its assertions.
     er_modules=ROOT/"games/maps/entre-reinos/game/places/main/src/ReplicatedStorage"
-    for module_name in ("WorldProfile.luau", "SlotModel.luau", "SlotLeasePolicy.luau"):
+    for module_name in ("WorldProfile.luau", "SlotModel.luau", "SlotLeasePolicy.luau", "InputProjection.luau"):
         subprocess.run([lsp,"analyze",f"--definitions={definitions}",str(er_modules/module_name)],cwd=ROOT,check=True)
     # Execute Entre Reinos pure Luau assertions, not merely syntax-check the test file.
     er_test=ROOT/"games/maps/entre-reinos/game/tests/region_and_slots.luau"
