@@ -1,0 +1,68 @@
+name: Entre Reinos post-publication Place verification (read only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/entre-reinos-postpublish-verify.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Independently inspect live saved Place v2 without modifying it
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import json, os
+          from cloud_tasks import run_task
+          source = '''
+          local H=game:GetService("HttpService")
+          local rs=game:GetService("ReplicatedStorage")
+          local ss=game:GetService("ServerScriptService")
+          local sp=game:GetService("StarterPlayer")
+          local w=game:GetService("Workspace")
+          local function child(p,name,kind)
+              local x=p and p:FindFirstChild(name)
+              return x~=nil and (kind==nil or x.ClassName==kind)
+          end
+          local serviceFolder=ss:FindFirstChild("Services")
+          local gameFolder=rs:FindFirstChild("Game")
+          local clientFolder=sp:FindFirstChild("StarterPlayerScripts")
+          return H:JSONEncode({
+              universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
+              placeVersion=game.PlaceVersion,
+              nodes={
+                  boot=child(ss,"Boot","Script"),
+                  world=child(serviceFolder,"WorldService","ModuleScript"),
+                  save=child(serviceFolder,"SaveSlotService","ModuleScript"),
+                  profile=child(gameFolder,"WorldProfile","ModuleScript"),
+                  slot=child(gameFolder,"SlotModel","ModuleScript"),
+                  lease=child(gameFolder,"SlotLeasePolicy","ModuleScript"),
+                  clientBoot=child(clientFolder,"ClientBoot","LocalScript"),
+                  camera=child(clientFolder,"SideCamera","ModuleScript"),
+                  lane=child(clientFolder,"LaneController","ModuleScript"),
+                  menu=child(clientFolder,"SlotMenu","ModuleScript"),
+                  startArea=child(w,"StartArea","Model")
+              }
+          })
+          '''
+          response=run_task("10769712413","90623742498445",
+                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source)
+          required=response["nodes"]
+          report={"loadedVersion":response["loadedVersion"],"nodes":required}
+          print("ENTRE_REINOS_POSTPUBLISH_READBACK",json.dumps(report,sort_keys=True))
+          assert response["loadedVersion"]>=2, "Publish version not yet present"
+          assert all(required.values()), "Published Place is missing expected Rojo objects"
+          print("ENTRE_REINOS_POSTPUBLISH_PASS")
+          PY
