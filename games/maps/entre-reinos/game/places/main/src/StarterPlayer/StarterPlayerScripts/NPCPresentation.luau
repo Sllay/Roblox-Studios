@@ -56,6 +56,7 @@ local function register(model: Model)
         snapshot=pose,
         arrivedAt=os.clock(),
         smoothedVelocity=0,
+        movementHold=0,
         walk=track,
     }
     model.Destroying:Connect(function() remove(model) end)
@@ -95,34 +96,47 @@ function Presentation.start()
             end
             local targetVelocity=model:GetAttribute("ER_NPCVelocityX")
             if type(targetVelocity)~="number" then targetVelocity=0 end
-            -- Dampen changes of direction but never let irregular 10 Hz
-            -- packet spacing pulse a moving resident back to zero speed.
-            item.smoothedVelocity+=(targetVelocity-item.smoothedVelocity)
-                *(1-math.exp(-12*math.clamp(dt,0,0.10)))
+            -- Advance the avatar continuously each rendered frame, independently
+            -- of irregular 8-10Hz server packets; packets correct drift smoothly
+            -- instead of repeatedly resetting prediction at their arrival.
+            local frameDt=math.clamp(dt,0,1/20)
+            if math.abs(targetVelocity)>0.2 then
+                item.movementHold=0.16
+            else
+                item.movementHold=math.max(0,item.movementHold-frameDt)
+            end
+            local velocityTarget=if item.movementHold>0 and targetVelocity==0
+                then item.smoothedVelocity else targetVelocity
+            item.smoothedVelocity+=(velocityTarget-item.smoothedVelocity)
+                *(1-math.exp(-16*frameDt))
             local velocity=item.smoothedVelocity
             local facing=model:GetAttribute("ER_NPCFacing")
             if type(facing)~="number" then facing=0 end
-            -- Limit extrapolation to one server snapshot interval, avoiding
-            -- runaway on network stalls or when a worker stops for a job.
-            local ahead=math.clamp(t-item.arrivedAt,0,0.26)
-            local predicted=pose+Vector3.new(math.clamp(velocity*ahead,-2,2),0,0)
-            local desired=CFrame.new(predicted)*CFrame.Angles(0,facing,0)
-            local blend=1-math.exp(-17*math.clamp(dt,0,0.10))
-            if (item.render.Position-desired.Position).Magnitude>10 then
-                -- Teleport/streaming recovery, not normal NPC movement.
-                item.render=desired
-            else
-                item.render=item.render:Lerp(desired,blend)
+
+            local sincePacket=t-item.arrivedAt
+            -- Do not run further than a single packet interval without fresh
+            -- authority. This limits drift when the worker stops or streams.
+            local lead=math.clamp(sincePacket,0,0.16)
+            local authoritativeX=pose.X+targetVelocity*lead
+            local old=item.render.Position
+            local integratedX=old.X+velocity*frameDt
+            local correction=1-math.exp(-11*frameDt)
+            local nextX=integratedX+(authoritativeX-integratedX)*correction
+            local target=Vector3.new(nextX,
+                old.Y+(pose.Y-old.Y)*(1-math.exp(-13*frameDt)),pose.Z)
+            if (old-pose).Magnitude>12 then
+                target=pose
             end
+            item.render=CFrame.new(target)*CFrame.Angles(0,facing,0)
             model:PivotTo(item.render)
             local track=item.walk
             if track then
-                local moving=math.abs(velocity)>0.35
-                if moving and not track.IsPlaying then track:Play(0.15,1,1) end
+                local moving=math.abs(velocity)>0.24 or item.movementHold>0
+                if moving and not track.IsPlaying then track:Play(0.12,1,1) end
                 if moving then
-                    track:AdjustSpeed(math.clamp(math.abs(velocity)/6,0.6,1.5))
+                    track:AdjustSpeed(math.clamp(math.abs(velocity)/6,0.45,1.45))
                 elseif track.IsPlaying then
-                    track:Stop(0.18)
+                    track:Stop(0.16)
                 end
             end
         end
