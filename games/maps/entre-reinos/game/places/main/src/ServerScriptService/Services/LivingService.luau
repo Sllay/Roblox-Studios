@@ -412,7 +412,38 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
         return {ok=false,error="world_not_loaded"}
     end
     if action=="status" then
-        return {ok=true,data=Work.summary(state)}
+        -- One read-only world overview for the whole immersive game HUD.
+        -- Proximity is computed from the real server-observed character.
+        local overview=Work.summary(state)
+        local character=player.Character
+        local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
+        local nearby={wood=0,canTrade=false,npcId=0,coinId=0}
+        if root and root:IsA("BasePart") then
+            local x=root.Position.X
+            nearby.canTrade=math.abs(x)<=24
+            local closestNPC=15
+            for _,npc in ipairs(state.npcs) do
+                local distance=math.abs(npc.x-x)
+                if distance<closestNPC then
+                    closestNPC=distance
+                    nearby.npcId=npc.id
+                end
+            end
+            for _,site in ipairs(state.sites) do
+                if site.item=="wood" and math.abs(site.x-x)<=9 then
+                    nearby.wood+=site.remaining
+                end
+            end
+            local closestCoin=6
+            for _,coin in ipairs(state.r3.drops) do
+                local distance=math.abs(coin.x-x)
+                if not coin.claimed and distance<=closestCoin then
+                    closestCoin=distance
+                    nearby.coinId=coin.id
+                end
+            end
+        end
+        return {ok=true,data=overview,hud=R3.summary(state),nearby=nearby}
     end
     if action=="attack" or action=="bow" or action=="drop_coin"
         or action=="pickup_coin" or action=="arm_defender"
