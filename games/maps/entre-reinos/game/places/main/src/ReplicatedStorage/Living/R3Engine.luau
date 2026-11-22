@@ -3,6 +3,7 @@
 -- Gameplay rules here contain no Instance, Remote or client trust.
 local World=require("../WorldProfile")
 local Structures=require("./StructureDefs")
+local Inventory=require("./Inventory")
 local R3={}
 R3.VERSION=1
 R3.DAY=240
@@ -97,8 +98,22 @@ function R3.craftArrows(state: any,x: number): (boolean, any)
     if not finite(x) then return false,"invalid_position" end
     local d=state.r3
     if d.arrows>24 then return false,"ammo_capacity" end
-    -- The player must stand beside an existing finite timber stock. Each
-    -- bundle consumes two real units of wood and produces six arrows.
+    -- A completed galpão offers the normal craft interaction. Move actual
+    -- stored timber out of its finite inventory before producing arrows.
+    for _,b in ipairs(state.buildings) do
+        if b.typeId=="stockpile" and b.state=="complete" and b.health>0
+            and b.stored and math.abs(b.x-x)<=12
+            and Inventory.count(b.stored,"wood")>=2 then
+            if not Inventory.take(b.stored,"wood",2) then
+                return false,"wood_stock_required"
+            end
+            d.arrows+=6
+            ledger(d,"arrow_crafting",0,"galpao:"..tostring(b.id))
+            return true,d.arrows
+        end
+    end
+    -- Backwards compatible: at a nearby natural timber source the player
+    -- may still craft a small primitive bundle without a galpão.
     for _,site in ipairs(state.sites) do
         if site.item=="wood" and site.remaining>=2 and math.abs(site.x-x)<=9 then
             site.remaining-=2
@@ -119,6 +134,19 @@ function R3.trade(state: any,item: string,x: number): (boolean, any)
     if price==0 then return false,"unknown_trade_item" end
     local d=state.r3
     if d.treasury<price then return false,"treasury_empty" end
+    for _,b in ipairs(state.buildings) do
+        if b.typeId=="stockpile" and b.state=="complete" and b.health>0
+            and b.stored and math.abs(b.x-x)<=24
+            and Inventory.count(b.stored,item)>=1 then
+            if not Inventory.take(b.stored,item,1) then
+                return false,"resource_unavailable"
+            end
+            d.treasury-=price
+            d.wallet+=price
+            ledger(d,"trade_income",price,"galpao:"..tostring(b.id)..":"..item)
+            return true,price
+        end
+    end
     for _,site in ipairs(state.sites) do
         if site.item==item and site.remaining>=1 then
             site.remaining-=1
