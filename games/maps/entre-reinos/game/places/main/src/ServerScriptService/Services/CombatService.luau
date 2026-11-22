@@ -42,10 +42,17 @@ local function enemyModel(e: any): Model
         Vector3.zero,Color3.new(0,0,0))
     root.Transparency=1
     m.PrimaryPart=root
-    local flesh=Color3.fromRGB(58,48,55)
+    local isDuke=e.typeId=="infected_duke"
+    local flesh=if isDuke then Color3.fromRGB(77,49,96)
+        else Color3.fromRGB(58,48,55)
     part(m,"Torso",Vector3.new(2.3,2.8,1.3),Vector3.new(0,1.5,0),flesh)
     part(m,"Head",Vector3.new(1.55,1.4,1.4),Vector3.new(0,3.6,0),
-        Color3.fromRGB(53,61,59))
+        if isDuke then Color3.fromRGB(115,81,131) else Color3.fromRGB(53,61,59))
+    if isDuke then
+        part(m,"DucalCrown",Vector3.new(1.8,0.4,1.6),
+            Vector3.new(0,4.55,0),Color3.fromRGB(196,157,66))
+        m:SetAttribute("ER_StoryEnemy","infected_duke")
+    end
     part(m,"Left Arm",Vector3.new(0.7,2.5,0.9),Vector3.new(-1.5,1.45,0),flesh)
     part(m,"Right Arm",Vector3.new(0.7,2.5,0.9),Vector3.new(1.5,1.45,0),flesh)
     part(m,"Left Leg",Vector3.new(0.9,1.8,1),Vector3.new(-0.55,-0.7,0),flesh)
@@ -206,6 +213,16 @@ function Combat.action(player: Player,action: string,arg: any): any
         if ok then syncViews() end
         return {ok=ok,result=result,error=if not ok then result else nil}
     elseif action=="pickup_coin" then
+        local dropHeight=nil
+        for _,item in ipairs(state.r3.drops) do
+            if item.id==arg and not item.claimed then
+                dropHeight=World.sample(state.seed,item.x,0).height+2
+                break
+            end
+        end
+        if dropHeight~=nil and math.abs(root.Position.Y-dropHeight)>10 then
+            return {ok=false,error="too_far_from_coin"}
+        end
         local ok,result=R3.pickup(state,arg,root.Position.X)
         if ok then syncViews() end
         return {ok=ok,result=result,error=if not ok then result else nil}
