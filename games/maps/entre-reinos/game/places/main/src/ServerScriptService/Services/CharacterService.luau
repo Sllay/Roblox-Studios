@@ -29,6 +29,15 @@ function Service.ensureR6(player: Player): (boolean, string?)
     spawning[player] = true
 
     local old = player.Character
+    -- Replacing Player.Character with a manually constructed R6 model can discard
+    -- Roblox's stock Animate LocalScript. Preserve it so Humanoid's Swimming
+    -- state has the native swim/swim-idle animation handlers available.
+    local previousAnimate = if old then old:FindFirstChild("Animate") else nil
+    local starterAnimate = game:GetService("StarterPlayer")
+        :WaitForChild("StarterCharacterScripts"):FindFirstChild("Animate")
+    local animateSource = if previousAnimate and previousAnimate:IsA("LocalScript")
+        then previousAnimate else if starterAnimate and starterAnimate:IsA("LocalScript")
+        then starterAnimate else nil
     -- Preserve the player's classic clothing and body colors when the engine can
     -- convert them. Layered R15 geometry is not applied to a classic R6 skeleton.
     local description = Instance.new("HumanoidDescription")
@@ -82,6 +91,15 @@ function Service.ensureR6(player: Player): (boolean, string?)
     -- Assigning Player.Character raises CharacterAdded for client controls.
     local successAssign, assignError = pcall(function()
         model.Parent = workspace
+        -- Reuse Roblox's original animation controller only. Do not copy R15
+        -- skeleton or force artificial Motor6D animation on the R6 character.
+        if animateSource and not model:FindFirstChild("Animate") then
+            local animate = animateSource:Clone()
+            animate.Name = "Animate"
+            animate.Enabled = true
+            animate.Parent = model
+            model:SetAttribute("ER_NativeAnimateRestored", true)
+        end
         player.Character = model
     end)
     if not successAssign then
