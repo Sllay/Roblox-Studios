@@ -4,7 +4,7 @@
     "Folder": 5,
     "LocalScript": 3,
     "Model": 1,
-    "ModuleScript": 65,
+    "ModuleScript": 68,
     "Part": 1,
     "Script": 1,
     "SpawnLocation": 1,
@@ -13,12 +13,12 @@
     "Terrain": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 11,
+  "loadedVersion": 12,
   "placeId": "90623742498445",
   "schemaVersion": 1,
-  "stateDigest": "96efdc480a44eaeab18ffc299a9e6a2ffcc685a98d78bc96b78d7565fc652093",
+  "stateDigest": "54d375469a2cddb2addcc2b135cf2ac49280c4835d6043df4dc45b6ad16c5843",
   "terrain": {},
-  "total": 81,
+  "total": 84,
   "universeId": "10769712413",
   "workspaceRoots": [
     {
