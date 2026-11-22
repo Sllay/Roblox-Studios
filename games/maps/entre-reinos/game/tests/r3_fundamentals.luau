@@ -123,6 +123,27 @@ end
 assert(wall.state=="complete" and wall.ruined==false)
 assert(wall.health==Structures.get("wall").health)
 assert(Living.valid(blocked),"repaired and salvaged world must remain saveable")
+-- Deterministic local threat curve: first night protected; second night
+-- warns at dusk and then spawns exactly one two-sided wave.
+local clock=Living.new(seed)
+local clockRaid=R3.ensure(clock,false)
+clock.elapsed=R3.NIGHT_START+0.1
+R3.step(clock,0.1,0)
+assert(#clockRaid.enemies==0,"first sandbox night must be peaceful")
+clock.elapsed=R3.DAY+R3.NIGHT_START-20
+R3.step(clock,0.1,0)
+assert(R3.summary(clock).raidForecast==true)
+assert(#clockRaid.enemies==0)
+clock.elapsed=R3.DAY+R3.NIGHT_START+0.1
+R3.step(clock,0.1,0)
+assert(#clockRaid.enemies==4 and clockRaid.lastNight==1)
+R3.step(clock,0.1,0)
+assert(#clockRaid.enemies==4,"each night only spawns once")
+for _,e in ipairs(clockRaid.enemies) do e.hp=0 end
+R3.step(clock,0.1,0)
+clock.elapsed=R3.DAY*2+R3.NIGHT_START+0.1
+R3.step(clock,0.1,0)
+assert(#clockRaid.enemies==0,"alternating nights stay quiet")
 -- Raid conditions do not roll every night and preserve existing snapshots.
 local saved=Living.clone(fresh)
 assert(Living.valid(saved))
