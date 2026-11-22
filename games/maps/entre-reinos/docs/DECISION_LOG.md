@@ -85,3 +85,13 @@ Teste headless em engine v4: https://github.com/Sllay/Roblox-Studios/actions/run
 Novo código + testes: `971a306932aa8aa39c301a30a1fe9938f5329859`; CI https://github.com/Sllay/Roblox-Studios/actions/runs/44978915630 success. Publicação em staging com inventário v4 verificado e Place correto: https://github.com/Sllay/Roblox-Studios/actions/runs/44978951305, `SUCCESS: Place 90623742498445, revision 5`. Readback independente https://github.com/Sllay/Roblox-Studios/actions/runs/44979034609 (`success`) comprovou v5 e 12 checks da fonte dos scripts (WorldService, Boot, SaveSlotService, client, etc.).
 
 Reentrada segura: sair da sessão antiga, entrar no Place, Jogar → **Entrar Mundo 1** já existente. Menu deve mostrar `ENTRE REINOS • v5`, seed e diagnóstico detalhado. Se o mundo carregar, testar solo/nado/saves; se falhar, compartilhar a mensagem completa (especialmente `[geração: ...]`) para identificar o método exato que falhou. T1-R1 permanece `in_progress`; T1-R2 bloqueado.
+
+## 22/11/2026 — T1-R1: bug de `record.seed` e separação definitiva lobby/partida
+
+Criador enviou Developer Console v5 comprovando `Boot:101 attempt to index nil with 'seed'`, solicitou abandonar geração no lobby, usar outro servidor reservado do mesmo Place, loading opaco com progresso real, chunks iniciais e streaming do restante, 1 jogador no lobby e nos mundos por enquanto.
+
+- **FIXADO**: a expressão condicional Luau que descartava o segundo retorno foi substituída por `if/else` com captura explícita dos valores; saves existentes não são apagados.
+- **FIXADO**: lobby público não cria lease de mundo; servidor reservado `ReservedServerId` opera Terrain/R6/Save. Mesma experiência/Place em outro servidor, sem criar Place extra. Ticket conferido por servidor, com seed somente do DataStore.
+- **FIXADO**: GUI lobby+teleporte+loading totalmente opacos e progresso real por atributos; chunks iniciais 2,3,4 e chunk1 quando exploração avança.
+- **Observado via Open Cloud readback da publicação v6**: `Players.MaxPlayers=1`. Não foi necessário alterar limite; hard gate 1/servidor também foi implementado. Capacidade futura multiplayer fora de T1-R1.
+- **Prova**: CI https://github.com/Sllay/Roblox-Studios/actions/runs/45030168933, release https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476, readback https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488. Teste de teleporte com Player no app Roblox ainda pendente; runner não finalizado.

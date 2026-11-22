@@ -79,3 +79,18 @@ Código corrigido em `9e07bcd44f7326be264b8e17ee78aca4a047b8dd`, publicado como 
 - [ ] Não considerar T1-R1 validado com base no CI + Luau Execution. A entrada real do jogador é o gate pendente.
 
 Evidência da publicação https://github.com/Sllay/Roblox-Studios/actions/runs/44978951305; readback source v5 https://github.com/Sllay/Roblox-Studios/actions/runs/44979034609; cinco seeds testadas na engine, mas falha no jogo real ainda não isolada.
+
+## **NOVO** — v6: lobby público e partida reservada, teste inicial 22/11/2026
+
+A revisão anterior v5 tinha bug `Boot:101 record.seed nil`; não usar seus erros como se fossem da v6. Seed válida do Mundo 1: **516639272**.
+
+- [ ] **Fechar completamente v5** e entrar de novo. Menu principal totalmente opaco (nada do 3D aparece atrás) e título mostra **v6** ao entrar em Jogar.
+- [ ] `Mundo 1 -> Entrar` não cria novo save e mostra tela opaca "Conectando ao servidor privado...".
+- [ ] Novo servidor reservado abre loader "Gerando região 1/3, 2/3, 3/3" com barra que avança por confirmação real de cada chunk; nenhum teste de progresso falso.
+- [ ] Quando terminar, carregamento desaparece, R6 e câmera lateral surgem e o jogador fica sobre Terrain; mundo próprio para um jogador.
+- [ ] Ir à direita para testar rio/água e natação. Ao ir bem à esquerda, chunk oeste é gerado ao explorar, sem travamentos perceptíveis ou lacuna no terreno.
+- [ ] Sair e entrar novamente no Mundo 1: **mesma seed 516639272 e posição**.
+- [ ] Se a transferência ou load falhar: capturar tela do código de erro, etapa e Developer Console; não excluir.
+- [ ] Player cap real na engine publicado já retornou `Players.MaxPlayers=1` no teste remoto; hard gate do servidor impede segundo jogador mesmo se configurarem outro valor.
+
+Release https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476; readback https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488. Continuar T1-R1 `in_progress` até reteste real.

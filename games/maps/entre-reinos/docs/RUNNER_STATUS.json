@@ -3,8 +3,8 @@
   "project": "entre-reinos",
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
-  "recordedAt": "2026-11-21",
-  "note": "T1-R1 publicado em staging revision 5. O erro original de Terrain ainda necessita reprodução no runtime; cinco seeds geraram com sucesso em Luau edit session. Console UI agora informa causa/etapa/seed; T1-R1 continua in_progress.",
+  "recordedAt": "2026-11-22",
+  "note": "T1-R1 STAGING ROBLOX v6: lobby solo e mundo em servidor reservado do mesmo Place; retorno duplo nil record corrigido. 155 Python tests, pure Luau, Rojo, Open Cloud render engine 3+1 chunks and water PASS. Teste de teleport real e mobile pendente; T1-R2 segue planejado.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -22,12 +22,12 @@
         "status": "preview_published",
         "previewRunner": "T1-R1",
         "isSeasonFinal": false,
-        "commit": "3d00a25e",
+        "commit": "d8b821eb6fddfa9a0b9ba2d14a36d62049d95922",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 5,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978951305",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44979034609"
+        "revisionId": 6,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488"
       },
       "userReview": "not_requested",
       "refinementCycles": [],
@@ -35,31 +35,30 @@
         {
           "id": "T1-R1",
           "status": "in_progress",
-          "commit": "971a306932aa8aa39c301a30a1fe9938f5329859",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978915630",
+          "commit": "ad55c0176a9d2adf63f954ee124a584b1f550e28",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030168933",
           "receipt": "docs/runner-receipts/T1-R1.md",
           "validation": {
             "structure": "pass",
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "isolated_terrain_probe_5_seeds_pass; live_load_not_verified",
-            "mobile": "awaiting_creator_v5_retest"
+            "runtime": "unsaved_engine_seed_516639272_3+1_chunks_and_water_pass",
+            "mobile": "awaiting_creator_real_teleport_test"
           },
           "blockers": [
-            "v4 criador confirmou falha ao abrir Mundo 1: terrain/world_needs_new_server, bad_slot_or_session_active, other_slot_active; v5 precisa reteste mobile real",
-            "Causa específica da falha no servidor real ainda não identificada; o v4 mascarava o erro de Terrain ao chamar resume, v5 mantém código/etapa e seed visíveis",
-            "Após abrir o mundo, validar câmera 3D, R6, movimentação/natação, save após reconexão e desempenho mobile"
+            "A transferência real via TeleportAsync para ReservedServerId ainda não foi observada com um Player em partida; exige teste no Roblox publicado",
+            "Persistência após reentrar, física R6, camera e natação mobile ainda necessitam validação do criador",
+            "Não completar T1-R1 nem começar T1-R2 até partida real passar"
           ],
           "previewPublication": {
-            "status": "published_v5",
+            "status": "published_v6",
             "placeId": "90623742498445",
             "universeId": "10769712413",
-            "revision": 5,
-            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978951305",
-            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44979034609",
-            "verifiedChecks": 12,
-            "fix": "Prevent terrain errors being masked by resume; preserve save position and report seed/actual server version; bounded idempotent lease release"
+            "revision": 6,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488",
+            "fix": "Luau two-result collapse (Boot:101), separate lobby/private world server; 3 initial chunks + 1 streamed; opaque loading; solo gate."
           }
         },
         {
@@ -95,7 +94,7 @@
           "blockers": []
         }
       ],
-      "previewUserReview": "awaiting_creator_live_retest_after_v5"
+      "previewUserReview": "awaiting_creator_retest_after_v6"
     },
     {
       "id": "T2",
@@ -227,7 +226,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R1_staging_v5_terrain_diagnostic_awaiting_mobile",
+  "programStage": "T1_R1_staging_v6_lobby_reserved_world_awaiting_playtest",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -253,20 +252,21 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "971a306932aa8aa39c301a30a1fe9938f5329859",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978915630",
+    "codeCommit": "ad55c0176a9d2adf63f954ee124a584b1f550e28",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030168933",
     "ciConclusion": "success",
-    "publishedVersion": 5,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978951305",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44979034609",
-    "verifiedChecks": 12,
-    "seedSweepRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978508712",
-    "seedSweepSucceeded": 5,
-    "seedSweepError": "Roblox Open Cloud HTTP 429 on sixth request; not a terrain generator failure",
-    "scope": "CI + five unsaved Terrain seeds + Open Cloud publish v5 + saved Source readback. Live player/Datastore/camera movement remains untested",
-    "runtime": "isolated generation pass 5 seeds; real live initial world error not yet isolated",
+    "publishedVersion": 6,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030363476",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45030586488",
+    "verifiedModules": 17,
+    "observedMaxPlayers": 1,
+    "knownUserWorldSeed": 516639272,
+    "engineInitialChunks": 3,
+    "engineStreamedChunks": 4,
+    "engineWaterCells": 596,
+    "liveTeleport": "not_tested",
     "mobile": "awaiting_creator_retest",
-    "staging": "published_v5"
+    "staging": "published_v6"
   },
   "remoteIdentity": {
     "status": "verified",

@@ -104,3 +104,11 @@ Distinguir algoritmos ORIGINAIS (H) de configuracoes/analise estatica de Kingdom
 Commit `ce50d163e8978623fa944da27b4b41cc6e58c072`, CI https://github.com/Sllay/Roblox-Studios/actions/runs/44965276453 passou no escopo automatizado. Novo arquivo `ReplicatedStorage/SlotLeasePolicy.luau` formaliza expiração e decisões de `UpdateAsync` idempotentes testadas no Luau VM. `WorldService` está realmente em `ServerScriptService/Services/` (bug de path duplicado corrigido). Post-write do Terrain verifica `SolidMaterial`, `SolidOccupancy` e `LiquidOccupancy`; bordas físicas limitam a primeira região e foreground preto evita a zona central.
 
 A revisão de comportamento físico (R6, PlaneConstraint, Swimming), carga/durabilidade DataStore no Roblox real e desempenho mobile permanecem obrigatórios. Não concluir runner nem liberar T1-R2 com base em build.
+
+## Estado v6 — separação lobby / instância de mundo
+
+No mesmo Place em staging, a função de servidor é decidida por `WorldRoute.isWorldServer(game.PrivateServerId, game.PrivateServerOwnerId)`. Lobby público apenas opera a listagem/criação (sem lease) e envia `TeleportService:TeleportAsync` com `TeleportOptions.ReservedServerId` criado no servidor. Cada mundo abre em um servidor Roblox **reservado e isolado**, exclusivo do jogador nesta fase. JoinData/TeleportData é apenas um ticket e nunca a fonte de seed/posição: record completo vem do DataStore por `Player.UserId`.
+
+Ao chegar, autenticar roteamento, criar R6, abrir save com `UpdateAsync` e lease, gerar chunks nativos 2,3,4, exibir UI opaca progressiva e iniciar simulação só após terreno/corpo prontos. O chunk1 oeste usa `World.ensureNear` enquanto o usuário se desloca; cada chunk possui readback de sólido/líquido/material, evita sobrescrever Terrain. Voltar ao lobby com `TeleportOptions.ForcePublicServer`.
+
+Os testes automáticos e o Roblox Luau edit session passaram, v6 publicada, mas teleport e gameplay reais aguardam teste mobile. `Players.MaxPlayers=1` já observado no Place, sem mutação de configurações. Não levar essa arquitetura para o Black Island.
