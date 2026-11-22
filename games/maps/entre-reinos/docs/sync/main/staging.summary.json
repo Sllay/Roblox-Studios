@@ -13,20 +13,14 @@
     "Terrain": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 12,
+  "loadedVersion": 13,
   "placeId": "90623742498445",
   "schemaVersion": 1,
-  "stateDigest": "54d375469a2cddb2addcc2b135cf2ac49280c4835d6043df4dc45b6ad16c5843",
+  "stateDigest": "a3a17dc80c3bcae45bcc40113c4e59f407974edafaac12207db527172daf0d46",
   "terrain": {},
   "total": 84,
   "universeId": "10769712413",
   "workspaceRoots": [
-    {
-      "class": "Camera",
-      "key": "path:[\"Workspace\",[{\"class\":\"Camera\",\"name\":\"Camera\",\"ordinal\":1}]]",
-      "managedId": "",
-      "name": "Camera"
-    },
     {
       "class": "Model",
       "key": "path:[\"Workspace\",[{\"class\":\"Model\",\"name\":\"StartArea\",\"ordinal\":1}]]",
@@ -38,6 +32,12 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Terrain\",\"name\":\"Terrain\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "Terrain"
+    },
+    {
+      "class": "Camera",
+      "key": "path:[\"Workspace\",[{\"class\":\"Camera\",\"name\":\"Camera\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "Camera"
     }
   ]
 }
