@@ -156,6 +156,56 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertNotIn('stats.Position = UDim2.fromOffset(12, 16)', client)
         self.assertNotIn('gui.IgnoreGuiInset = true', client)
 
+    def test_r1_native_r6_animation_controller_preserved(self):
+        service = read("ServerScriptService/Services/CharacterService.luau")
+        lane = read("StarterPlayer/StarterPlayerScripts/LaneController.luau")
+        self.assertIn('old:FindFirstChild("Animate")', service)
+        self.assertIn('animateSource:Clone()', service)
+        self.assertIn('animate.Parent = model', service)
+        self.assertIn('Enum.HumanoidStateType.Swimming', lane)
+        self.assertNotIn('Humanoid.RigType =', service)
+        self.assertNotIn('h.Jump =', lane)
+
+    def test_r2_live_npc_construction_is_server_only_and_saved(self):
+        boot = read("ServerScriptService/Boot.server.luau")
+        living = read("ServerScriptService/Services/LivingService.luau")
+        saves = read("ServerScriptService/Services/SaveSlotService.luau")
+        slots = read("ReplicatedStorage/SlotModel.luau")
+        client = read("StarterPlayer/StarterPlayerScripts/ClientBoot.client.luau")
+        for name in ("LivingModel", "Inventory", "ItemDefs", "ProfessionDefs",
+                     "StructureDefs", "WorkEngine"):
+            self.assertTrue((SRC/"ReplicatedStorage/Living"/(name+".luau")).is_file())
+        self.assertIn('WaitForChild("LivingService")', boot)
+        self.assertIn('pcall(LivingService.start,', boot)
+        self.assertIn('LivingService.snapshot(player)', boot)
+        self.assertIn('Saves.setLivingProvider(function(player: Player)', boot)
+        self.assertIn('if worldServer then', boot)
+        self.assertIn('LivingService.stop(player)', boot)
+        self.assertIn('s.data.living = LivingModel.clone(state)', saves)
+        self.assertIn('if data.living ~= nil and not Living.valid(data.living)', slots)
+        self.assertIn('actions.OnServerInvoke=function(player: Player,action: any,typeId: any)', living)
+        self.assertIn('owner~=player', living)
+        self.assertIn('Work.place(state,typeId,x)', living)
+        self.assertIn('RunService.Heartbeat:Connect', living)
+        self.assertIn('Players:CreateHumanoidModelFromDescriptionAsync(', living)
+        self.assertIn('BuildMenu.start(player)', client)
+
+    def test_r2_no_client_minting_no_future_economy(self):
+        menu = read("StarterPlayer/StarterPlayerScripts/BuildMenu.luau")
+        engine = read("ReplicatedStorage/Living/WorkEngine.luau")
+        inventory = read("ReplicatedStorage/Living/Inventory.luau")
+        self.assertIn('remote:InvokeServer(action,arg)', menu)
+        self.assertNotIn('DataStoreService', menu)
+        self.assertNotIn('UpdateAsync(', menu)
+        self.assertIn('site.remaining-=n', engine)
+        self.assertIn('Inventory.add(npc.inventory,item,n)', engine)
+        self.assertIn('Inventory.take(npc.inventory,item,n)', engine)
+        self.assertIn('b.delivered[item]', engine)
+        self.assertIn('claimed', engine)
+        self.assertIn('function Inv.transfer(source: any, dest: any, id: string, amount: number)', inventory)
+        self.assertNotIn('currency', engine.lower())
+        self.assertNotIn('portal', engine.lower())
+
     def test_user_production_target_is_unset(self):
         targets = json.loads((GAME / "deploy.targets.json").read_text())["environments"]
         self.assertEqual(str(targets["staging"]["universeId"]), "10769712413")
