@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-22",
-  "note": "22/11 T1-R3 staging preview v12 published successfully; independent Roblox Luau Execution readback v12 PASS 11/11 source checks plus native Terrain 3 chunks, R3 fresh/legacy migration, scripted infected duke, two-front invasion, coin anti-duplication. Not live mobile gameplay/FPS. Creator still reports mild NPC footstep jitter from v11; v12 new per-frame render integration requires mobile retest. Production/Black Islands untouched.",
+  "note": "22/11 T1-R3 v13: creator rejected developer-like nine-button UI. Single immersive village journal + compact 2-button combat + contextual interaction + truthful regional sources, NPC bags/reserved/committed summary + real near-site crafting, construction progress, optional FPS. Staging v13 published; independent Roblox v13 engine readback PASS all 13 source checks and 5 mounted/catalog/inventory/legacy checks. Mobile visual/UI playtest remains pending; game/production untouched.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -22,12 +22,12 @@
         "status": "preview_published",
         "previewRunner": "T1-R3",
         "isSeasonFinal": false,
-        "commit": "1ad913a2e843eb1db4efaa60cd844b9d76635d0c",
+        "commit": "9b8b19cadf7ea89fc24bbb8363dd38ae774b02b9",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 12,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45042109502",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45042278397"
+        "revisionId": 13,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044458402",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044562948"
       },
       "userReview": "not_requested",
       "refinementCycles": [],
@@ -103,21 +103,21 @@
         {
           "id": "T1-R3",
           "status": "in_progress",
-          "commit": "3f4af1a4808472e258f3b2bd3316a31134d28abc",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45042046569",
+          "commit": "e0abafa4275ca49a9ec2e732af38d14014517ba0",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044388022",
           "receipt": "docs/runner-receipts/T1-R3.md",
           "validation": {
             "structure": "pass",
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "v12_independent_roblox_engine_11_source_checks_and_R3_migration_duke_invasion_coin_terrain_pass",
-            "mobile": "awaiting_creator_actual_R6_swim_NPC_combat_raid_prologue_FPS"
+            "runtime": "v13_independent_engine_13_source_5_game_ui_mounted_inventory_conservation_migration_checks_pass",
+            "mobile": "awaiting_creator_mobile_game_ui_layout_context_action_real_controls_FPS"
           },
           "blockers": [
-            "Criador precisa validar gameplay real mobile da v12: passos dos quatro NPCs, controle R6/água, botões de combate, projéteis, danos e moeda",
-            "Novo slot separado para testar prólogo; nunca apagar Mundo 1. Reabrir Mundo 1 para migração R2→R3 e persistência",
-            "Prologue com guardas/cenas e equipamentos/defesa ainda precisa da aprovação visual do criador; simulações de longos dias e stress precisam medição adicional em cliente real"
+            "Player mobile v13: visual grade UX, safe zone for native jump/thumbstick, spacing and visibility of village journal + contextual/combat actions",
+            "Player mobile v13: manually confirm resource stock vs NPC inventory, building requirements, crafting near source, coin and defense real behavior",
+            "Legacy Mundo 1 save/reconnect + fresh slot tutorial (without deleting existing saves), NPC 60FPS fluidity after prior v12 work"
           ],
           "deliverables": [
             "Native client per-frame NPC velocity integration with bounded authoritative correction",
@@ -127,19 +127,19 @@
             "R3HUD mobile combat and defense buttons, day/night lighting, existing slots preserved"
           ],
           "previewPublication": {
-            "status": "published_v12",
+            "status": "published_v13",
             "placeId": "90623742498445",
             "universeId": "10769712413",
-            "revision": 12,
-            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45042109502",
-            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45042278397",
-            "verifiedSourceChecks": 11,
-            "engineProbe": "R3_duke_two_front_coin_migration_nativeTerrain_pass",
+            "revision": 13,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044458402",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044562948",
+            "verifiedSourceChecks": 13,
+            "engineProbe": "mounted_build_journal_costs_actual_sources_and_R3_migration_pass",
             "mobile": "pending"
           }
         }
       ],
-      "previewUserReview": "awaiting_creator_R3_v12_mobile_and_save_review"
+      "previewUserReview": "awaiting_creator_review_of_v13_immersive_UI_R3"
     },
     {
       "id": "T2",
@@ -271,7 +271,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R3_preview_v12_published_engine_checked_awaiting_mobile_author_review",
+  "programStage": "T1_R3_v13_immersive_ui_staging_published_engine_verified_awaiting_creator_mobile_review",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -297,13 +297,13 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "3f4af1a4808472e258f3b2bd3316a31134d28abc",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45042046569",
+    "codeCommit": "e0abafa4275ca49a9ec2e732af38d14014517ba0",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044388022",
     "ciConclusion": "success",
-    "publishedVersion": 12,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45042109502",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45042278397",
-    "verifiedModules": 11,
+    "publishedVersion": 13,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044458402",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044562948",
+    "verifiedModules": 13,
     "seedTested": 516639272,
     "engineInitialChunks": 3,
     "engineWaterCells": 596,
@@ -312,8 +312,8 @@
     "nativeWaterRuleValid": true,
     "liveNPCPresentation": "v12_frame_integrated_unverified_mobile",
     "liveR6SwimStrokes": "user_confirmed_native_water_fixed_v10",
-    "mobile": "awaiting_creator_R3_v12",
-    "staging": "published_v12_T1_R3_preview",
+    "mobile": "awaiting_creator_R3_v13_UI",
+    "staging": "published_v13_immersive_UI",
     "productionUnchanged": true
   },
   "remoteIdentity": {
