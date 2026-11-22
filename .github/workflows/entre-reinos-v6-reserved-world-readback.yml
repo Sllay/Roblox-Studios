@@ -1,0 +1,118 @@
+name: Entre Reinos v6 published lobby/private-world and 3D chunk readback (unsaved)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/entre-reinos-v6-reserved-world-readback.yml
+
+permissions:
+  contents: read
+
+jobs:
+  readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Independently verify saved Place v6 and run unsaved 3+1 chunk generation
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import json,os
+          from cloud_tasks import run_task
+          source = '''
+          local H = game:GetService("HttpService")
+          local S = game:GetService("ServerScriptService")
+          local R = game:GetService("ReplicatedStorage")
+          local SP = game:GetService("StarterPlayer")
+          local P = game:GetService("Players")
+          local services = S:FindFirstChild("Services")
+          local shared = R:FindFirstChild("Game")
+          local client = SP:FindFirstChild("StarterPlayerScripts")
+          local function sourceContains(root,name,needle)
+              local obj = root and root:FindFirstChild(name)
+              if not obj then return false end
+              if not needle then return true end
+              local ok,sourceText=pcall(function() return obj.Source end)
+              return ok and type(sourceText)=="string"
+                  and string.find(sourceText,needle,1,true)~=nil
+          end
+          local checks={
+              boot=sourceContains(S,"Boot","Route.isWorldServer"),
+              privateRoute=sourceContains(S,"Boot","options.ReservedServerId = id"),
+              saveHandoff=sourceContains(S,"Boot","Saves.createDetached(player, index)"),
+              worldOpen=sourceContains(S,"Boot","Saves.open, player, index"),
+              chunkStreaming=sourceContains(S,"Boot","World.ensureNear("),
+              world=sourceContains(services,"WorldService","function World.ensureNear("),
+              saves=sourceContains(services,"SaveSlotService","function SaveSlotService.createDetached("),
+              r6=sourceContains(services,"CharacterService"),
+              route=sourceContains(shared,"WorldRoute"),
+              slot=sourceContains(shared,"SlotModel"),
+              menuOpaque=sourceContains(client,"SlotMenu","overlay.BackgroundTransparency = 0"),
+              loadingOpaque=sourceContains(client,"WorldLoadingUI","shade.BackgroundTransparency = 0"),
+              loadingProgress=sourceContains(client,"WorldLoadingUI",'ER_LoadProgress'),
+              clientMode=sourceContains(client,"ClientBoot","mode == \"world\""),
+              lane=sourceContains(client,"LaneController"),
+              camera=sourceContains(client,"SideCamera"),
+              start=sourceContains(workspace,"StartArea"),
+          }
+          local teleportOptions=Instance.new("TeleportOptions")
+          local teleportOk=pcall(function()
+              teleportOptions.ReservedServerId="00000000-0000-0000-0000-000000000001"
+              teleportOptions:SetTeleportData({slot=1,kind="EntreReinosWorld"})
+          end)
+          teleportOptions:Destroy()
+          local initial=false
+          local final=false
+          local countBefore=0
+          local countAfter=0
+          local cells=0
+          local errorCode=""
+          local phase=""
+          local elapsed=0
+          local worldOk, worldError=pcall(function()
+              local world=require(services:WaitForChild("WorldService"))
+              local start=os.clock()
+              local ok,reason=world.activate(516639272)
+              initial=ok
+              errorCode=reason or ""
+              countBefore=world.getChunkCount()
+              cells=tonumber(workspace:GetAttribute("ER_WorldWaterCells")) or 0
+              if ok then
+                  local nextOk,nextReason=world.ensureNear(516639272,-40)
+                  final=nextOk
+                  if not nextOk then errorCode=nextReason or "chunk_stream_failed" end
+              end
+              countAfter=world.getChunkCount()
+              phase=world.getPhase()
+              elapsed=math.floor((os.clock()-start)*1000)
+          end)
+          return H:JSONEncode({
+              universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
+              version=game.PlaceVersion,checks=checks,maxPlayers=P.MaxPlayers,
+              teleportOptionsSupported=teleportOk,initial=initial,final=final,
+              countBefore=countBefore,countAfter=countAfter,waterCells=cells,
+              worldCallOk=worldOk,
+              error=if worldOk then tostring(errorCode) else tostring(worldError):sub(1,400),
+              phase=phase,elapsedMs=elapsed
+          })
+          '''
+          r=run_task("10769712413","90623742498445",os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source,read_version=6)
+          public={k:v for k,v in r.items() if k in
+              ("loadedVersion","checks","maxPlayers","teleportOptionsSupported",
+               "initial","final","countBefore","countAfter","waterCells","worldCallOk",
+               "error","phase","elapsedMs")}
+          print("ENTRE_REINOS_V6_READBACK",json.dumps(public,sort_keys=True,ensure_ascii=False))
+          assert r["loadedVersion"]==6,"Unexpected saved Roblox revision"
+          assert all(r["checks"].values()),"One or more new gameplay modules absent from Place"
+          assert r["teleportOptionsSupported"],"Current Roblox reserved server options unsupported"
+          assert r["worldCallOk"] and r["initial"] and r["final"],"Unsaved chunk generation failed"
+          assert r["countBefore"]==3 and r["countAfter"]==4,"Chunk pipeline did not stream correctly"
+          assert r["waterCells"]>0,"No native water cells in initial Terrain"
+          print("ENTRE_REINOS_V6_READBACK_PASS")
+          PY
