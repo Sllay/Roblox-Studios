@@ -252,6 +252,29 @@ function R3.command(state: any,command: string): (boolean, any)
     return false,"action_unavailable"
 end
 
+-- An actual lost building requires rebuilding from finite materials.
+-- Salvage is a bounded fraction of material PREVIOUSLY consumed there;
+-- a persistent flag prevents repeated raids from creating infinite stocks.
+local function ruin(state: any,b: any)
+    if b.health>0 or b.ruined==true then return end
+    local def=Structures.get(b.typeId)
+    if not def then return end
+    b.ruined=true
+    b.state="ruined"
+    b.progress=0
+    for item,amount in pairs(b.delivered) do
+        local recover=math.min(amount,math.floor((def.cost[item] or 0)*0.2))
+        if recover>0 and #state.sites<256 then
+            table.insert(state.sites,{id="salvage_"..tostring(b.id).."_"..item,
+                item=item,x=b.x,remaining=recover})
+        end
+    end
+    b.delivered={}
+    b.claimed={}
+    b.health=0
+    table.insert(state.events,{kind="ruined",buildingId=b.id,time=state.elapsed})
+end
+
 local function wallBeforeTown(state: any,e: any): any
     local best=nil
     local nearest=math.huge
@@ -302,6 +325,7 @@ function R3.step(state: any,dt: number,playerX: number): number
         elseif block then
             block.health=math.max(0,block.health-7*dt)
             if block.state=="complete" then block.state="damaged" end
+            ruin(state,block)
             d.stats.structuresHit+=dt
         else
             if math.abs(e.x-playerX)<4 then
@@ -315,6 +339,7 @@ function R3.step(state: any,dt: number,playerX: number): number
                 if math.abs(b.x-e.x)<4 and b.health>0 then
                     b.health=math.max(0,b.health-4*dt)
                     if b.state=="complete" then b.state="damaged" end
+                    ruin(state,b)
                     break
                 end
             end
