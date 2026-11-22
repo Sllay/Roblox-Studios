@@ -137,3 +137,16 @@ Usuário testou v2 e relatou que o menu não deixava criar mundo porque Roblox i
 - User deve **sair por completo e abrir nova sessão** em https://www.roblox.com/games/90623742498445, criar Mundo 1, verificar avatar R6, geração Terrain/natação e seis slots.
 - Runner T1-R1 **ainda in_progress**: teste runtime do ciclo de vida Player.Character real e todo gameplay ainda pendentes. Não começar T1-R2 até correções e aprovação.
 - O código não depende mais de mudar Avatar Settings. Se aparecer erro `r6_creation_failed`, pedir evidência, não exigir editar configuração nem excluir mundo.
+
+## Incidente reportado em jogo v3 e correção staging v4
+
+- 21/11/2026 (UTC 22/11): o criador enviou captura do menu após tentar criar Mundo 1. Primeiro retornou `server_operation_failed`; ao tentar de novo, veio `world_already_active`. Ao voltar em Jogar, Mundo 1 já aparecia como **Dia 1**. Portanto a operação de criação/persistência chegou a ocorrer, mas o servidor ficou com estado de mundo/sessão ativo sem entregar uma resposta de entrada ao cliente. Não excluir o Mundo 1.
+- Análise do código v3 confirmou falha estrutural: `Boot.server.luau` marcava `activePlayer` e iniciava Terrain antes de executar diretamente `respawnOnLane`; qualquer exceção posterior era capturada como erro genérico e o bloqueio `if activePlayer or WorldService.isActive() or SaveSlotService.active(player)` tornava impossível retomar o mesmo slot.
+- Diagnóstico sem mexer em dados do jogador: https://github.com/Sllay/Roblox-Studios/actions/runs/44977611252 carregou Place v3 em sessão de edição Luau descartável, `WorldService.activate(42)` passou, `waterCells=574`, criação R6 real e PlaneConstraint passaram. Isso não isola a exceção específica do jogador, mas direciona para o fluxo de entrada real.
+- Fixado em `9e07bcd44f7326be264b8e17ee78aca4a047b8dd`: servidor agora responde com estágio `avatar/slot/terrain/character/lane` e log detalhado, inicia com tratamento de exceções por estágio, libera o lease se Terrain falhar e, principalmente, tem RPC `resume` que permite concluir o **mesmo** slot ativo sem recriar save ou regenerar Terrain. Entrada `create/open` no próprio slot ativo é idempotente. Cliente tenta `resume` quando uma operação falhar após possível ativação. `SaveSlotService.index(player)` fornece identidade da sessão segura, sem acesso a outro slot.
+- GitHub CI/Build: https://github.com/Sllay/Roblox-Studios/actions/runs/44977827154 (`success`).
+- Publicação oficial staging: https://github.com/Sllay/Roblox-Studios/actions/runs/44978003846; log `SUCCESS: Place 90623742498445, revision 4`.
+- Readback independente do Place v4: https://github.com/Sllay/Roblox-Studios/actions/runs/44978130381; versão 4 e 10/10 scripts/módulos presentes, além de `serverRecovery=true`, `clientRecovery=true` inspecionando Source do código publicado. Nenhuma alteração no Black Island nem produção.
+- T1-R1 continua `in_progress`: somente o criador pode verificar agora o ciclo verdadeiro do player/cliente, câmera, controls, nado e DataStore no servidor do Roblox.
+
+**Reteste prioritário:** entrar em um servidor NOVO da versão 4, clicar em Jogar > **Entrar Mundo 1**, NUNCA clicar Excluir. Caso falhe, enviar texto exato incluindo `(etapa: X)`. Se o mundo carregar, testar movimento, rio e seed após reconexão. T1-R2 continua planned.

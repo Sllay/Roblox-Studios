@@ -56,3 +56,9 @@ Estados: FIXADO, PROPOSTA, FUTURO, ABERTO. Criador tem prioridade sobre sugestõ
 - Não falsificar rig modificando `Humanoid.RigType`; usar API `Players:CreateHumanoidModelFromDescriptionAsync` após verificação oficial.
 - Colocar produção do R6 antes de `SaveSlotService.create/open` para garantir que erro não afete persistência.
 - Publicação staging 3 confirmada em https://github.com/Sllay/Roblox-Studios/actions/runs/44976293591; readback independente https://github.com/Sllay/Roblox-Studios/actions/runs/44976379375. R6 em cliente e gameplay ainda requerem teste do criador.
+
+## 21/11/2026 — T1-R1 restauração de sessão v4
+- Usuário reportou bug real na versão 3: erro `server_operation_failed` após criar Mundo 1, mas save Dia 1 existe, então `world_already_active` bloqueava a entrada.
+- FIXADO: o save permanece intacto; entradas posteriores no **mesmo slot ativo** devem ser recuperáveis e idempotentes, nunca criar outro save ou regenerar o Terrain sem necessidade.
+- FIXADO: erros de entrada têm estágio diagnóstico e caminhos de retry explícitos; em falha do Terrain o lease deve ser liberado com cautela.
+- V4 publicada em https://github.com/Sllay/Roblox-Studios/actions/runs/44978003846; readback da versão e código de recovery confirmado https://github.com/Sllay/Roblox-Studios/actions/runs/44978130381. Confirmação em partida real continua pendente.

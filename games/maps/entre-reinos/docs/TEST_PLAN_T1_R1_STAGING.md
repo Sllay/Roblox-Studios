@@ -56,3 +56,15 @@ Uma falha crítica de save, spawn, R6 ou nado bloqueia `T1-R1 validated`, mesmo 
 - Prioridade absoluta: Menu > Jogar > Criar Mundo 1, verificar se não há mais recusa de R6 e se a geração do mundo começa.
 - Se o R6 carregar sem animação, travar no ar ou não controlar, relatar separadamente: modelo e movimento são sistemas diferentes.
 - Se DataStore falhar, não deletar mundos para tentar reparar. Tratar como outro bug.
+
+## Reteste obrigatório — revisão staging 4, bug de sessão presa
+
+- [ ] Fechar o servidor v3, abrir novamente https://www.roblox.com/games/90623742498445 .
+- [ ] **Selecionar Mundo 1 existente e tocar Entrar**. Não excluir nem recriar.
+- [ ] Verificar se o menu fecha, personagem aparece e o mundo 3D de Terrain carrega.
+- [ ] Voltar ao menu sem mudar mundo, se possível, e abrir o mesmo Mundo 1: o servidor não deve retornar `world_already_active`.
+- [ ] Conferir câmera lateral, R6, esquerda/direita, rotação cima/baixo e natação no rio.
+- [ ] Se aparecer erro, registrar o nome e a nova **etapa** mostrada na mensagem (`terrain`, `character`, `lane` etc.).
+- [ ] Sair de fato e reentrar no Mundo 1: seed e posição devem continuar, sem criar segundo save.
+
+Código corrigido em `9e07bcd44f7326be264b8e17ee78aca4a047b8dd`, publicado como revisão 4 em https://github.com/Sllay/Roblox-Studios/actions/runs/44978003846 e leitura independente confirmada em https://github.com/Sllay/Roblox-Studios/actions/runs/44978130381.

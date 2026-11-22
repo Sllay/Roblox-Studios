@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-21",
-  "note": "T1-R1 corregido e publicado em staging na revisão Roblox 3. CI, API R6 e leitura remota PASS; validação de gameplay/móvel pendente, T1-R2 planejado.",
+  "note": "T1-R1 staging v4 corrigiu código de sessão presa após criação de save; CI e readback Cloud PASS, porém reteste real no celular pendente e runner permanece in_progress.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -22,12 +22,12 @@
         "status": "preview_published",
         "previewRunner": "T1-R1",
         "isSeasonFinal": false,
-        "commit": "263306969f02aa073f1e44f9bc540d996997b27d",
+        "commit": "d4c997a0b5172a2d31159846c58d229d2d38301f",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 3,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976293591",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976379375"
+        "revisionId": 4,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978003846",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978130381"
       },
       "userReview": "not_requested",
       "refinementCycles": [],
@@ -35,31 +35,31 @@
         {
           "id": "T1-R1",
           "status": "in_progress",
-          "commit": "01e90365974e3241b49e489a83a3adb28fad9999",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976179460",
+          "commit": "9e07bcd44f7326be264b8e17ee78aca4a047b8dd",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44977827154",
           "receipt": "docs/runner-receipts/T1-R1.md",
           "validation": {
             "structure": "pass",
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "R6_actual_model_api_probe_only",
-            "mobile": "awaiting_creator_retest"
+            "runtime": "isolated_terrain_r6_lane_probe_pass",
+            "mobile": "awaiting_creator_v4_retest"
           },
           "blockers": [
-            "Reteste do criador após revisão 3: criar Mundo 1, gerar Terrain, câmera, física X/Y, água, seis saves e FPS no celular",
-            "A API oficial gerou R6 em Luau Execution, mas o ciclo R15 -> R6 com Player.Character ainda requer teste de cliente em partida",
-            "Corrigir eventuais bugs de animação/controlador/SaveSlot/Terrain detectados antes de validar T1-R1"
+            "Usuário registrou v3: criar Mundo 1 gerava server_operation_failed, Mundo 1 persistia, depois world_already_active; v4 corrige recuperação mas ainda precisa reteste no Roblox real",
+            "Confirmar v4: Mundo 1 já existente abre sem excluir/criar outro, R6 entra, Terrain e controlador X/Y funcionam",
+            "Verificar natação, câmera, persistência após reconexão, seis slots e FPS mobile antes de validar o T1-R1"
           ],
           "previewPublication": {
-            "status": "published_v3",
+            "status": "published_v4",
             "placeId": "90623742498445",
             "universeId": "10769712413",
-            "revision": 3,
-            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976293591",
-            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976379375",
-            "verifiedObjects": 11,
-            "fix": "Server-side genuine R6 replaces R15 before acquiring save slot"
+            "revision": 4,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978003846",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978130381",
+            "verifiedObjects": 10,
+            "fix": "Recover active same-world session and show stage-specific errors; no duplicate saves or terrain regeneration"
           }
         },
         {
@@ -95,7 +95,7 @@
           "blockers": []
         }
       ],
-      "previewUserReview": "awaiting_creator_mobile_test"
+      "previewUserReview": "awaiting_creator_retest_after_v4"
     },
     {
       "id": "T2",
@@ -227,7 +227,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R1_staging_v3_R6_hotfix_awaiting_mobile",
+  "programStage": "T1_R1_staging_v4_session_recovery_awaiting_mobile",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -253,19 +253,19 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "01e90365974e3241b49e489a83a3adb28fad9999",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976179460",
+    "codeCommit": "9e07bcd44f7326be264b8e17ee78aca4a047b8dd",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44977827154",
     "ciConclusion": "success",
-    "releaseCommit": "263306969f02aa073f1e44f9bc540d996997b27d",
-    "publishedVersion": 3,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976293591",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976379375",
-    "robloxObjectsPresent": 11,
-    "rigProbeRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44976095162",
-    "scope": "official R6 model creation API probe, Luau/CI, Open Cloud publish v3 and remote readback; no full live gameplay",
-    "runtime": "R6 construction API probe passed",
+    "releaseCommit": "d4c997a0b5172a2d31159846c58d229d2d38301f",
+    "publishedVersion": 4,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978003846",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44978130381",
+    "robloxObjectsPresent": 10,
+    "worldProbeRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44977611252",
+    "scope": "CI + unsaved Roblox Terrain/R6/PlaneConstraint probe + official Open Cloud v4 publish + saved version/script source readback; no full live gameplay test",
+    "runtime": "isolated world generator and plane API passed",
     "mobile": "awaiting_creator_retest",
-    "staging": "published_v3"
+    "staging": "published_v4"
   },
   "remoteIdentity": {
     "status": "verified",
