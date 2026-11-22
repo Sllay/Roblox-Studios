@@ -332,7 +332,7 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('nearby.canTrade=math.abs(x)<=24', server)
         self.assertIn('return {ok=true,data=overview,hud=R3.summary(state),nearby=nearby}', server)
         self.assertIn('resources={sources=sources,carried=carried,reserved=reserved,', work)
-        self.assertIn('committed=committed}', work)
+        self.assertIn('committed=committed,stored=deposited,markedTrees=markedTrees}', work)
         self.assertIn('s.data.living = LivingModel.clone(state)',
                       read("ServerScriptService/Services/SaveSlotService.luau"))
         self.assertIn('local options = {wide = false, debug = false}', lobby)
