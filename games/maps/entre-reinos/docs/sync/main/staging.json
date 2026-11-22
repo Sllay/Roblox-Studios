@@ -1,5 +1,5 @@
 {
-  "loadedVersion": 7,
+  "loadedVersion": 8,
   "placeId": "90623742498445",
   "records": {
     "environment:lighting": {
@@ -39,6 +39,222 @@
         0
       ],
       "gravity": 196.1999969482422
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"Inventory\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "Inventory",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "Inventory",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 2300,
+        "sourceHash": "3vezA7mCB8FAHaBCFGG7k6a28JJs/yeiP3aVKdL2IHs="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"ItemDefs\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "ItemDefs",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "ItemDefs",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 982,
+        "sourceHash": "hFurLuKe/Jtz5Gr6kqwv+e1h0jqazIIVnVMSdVK5zm8="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"LivingModel\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "LivingModel",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "LivingModel",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 3178,
+        "sourceHash": "o4uj09TY+xhFeLMGzLtAsORCZd/7QgkGi+DoxhzruuY="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"ProfessionDefs\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "ProfessionDefs",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "ProfessionDefs",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 1313,
+        "sourceHash": "bsisnQwXFIK8TVLZjRWbBfd7YH3lAswpefY4qBQs/VA="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"StructureDefs\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "StructureDefs",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "StructureDefs",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 1529,
+        "sourceHash": "eWyPh1hpedh9JumfoG2Vv1qMuvy3YBJWOyRxo2k7Hgw="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"WorkEngine\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "WorkEngine",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "WorkEngine",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 11469,
+        "sourceHash": "dtROIj6qhtiFkBXFc9WQ12iye/zJPA0qBTk/J/UwKmA="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 6,
+      "class": "Folder",
+      "coverage": "structure",
+      "managedId": "",
+      "name": "Living",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        }
+      ],
+      "properties": [],
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
     },
     "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"Config\",\"ordinal\":1}]]": {
       "ambiguous": false,
@@ -142,8 +358,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 2901,
-        "sourceHash": "jmA7B49STJTqbmh/0iP8TsRp7obUTwdpEys8JoodF0E="
+        "sourceBytes": 3272,
+        "sourceHash": "BT48mDDJYCnU4YzCKOT8tKsn4Kol/DttWFjuEamtvs8="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -205,7 +421,7 @@
     "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
-      "childCount": 6,
+      "childCount": 7,
       "class": "Folder",
       "coverage": "structure",
       "managedId": "",
@@ -288,8 +504,35 @@
         }
       ],
       "properties": {
-        "sourceBytes": 4081,
-        "sourceHash": "dqiTQoTfNOvT8EXDgZ70uksqLNixtRq39c5SJV+HvW4="
+        "sourceBytes": 5201,
+        "sourceHash": "IHPIe/zOGz5LbmWrESRLv3A++i1MtaTUk5jmFijUXt8="
+      },
+      "service": "ServerScriptService",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"LivingService\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "LivingService",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Services",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "LivingService",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 12716,
+        "sourceHash": "umU2GB2a8MYhw6P3GgReoqPHVD+6JdPjWoOYSoEe9cU="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -315,8 +558,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 13193,
-        "sourceHash": "Gybg91+zL8WKfVjSCTNshUS/cW982IlxdyXxcqYQni0="
+        "sourceBytes": 14207,
+        "sourceHash": "sPnVxZ0aIoQfDL8vI4W5IUBltYogv38m6WPV0t23Jm0="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -351,7 +594,7 @@
     "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
-      "childCount": 3,
+      "childCount": 4,
       "class": "Folder",
       "coverage": "structure",
       "managedId": "",
@@ -385,8 +628,8 @@
       "properties": {
         "enabled": true,
         "runContext": "Legacy",
-        "sourceBytes": 16170,
-        "sourceHash": "XkdwEHC9vs1f3yyW2/H1sHTSbNOEs6rRDIxEULQFEHI="
+        "sourceBytes": 17270,
+        "sourceHash": "Pe02GrYwsJleSlYl/UNC9tP/pz+j0KXu+a7owgIRKPM="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -433,8 +676,8 @@
       "properties": {
         "enabled": true,
         "runContext": "Legacy",
-        "sourceBytes": 3327,
-        "sourceHash": "CWc5ZdYfwDmd45cdFCCQex5UHOUsvGPqhlrkqwAxlSo="
+        "sourceBytes": 3426,
+        "sourceHash": "Wv8FrTtYnSPMnSSGx9wEmcOawGe8vTzjQ8385K1jyE0="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -525,6 +768,33 @@
         "runContext": "Legacy",
         "sourceBytes": 13029,
         "sourceHash": "14vwjF7fPzymPlWubd5pwzSRpxXIvvFPtHITXbchOIc="
+      },
+      "service": "StarterPlayer",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"BuildMenu\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "BuildMenu",
+      "path": [
+        {
+          "class": "StarterPlayerScripts",
+          "name": "StarterPlayerScripts",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "BuildMenu",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 4986,
+        "sourceHash": "H4zRwXzj8aTWhNlQkgkYBuSjfizkkd2SHBSqQcRd8bk="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2181,7 +2451,7 @@
     "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
-      "childCount": 8,
+      "childCount": 9,
       "class": "StarterPlayerScripts",
       "coverage": "structure",
       "managedId": "",
@@ -2423,7 +2693,7 @@
     "Teams",
     "ReplicatedFirst"
   ],
-  "stateDigest": "0afd92f6a7735c2aa1efa550b54e90941eb29eec3b0aee5c24a9f6e91693dd78",
-  "total": 71,
+  "stateDigest": "519895dbf28dd3961504f4ce32aa86f9eac59d637dcf0e7afbe0418ff6b07983",
+  "total": 80,
   "universeId": "10769712413"
 }

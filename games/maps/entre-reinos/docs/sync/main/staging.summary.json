@@ -1,10 +1,10 @@
 {
   "classes": {
     "Camera": 1,
-    "Folder": 4,
+    "Folder": 5,
     "LocalScript": 3,
     "Model": 1,
-    "ModuleScript": 56,
+    "ModuleScript": 64,
     "Part": 1,
     "Script": 1,
     "SpawnLocation": 1,
@@ -13,12 +13,12 @@
     "Terrain": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 7,
+  "loadedVersion": 8,
   "placeId": "90623742498445",
   "schemaVersion": 1,
-  "stateDigest": "0afd92f6a7735c2aa1efa550b54e90941eb29eec3b0aee5c24a9f6e91693dd78",
+  "stateDigest": "519895dbf28dd3961504f4ce32aa86f9eac59d637dcf0e7afbe0418ff6b07983",
   "terrain": {},
-  "total": 71,
+  "total": 80,
   "universeId": "10769712413",
   "workspaceRoots": [
     {
