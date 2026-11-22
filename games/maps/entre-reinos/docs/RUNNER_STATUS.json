@@ -31,21 +31,22 @@
         {
           "id": "T1-R1",
           "status": "in_progress",
-          "commit": "36f7ddebb501877c69f423b74853c1dcfb9a8e12",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44964751575",
+          "commit": "ce50d163e8978623fa944da27b4b41cc6e58c072",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44965276453",
           "receipt": "docs/runner-receipts/T1-R1.md",
           "validation": {
-            "structure": "passed_previous_ci",
-            "luau": "passed_previous_compile_only",
-            "unit": "running_new_pure_luau_assertions",
-            "rojo": "passed_previous_ci",
+            "structure": "pass",
+            "luau": "pass",
+            "unit": "pass",
+            "rojo": "pass",
             "runtime": "not_run",
             "mobile": "not_run"
           },
           "blockers": [
-            "R6 Avatar Settings must be verified in staging; not scriptable from runtime",
-            "Runtime Terrain liquid/physical swimming, camera and 6-slot DataStore CRUD not tested on Roblox/mobile",
-            "Staging Universe/Place IDs unverified; no publishing"
+            "Sem runtime Roblox real validado: Terrain voxel, natação, câmera e limite Z exigem execução da experiência",
+            "DataStore Create/Open/Delete, leases e retomada após queda não testados em servidores reais",
+            "Avatar Settings R6 e par Universe/Place staging não verificados; nenhuma publicação",
+            "O controle touch e visuais precisam de aprovação no dispositivo móvel"
           ]
         },
         {
@@ -226,7 +227,7 @@
     "runStarted": true
   },
   "preflight": {
-    "status": "complete_runner_started",
+    "status": "completed",
     "date": "2026-11-21",
     "validatedMainCommit": "cb96b9e5c508571e937ea72c84698f64c543b049",
     "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44959789451",
@@ -236,5 +237,14 @@
     "stagingBlocks": "publishing only, not coding",
     "runtimeRobloxTested": false,
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
+  },
+  "latestEvidence": {
+    "commit": "ce50d163e8978623fa944da27b4b41cc6e58c072",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44965276453",
+    "conclusion": "success",
+    "scope": "GitHub Actions automated tests, 150 Python unit tests, Luau compiler + strict analysis + VM assertions and Rojo builds; not Roblox Studio/live gameplay",
+    "runtime": "not_run",
+    "mobile": "not_run",
+    "staging": "not_published"
   }
 }

@@ -99,3 +99,19 @@ Para perguntas sobre 'o que fazer agora', consultar primeiro status JSON em vez 
 - Avatares R6 são configurados em Avatar Settings do Place, e o código falha explicitamente caso o jogador esteja em R15. Não alterar RigType em um Humanoid R15 ao vivo.
 - Publicação staging continua BLOQUEADA por ID sem verificação, e não ocorre antes de T1-R3 e aprovação do fluxo oficial.
 - Próxima ação: corrigir eventuais falhas do novo CI que executa testes Luau, expandir testes de lock/CRUD em Roblox, capturar métricas reais e validar água/plane/câmera em cliente. NÃO iniciar T1-R2 nem marcar validated.
+
+## Checkpoint mais recente T1-R1 — execução real, CI verde, ainda NÃO validado
+
+Código atual comprovado: `ce50d163e8978623fa944da27b4b41cc6e58c072`.
+CI: https://github.com/Sllay/Roblox-Studios/actions/runs/44965276453 (concluído com sucesso).
+150 testes Python (inclui wiring/paths), testes Luau puros executados (WorldProfile, SlotModel, SlotLeasePolicy), analise de tipos Luau de módulos puros, Rojo build do novo Place passaram.
+
+Arquivos relevantes:
+- `game/places/main/src/ReplicatedStorage/{WorldProfile,SlotModel,SlotLeasePolicy}.luau`
+- `game/places/main/src/ServerScriptService/{Boot.server.luau,Services/WorldService.luau,Services/SaveSlotService.luau}`
+- `game/places/main/src/StarterPlayer/StarterPlayerScripts/{ClientBoot.client.luau,LaneController.luau,SideCamera.luau,SlotMenu.luau}`
+- `game/tests/region_and_slots.luau` e `/tests/test_entre_reinos_wiring.py`.
+
+Diagnóstico do bug já corrigido: WorldService estava sob `src/game/places/main/src/...` duplicado e Boot não o carregaria. Corrigido e protegido por unittest. Gerador possui limites de região x, readback de voxels sólidos/líquidos/materiais e cancela geração se a região tiver Terrain preexistente.
+
+**NÃO declarar validated, NÃO iniciar T1-R2:** runtime Roblox e mobile nunca foram executados neste turno, Avatar R6 e IDs staging não verificados. Próximo checkpoint obrigatório é teste real do servidor (criar/abrir/excluir 6 slots, locks, queda/reconexão, Terrain + água e input Z) e correções. Status oficial docs/RUNNER_STATUS.json.

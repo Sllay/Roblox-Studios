@@ -98,3 +98,9 @@ Distinguir algoritmos ORIGINAIS (H) de configuracoes/analise estatica de Kingdom
 - `game/tests/region_and_slots.luau`: assertions Luau de seed, rio, chaves de slot e schema. Integradas ao quality_gate_v2.py em CI.
 - Requisitos pendentes de validação no Roblox real: física do PlaneConstraint e nado R6, compatibilidade de Avatar Settings, readback Terrain, DataStore e FPS real de dispositivos móveis.
 - STATUS: não declarar T1-R1 validado antes de confirmar runtime/mobile e corrigir eventuais erros. Escopo T1-R2 ainda não iniciado.
+
+## T1-R1 — atualização do checkpoint validado em CI, sem runtime
+
+Commit `ce50d163e8978623fa944da27b4b41cc6e58c072`, CI https://github.com/Sllay/Roblox-Studios/actions/runs/44965276453 passou no escopo automatizado. Novo arquivo `ReplicatedStorage/SlotLeasePolicy.luau` formaliza expiração e decisões de `UpdateAsync` idempotentes testadas no Luau VM. `WorldService` está realmente em `ServerScriptService/Services/` (bug de path duplicado corrigido). Post-write do Terrain verifica `SolidMaterial`, `SolidOccupancy` e `LiquidOccupancy`; bordas físicas limitam a primeira região e foreground preto evita a zona central.
+
+A revisão de comportamento físico (R6, PlaneConstraint, Swimming), carga/durabilidade DataStore no Roblox real e desempenho mobile permanecem obrigatórios. Não concluir runner nem liberar T1-R2 com base em build.
