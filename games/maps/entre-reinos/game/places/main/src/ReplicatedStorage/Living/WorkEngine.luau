@@ -131,6 +131,7 @@ local function assign(npc: any, state: any): boolean
 end
 
 local function walk(npc: any, destX: number, dt: number): boolean
+    npc.targetX=destX
     local diff=destX-npc.x
     if math.abs(diff)<=NEAR then return true end
     local speed=Professions.get(npc.profession).moveSpeed

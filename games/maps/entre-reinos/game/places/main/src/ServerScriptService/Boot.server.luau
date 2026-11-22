@@ -206,7 +206,10 @@ local function startWorld(player: Player)
     -- T1-R2 lives in this reserved server and in the SAME leased world record.
     -- Do not proceed if the optional population schema is unknown/corrupt.
     stage(player, "population", 0.96, "Carregando moradores e trabalhos...")
-    local livingInvoked, livingOk, livingError = pcall(LivingService.start, player, record)
+    local livingInvoked, livingOk, livingError = pcall(LivingService.start,
+        player, record, function(fraction: number, message: string)
+            stage(player,"population",0.96+0.035*fraction,message)
+        end)
     if not livingInvoked or not livingOk then
         local reason = if livingInvoked then livingError else "living_start_exception"
         player:SetAttribute("ER_LoadError", reason or "living_start_failed")

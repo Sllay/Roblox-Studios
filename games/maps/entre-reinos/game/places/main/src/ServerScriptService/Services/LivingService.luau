@@ -211,7 +211,7 @@ function Service.snapshot(player: Player): any
     return Living.clone(state)
 end
 
-function Service.start(player: Player, worldRecord: any): (boolean, string?)
+function Service.start(player: Player, worldRecord: any, onProgress: ((number, string) -> ())?): (boolean, string?)
     if owner then return false,"population_already_active" end
     local loaded=Living.restore(worldRecord.living,worldRecord.seed)
     if not loaded then return false,"population_schema_conflict" end
@@ -223,10 +223,14 @@ function Service.start(player: Player, worldRecord: any): (boolean, string?)
     folder.Parent=workspace
     visualization=folder
     for _,site in ipairs(state.sites) do createSiteVisual(site) end
-    for _,npc in ipairs(state.npcs) do
+    for i,npc in ipairs(state.npcs) do
+        if onProgress then
+            onProgress((i-1)/#state.npcs,"Preparando morador "..tostring(i).."/"..tostring(#state.npcs))
+        end
         local model=createActor(npc)
         if model then figures[npc.id]=model end
     end
+    if onProgress then onProgress(1,"Moradores preparados") end
     for _,b in ipairs(state.buildings) do buildVisual(b) end
     draw()
 
