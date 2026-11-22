@@ -403,6 +403,7 @@ local function syncR3Hud(player: Player)
     player:SetAttribute("ER_R3Enemies",data.enemies)
     player:SetAttribute("ER_R3Phase",data.phase)
     player:SetAttribute("ER_R3Warning",data.warning)
+    player:SetAttribute("ER_R3Forecast",data.raidForecast)
     Lighting.ClockTime=((state.elapsed%R3.DAY)/10+6)%24
 end
 
@@ -586,6 +587,14 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
                     -- Crafting consumes two pieces from ONE nearby site.
                     -- Sum of several depleted sites must never imply craftability.
                     nearby.wood=math.max(nearby.wood,site.remaining)
+                end
+            end
+            for _,b in ipairs(state.buildings) do
+                if b.typeId=="stockpile" and b.state=="complete"
+                    and b.health>0 and b.stored
+                    and math.abs(b.x-x)<=12 then
+                    nearby.wood=math.max(nearby.wood,
+                        b.stored.items.wood or 0)
                 end
             end
             local closestCoin=6
