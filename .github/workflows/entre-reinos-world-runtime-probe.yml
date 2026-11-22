@@ -1,0 +1,82 @@
+name: Entre Reinos T1-R1 world activation probe (isolated Open Cloud editing session)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/entre-reinos-world-runtime-probe.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Run unsaved Terrain and PlaneConstraint diagnostic, no player data
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import json,os
+          from cloud_tasks import run_task
+          source = '''
+          local H=game:GetService("HttpService")
+          local W=game:GetService("Workspace")
+          local S=game:GetService("ServerScriptService")
+          local RS=game:GetService("ReplicatedStorage")
+          local result={universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),version=game.PlaceVersion}
+          local stage="load"
+          local okay,err=xpcall(function()
+              local svc=require(S:WaitForChild("Services"):WaitForChild("WorldService"))
+              local p=require(RS:WaitForChild("Game"):WaitForChild("WorldProfile"))
+              result.seedSample=p.sample(42,0,0).height
+              stage="activate"
+              local ok,reason=svc.activate(42)
+              result.worldOk=ok
+              result.worldReason=reason or ""
+              stage="lane"
+              local players=game:GetService("Players")
+              local description=Instance.new("HumanoidDescription")
+              local m=players:CreateHumanoidModelFromDescriptionAsync(description,Enum.HumanoidRigType.R6)
+              description:Destroy()
+              m.Parent=W
+              local root=m:WaitForChild("HumanoidRootPart")
+              local anchor=Instance.new("Part")
+              anchor.Anchored=true
+              anchor.CanCollide=false
+              anchor.CFrame=CFrame.Angles(0,math.pi/2,0)
+              anchor.Parent=W
+              local att0=Instance.new("Attachment")
+              att0.Parent=anchor
+              local att1=Instance.new("Attachment")
+              att1.Parent=root
+              local constraint=Instance.new("PlaneConstraint")
+              constraint.Attachment0=att0
+              constraint.Attachment1=att1
+              constraint.Parent=root
+              root.CFrame=CFrame.new(0,22,0)
+              result.planeOk=constraint.Attachment1==att1 and constraint.Attachment0==att0
+              result.rigOk=m:FindFirstChildOfClass("Humanoid").RigType==Enum.HumanoidRigType.R6
+              m:Destroy()
+              anchor:Destroy()
+              stage="complete"
+          end,function(e)return tostring(e).." (stage="..stage..")" end)
+          result.okay=okay
+          result.stage=stage
+          result.error=if okay then "" else tostring(err):sub(1,750)
+          result.signature=tostring(W:GetAttribute("ER_WorldSignature") or "")
+          result.waterCells=tonumber(W:GetAttribute("ER_WorldWaterCells")) or 0
+          -- All mutations above are inside an unsaved Luau execution edit session.
+          return H:JSONEncode(result)
+          '''
+          r=run_task("10769712413","90623742498445",os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source,read_version=3)
+          keep={k:v for k,v in r.items() if k in ("loadedVersion","okay","stage","error","worldOk","worldReason","planeOk","rigOk","waterCells","signature","seedSample")}
+          print("ENTRE_REINOS_WORLD_ACTIVATION_PROBE",json.dumps(keep,sort_keys=True))
+          if not r.get("okay") or not r.get("worldOk") or not r.get("planeOk"):
+              print("DIAGNOSTIC_REPRODUCED_OR_BLOCKED: see details above; no Place saved")
+          PY
