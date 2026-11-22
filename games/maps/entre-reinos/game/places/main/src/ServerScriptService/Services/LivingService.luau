@@ -431,7 +431,9 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
             end
             for _,site in ipairs(state.sites) do
                 if site.item=="wood" and math.abs(site.x-x)<=9 then
-                    nearby.wood+=site.remaining
+                    -- Crafting consumes two pieces from ONE nearby site.
+                    -- Sum of several depleted sites must never imply craftability.
+                    nearby.wood=math.max(nearby.wood,site.remaining)
                 end
             end
             local closestCoin=6
