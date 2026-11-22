@@ -5,7 +5,7 @@
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-21",
   "note": "PLANEJAMENTO; nenhuma implementacao de runner validada ou publicada.",
-  "stagingVerified": false,
+  "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
     "planned",
@@ -233,8 +233,8 @@
     "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44959789451",
     "ciResult": "success",
     "scope": "Scaffold, docs, plan and existing tests only; not a T1-R1 implementation pass",
-    "stagingPlaceVerified": false,
-    "stagingBlocks": "publishing only, not coding",
+    "stagingPlaceVerified": true,
+    "stagingBlocks": "read-only remote tree review and full replacement approval required before publishing",
     "runtimeRobloxTested": false,
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
@@ -246,5 +246,15 @@
     "runtime": "not_run",
     "mobile": "not_run",
     "staging": "not_published"
+  },
+  "remoteIdentity": {
+    "status": "verified",
+    "universeId": "10769712413",
+    "placeId": "90623742498445",
+    "loadedVersion": 1,
+    "verificationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975065621",
+    "method": "authenticated Open Cloud read-only Luau execution",
+    "ownerVerifiedByKeyAccess": true,
+    "fullPlaceAuthority": "not_yet_confirmed"
   }
 }

@@ -33,6 +33,37 @@ jobs:
             --place main \
             --universe-id 10769712413 \
             --place-id 90623742498445
+      - name: Audit saved Place roots before allowing full replacement (read-only)
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import json, os
+          from cloud_tasks import run_task
+          source = """
+          local Http = game:GetService("HttpService")
+          local rootNames = {"Workspace", "ReplicatedStorage", "ServerScriptService", "ServerStorage",
+                             "StarterPlayer", "StarterGui", "StarterPack", "Lighting"}
+          local roots = {}
+          for _, serviceName in ipairs(rootNames) do
+              local children = {}
+              for _, child in ipairs(game:GetService(serviceName):GetChildren()) do
+                  table.insert(children, {name = child.Name, class = child.ClassName})
+              end
+              roots[serviceName] = children
+          end
+          return Http:JSONEncode({
+              universeId = tostring(game.GameId), placeId = tostring(game.PlaceId),
+              placeVersion = game.PlaceVersion, creatorId = tostring(game.CreatorId),
+              creatorType = game.CreatorType.Name, roots = roots
+          })
+          """
+          response = run_task("10769712413", "90623742498445",
+                              os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], source)
+          print("ENTRE_REINOS_READ_ONLY_REMOTE_TREE",
+                json.dumps({"version": response["loadedVersion"], "roots": response["roots"]},
+                           sort_keys=True, ensure_ascii=False))
+          PY
       - name: Read-only verification completed
         if: success()
         run: echo "IDENTITY_VERIFIED_FROM_ROBLOX_ENGINE; no file or Place write performed"

@@ -1,16 +1,15 @@
-# Entre Reinos — IDs de Roblox aguardando verificação
+# Entre Reinos — Staging IDs CONFIRMADOS (21/11/2026)
 
-Fornecidos pelo criador em 21/11/2026:
-- Primeiro número: 10769712413
-- Segundo número: 90623742498445
+Os IDs foram comprovados em execução remota de somente leitura usando a API Open Cloud do Roblox, sem publicar ou alterar objetos:
 
-Hipótese forte, mas AINDA NÃO COMPROVADA:
-- Universe ID: 10769712413
-- Place ID: 90623742498445
-- Ambiente pretendido: staging de desenvolvimento, conforme contexto de dois ambientes separados.
+- **Universe ID:** 10769712413
+- **Place ID:** 90623742498445
+- Versão observada do Place: **1**
+- Workflow: https://github.com/Sllay/Roblox-Studios/actions/runs/44975065621 (success)
+- Evidência de log: `PLACE_ENROLLED {"verified": true, "recorded": false, "universeId": "10769712413", "placeId": "90623742498445", "version": 1}`.
+- A chave existente de `ROBLOX_OPEN_CLOUD_API_KEY` autorizou leitura da experiência; isso não prova permissão de publicação.
+- Registro local em `deploy.targets.json` realizado após verificação. `production` continua nulo.
 
-O acesso direto ao endpoint público de verificação não funcionou neste turno. Até confirmar que esse Place pertence exatamente ao Universe informado e que é o novo ambiente de desenvolvimento, NÃO modificar deploy.targets.json, NÃO publicar, NÃO associar ao Black Island.
+**Atenção:** vínculo de IDs não comprova que o Place esteja vazio nem autoriza substituição integral automaticamente. `game.manifest.json` permanece sem `fullPlaceBuildAuthoritative`; `publish.yml` é manual e exige confirmação de substituição. Antes da publicação, inspecionar o inventário remoto e confirmar se a cena é nova e gerenciada inteiramente por nós. Após isso validar Scene Sync/backup e fazer publicação somente staging.
 
-Verificação sugerida: resposta autenticada ou pública de https://apis.roblox.com/universes/v1/places/90623742498445/universe comparada ao Universe 10769712413; e checagem do nome e titularidade no Creator Dashboard.
-
-Production ficará sem ID até o usuário indicar experiência separada para lançamento.
+Não misturar este mapa com `mapa-principal` / Black Island. Não colar secrets no Git.
