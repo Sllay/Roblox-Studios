@@ -319,11 +319,19 @@ function R3.step(state: any,dt: number,playerX: number): number
     local dayTick=state.elapsed%R3.DAY
     d.night=day
     local night=dayTick>=R3.NIGHT_START and dayTick<R3.NIGHT_END
+    local scheduled=day>=1 and (day-1)%3==0
+    -- First night is peaceful; from night two every third night can bring
+    -- a local raid. Warn while there is still daylight to prepare defenses.
+    if d.prologue.stage=="sandbox" and not night and scheduled
+        and dayTick>=R3.NIGHT_START-25 and #d.enemies==0
+        and d.lastNight<day then
+        d.raidWarning="Batedores viram invasores! Proteja as muralhas."
+    end
     if d.prologue.stage=="sandbox" and night and day>d.lastNight then
         d.lastNight=day
         -- First sandbox night is protected; later local raids alternate with
         -- genuinely quiet nights. This is not a copied external game curve.
-        if day>=2 and (day+state.seed)%3==0 and #d.enemies==0 then
+        if scheduled and #d.enemies==0 then
             R3.spawnWave(state,2)
         else
             d.raidWarning="Noite tranquila. Mantenha suas defesas prontas."
@@ -432,6 +440,12 @@ function R3.summary(state: any): any
             and (state.elapsed%R3.DAY)<R3.NIGHT_END,
         phase=d.prologue.stage,raidActive=d.raidActive,
         warning=d.raidWarning,enemies=#d.enemies,
+        raidForecast=d.prologue.stage=="sandbox" and not d.raidActive
+            and d.lastNight<math.floor(state.elapsed/R3.DAY)
+            and (math.floor(state.elapsed/R3.DAY)-1)%3==0
+            and math.floor(state.elapsed/R3.DAY)>=1
+            and state.elapsed%R3.DAY>=R3.NIGHT_START-25
+            and state.elapsed%R3.DAY<R3.NIGHT_START,
         drops=d.drops,stats=d.stats}
 end
 return R3
