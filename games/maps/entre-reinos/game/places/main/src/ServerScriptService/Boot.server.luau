@@ -1,326 +1,372 @@
 --!strict
--- Entre Reinos T1-R1. One world per solo server; recoverable, idempotent slot activation.
--- A Place/character failure must never silently orphan an already saved world.
+-- T1-R1. Same Place, two server roles:
+-- public lobby only reads/creates slots and starts server-only teleport;
+-- a reserved server exclusively loads one player's world and writes Terrain.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 local services = script.Parent:WaitForChild("Services")
-local SaveSlotService = require(services:WaitForChild("SaveSlotService"))
-local WorldService = require(services:WaitForChild("WorldService"))
-local CharacterService = require(services:WaitForChild("CharacterService"))
-local gameFolder = ReplicatedStorage:WaitForChild("Game")
-local WorldProfile = require(gameFolder:WaitForChild("WorldProfile"))
-local SlotModel = require(gameFolder:WaitForChild("SlotModel"))
+local Saves = require(services:WaitForChild("SaveSlotService"))
+local World = require(services:WaitForChild("WorldService"))
+local Characters = require(services:WaitForChild("CharacterService"))
+local shared = ReplicatedStorage:WaitForChild("Game")
+local Profile = require(shared:WaitForChild("WorldProfile"))
+local Slots = require(shared:WaitForChild("SlotModel"))
 
-local remote = Instance.new("RemoteFunction")
-remote.Name = "ER_WorldSlots"
-remote.Parent = gameFolder
+local rpc = Instance.new("RemoteFunction")
+rpc.Name = "ER_WorldSlots"
+rpc.Parent = shared
 
--- The X axis of Attachment0 points along Z, so the PlaneConstraint permits XY.
-local planeAnchor = Instance.new("Part")
-planeAnchor.Name = "ER_PhysicsLaneAnchor"
-planeAnchor.Anchored = true
-planeAnchor.Transparency = 1
-planeAnchor.CanCollide = false
-planeAnchor.CanQuery = false
-planeAnchor.CanTouch = false
-planeAnchor.Size = Vector3.one
-planeAnchor.CFrame = CFrame.Angles(0, math.pi / 2, 0)
-planeAnchor.Parent = workspace
-local planeAttachment = Instance.new("Attachment")
-planeAttachment.Name = "ER_WorldLanePlane"
-planeAttachment.Parent = planeAnchor
-
+-- Dedicated destination is a RESERVED server. VIP servers are not world sessions.
+local worldServer = game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0
+local busy: {[Player]: boolean} = {}
 local activePlayer: Player? = nil
-local inFlight: {[Player]: boolean} = {}
-local lastAction: {[Player]: number} = {}
-local stages: {[Player]: string} = {}
+local activeSlot: number? = nil
+local pendingTeleport: {[Player]: boolean} = {}
 
-local function setStage(player: Player, stage: string)
-    stages[player] = stage
-    player:SetAttribute("ER_LoadStage", stage)
+local function stage(player: Player, name: string, progress: number?, message: string?)
+    player:SetAttribute("ER_LoadStage", name)
+    if progress ~= nil then
+        player:SetAttribute("ER_LoadProgress", math.clamp(progress, 0, 1))
+    end
+    if message then player:SetAttribute("ER_LoadMessage", message) end
 end
 
-local function attachLane(player: Player, character: Model): (boolean, string?)
-    if activePlayer ~= player or player.Character ~= character then
+local anchor: Part? = nil
+local lanePlane: Attachment? = nil
+if worldServer then
+    local root = Instance.new("Part")
+    root.Name = "ER_PhysicsLaneAnchor"
+    root.Anchored = true
+    root.Transparency = 1
+    root.CanCollide = false
+    root.CanTouch = false
+    root.CanQuery = false
+    root.Size = Vector3.one
+    root.CFrame = CFrame.Angles(0, math.pi / 2, 0)
+    root.Parent = workspace
+    local normal = Instance.new("Attachment")
+    normal.Name = "ER_WorldLanePlane"
+    normal.Parent = root
+    anchor = root
+    lanePlane = normal
+end
+
+local function attachLane(player: Player, char: Model): (boolean, string?)
+    if not worldServer or activePlayer ~= player or player.Character ~= char then
         return false, "character_changed"
     end
-    local root = character:WaitForChild("HumanoidRootPart", 8)
-    local humanoid = character:WaitForChild("Humanoid", 8)
-    if not root or not root:IsA("BasePart") or not humanoid or not humanoid:IsA("Humanoid") then
+    local root = char:WaitForChild("HumanoidRootPart", 10)
+    local h = char:WaitForChild("Humanoid", 10)
+    if not root or not root:IsA("BasePart") or not h or not h:IsA("Humanoid") then
         return false, "character_not_ready"
     end
-    if humanoid.RigType ~= Enum.HumanoidRigType.R6 then
-        return false, "r6_not_ready"
-    end
-    local record = SaveSlotService.get(player)
-    if not record then return false, "no_active_session" end
-
+    if h.RigType ~= Enum.HumanoidRigType.R6 then return false, "r6_not_ready" end
+    if not lanePlane then return false, "plane_unavailable" end
+    local data = Saves.get(player)
+    if not data or not Slots.validWorld(data) then return false, "no_active_session" end
     if not root:FindFirstChild("ER_XYPlaneLock") then
-        local laneAttachment = root:FindFirstChild("ER_LaneAttachment")
-        if not laneAttachment then
-            local newAttachment = Instance.new("Attachment")
-            newAttachment.Name = "ER_LaneAttachment"
-            newAttachment.Parent = root
-            laneAttachment = newAttachment
-        end
-        if not laneAttachment:IsA("Attachment") then return false, "invalid_lane_attachment" end
-        local plane = Instance.new("PlaneConstraint")
-        plane.Name = "ER_XYPlaneLock"
-        plane.Attachment0 = planeAttachment
-        plane.Attachment1 = laneAttachment
-        plane.Parent = root
+        local attachment = Instance.new("Attachment")
+        attachment.Name = "ER_LaneAttachment"
+        attachment.Parent = root
+        local lock = Instance.new("PlaneConstraint")
+        lock.Name = "ER_XYPlaneLock"
+        lock.Attachment0 = lanePlane
+        lock.Attachment1 = attachment
+        lock.Parent = root
     end
-
-    -- Reapplying the same persisted spawn is safe while recovering an incomplete start.
-    local p = record.position
-    root.CFrame = CFrame.new(p.x, p.y + 1, WorldProfile.LANE_Z)
-    humanoid.AutoRotate = false
-    player:SetAttribute("ER_GeneratorVersion", WorldProfile.GENERATOR_VERSION)
-    player:SetAttribute("ER_Seed", record.seed)
-    player:SetAttribute("ER_WorldLoaded", true)
-    setStage(player, "ready")
+    local pos = data.position
+    root.CFrame = CFrame.new(pos.x, pos.y + 1, Profile.LANE_Z)
+    h.AutoRotate = false
+    player:SetAttribute("ER_GeneratorVersion", Profile.GENERATOR_VERSION)
+    player:SetAttribute("ER_Seed", data.seed)
     return true, nil
 end
 
-local function worldResponse(index: number, record: any)
-    return {
-        ok = true,
+local function makeDestination(player: Player, index: number): (boolean, string?)
+    if worldServer then return false, "already_in_world_server" end
+    if pendingTeleport[player] then return false, "teleport_in_progress" end
+    pendingTeleport[player] = true
+    local id = HttpService:GenerateGUID(false)
+    local options = Instance.new("TeleportOptions")
+    options.ReservedServerId = id
+    options:SetTeleportData({
+        kind = "EntreReinosWorld",
+        protocol = 1,
         slot = index,
-        seed = record.seed,
-        spawn = record.position,
-        signature = WorldProfile.signature(record.seed),
-    }
+        ownerUserId = player.UserId,
+        reservedId = id,
+        sourcePlaceId = game.PlaceId,
+    })
+    player:SetAttribute("ER_TeleportError", "")
+    player:SetAttribute("ER_LobbyTransfer", "starting")
+    local ok, reason = pcall(function()
+        TeleportService:TeleportAsync(game.PlaceId, {player}, options)
+    end)
+    options:Destroy()
+    if not ok then
+        pendingTeleport[player] = nil
+        player:SetAttribute("ER_LobbyTransfer", "failed")
+        player:SetAttribute("ER_TeleportError", "teleport_request_failed")
+        warn("[EntreReinos][Lobby] TeleportAsync failed: ", reason)
+        return false, "teleport_request_failed"
+    end
+    player:SetAttribute("ER_LobbyTransfer", "accepted")
+    return true, nil
 end
 
-local function completeEntry(player: Player, index: number, record: any): any
-    if not SaveSlotService.active(player) then
-        return {ok = false, error = "no_active_session", stage = "slot"}
+TeleportService.TeleportInitFailed:Connect(function(player, _result, message, placeId, _options)
+    if not worldServer and placeId == game.PlaceId then
+        pendingTeleport[player] = nil
+        player:SetAttribute("ER_LobbyTransfer", "failed")
+        player:SetAttribute("ER_TeleportError", "teleport_init_failed")
+        warn("[EntreReinos][Lobby] TeleportInitFailed: ", message)
     end
-    if not WorldService.isActive() then
-        setStage(player, "terrain")
-        local invoked, worldOk, reason = pcall(WorldService.activate, record.seed)
-        if not invoked or not worldOk then
-            if not invoked then
-                warn("[EntreReinos][terrain] Engine exception at ", WorldService.getPhase(), ": ", worldOk)
-                WorldService.reportException()
-            else
-                warn("[EntreReinos][terrain] Generation failed: ", reason)
-            end
-            -- The recorded lease can survive a partial terrain write.
-            -- Only release the lease; NEVER remove, recreate or modify the world seed.
-            local released, releaseError = SaveSlotService.abortActivation(player)
-            if not released then
-                warn("[EntreReinos][terrain] Lease release not confirmed: ", releaseError)
-            end
-            player:SetAttribute("ER_WorldLoaded", false)
-            setStage(player, "terrain_failed")
-            local safeCode = WorldService.getFailure() or "terrain_activation_exception"
-            return {ok = false, error = safeCode, stage = "terrain",
-                terrainPhase = WorldService.getPhase(),
-                retryInNewServer = true, leaseReleased = released}
-        end
+end)
+
+local function startWorld(player: Player)
+    stage(player, "validating", 0.02, "Validando a entrada no seu mundo...")
+    local join = player:GetJoinData()
+    local ticket = if type(join) == "table" then join.TeleportData else nil
+    -- TeleportData is a routing hint, never a source of saved seed or ownership.
+    -- The record is always fetched by the destination from player.UserId.
+    if type(ticket) ~= "table"
+        or ticket.kind ~= "EntreReinosWorld"
+        or ticket.protocol ~= 1
+        or not Slots.validIndex(ticket.slot)
+        or ticket.ownerUserId ~= player.UserId
+        or ticket.sourcePlaceId ~= game.PlaceId
+        or type(ticket.reservedId) ~= "string"
+        or ticket.reservedId ~= game.PrivateServerId then
+        player:Kick("Entrada no servidor do mundo inválida. Abra seu mundo pelo lobby.")
+        return
     end
-    -- Do not rerun Terrain generation on retries: it may have already succeeded.
+    local index: number = ticket.slot
     activePlayer = player
-    setStage(player, "character")
-    local character = player.Character
-    local h = if character then character:FindFirstChildOfClass("Humanoid") else nil
-    if not h or h.RigType ~= Enum.HumanoidRigType.R6 then
-        local okCharacter, rigOk, rigError = pcall(CharacterService.ensureR6, player)
-        if not okCharacter then
-            warn("[EntreReinos][character] Unexpected avatar error: ", rigOk)
-            return {ok = false, error = "character_setup_exception",
-                stage = "character", recoverable = true, slot = index}
-        end
-        if not rigOk then
-            return {ok = false, error = rigError or "r6_creation_failed",
-                stage = "character", recoverable = true, slot = index}
-        end
-        character = player.Character
-    end
-    if not character then
-        return {ok = false, error = "character_not_ready", stage = "character",
-            recoverable = true, slot = index}
+    activeSlot = index
+
+    stage(player, "character", 0.08, "Preparando personagem R6...")
+    local avatarInvoked, avatarOk, avatarReason = pcall(Characters.ensureR6, player)
+    if not avatarInvoked or not avatarOk then
+        local code = if avatarInvoked then (avatarReason or "r6_creation_failed")
+            else "r6_creation_exception"
+        player:SetAttribute("ER_LoadError", code)
+        stage(player, "failed", nil, "Falha no personagem R6; seu save não foi alterado.")
+        warn("[EntreReinos][World] R6 error ", code)
+        return
     end
 
-    setStage(player, "lane")
-    local attached, laneOk, laneReason = pcall(attachLane, player, character)
-    if not attached then
-        warn("[EntreReinos][lane] Failed to attach XY physics: ", laneOk)
-        return {ok = false, error = "lane_setup_exception", stage = "lane",
-            recoverable = true, slot = index}
+    stage(player, "slot", 0.14, "Abrindo seu save persistente...")
+    -- Independent game-server UpdateAsync ownership; lobby never holds this lease.
+    local opened, openOk, record = pcall(Saves.open, player, index)
+    if not opened or not openOk or type(record) ~= "table" then
+        local code = if opened then tostring(record) else "slot_open_exception"
+        player:SetAttribute("ER_LoadError", code)
+        stage(player, "failed", nil, "Não foi possível abrir o save. Ele não será apagado.")
+        warn("[EntreReinos][World] Slot open failure: ", code)
+        return
     end
-    if not laneOk then
-        warn("[EntreReinos][lane] Character not ready for play: ", laneReason)
-        return {ok = false, error = laneReason or "lane_setup_failed",
-            stage = "lane", recoverable = true, slot = index}
+    -- IMPORTANT: no conditional expression returning multiple values;
+    -- explicit branch above checks (success, record) separately.
+
+    stage(player, "terrain", 0.18, "Gerando as primeiras regiões...")
+    local terrainInvoked, terrainOk, terrainReason = pcall(World.activate,
+        record.seed, function(fraction: number, message: string)
+            stage(player, "terrain", 0.18 + fraction * 0.66, message)
+        end)
+    if not terrainInvoked or not terrainOk then
+        local failureCode = if terrainInvoked then (terrainReason or World.getFailure()
+            or "terrain_failed") else "terrain_activation_exception"
+        if not terrainInvoked then
+            warn("[EntreReinos][Terrain] Exception at phase ", World.getPhase(), ": ", terrainOk)
+            World.reportException()
+        end
+        player:SetAttribute("ER_LoadError", failureCode)
+        stage(player, "failed", nil,
+            "Falha na geração do terreno (" .. tostring(failureCode) .. "). Save preservado.")
+        local releaseOk, releaseReason = Saves.abortActivation(player)
+        if not releaseOk then
+            warn("[EntreReinos][World] Could not release failed lease: ", releaseReason)
+        end
+        return
     end
-    return worldResponse(index, record)
+
+    stage(player, "spawn", 0.91, "Posicionando personagem no terreno...")
+    local char = player.Character
+    if not char then
+        player:SetAttribute("ER_LoadError", "character_not_ready")
+        stage(player, "failed", nil, "Personagem não carregado; o save está preservado.")
+        return
+    end
+    local attached, okLane, reasonLane = pcall(attachLane, player, char)
+    if not attached or not okLane then
+        local errorCode = if attached then reasonLane else "lane_setup_exception"
+        player:SetAttribute("ER_LoadError", errorCode or "lane_setup_failed")
+        stage(player, "failed", nil, "Falha na física do personagem; o save foi preservado.")
+        warn("[EntreReinos][World] XY lane failed: ", reasonLane or okLane)
+        return
+    end
+
+    -- Simulation only starts after the world and R6 are both ready.
+    player:SetAttribute("ER_WorldLoaded", true)
+    stage(player, "ready", 1, "Mundo carregado")
+    task.spawn(function()
+        while player.Parent == Players and activePlayer == player do
+            task.wait(1.25)
+            local character = player.Character
+            local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
+            if root and root:IsA("BasePart") then
+                local generated, reason = World.ensureNear(record.seed, root.Position.X)
+                if not generated and reason ~= "world_generation_in_progress" then
+                    warn("[EntreReinos][Streaming] Could not load nearby region: ", reason)
+                    player:SetAttribute("ER_StreamError", tostring(reason))
+                end
+            end
+        end
+    end)
+    print("[EntreReinos] Reserved world started: slot=", index, " seed=", record.seed)
 end
 
-local function resume(player: Player, index: any): any
-    local actual = SaveSlotService.index(player)
-    if not actual then
-        return {ok = false, error = "no_active_session", stage = "slot"}
+local function returnLobby(player: Player): (boolean, string?)
+    if not worldServer then return false, "not_in_world_server" end
+    local options = Instance.new("TeleportOptions")
+    options.ForcePublicServer = true
+    local ok, reason = pcall(function()
+        TeleportService:TeleportAsync(game.PlaceId, {player}, options)
+    end)
+    options:Destroy()
+    if not ok then
+        warn("[EntreReinos] Return lobby teleport failed: ", reason)
+        return false, "teleport_request_failed"
     end
-    if index ~= actual then
-        return {ok = false, error = "other_slot_active", activeSlot = actual, stage = "slot"}
-    end
-    if not WorldService.isActive() then
-        -- The first diagnostic must never be replaced with a generic resume error.
-        -- A broken session releases only its lease. A partially written Terrain
-        -- is not retried on this same server.
-        local reason = WorldService.getFailure() or "terrain_incomplete"
-        local released, releaseError = SaveSlotService.abortActivation(player)
-        if not released then
-            warn("[EntreReinos][terrain] Recovery lease release not confirmed: ", releaseError)
-        end
-        player:SetAttribute("ER_WorldLoaded", false)
-        setStage(player, "terrain_failed")
-        return {ok = false, error = reason, stage = "terrain",
-            terrainPhase = WorldService.getPhase(),
-            retryInNewServer = true, leaseReleased = released}
-    end
-    if activePlayer and activePlayer ~= player then
-        return {ok = false, error = "another_player_world_active"}
-    end
-    local data = SaveSlotService.get(player)
-    if not data then return {ok = false, error = "no_active_session"} end
-    return completeEntry(player, actual, data)
+    return true, nil
 end
 
-remote.OnServerInvoke = function(player: Player, action: any, index: any)
-    if typeof(action) ~= "string" then return {ok = false, error = "invalid_action"} end
-    if #Players:GetPlayers() > 1 then return {ok = false, error = "solo_server_required"} end
-    if inFlight[player] then return {ok = false, error = "request_busy"} end
-    local now = os.clock()
-    -- A recovery request must not be rate-limited immediately after a failed response.
-    if action ~= "resume" and lastAction[player] and now - lastAction[player] < 0.35 then
-        return {ok = false, error = "rate_limited"}
+rpc.OnServerInvoke = function(player: Player, action: any, index: any): any
+    if type(action) ~= "string" then return {ok = false, error = "invalid_action"} end
+    if worldServer then
+        if action == "status" then
+            return {ok = true, stage = player:GetAttribute("ER_LoadStage"),
+                progress = player:GetAttribute("ER_LoadProgress"),
+                error = player:GetAttribute("ER_LoadError"), serverRevision = game.PlaceVersion}
+        end
+        if action == "return" then
+            local ok, reason = returnLobby(player)
+            return if ok then {ok = true, teleporting = true}
+                else {ok = false, error = reason}
+        end
+        return {ok = false, error = "world_server_lobby_disabled"}
     end
-    if action ~= "resume" then lastAction[player] = now end
-
-    inFlight[player] = true
-    local stage = "request"
-    local ok, answer = pcall(function()
+    if not Players:FindFirstChild(player.Name) or #Players:GetPlayers() > 1 then
+        return {ok = false, error = "solo_server_required"}
+    end
+    if busy[player] then return {ok = false, error = "request_busy"} end
+    busy[player] = true
+    local invoked, result = pcall(function()
         if action == "list" then
-            stage = "list"
-            local success, slots = SaveSlotService.list(player)
-            return if success then {
-                ok = true, slots = slots, activeSlot = SaveSlotService.index(player),
-                worldActive = WorldService.isActive(),
-                serverRevision = game.PlaceVersion,
-            } else {ok = false, error = slots}
+            local ok, slots = Saves.list(player)
+            return if ok then {ok = true, slots = slots,
+                serverRevision = game.PlaceVersion, activeSlot = nil, worldActive = false}
+                else {ok = false, error = slots}
         end
-        if action == "save" then
-            stage = "save"
-            local success, reason = SaveSlotService.save(player, false)
-            return if success then {ok = true} else {ok = false, error = reason}
-        end
-        if action ~= "create" and action ~= "open" and action ~= "delete" and action ~= "resume" then
-            return {ok = false, error = "unknown_action"}
-        end
-        if not SlotModel.validIndex(index) then
+        if not Slots.validIndex(index) then
             return {ok = false, error = "invalid_slot"}
         end
-        if action == "resume" then
-            stage = "resume"
-            return resume(player, index)
-        end
         if action == "delete" then
-            stage = "delete"
-            local success, result = SaveSlotService.delete(player, index)
-            return if success then {ok = true, summary = result} else {ok = false, error = result}
+            local ok, summary = Saves.delete(player, index)
+            return if ok then {ok = true, summary = summary}
+                else {ok = false, error = summary}
         end
-        -- Critical fix: create/open a slot already active in THIS server means CONTINUE,
-        -- not a permanent world_already_active denial.
-        if SaveSlotService.active(player) then
-            stage = "resume"
-            return resume(player, index)
-        end
-        if WorldService.isActive() or activePlayer then
-            return {ok = false, error = "world_needs_new_server", stage = "terrain"}
+        if action ~= "create" and action ~= "open" then
+            return {ok = false, error = "unknown_action"}
         end
 
-        stage = "avatar"
-        setStage(player, "avatar")
-        local avatarOk, avatarReason = CharacterService.ensureR6(player)
-        if not avatarOk then
-            return {ok = false, error = avatarReason or "r6_creation_failed", stage = "avatar"}
+        local ok: boolean
+        local record: any
+        if action == "create" then
+            -- FIX for Boot:101: Luau conditional expressions collapse
+            -- multivalue returns. Do not use local ok, record = if ... then ...
+            ok, record = Saves.createDetached(player, index)
+        else
+            ok, record = Saves.inspect(player, index)
         end
-
-        stage = "slot"
-        setStage(player, "slot")
-        local success, record = if action == "create"
-            then SaveSlotService.create(player, index) else SaveSlotService.open(player, index)
-        if not success then
-            return {ok = false, error = record, stage = "slot"}
+        if not ok then return {ok = false, error = record, stage = "slot"} end
+        if type(record) ~= "table" then
+            return {ok = false, error = "slot_record_invalid", stage = "slot"}
         end
-
-        stage = "enter"
-        return completeEntry(player, index, record)
+        local transferred, transferReason = makeDestination(player, index)
+        return if transferred then {ok = true, teleporting = true, slot = index}
+            else {ok = false, error = transferReason, stage = "teleport"}
     end)
-    inFlight[player] = nil
-    if not ok then
-        local stageName = stages[player] or stage
-        warn("[EntreReinos] RPC operation error stage=", stageName,
-            " action=", action, " index=", tostring(index), " reason=", answer)
-        return {ok = false, error = "server_operation_failed", stage = stageName,
-            recoverable = SaveSlotService.active(player) and WorldService.isActive()}
+    busy[player] = nil
+    if not invoked then
+        warn("[EntreReinos][Lobby] RPC operation error: ", result)
+        return {ok = false, error = "server_operation_failed", stage = "lobby"}
     end
-    return answer
+    return result
 end
 
 local function register(player: Player)
+    -- Hard single-player guard even if Creator Dashboard matchmaking capacity
+    -- is greater than 1. Actual Players.MaxPlayers is Dashboard-only.
     if #Players:GetPlayers() > 1 then
-        player:Kick("Entre Reinos: esta versão usa servidores solo.")
+        player:Kick("Entre Reinos: este servidor aceita um jogador por enquanto.")
         return
     end
+    player:SetAttribute("ER_ServerMode", if worldServer then "world" else "lobby")
     player:SetAttribute("ER_WorldLoaded", false)
-    setStage(player, "menu")
-    player.CharacterAdded:Connect(function(character)
-        task.defer(function()
-            if activePlayer ~= player or player.Character ~= character then return end
-            local humanoid = character:WaitForChild("Humanoid", 10)
-            if humanoid and humanoid:IsA("Humanoid")
-                and humanoid.RigType ~= Enum.HumanoidRigType.R6 then
-                local conversionOk, success, reason = pcall(CharacterService.ensureR6, player)
-                if not conversionOk or not success then
-                    player:SetAttribute("ER_WorldLoaded", false)
-                    warn("[EntreReinos][respawn] R6 conversion failed: ", reason or success)
+    player:SetAttribute("ER_LoadError", "")
+    stage(player, if worldServer then "connecting" else "lobby", 0, "Bem-vindo ao Entre Reinos")
+    if worldServer then
+        player.CharacterAdded:Connect(function(char)
+            task.defer(function()
+                if activePlayer ~= player or player.Character ~= char
+                    or not World.isActive() then return end
+                local human = char:WaitForChild("Humanoid", 10)
+                if not human or not human:IsA("Humanoid") then return end
+                if human.RigType ~= Enum.HumanoidRigType.R6 then
+                    local converted, ok, reason = pcall(Characters.ensureR6, player)
+                    if not converted or not ok then
+                        player:SetAttribute("ER_WorldLoaded", false)
+                        player:SetAttribute("ER_LoadError", "r6_respawn_failed")
+                        warn("[EntreReinos] Respawn conversion failed ", reason or ok)
+                    end
+                    return
                 end
-                return
-            end
-            local invoked, attached, reason = pcall(attachLane, player, character)
-            if not invoked or not attached then
-                player:SetAttribute("ER_WorldLoaded", false)
-                setStage(player, "respawn_failed")
-                warn("[EntreReinos][respawn] XY lane reattachment failed: ",
-                    if invoked then reason else attached)
-            end
+                local attached, ok, why = pcall(attachLane, player, char)
+                if not attached or not ok then
+                    warn("[EntreReinos] Respawn plane not attached: ", why or ok)
+                end
+            end)
         end)
-    end)
+        task.spawn(function() startWorld(player) end)
+    end
 end
+
 Players.PlayerAdded:Connect(register)
 for _, player in ipairs(Players:GetPlayers()) do register(player) end
-
 Players.PlayerRemoving:Connect(function(player)
-    inFlight[player] = nil
-    lastAction[player] = nil
-    stages[player] = nil
-    if SaveSlotService.active(player) then
-        local saved, reason = SaveSlotService.save(player, true)
-        if not saved then warn("[EntreReinos] Leave save not confirmed: ", reason) end
+    busy[player] = nil
+    pendingTeleport[player] = nil
+    if worldServer and Saves.active(player) then
+        local ok, reason = Saves.save(player, true)
+        if not ok then warn("[EntreReinos][World] Exit save not confirmed: ", reason) end
     end
-    if activePlayer == player then activePlayer = nil end
+    if activePlayer == player then
+        activePlayer = nil
+        activeSlot = nil
+    end
 end)
 game:BindToClose(function()
+    if not worldServer then return end
     for _, player in ipairs(Players:GetPlayers()) do
-        if SaveSlotService.active(player) then
-            local saved, reason = SaveSlotService.save(player, true)
-            if not saved then warn("[EntreReinos] Shutdown save not confirmed: ", reason) end
+        if Saves.active(player) then
+            local ok, reason = Saves.save(player, true)
+            if not ok then warn("[EntreReinos] Shutdown save not confirmed: ", reason) end
         end
     end
 end)
-SaveSlotService.startAutosave()
-print("[EntreReinos] Recoverable T1-R1 world boot ready")
+if worldServer then Saves.startAutosave() end
+print("[EntreReinos] Role=", if worldServer then "reserved-world" else "lobby",
+    " Place=", game.PlaceId, " Rev=", game.PlaceVersion)
