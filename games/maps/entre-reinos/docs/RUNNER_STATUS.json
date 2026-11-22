@@ -28,7 +28,7 @@
         "revisionId": 14,
         "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
         "independentReadback": "https://github.com/Sllay/Roblox-Studios/actions/runs/45053031856",
-        "readbackStatus": "pending"
+        "readbackStatus": "success"
       },
       "userReview": "pending_mobile_v14_creator_review_and_feature_completeness",
       "refinementCycles": [],
@@ -112,7 +112,7 @@
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "v14_staging_published_and_pure_luau_CI_green; independent_readback_pending",
+            "runtime": "v14_independent_Roblox_engine_readback_SUCCESS plus CI pure tests; mobile gameplay still unapproved",
             "mobile": "not_approved: T1 foundational gameplay and UX incomplete"
           },
           "blockers": [
@@ -136,8 +136,9 @@
             "revision": 14,
             "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
             "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45053031856",
-            "readbackStatus": "pending",
-            "mobile": "not_approved"
+            "readbackStatus": "success",
+            "mobile": "not_approved",
+            "verifiedReadbackProbe": "published_v14_modules_mounted_galpao_real_deposit_crafting_marked_tree_second_night_save_format_protection"
           }
         }
       ],
@@ -304,7 +305,7 @@
     "ciConclusion": "success",
     "publishedVersion": 14,
     "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044562948",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45053031856",
     "verifiedModules": 13,
     "seedTested": 516639272,
     "engineInitialChunks": 3,
@@ -319,7 +320,8 @@
     "productionUnchanged": true,
     "completenessAuditPath": "docs/FEATURE_COMPLETENESS_AUDIT.md",
     "completenessCiUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052959871",
-    "featureLaunchReadiness": "blocked_by_T1_19_partial_1_absent"
+    "featureLaunchReadiness": "blocked_by_T1_19_partial_1_absent",
+    "v14IndependentReadback": "success"
   },
   "remoteIdentity": {
     "status": "verified",
