@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-22",
-  "note": "Entre Reinos staging v7 publicado: joystick+pulo nativos Roblox sem CAS custom, joystick projetado em terra X e na água X/Y, painel dev no CoreUISafeInsets direito; CI + readback engine todos PASS. R1 continua in_progress à espera do criador confirmar o mobile e save.",
+  "note": "Creator accepted T1-R1 movement and explicitly authorized R2. Native R6 Animate handoff implemented/compiled; swimming animation remains visual retest. T1-R2 core NPC work/build/save integrated in GitHub, green CI 45033200114; Roblox runtime + mobile pending.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -34,9 +34,9 @@
       "runners": [
         {
           "id": "T1-R1",
-          "status": "in_progress",
-          "commit": "4c5ce8ed31c1ade777b80feff5e98e4b5e062311",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031416589",
+          "status": "validated",
+          "commit": "f507387742bc6b1a78d91c902f68a507d25a935f",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45032200071",
           "receipt": "docs/runner-receipts/T1-R1.md",
           "validation": {
             "structure": "pass",
@@ -44,13 +44,9 @@
             "unit": "pass",
             "rojo": "pass",
             "runtime": "published_v7_control_projection_engine_pass_11_checks",
-            "mobile": "awaiting_creator_native_joystick_jump_test"
+            "mobile": "creator_confirmed_v7_entry_native_controls_and_movement; native_swim_animation_requires_visual_retest"
           },
-          "blockers": [
-            "No jogo real, validar joystick e botão pulo nativos sem botões sobrepostos, posição do FPS top-right fora do Core UI",
-            "Validar movimento X-only em terra e rotação frente/fundo; em rio joystick sobe/desce/diagonal com nado fluido e pulo nativo normal",
-            "Validar save/reentrada Mundo 1, FPS e controle touch antes de fechar T1-R1"
-          ],
+          "blockers": [],
           "previewPublication": {
             "status": "published_v7",
             "placeId": "90623742498445",
@@ -60,23 +56,40 @@
             "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031693274",
             "verifiedChecks": 11,
             "fix": "Remove five custom CAS touchscreen bindings, keep Roblox PlayerModule movement+native jump, project thumbstick to XY swimming, place HUD outside topbar via CoreUISafeInsets."
+          },
+          "acceptance": {
+            "source": "creator_direct_message_2026_11_22",
+            "scope": "avatar movement/joystick/world entry approved; R6 native Animate restoration implemented and CI checked; creator authorized T1-R2",
+            "swimVisual": "not_yet_retested",
+            "saveReconnect": "not_independently_reconfirmed"
           }
         },
         {
           "id": "T1-R2",
-          "status": "planned",
-          "commit": null,
-          "ciRunUrl": null,
-          "receipt": null,
+          "status": "in_progress",
+          "commit": "bd4a91ab520360940bfcbb0c8acb5e7bf9949cff",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033200114",
+          "receipt": "docs/runner-receipts/T1-R2.md",
           "validation": {
-            "structure": "not_run",
-            "luau": "not_run",
-            "unit": "not_run",
-            "rojo": "not_run",
-            "runtime": "not_run",
-            "mobile": "not_run"
+            "structure": "pass",
+            "luau": "pass",
+            "unit": "pass",
+            "rojo": "pass",
+            "runtime": "pure_R2_FSM_in_CI_pass; live_R6_NPC_engine_not_yet_tested",
+            "mobile": "awaiting_creator_preview"
           },
-          "blockers": []
+          "blockers": [
+            "Roblox runtime Play test: 4 NPCs R6, gathering/delivery/building/repair and UI BuildMenu in reserved world",
+            "NPC 3D animation/smooth movement, mobile FPS and save/reconnect with partially built structures require validation",
+            "R2 profession/needs/storage/free placement progress remains in development; no T1-R3 until runner R2 validated"
+          ],
+          "deliverables": [
+            "Server-only 4 NPC R6 models and bounded Heartbeat simulation",
+            "Data-driven ItemDefs ProfessionDefs StructureDefs Inventory LivingModel WorkEngine",
+            "Finite resource sites with mass-based physical NPC inventory, reserved materials, direct deliveries and per-profession output multipliers",
+            "Shelter/house/stockpile/fence/wall blueprints with footprint and slope rules, cumulative build and repairs",
+            "BuildMenu for mobile and saved living snapshots in six existing slot keys, backward compatible with R1 schema"
+          ]
         },
         {
           "id": "T1-R3",
@@ -95,7 +108,7 @@
           "blockers": []
         }
       ],
-      "previewUserReview": "awaiting_creator_mobile_v7_native_controls"
+      "previewUserReview": "T1-R1_creator_approved_to_start_R2"
     },
     {
       "id": "T2",
@@ -227,7 +240,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R1_staging_v7_native_mobile_controls_awaiting_creator_retest",
+  "programStage": "T1_R2_in_progress_code_green_staging_preview_pending",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -253,22 +266,14 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "4c5ce8ed31c1ade777b80feff5e98e4b5e062311",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031416589",
+    "codeCommit": "bd4a91ab520360940bfcbb0c8acb5e7bf9949cff",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033200114",
     "ciConclusion": "success",
-    "publishedVersion": 7,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031576169",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031693274",
-    "readbackChecks": 11,
-    "publishedNativeModuleExecuted": true,
-    "publishedAnalogDiagonalPass": true,
-    "observedMaxPlayers": 1,
-    "knownUserWorldSeed": 516639272,
-    "liveJoystick": "awaiting_creator",
-    "liveJump": "awaiting_creator",
-    "cameraAndMobileFPS": "awaiting_creator",
-    "staging": "published_v7",
-    "scope": "CI + executable pure Luau input tests + Place v7 source readback + actual Roblox Luau InputProjection runtime; physical mobile input not simulated"
+    "lastPublishedVersion": 7,
+    "staging": "v8_R2_preview_pending",
+    "runtime": "pure Luau NPC resource and construction cycle passed; no real NPCs in Roblox client yet",
+    "mobile": "awaiting_creator",
+    "r1UserMovementApproved": true
   },
   "remoteIdentity": {
     "status": "verified",

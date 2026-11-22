@@ -204,3 +204,14 @@ Implementado:
 - **Ainda não é teste do touchscreen real**: teste mobile do criador ainda necessário. O runner T1-R1 permanece `in_progress`; T1-R2 `planned`. Saves existentes/Black Island/produção intocados.
 
 Reteste: fechar v6, abrir servidor v7, Mundo 1, verificar joystick e pulo padrão sem sobreposição, FPS direito fora do CoreUI, X movimento em terra, giro frente/trás sem andar profundidade, diagonal/nado vertical em água. Reportar print/FPS e comportamento.
+
+## Transição aprovada pelo criador: T1-R1 → T1-R2 (22/11/2026)
+
+O usuário declarou que controles, joystick e movimentação do v7 estavam funcionando bem e **autorizou explicitamente o R2**; solicitou somente que o personagem R6 use a animação padrão `Swimming` quando nadar. O `CharacterService` agora preserva o `Animate` original ao substituir `Player.Character`; Roblox `Humanoid.StateChanged` dirige o estado `Swimming`. A apresentação da animação de nado ainda exige observação no cliente, não marcar como visualmente testada. R1 formalmente aceito para transição com essa ressalva.
+
+**T1-R2 iniciado em código real**, green CI https://github.com/Sllay/Roblox-Studios/actions/runs/45033200114:
+- `ReplicatedStorage/Living/`: ItemDefs, ProfessionDefs, StructureDefs, Inventory, LivingModel, WorkEngine (FSM); massa, materiais finitos, reservation counter, construção/reparo cumulativos. Profissões carpinteiro madeira 3x, minerador pedra/ferro 3x, construtor obra 2x, comum 1x. Sem dinheiro nem sistemas prematuros R3.
+- `ServerScriptService/Services/LivingService.luau`: quatro NPCs visuais R6, fontes físicas, blueprints, simulação Heartbeat com baixa frequência, stream de chunk pelos trabalhadores.
+- Boot server reservado inicia LivingService somente depois de Terrain/R6, atualiza progresso real de carregamento; o lobby permanece isolado. `SaveSlotService` coleta snapshots `living` em UpdateAsync com cópia profunda e preserva seis slots anteriores de schema 1. `BuildMenu` permite ordenar construção no celular, posição definida pelo servidor e custo entregue pelos NPCs.
+- Teste executável `game/tests/living_work_r2.luau` fez worker completar um abrigo por madeira/pedra reais, reparo e serialização/restauração; gate de tipagem, Python, compilação e Rojo passaram.
+- **Ainda pendente:** observar NPC e UI em partida real, checar performance do celular e persistência prática; T1-R2 `in_progress`, T1-R3 `planned`. Preview staging R2 ainda não publicado neste checkpoint.
