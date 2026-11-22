@@ -52,12 +52,14 @@ jobs:
           assert json.loads((g/"deploy.targets.json").read_text())["environments"]["production"]["universeId"] is None
           print("ER_V10_NATIVE_SWIM_GHOST_NPC_SOURCE_PASS")
           PY
-      - name: Compile and strictly analyze Luau
-        run: |
-          bash tools/install-luau.sh
-          python tools/script_quality.py
-          bash tools/install-luau-lsp.sh
-          python tools/quality_gate_v2.py
+      - name: Install pinned official Luau
+        run: bash tools/install-luau.sh
+      - name: Compile-check all Luau sources
+        run: python tools/script_quality.py
+      - name: Install pinned Roblox Luau LSP
+        run: bash tools/install-luau-lsp.sh
+      - name: Strict type analysis and executable Luau regression tests
+        run: python tools/quality_gate_v2.py
       - uses: CompeyDev/setup-rokit@v0.2.1
       - name: Build only Entre Reinos staging Place
         run: python tools/workspace.py build --game entre-reinos --place main
