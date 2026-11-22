@@ -279,8 +279,7 @@ rpc.OnServerInvoke = function(player: Player, action: any, index: any): any
         local ok: boolean
         local record: any
         if action == "create" then
-            -- FIX for Boot:101: Luau conditional expressions collapse
-            -- multivalue returns. Do not use local ok, record = if ... then ...
+            -- FIX for Boot:101: preserve both result values by explicit branch.
             ok, record = Saves.createDetached(player, index)
         else
             ok, record = Saves.inspect(player, index)
