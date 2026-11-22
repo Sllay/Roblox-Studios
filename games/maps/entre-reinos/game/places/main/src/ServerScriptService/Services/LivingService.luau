@@ -4,6 +4,7 @@
 local Players=game:GetService("Players")
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
+local PhysicsService=game:GetService("PhysicsService")
 local shared=ReplicatedStorage:WaitForChild("Game")
 local Profile=require(shared:WaitForChild("WorldProfile"))
 local Living=require(shared:WaitForChild("Living"):WaitForChild("LivingModel"))
@@ -22,7 +23,29 @@ local connection: RBXScriptConnection?=nil
 local simulationAccumulator=0
 local drawAccumulator=0
 local lastActionAt: {[Player]: number}={}
-local lastVisualX: {[number]: number}={}
+-- Non-physical R6 residents. Logical work coordinates remain untouched.
+local GHOST_GROUP="ER_GhostNPC"
+if not PhysicsService:IsCollisionGroupRegistered(GHOST_GROUP) then
+    PhysicsService:RegisterCollisionGroup(GHOST_GROUP)
+end
+PhysicsService:CollisionGroupSetCollidable(GHOST_GROUP,GHOST_GROUP,false)
+PhysicsService:CollisionGroupSetCollidable(GHOST_GROUP,"Default",false)
+
+-- Four stable depth lanes and small visual offsets avoid NPC piles at the
+-- same work station. These are presentation offsets, never job/save positions.
+local function actorX(npc: any): number
+    return npc.x+(((npc.id-1)%4)-1.5)*2.2
+end
+local function actorZ(npc: any): number
+    return -8+((npc.id-1)%4)*4
+end
+
+local function ghostPart(p: BasePart)
+    p.CollisionGroup=GHOST_GROUP
+    p.CanCollide=false
+    p.CanQuery=false
+    p.CanTouch=false
+end
 local groundCast=RaycastParams.new()
 groundCast.FilterType=Enum.RaycastFilterType.Include
 groundCast.FilterDescendantsInstances={workspace.Terrain}
@@ -119,12 +142,14 @@ local function createActor(npc: any): Model?
     end
     for _,item in ipairs(model:GetDescendants()) do
         if item:IsA("BasePart") then
-            item.CanCollide=false
-            item.CanQuery=false
-            item.CanTouch=false
+            ghostPart(item)
             item.CastShadow=true
         end
     end
+    -- Accessory or rig parts inserted later must stay ghosted too.
+    model.DescendantAdded:Connect(function(item: Instance)
+        if item:IsA("BasePart") then ghostPart(item) end
+    end)
     local root=model:FindFirstChild("HumanoidRootPart")
     if root and root:IsA("BasePart") then root.Anchored=true end
     -- R6 feet and Model:GetPivot() can differ by several studs.
@@ -133,25 +158,24 @@ local function createActor(npc: any): Model?
     model:SetAttribute("ER_FeetOffset",feetOffset)
     model:SetAttribute("ER_NPCVisual",true)
     model:SetAttribute("ER_NPCVelocityX",0)
-    local z=-2
-    local target=Vector3.new(npc.x,groundHeight(npc.x,z)+feetOffset+0.14,z)
+    local x,z=actorX(npc),actorZ(npc)
+    local target=Vector3.new(x,groundHeight(x,z)+feetOffset+0.14,z)
     model:SetAttribute("ER_NPCPose",target)
     model:SetAttribute("ER_NPCFacing",0)
     model:PivotTo(CFrame.new(target))
     model.Parent=visualization
-    lastVisualX[npc.id]=npc.x
     return model
 end
 
 local function syncNPC(npc: any)
     local model=figures[npc.id]
     if not model then return end
-    local z=-2
+    local x,z=actorX(npc),actorZ(npc)
     local offset=model:GetAttribute("ER_FeetOffset")
     if type(offset)~="number" then return end
-    local target=Vector3.new(npc.x,groundHeight(npc.x,z)+offset+0.14,z)
-    local previous=lastVisualX[npc.id] or npc.x
-    local vx=math.clamp((npc.x-previous)/math.max(drawAccumulator,0.12),-9,9)
+    local target=Vector3.new(x,groundHeight(x,z)+offset+0.14,z)
+    local motion=if type(npc.motionX)=="number" then npc.motionX else 0
+    local vx=math.clamp(motion,-9,9)
     -- A single replicated pose is atomic; clients do their own frame-level
     -- interpolation from this logical position. No low-FPS PivotTo on server.
     model:SetAttribute("ER_NPCPose",target)
@@ -160,7 +184,6 @@ local function syncNPC(npc: any)
     if vx>0.08 then facing=-math.pi/2
     elseif vx< -0.08 then facing=math.pi/2 end
     if type(facing)=="number" then model:SetAttribute("ER_NPCFacing",facing) end
-    lastVisualX[npc.id]=npc.x
     local h=model:FindFirstChildOfClass("Humanoid")
     if h and h.DisplayName~=npc.name.." · "..tostring(npc.state) then
         h.DisplayName=npc.name.." · "..tostring(npc.state)
@@ -344,7 +367,6 @@ function Service.stop(player: Player)
     figures={}
     buildings={}
     siteDisplays={}
-    lastVisualX={}
     if visualization then visualization:Destroy() end
     visualization=nil
 end
