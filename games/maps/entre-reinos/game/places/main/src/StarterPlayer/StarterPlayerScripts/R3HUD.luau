@@ -57,8 +57,8 @@ function UI.start(player: Player)
     local bar=Instance.new("Frame")
     bar.Name="Actions"
     bar.AnchorPoint=Vector2.new(0.5,1)
-    bar.Position=UDim2.new(0.5,0,1,-70)
-    bar.Size=UDim2.fromOffset(350,88)
+    bar.Position=UDim2.new(0.5,0,1,-68)
+    bar.Size=UDim2.fromOffset(350,129)
     bar.BackgroundTransparency=1
     bar.Parent=gui
     local layout=Instance.new("UIGridLayout")
@@ -70,7 +70,7 @@ function UI.start(player: Player)
     local feedback=Instance.new("TextLabel")
     feedback.Name="ActionFeedback"
     feedback.AnchorPoint=Vector2.new(0.5,1)
-    feedback.Position=UDim2.new(0.5,0,1,-164)
+    feedback.Position=UDim2.new(0.5,0,1,-199)
     feedback.Size=UDim2.fromOffset(370,40)
     feedback.BackgroundTransparency=1
     feedback.TextColor3=Color3.new(1,1,1)
@@ -101,6 +101,8 @@ function UI.start(player: Player)
                 invalid_coin_drop="A bolsa não possui essa moeda.",
                 treasury_empty="O tesouro não tem fundos.",
                 resource_unavailable="Faltam recursos para negociar.",
+                wood_stock_required="Crie flechas perto de um depósito de madeira.",
+                ammo_capacity="Sua aljava já está cheia.",
                 too_far_from_market="Negocie perto do centro da vila.",
                 not_enough_equipment_materials="Faltam materiais para equipar.",
                 too_far_from_defender="Aproxime-se de um morador.",
@@ -126,11 +128,13 @@ function UI.start(player: Player)
     local bowGuard=button(bar,"ArmArcher","Armar arco",82)
     local spearGuard=button(bar,"ArmSpearman","Armar lança",82)
     local trade=button(bar,"Trade","Vender madeira",82)
+    local craft=button(bar,"CraftArrows","Criar flechas",82)
 
     attack.Activated:Connect(function() send("attack",nil) end)
     bow.Activated:Connect(function() send("bow",nil) end)
     drop.Activated:Connect(function() send("drop_coin",nil) end)
     trade.Activated:Connect(function() send("trade","wood") end)
+    craft.Activated:Connect(function() send("craft_arrows",nil) end)
     pickup.Activated:Connect(function()
         local char=player.Character
         local root=if char then char:FindFirstChild("HumanoidRootPart") else nil
