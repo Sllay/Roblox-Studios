@@ -61,6 +61,11 @@ local function update(_dt: number)
     local x, y = readNativeInput(h)
     local swimming = h:GetState() == Enum.HumanoidStateType.Swimming
 
+    -- The side-facing land constraint must not fight native swim orientation.
+    -- Let the Humanoid orient itself in water, restore the 2.5D yaw on land.
+    o.Enabled = not swimming
+    if h.AutoRotate ~= swimming then h.AutoRotate = swimming end
+
     -- Native Roblox Humanoid controls all water physics, transitions,
     -- buoyancy and the character's own Animate script. No LinearVelocity,
     -- manual ChangeState, Motor6D transforms, or animation suppression.
