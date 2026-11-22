@@ -226,6 +226,10 @@ function Engine.step(state: any, dt: number)
     for _,npc in ipairs(state.npcs) do
         npc.motionX=0
         npc.hunger=math.min(100,npc.hunger+dt*0.045)
+        -- During a real nearby raid, civilians pause their tasks without
+        -- canceling reserved materials or losing work progress. R3Engine
+        -- determines danger and defensive/escape movement after this tick.
+        if npc.underAttack then continue end
         if npc.hunger>70 and Inventory.count(npc.inventory,"food")>0 then
             if Inventory.take(npc.inventory,"food",1) then npc.hunger-=45 end
         end
