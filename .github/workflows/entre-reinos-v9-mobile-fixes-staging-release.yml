@@ -1,0 +1,113 @@
+name: Entre Reinos v9 NPC feet, 60Hz presentation and R6 swim staging release
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/entre-reinos-v9-mobile-fixes-staging-release.yml]
+permissions:
+  actions: write
+  contents: write
+concurrency:
+  group: roblox-place-write-entre-reinos-main-staging
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Audit v9 fixes, staging IDs, game isolation and green source CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          game=Path('games/maps/entre-reinos')
+          target=json.loads((game/'deploy.targets.json').read_text())['environments']
+          assert str(target['staging']['universeId'])=='10769712413'
+          assert str(target['staging']['placeIds']['main'])=='90623742498445'
+          assert target['production']['universeId'] is None
+          assert target['production']['placeIds']['main'] is None
+          assert json.loads((game/'game.manifest.json').read_text())['places'][0]['fullPlaceBuildAuthoritative']
+          src=game/'game/places/main/src'
+          server=(src/'ServerScriptService/Services/LivingService.luau').read_text()
+          npc=(src/'StarterPlayer/StarterPlayerScripts/NPCPresentation.luau').read_text()
+          lane=(src/'StarterPlayer/StarterPlayerScripts/LaneController.luau').read_text()
+          swim=(src/'StarterPlayer/StarterPlayerScripts/R6SwimVisual.luau').read_text()
+          water=(src/'ReplicatedStorage/WaterRules.luau').read_text()
+          camera=(src/'StarterPlayer/StarterPlayerScripts/SideCamera.luau').read_text()
+          world=(src/'ServerScriptService/Services/WorldService.luau').read_text()
+          assert 'local function pivotToFoot(model: Model)' in server
+          assert 'groundCast.FilterDescendantsInstances={workspace.Terrain}' in server
+          assert 'model:SetAttribute("ER_NPCPose",target)' in server
+          assert 'caption.BackgroundTransparency=1' in server
+          assert 'caption.TextStrokeTransparency=0.08' in server
+          assert 'model:PivotTo(item.render)' in npc
+          assert 'RunService:BindToRenderStep("ER_NPCPresentation"' in npc
+          assert 'Water.submerged(currentSeed,' in lane
+          assert 'SwimVisual.setActive(swimming)' in lane
+          assert 'RunService.PreSimulation:Connect(' in swim
+          assert 'local sample=Profile.sample(seed,x,z)' in water
+          assert 'desiredDistance = if wide then 118 else 88' in camera
+          assert 'DarkTreeSilhouette_' in world and 'BlackForegroundGrass' not in world
+          st=json.loads((game/'docs/RUNNER_STATUS.json').read_text())
+          assert st['seasons'][0]['runners'][0]['status']=='validated'
+          assert st['seasons'][0]['runners'][1]['status']=='in_progress'
+          assert st['seasons'][0]['runners'][2]['status']=='planned'
+          print('ER_V9_FIXES_SOURCE_REVIEW_PASS')
+          PY
+          conclusion="$(gh api repos/Sllay/Roblox-Studios/actions/runs/45036214420 --jq .conclusion)"
+          [[ "$conclusion" == success ]] || { echo "::error::v9 gameplay code CI is not green"; exit 1; }
+      - name: Inspect exact current saved Place v8 before replacement
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          python tools/scene_sync.py --game entre-reinos --place main --environment staging --expected-version 8 --record
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.loads(Path('games/maps/entre-reinos/docs/sync/main/staging.summary.json').read_text())
+          assert s['loadedVersion']==8
+          assert str(s['universeId'])=='10769712413'
+          assert str(s['placeId'])=='90623742498445'
+          assert s['total']>=74
+          roots={x['name'] for x in s['workspaceRoots']}
+          assert 'StartArea' in roots and 'Baseplate' not in roots
+          print('ER_V8_BEFORE_V9_BASELINE_VERIFIED',s['stateDigest'])
+          PY
+      - name: Record observed v8 scene, never force branch
+        run: |
+          git config user.name "entre-reinos-v9-release[bot]"
+          git config user.email "entre-reinos-v9-release@users.noreply.github.com"
+          git add -- games/maps/entre-reinos/docs/sync/main/staging.json games/maps/entre-reinos/docs/sync/main/staging.summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "sync(entre-reinos): record staging v8 before v9 NPC/swim fixes"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Official Place replacement dispatch — staging only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head="$(gh api repos/Sllay/Roblox-Studios/git/ref/heads/main --jq .object.sha)"
+          local="$(git rev-parse HEAD)"
+          [[ "$head" == "$local" ]] || { echo "::error::main moved after inventory"; exit 1; }
+          gh api -X POST repos/Sllay/Roblox-Studios/actions/workflows/publish.yml/dispatches --input - <<'JSON'
+          {
+            "ref": "main",
+            "inputs": {
+              "game": "entre-reinos",
+              "place": "main",
+              "environment": "staging",
+              "confirm_publish": "true",
+              "confirm_full_place_replacement": "true"
+            }
+          }
+          JSON
+          echo "ER_V9_STAGING_DISPATCHED"
