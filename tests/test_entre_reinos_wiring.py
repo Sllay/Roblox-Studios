@@ -186,10 +186,33 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('if data.living ~= nil and not Living.valid(data.living)', slots)
         self.assertIn('actions.OnServerInvoke=function(player: Player,action: any,typeId: any)', living)
         self.assertIn('owner~=player', living)
-        self.assertIn('Work.place(state,typeId,x)', living)
+        self.assertIn('Work.findPlacement(state,typeId,root.Position.X+15)', living)
+        self.assertIn('Work.place(state,typeId,site)', living)
+        self.assertLess(living.index('Work.findPlacement(state,typeId,root.Position.X+15)'),
+                        living.index('Work.place(state,typeId,site)'))
+        self.assertGreater(living.index('lastActionAt[player]=now'),
+                           living.index('Work.place(state,typeId,site)'))
+        self.assertIn('local function actorX(npc: any)', living)
         self.assertIn('RunService.Heartbeat:Connect', living)
         self.assertIn('Players:CreateHumanoidModelFromDescriptionAsync(', living)
         self.assertIn('BuildMenu.start(player)', client)
+
+    def test_v11_nearest_valid_build_plot_and_human_feedback(self):
+        engine = read("ReplicatedStorage/Living/WorkEngine.luau")
+        living = read("ServerScriptService/Services/LivingService.luau")
+        ui = read("StarterPlayer/StarterPlayerScripts/BuildMenu.luau")
+        pure = (GAME / "game/tests/living_work_r2.luau").read_text()
+        self.assertIn('function Engine.findPlacement(', engine)
+        self.assertIn('function Engine.canPlace(', engine)
+        self.assertIn('local valid,reason=Engine.canPlace(state,typeId,x)', engine)
+        self.assertIn('or center.shore or left.shore or right.shore', engine)
+        self.assertIn('return false,"no_available_build_site"', engine)
+        self.assertIn('Work.findPlacement(state,typeId,root.Position.X+15)', living)
+        self.assertIn('local placing=false', ui)
+        self.assertIn('if placing then return end', ui)
+        self.assertIn('no_available_build_site=', ui)
+        self.assertIn('ENTRE_REINOS_V11_PLOTS:', pure)
+        self.assertNotIn('lastActionAt[player]=now\\n    local character=', living)
 
     def test_r2_no_client_minting_no_future_economy(self):
         menu = read("StarterPlayer/StarterPlayerScripts/BuildMenu.luau")
