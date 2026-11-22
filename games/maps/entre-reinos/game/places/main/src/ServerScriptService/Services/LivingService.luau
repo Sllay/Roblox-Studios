@@ -22,6 +22,36 @@ local connection: RBXScriptConnection?=nil
 local simulationAccumulator=0
 local drawAccumulator=0
 local lastActionAt: {[Player]: number}={}
+local lastVisualX: {[number]: number}={}
+local groundCast=RaycastParams.new()
+groundCast.FilterType=Enum.RaycastFilterType.Include
+groundCast.FilterDescendantsInstances={workspace.Terrain}
+groundCast.IgnoreWater=true
+
+-- Height must come from the actually-generated voxel surface, not only
+-- Profile.sample: voxel quantization and a Model pivot differ from the rig feet.
+local function groundHeight(x: number, z: number): number
+    local hit=workspace:Raycast(Vector3.new(x,70,z),Vector3.new(0,-120,0),groundCast)
+    if hit then return hit.Position.Y end
+    return Profile.sample(state.seed,x,z).height
+end
+
+local function pivotToFoot(model: Model): number
+    local pivot=model:GetPivot().Position.Y
+    local bottom=math.huge
+    for _,name in ipairs({"Left Leg","Right Leg"}) do
+        local leg=model:FindFirstChild(name)
+        if leg and leg:IsA("BasePart") then
+            bottom=math.min(bottom,leg.Position.Y-leg.Size.Y*0.5)
+        end
+    end
+    if bottom==math.huge then
+        local bounds,boundsSize=model:GetBoundingBox()
+        bottom=bounds.Position.Y-boundsSize.Y*0.5
+    end
+    return math.clamp(pivot-bottom,1.8,7)
+end
+
 local actions=Instance.new("RemoteFunction")
 actions.Name="ER_LivingActions"
 actions.Parent=shared
@@ -43,22 +73,23 @@ end
 local function textTag(part: BasePart,label: string): (BillboardGui, TextLabel)
     local bill=Instance.new("BillboardGui")
     bill.Name="ER_Info"
-    bill.AlwaysOnTop=true
-    bill.MaxDistance=110
-    bill.Size=UDim2.fromOffset(180,50)
-    bill.StudsOffset=Vector3.new(0,4,0)
+    bill.AlwaysOnTop=false
+    bill.MaxDistance=40
+    bill.Size=UDim2.fromOffset(146,36)
+    bill.StudsOffset=Vector3.new(0,1.8,0)
     bill.Adornee=part
     bill.Parent=part
     local caption=Instance.new("TextLabel")
     caption.Name="Info"
-    caption.BackgroundColor3=Color3.fromRGB(17,25,19)
-    caption.BackgroundTransparency=0.18
+    caption.BackgroundTransparency=1
+    caption.TextStrokeColor3=Color3.new(0,0,0)
+    caption.TextStrokeTransparency=0.08
     caption.BorderSizePixel=0
     caption.Size=UDim2.fromScale(1,1)
     caption.Text=label
     caption.TextColor3=Color3.fromRGB(244,242,224)
     caption.Font=Enum.Font.GothamSemibold
-    caption.TextSize=13
+    caption.TextSize=11
     caption.TextScaled=false
     caption.TextWrapped=true
     caption.Parent=bill
@@ -96,28 +127,42 @@ local function createActor(npc: any): Model?
     end
     local root=model:FindFirstChild("HumanoidRootPart")
     if root and root:IsA("BasePart") then root.Anchored=true end
+    -- R6 feet and Model:GetPivot() can differ by several studs.
+    -- Measure *before* pivoting, then keep this per-rig offset.
+    local feetOffset=pivotToFoot(model)
+    model:SetAttribute("ER_FeetOffset",feetOffset)
+    model:SetAttribute("ER_NPCVisual",true)
+    model:SetAttribute("ER_NPCVelocityX",0)
+    local z=-2
+    local target=Vector3.new(npc.x,groundHeight(npc.x,z)+feetOffset+0.14,z)
+    model:SetAttribute("ER_NPCPose",target)
+    model:SetAttribute("ER_NPCFacing",0)
+    model:PivotTo(CFrame.new(target))
     model.Parent=visualization
+    lastVisualX[npc.id]=npc.x
     return model
 end
 
 local function syncNPC(npc: any)
     local model=figures[npc.id]
     if not model then return end
-    local pos=Profile.sample(state.seed,npc.x,0)
-    local y=pos.height+3.15
-    local current=model:GetPivot()
-    local desired=CFrame.new(npc.x,y,0)
-    local direction=npc.targetX
-    if type(direction)=="number" and direction<npc.x then
-        desired*=CFrame.Angles(0,math.pi/2,0)
-    elseif type(direction)=="number" and direction>npc.x then
-        desired*=CFrame.Angles(0,-math.pi/2,0)
-    end
-    if (current.Position-desired.Position).Magnitude>0.06 then
-        model:PivotTo(desired)
-    end
+    local z=-2
+    local offset=model:GetAttribute("ER_FeetOffset")
+    if type(offset)~="number" then return end
+    local target=Vector3.new(npc.x,groundHeight(npc.x,z)+offset+0.14,z)
+    local previous=lastVisualX[npc.id] or npc.x
+    local vx=math.clamp((npc.x-previous)/math.max(drawAccumulator,0.12),-9,9)
+    -- A single replicated pose is atomic; clients do their own frame-level
+    -- interpolation from this logical position. No low-FPS PivotTo on server.
+    model:SetAttribute("ER_NPCPose",target)
+    model:SetAttribute("ER_NPCVelocityX",vx)
+    local facing=model:GetAttribute("ER_NPCFacing")
+    if vx>0.08 then facing=-math.pi/2
+    elseif vx< -0.08 then facing=math.pi/2 end
+    if type(facing)=="number" then model:SetAttribute("ER_NPCFacing",facing) end
+    lastVisualX[npc.id]=npc.x
     local h=model:FindFirstChildOfClass("Humanoid")
-    if h then
+    if h and h.DisplayName~=npc.name.." · "..tostring(npc.state) then
         h.DisplayName=npc.name.." · "..tostring(npc.state)
     end
 end
@@ -132,14 +177,14 @@ local function buildVisual(b: any)
     model:SetAttribute("TypeId",b.typeId)
     local base=makePart(model,"Foundation",
         Vector3.new(def.footprint,1,7),Color3.fromRGB(104,90,76))
-    base.Position=Vector3.new(b.x,b.y+0.35,0)
+    base.Position=Vector3.new(b.x,b.y+0.35,-10)
     local wall=makePart(model,"Structure",Vector3.new(
         def.footprint-1,def.height,5),Color3.fromRGB(146,115,80))
-    wall.Position=Vector3.new(b.x,b.y+def.height/2+1,0)
+    wall.Position=Vector3.new(b.x,b.y+def.height/2+1,-10)
     wall.Transparency=0.80
     local tagPart=makePart(model,"InfoAnchor",
         Vector3.new(1,1,1),Color3.fromRGB(30,49,35))
-    tagPart.Position=Vector3.new(b.x,b.y+def.height+3,0)
+    tagPart.Position=Vector3.new(b.x,b.y+def.height+2,-10)
     tagPart.Transparency=1
     textTag(tagPart,def.label.." | Plantação de obra")
     model.Parent=visualization
@@ -186,6 +231,8 @@ local function createSiteVisual(site: any)
     p:SetAttribute("ResourceType",site.item)
     p:SetAttribute("SourceId",site.id)
     local gui,label=textTag(p,site.item.." | "..tostring(site.remaining))
+    gui.MaxDistance=23
+    gui.Size=UDim2.fromOffset(110,24)
     siteDisplays[site.id]=gui
     label.Name="Remaining"
 end
@@ -263,7 +310,11 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         end
         drawAccumulator+=dt
         if drawAccumulator>=0.12 then
+            -- Expose the real interval to the pose velocity estimator;
+            -- update only once per ~0.12 seconds to avoid network floods.
+            local elapsed=drawAccumulator
             drawAccumulator=0
+            drawAccumulator=math.max(elapsed,0.01)
             -- Workers can reach the west before the player; the same
             -- deterministic streaming contract must apply to NPC movement.
             for _,npc in ipairs(state.npcs) do
@@ -276,6 +327,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
                 end
             end
             draw()
+            drawAccumulator=0
         end
     end)
     player:SetAttribute("ER_NPCCount",#state.npcs)
@@ -292,6 +344,7 @@ function Service.stop(player: Player)
     figures={}
     buildings={}
     siteDisplays={}
+    lastVisualX={}
     if visualization then visualization:Destroy() end
     visualization=nil
 end
