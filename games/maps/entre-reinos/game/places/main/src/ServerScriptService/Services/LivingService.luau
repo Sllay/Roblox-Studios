@@ -192,6 +192,15 @@ local function syncNPC(npc: any)
         h.DisplayName=npc.name.." · "..tostring(npc.state)
     end
 end
+local function buildPiece(model: Model,b: any,name: string,
+        size: Vector3,offset: Vector3,color: Color3,tilt: number?): Part
+    local p=makePart(model,name,size,color)
+    p.CFrame=CFrame.new(b.x+offset.X,b.y+offset.Y,-10+offset.Z)
+        *CFrame.Angles(0,0,tilt or 0)
+    p:SetAttribute("ER_StructurePiece",true)
+    p.CastShadow=true
+    return p
+end
 local function buildVisual(b: any)
     if not visualization then return end
     local def=Structures.get(b.typeId)
@@ -201,18 +210,73 @@ local function buildVisual(b: any)
     model:SetAttribute("ER_BuildingId",b.id)
     model:SetAttribute("ER_Saveable",true)
     model:SetAttribute("TypeId",b.typeId)
-    local base=makePart(model,"Foundation",
-        Vector3.new(def.footprint,1,7),Color3.fromRGB(104,90,76))
-    base.Position=Vector3.new(b.x,b.y+0.35,-10)
-    local wall=makePart(model,"Structure",Vector3.new(
-        def.footprint-1,def.height,5),Color3.fromRGB(146,115,80))
-    wall.Position=Vector3.new(b.x,b.y+def.height/2+1,-10)
-    wall.Transparency=0.80
+    local stone=Color3.fromRGB(133,133,122)
+    local wood=Color3.fromRGB(104,73,48)
+    local warm=Color3.fromRGB(205,180,130)
+    local roof=Color3.fromRGB(104,69,57)
+    local pale=Color3.fromRGB(189,176,149)
+    local foundation=makePart(model,"Foundation",
+        Vector3.new(def.footprint,0.7,7),stone)
+    foundation.Position=Vector3.new(b.x,b.y+0.22,-10)
+    if b.typeId=="shelter" then
+        -- A-frame canvas shelter: the first home is not a wooden cube.
+        buildPiece(model,b,"TentFront",Vector3.new(6,4,5),
+            Vector3.new(0,2.4,0),Color3.fromRGB(159,142,100))
+        buildPiece(model,b,"CanvasLeft",Vector3.new(0.55,6.7,7),
+            Vector3.new(-2.65,5,0),warm,-0.65)
+        buildPiece(model,b,"CanvasRight",Vector3.new(0.55,6.7,7),
+            Vector3.new(2.65,5,0),warm,0.65)
+        buildPiece(model,b,"Entrance",Vector3.new(2,3,0.35),
+            Vector3.new(0,2,-3.05),Color3.fromRGB(65,54,44))
+    elseif b.typeId=="house" then
+        buildPiece(model,b,"PlasterWalls",Vector3.new(def.footprint-2,9,5),
+            Vector3.new(0,5,0),Color3.fromRGB(199,181,144))
+        for _,side in ipairs({-1,1}) do
+            buildPiece(model,b,"RoofPitch",Vector3.new(def.footprint*0.62,0.85,7),
+                Vector3.new(side*def.footprint*0.225,11,0),roof,side*0.48)
+            buildPiece(model,b,"Window",Vector3.new(1.7,1.7,0.18),
+                Vector3.new(side*3,6,-2.7),Color3.fromRGB(103,154,153))
+        end
+        buildPiece(model,b,"Door",Vector3.new(2.6,5,0.27),
+            Vector3.new(0,3.1,-2.68),wood)
+    elseif b.typeId=="stockpile" then
+        -- Open timber galpão: four pillars, visible crates, and wide roof.
+        for _,dx in ipairs({-1,1}) do
+            for _,dz in ipairs({-1,1}) do
+                buildPiece(model,b,"Support",Vector3.new(0.85,8.5,0.85),
+                    Vector3.new(dx*(def.footprint/2-1),4.8,dz*2.7),wood)
+            end
+        end
+        buildPiece(model,b,"WarehouseRoof",Vector3.new(def.footprint+2,1.3,9),
+            Vector3.new(0,9.8,0),Color3.fromRGB(115,83,57))
+        for i=-1,1 do
+            buildPiece(model,b,"SupplyCrate",Vector3.new(2.5,2.4,2.4),
+                Vector3.new(i*3,1.7,-0.2),Color3.fromRGB(155,112,70))
+        end
+    elseif b.typeId=="fence" then
+        for i=-2,2 do
+            buildPiece(model,b,"Palisade",Vector3.new(0.75,5.8,1.2),
+                Vector3.new(i*1.16,3.2,0),wood)
+        end
+        for _,height in ipairs({2.4,4.5}) do
+            buildPiece(model,b,"FenceRail",Vector3.new(def.footprint-0.5,0.6,1),
+                Vector3.new(0,height,-0.6),Color3.fromRGB(146,102,61))
+        end
+    elseif b.typeId=="wall" then
+        buildPiece(model,b,"StoneCurtain",Vector3.new(def.footprint-0.6,9,4),
+            Vector3.new(0,5,0),Color3.fromRGB(130,132,130))
+        for i=-2,2 do
+            buildPiece(model,b,"Battlement",Vector3.new(1.3,2.8,4.5),
+                Vector3.new(i*1.6,10.5,0),pale)
+        end
+        buildPiece(model,b,"WallBanner",Vector3.new(1.6,3,0.2),
+            Vector3.new(0,7,-2.2),Color3.fromRGB(78,105,81))
+    end
     local tagPart=makePart(model,"InfoAnchor",
         Vector3.new(1,1,1),Color3.fromRGB(30,49,35))
     tagPart.Position=Vector3.new(b.x,b.y+def.height+2,-10)
     tagPart.Transparency=1
-    textTag(tagPart,def.label.." | Plantação de obra")
+    textTag(tagPart,def.label.." · obra")
     model.Parent=visualization
     buildings[b.id]=model
 end
@@ -221,25 +285,40 @@ local function syncBuild(b: any)
     local model=buildings[b.id]
     if not model then return end
     local def=Structures.get(b.typeId)
-    local wall=model:FindFirstChild("Structure")
-    if wall and wall:IsA("BasePart") then
-        wall.Transparency=if b.state=="complete" then 0 else if b.state=="building" then 0.35 else 0.76
-        wall.Color=if b.state=="damaged" then Color3.fromRGB(109,83,73)
-            else if b.state=="complete" then Color3.fromRGB(150,112,77)
-            else Color3.fromRGB(133,138,116)
+    if not def then return end
+    if model:GetAttribute("ER_LastVisualState")~=b.state then
+        model:SetAttribute("ER_LastVisualState",b.state)
+        for _,p in ipairs(model:GetChildren()) do
+            if p:IsA("BasePart") and p:GetAttribute("ER_StructurePiece")==true then
+                -- Only touch visual properties on state transitions, not
+                -- every 10Hz physics tick of every completed building.
+                p.Transparency=if b.state=="complete" then 0
+                    else if b.state=="damaged" or b.state=="ruined" then 0.23
+                    else if b.state=="building" then 0.28 else 0.55
+            end
+        end
     end
     local p=model:FindFirstChild("InfoAnchor")
     local gui=if p then p:FindFirstChild("ER_Info") else nil
     local caption=if gui then gui:FindFirstChild("Info") else nil
     if caption and caption:IsA("TextLabel") then
-        local delivered=""
+        local delivered={}
         for resource,cost in pairs(def.cost) do
-            delivered..=resource.." "..tostring(b.delivered[resource] or 0)
-                .."/"..tostring(cost).."  "
+            table.insert(delivered,resource.." "..tostring(b.delivered[resource] or 0)
+                .."/"..tostring(cost))
         end
-        caption.Text=def.label.." #"..tostring(b.id)..": "..b.state.."\n"
-            ..(if b.state=="complete" then "Concluído"
-                else tostring(math.floor(100*b.progress/def.buildSeconds)).."% | "..delivered)
+        local stored=""
+        if b.typeId=="stockpile" and b.stored then
+            local pieces={}
+            for item,count in pairs(b.stored.items) do
+                table.insert(pieces,item.." "..tostring(count))
+            end
+            stored=if #pieces>0 then " | estoque: "..table.concat(pieces,", ") else " | vazio"
+        end
+        caption.Text=def.label.." #"..tostring(b.id).." · "..b.state
+            ..(if b.state=="complete" then stored
+                else " "..tostring(math.floor(100*b.progress/def.buildSeconds))
+                    .."% · "..table.concat(delivered,", "))
     end
 end
 
