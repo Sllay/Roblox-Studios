@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-22",
-  "note": "Creator accepted T1-R1 movement and explicitly authorized R2. Native R6 Animate handoff implemented/compiled; swimming animation remains visual retest. T1-R2 core NPC work/build/save integrated in GitHub, green CI 45033200114; Roblox runtime + mobile pending.",
+  "note": "T1-R1 accepted by creator; R6 Animate restoration code included in staging v8 but native swim visual still needs mobile retest. T1-R2 v8 staging preview published: 4 NPC R6, resources, weighted bags, wood/stone gathering, blueprint deliveries, builds, repairs, backward-compatible living save; CI and unsaved Roblox engine proof green. T1-R2 not validated pending live test and deeper R2 scope.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -20,14 +20,14 @@
       "status": "in_progress",
       "stagingPublication": {
         "status": "preview_published",
-        "previewRunner": "T1-R1",
+        "previewRunner": "T1-R2",
         "isSeasonFinal": false,
-        "commit": "d9370726",
+        "commit": "2fb5a87c",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 7,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031576169",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45031693274"
+        "revisionId": 8,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033471243",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033671441"
       },
       "userReview": "not_requested",
       "refinementCycles": [],
@@ -75,13 +75,14 @@
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "pure_R2_FSM_in_CI_pass; live_R6_NPC_engine_not_yet_tested",
-            "mobile": "awaiting_creator_preview"
+            "runtime": "unsaved_Roblox_engine_R6_NPC_FSM_4_workers_11_deliveries_1_build_1_repair_pass",
+            "mobile": "awaiting_creator_roblox_client_review"
           },
           "blockers": [
-            "Roblox runtime Play test: 4 NPCs R6, gathering/delivery/building/repair and UI BuildMenu in reserved world",
-            "NPC 3D animation/smooth movement, mobile FPS and save/reconnect with partially built structures require validation",
-            "R2 profession/needs/storage/free placement progress remains in development; no T1-R3 until runner R2 validated"
+            "Creator mobile preview: loading world after v8, four NPC R6 visible/moving, construction UI accessible without overlapping native joystick",
+            "Create a shelter: verify actual NPC path, finite harvesting, separate bag delivery, material/status progress and final model; inspect mobile FPS and animation smoothness",
+            "Save/leave/reenter World 1 seed 516639272 to check NPC state and partly built structures persist; builder/storage/free-footprint systems still need full R2 polishing",
+            "R1 stock native swimming animation handoff shipped with v8; verify visually it plays in water (no synthetic Motor6D edit)"
           ],
           "deliverables": [
             "Server-only 4 NPC R6 models and bounded Heartbeat simulation",
@@ -89,7 +90,17 @@
             "Finite resource sites with mass-based physical NPC inventory, reserved materials, direct deliveries and per-profession output multipliers",
             "Shelter/house/stockpile/fence/wall blueprints with footprint and slope rules, cumulative build and repairs",
             "BuildMenu for mobile and saved living snapshots in six existing slot keys, backward compatible with R1 schema"
-          ]
+          ],
+          "previewPublication": {
+            "status": "published_v8",
+            "placeId": "90623742498445",
+            "universeId": "10769712413",
+            "revision": 8,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033471243",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033671441",
+            "verifiedChecks": 16,
+            "scope": "4 native R6 NPC worker visuals + deterministic pure work engine + worksite finite resources + blueprint build/repair + 6-slot living persistence"
+          }
         },
         {
           "id": "T1-R3",
@@ -108,7 +119,7 @@
           "blockers": []
         }
       ],
-      "previewUserReview": "T1-R1_creator_approved_to_start_R2"
+      "previewUserReview": "awaiting_creator_T1_R2_preview_v8"
     },
     {
       "id": "T2",
@@ -240,7 +251,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R2_in_progress_code_green_staging_preview_pending",
+  "programStage": "T1_R2_in_progress_staging_v8_preview_published_awaiting_creator_test",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -269,11 +280,20 @@
     "codeCommit": "bd4a91ab520360940bfcbb0c8acb5e7bf9949cff",
     "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033200114",
     "ciConclusion": "success",
-    "lastPublishedVersion": 7,
-    "staging": "v8_R2_preview_pending",
-    "runtime": "pure Luau NPC resource and construction cycle passed; no real NPCs in Roblox client yet",
-    "mobile": "awaiting_creator",
-    "r1UserMovementApproved": true
+    "publishedVersion": 8,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033471243",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033671441",
+    "verifiedModules": 16,
+    "seedTested": 516639272,
+    "probeNPCs": 4,
+    "probeDeliveredMaterials": 11,
+    "probeBuildingsCompleted": 1,
+    "probeRepairs": 1,
+    "probeR6ModelCreated": true,
+    "runtime": "isolated Roblox Luau execution: NPC work simulation passed, native R6 model creation passed; not a Player/live server test",
+    "mobile": "awaiting_creator_T1_R2_preview",
+    "staging": "published_v8",
+    "swimVisual": "awaiting_creator"
   },
   "remoteIdentity": {
     "status": "verified",
