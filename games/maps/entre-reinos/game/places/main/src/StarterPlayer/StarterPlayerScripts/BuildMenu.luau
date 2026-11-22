@@ -7,6 +7,18 @@ local Structures=require(ReplicatedStorage:WaitForChild("Game")
 local Menu={}
 local installed=false
 local order={"shelter","house","stockpile","fence","wall"}
+local placing=false
+local errorMessages={
+    rate_limited="Aguarde um instante antes de enviar outra ordem.",
+    no_available_build_site="Sem terreno livre a até 48 studs. Ande para outra área.",
+    invalid_footprint_or_slope="Terreno muito inclinado ou perto da água.",
+    overlapping_footprint="Já existe uma obra ocupando esse espaço.",
+    building_limit="Limite de construções atingido.",
+    outside_playable_lane="Você precisa estar na área jogável.",
+    character_not_ready="Personagem ainda não está pronto.",
+    world_not_loaded="Mundo ainda não terminou de carregar.",
+    connection_failed="Não foi possível falar com o servidor.",
+}
 local function label(parent: Instance,txt: string,size: number): TextLabel
     local l=Instance.new("TextLabel")
     l.Text=txt
@@ -95,14 +107,18 @@ function Menu.start(player: Player)
         b.Size=UDim2.new(1,-16,0,54)
         b.Parent=panel
         b.Activated:Connect(function()
+            if placing then return end
+            placing=true
             b.Active=false
-            status.Text="Enviando ordem de "..def.label.." ..."
+            status.Text="Procurando terreno para "..def.label.."..."
             local result=call("build",id)
             status.Text=if result.ok
                 then def.label.." #"..tostring(result.buildingId)
-                    .." colocado. NPCs estão buscando os recursos."
-                else "Não foi possível: "..tostring(result.error)
+                    .." colocado em X="..tostring(result.x)..". NPCs buscarão os materiais."
+                else errorMessages[tostring(result.error)] or
+                    ("Não foi possível: "..tostring(result.error))
             b.Active=true
+            placing=false
         end)
     end
 
