@@ -1,0 +1,36 @@
+name: Entre Reinos staging identity (read-only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/entre-reinos-identity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Cross-check candidate Place/Universe IDs without writing
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          if [[ -z "$ROBLOX_OPEN_CLOUD_API_KEY" ]]; then
+            echo "::error::Missing ROBLOX_OPEN_CLOUD_API_KEY; no remote identity proof."
+            exit 1
+          fi
+          python tools/place_provision.py enroll \
+            --game entre-reinos \
+            --place main \
+            --universe-id 10769712413 \
+            --place-id 90623742498445
+      - name: Read-only verification completed
+        if: success()
+        run: echo "IDENTITY_VERIFIED_FROM_ROBLOX_ENGINE; no file or Place write performed"
