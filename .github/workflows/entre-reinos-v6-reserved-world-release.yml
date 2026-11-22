@@ -1,0 +1,110 @@
+name: Entre Reinos v6 lobby to reserved world staging release (single approved test)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/entre-reinos-v6-reserved-world-release.yml
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: roblox-place-write-entre-reinos-main-staging
+  cancel-in-progress: false
+
+jobs:
+  staging:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install official scene-inventory requirements
+        run: python -m pip install Pillow==11.3.0
+      - name: Verify exact staging destination, source controls, and completed CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          game=Path('games/maps/entre-reinos')
+          targets=json.loads((game/'deploy.targets.json').read_text())['environments']
+          manifest=json.loads((game/'game.manifest.json').read_text())
+          assert str(targets['staging']['universeId'])=='10769712413'
+          assert str(targets['staging']['placeIds']['main'])=='90623742498445'
+          assert targets['production']['universeId'] is None
+          assert targets['production']['placeIds']['main'] is None
+          assert manifest['places'][0]['fullPlaceBuildAuthoritative'] is True
+          b=(game/'game/places/main/src/ServerScriptService/Boot.server.luau').read_text()
+          w=(game/'game/places/main/src/ServerScriptService/Services/WorldService.luau').read_text()
+          s=(game/'game/places/main/src/ServerScriptService/Services/SaveSlotService.luau').read_text()
+          m=(game/'game/places/main/src/StarterPlayer/StarterPlayerScripts/SlotMenu.luau').read_text()
+          ui=(game/'game/places/main/src/StarterPlayer/StarterPlayerScripts/WorldLoadingUI.luau').read_text()
+          assert 'Route.isWorldServer(game.PrivateServerId' in b
+          assert 'options.ReservedServerId = id' in b
+          assert 'Route.validArrival(ticket, player.UserId' in b
+          assert 'ok, record = Saves.createDetached(player, index)' in b
+          assert 'Saves.open, player, index' in b
+          assert 'World.ensureNear(record.seed, root.Position.X)' in b
+          assert 'function World.activate(seed: number, progress:' in w
+          assert 'function SaveSlotService.createDetached(' in s
+          assert 'overlay.BackgroundTransparency = 0' in m
+          assert 'shade.BackgroundTransparency = 0' in ui
+          print('ENTRE_REINOS_V6_STAGING_REVIEW_PASS')
+          PY
+          status="$(gh api repos/Sllay/Roblox-Studios/actions/runs/45030168933 --jq .conclusion)"
+          [[ "$status" == success ]] || { echo "::error::Reviewed V6 CI did not finish green"; exit 1; }
+          echo "ENTRE_REINOS_V6_TESTED_CODE_PASS"
+      - name: Read-only inventory of published v5 before replacing staging
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          python tools/scene_sync.py --game entre-reinos --place main --environment staging --expected-version 5 --record
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.loads(Path('games/maps/entre-reinos/docs/sync/main/staging.summary.json').read_text())
+          assert s['loadedVersion']==5
+          assert str(s['universeId'])=='10769712413'
+          assert str(s['placeId'])=='90623742498445'
+          assert s['total']>=60
+          names={item['name'] for item in s['workspaceRoots']}
+          assert 'StartArea' in names and 'Baseplate' not in names
+          print('ENTRE_REINOS_V5_BASELINE_VERIFIED',s['stateDigest'])
+          PY
+      - name: Save the observed baseline on main without force-push
+        run: |
+          git config user.name "entre-reinos-v6-release[bot]"
+          git config user.email "entre-reinos-v6-release@users.noreply.github.com"
+          git add -- games/maps/entre-reinos/docs/sync/main/staging.json games/maps/entre-reinos/docs/sync/main/staging.summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "sync(entre-reinos): record verified staging v5 before reserved server v6"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Dispatch official full Place replacement for staging only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          local_commit="$(git rev-parse HEAD)"
+          remote_commit="$(gh api repos/Sllay/Roblox-Studios/git/ref/heads/main --jq .object.sha)"
+          [[ "$local_commit" == "$remote_commit" ]] || { echo "::error::main changed; release blocked"; exit 1; }
+          gh api -X POST repos/Sllay/Roblox-Studios/actions/workflows/publish.yml/dispatches --input - <<'JSON'
+          {
+            "ref": "main",
+            "inputs": {
+              "game": "entre-reinos",
+              "place": "main",
+              "environment": "staging",
+              "confirm_publish": "true",
+              "confirm_full_place_replacement": "true"
+            }
+          }
+          JSON
+          echo "V6_PUBLISH_DISPATCHED; only publish.yml can confirm an actual Roblox revision"
