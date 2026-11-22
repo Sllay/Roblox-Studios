@@ -87,6 +87,22 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertNotIn('if not answer and (failure == "server_operation_failed"', menu)
         self.assertIn("answer.terrainPhase", menu)
 
+    def test_menu_knows_actual_live_version_and_active_slot(self):
+        boot = (SRC/"ServerScriptService/Boot.server.luau").read_text(encoding="utf8")
+        menu = (SRC/"StarterPlayer/StarterPlayerScripts/SlotMenu.luau").read_text(encoding="utf8")
+        self.assertIn("serverRevision = game.PlaceVersion", boot)
+        self.assertIn("activeSlot = SaveSlotService.index(player)", boot)
+        self.assertIn("response.serverRevision", menu)
+        self.assertIn("activeSlot = response.activeSlot", menu)
+        self.assertIn("summary.seed", menu)
+        self.assertIn("choose.Text = \"Retomar\"", menu)
+        self.assertIn("remove.Active = summary.exists and activeSlot == nil", menu)
+
+    def test_failed_world_entry_does_not_persist_menu_position(self):
+        save = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
+        self.assertIn('player:GetAttribute("ER_WorldLoaded") ~= true', save)
+        self.assertIn("s.lastClock = now", save)
+
     def test_save_is_server_authoritative_and_atomic(self):
         service = (SRC/"ServerScriptService/Services/SaveSlotService.luau").read_text(encoding="utf8")
         self.assertIn("UpdateAsync(", service)
