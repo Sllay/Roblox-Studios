@@ -20,7 +20,7 @@ def main():
     subprocess.run([vm,str(ROOT/"tests/luau/surface_fields.luau")],cwd=ROOT,check=True)
     # Strict analyze the portable Entre Reinos core as well as executing its assertions.
     er_modules=ROOT/"games/maps/entre-reinos/game/places/main/src/ReplicatedStorage"
-    for module_name in ("WorldProfile.luau", "SlotModel.luau", "SlotLeasePolicy.luau", "InputProjection.luau"):
+    for module_name in ("WorldProfile.luau", "SlotModel.luau", "SlotLeasePolicy.luau", "InputProjection.luau", "WaterRules.luau"):
         subprocess.run([lsp,"analyze",f"--definitions={definitions}",str(er_modules/module_name)],cwd=ROOT,check=True)
     # T1-R2: strict type-check each data-driven economy/profession/work module.
     for module_name in ("ItemDefs", "ProfessionDefs", "StructureDefs",
