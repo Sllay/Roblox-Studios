@@ -465,7 +465,8 @@ function UI.start(player: Player)
         vitals.Text="DIA "..tostring(day)..(if night then " · NOITE" else " · SOL")..
             "    MOEDAS "..tostring(wallet).."    FLECHAS "..tostring(arrows)
         if type(message)~="string" then message="" end
-        warning.Visible=(phase~="sandbox" or isRaid)
+        warning.Visible=(phase~="sandbox" or isRaid
+            or player:GetAttribute("ER_R3Forecast")==true)
         warning.Text=if phase=="guard" then
                 "Proteja o duque: use GOLPE para iniciar o prólogo."
             else if isRaid then
@@ -520,10 +521,12 @@ function UI.start(player: Player)
         local carried=if resources then resources.carried else nil
         local reserved=if resources then resources.reserved else nil
         local committed=if resources then resources.committed else nil
+        local stocked=if resources then resources.stored else nil
         if not sources then
             stock.Text="FONTES DA VILA  ·  consultando..."
         else
-            stock.Text="FONTES  ·  MAD "..tostring(sources.wood or 0)..
+            stock.Text="VILA  ·  MADEIRA "..tostring(sources.wood or 0).."+"..
+                tostring(if stocked then stocked.wood or 0 else 0)..
                 "   PEDRA "..tostring(sources.stone or 0)..
                 "   FERRO "..tostring(sources.iron or 0)..
                 "   COMIDA "..tostring(sources.food or 0)
@@ -534,7 +537,8 @@ function UI.start(player: Player)
                 "\nFontes "..tostring(if sources then sources[item] or 0 else "?")..
                 "  ·  Nas bolsas "..tostring(if carried then carried[item] or 0 else "?")..
                 "\nReservado "..tostring(if reserved then reserved[item] or 0 else "?")..
-                "  ·  Aplicado em obras "..tostring(if committed then committed[item] or 0 else "?")
+                "  ·  Aplicado "..tostring(if committed then committed[item] or 0 else "?")..
+                "  ·  No galpão "..tostring(if stocked then stocked[item] or 0 else "?")
         end
         if builders then builders.update(snapshot) end
 
@@ -588,7 +592,8 @@ function UI.start(player: Player)
             "\nComércio no centro: "..(if nearby.canTrade then "próximo" else "longe")..
             "   ·   Tesouro: "..tostring(hud.treasury or "?")
         tradeButton.Active=nearby.canTrade==true and (hud.treasury or 0)>=1
-            and sources~=nil and (sources.wood or 0)>=1
+            and sources~=nil
+            and ((sources.wood or 0)+(if stocked then stocked.wood or 0 else 0))>=1
         tradeButton.BackgroundColor3=if tradeButton.Active then C.raised else C.surface
         coinsInfo.Text="SUA BOLSA  ·  "..tostring(player:GetAttribute("ER_R3Wallet") or 0)..
             " moedas. Soltar uma moeda deixa um item físico no chão."
@@ -623,7 +628,8 @@ function UI.start(player: Player)
     end)
 
     for _,name in ipairs({"ER_R3Day","ER_R3Night","ER_R3Enemies",
-        "ER_R3Wallet","ER_R3Arrows","ER_R3Warning","ER_R3Phase","ER_R3Raid"}) do
+        "ER_R3Wallet","ER_R3Arrows","ER_R3Warning","ER_R3Phase",
+        "ER_R3Raid","ER_R3Forecast"}) do
         player:GetAttributeChangedSignal(name):Connect(function()
             redraw()
             if name=="ER_R3Phase" then updateVillage() end
