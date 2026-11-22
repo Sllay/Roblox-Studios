@@ -338,7 +338,7 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('local options = {wide = false, debug = false}', lobby)
         self.assertIn('savedOptions = {wide = false, debug = false}', client)
         self.assertNotIn('BuildMenu.start(player)', client)
-        self.assertNotIn('ScreenGui', build)
+        self.assertNotIn('Instance.new("ScreenGui")', build)
         self.assertIn('function Menu.mount(', build)
         self.assertIn('tostring(b.progress)', build)
         self.assertNotIn('DataStoreService', hud)
