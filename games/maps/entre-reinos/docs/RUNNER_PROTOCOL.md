@@ -61,3 +61,18 @@ O cronograma V2 substitui a alocação antiga: T1 FUNDAÇÃO, T2 FINALIZAÇÃO d
 No começo de cada runner, consultar AGENT_HANDOFF.md e fonte exata de leitura em SEASON_RUNNERS.md; pesquisar RESEARCH_SOURCES.md, MECHANICS_AUDIT.md e ROBLOX_ADAPTATION.md pertinentes. Registrar no receipt a lista de fontes realmente lidas, URL e versão, além das hipóteses testadas. Se fonte não acessível, marcar em RESEARCH_GAPS.md e não inventar suas regras.
 
 Ao terminar um runner, registrar o mesmo protocolo universal: implementação real + testes + corrigir falhas + ci green + commit + RUNNER_STATUS.json atualizado + handoff do próximo. Documentação de pesquisa não altera status planned. Nenhuma mudança de modelo deve alterar a ordem ou os critérios por interpretação própria.
+
+## Emenda 22/11/2026 — 58 contratos de jogo e bloqueio de "jogo de papel"
+
+**Obrigatório em TODOS os runners:** consultar `docs/FEATURE_COMPLETENESS_AUDIT.md` e registrar no receipt os IDs ER-001…ER-058 impactados. Essa matriz rastreia a Bíblia/GDD até a execução real, com exatamente um runner responsável pelo fechamento de cada requisito. Não se pode apagar requisitos, reduzir o requisito ou mover um fundamento da T2 para "polimento da T3" apenas para obter CI verde.
+
+**Status PARCIAL/AUSENTE não é defeito cosmético.** Módulo/Remote/registrador serializável presente não significa gameplay completo. O fluxo deve ter controles/UX reais, lógica e efeitos de mundo observáveis, economia conservativa, persistência, falhas/abusos e prova de uso em Roblox/mobile. Campos em JSON/Luau, estados de FSM e modelos geométricos não equivalem a jogo aprovado.
+
+A CI executa `tests/test_entre_reinos_feature_completeness.py`, que bloqueia um requisito de lançamento sem dono; impede marcar um requisito como `VALIDADO` sem `docs/feature-evidence/ER-nnn.json` com commit, CI, execução Roblox, evidência mobile, save/load, teste de abuso e aprovação do criador; e bloqueia fechar uma temporada enquanto qualquer requisito dela ou de temporadas anteriores estiver aberto. O arquivo de evidência só deve existir com provas reais, nunca com links falsos ou "pending".
+
+- **T1** entrega fundamento funcional, sem fechar ER-007/008/009/010/014/015/019 enquanto houver árvores decorativas não cortáveis, galpão sem retirada para obra, construção sem preview, castelo inicial ausente, abrigo/invasão sem gameplay, prólogo só por FSM ou death/recovery sem contrato.
+- **T2** precisa terminar todos os ER-021…044 de verdade; nenhum pode ser transferido ao T3 apenas porque envolve muitas integrações.
+- **T3** amplia e polimenta, revisa a matriz cumulativamente e não publica produção se qualquer ER-001…058 ainda estiver aberto.
+- PvP, coop/multiplayer e segredos de eras distantes estão FORA do lançamento solo medieval; não inserir lore privada em documentos públicos.
+
+A política de save por atualização é: preservar formato/ruleset/gerador compatíveis, migrar somente por caminho testado e restaurável, proteger formato futuro/sem conversor. Deleção permanece ação deliberada do jogador com confirmação; preparar rollback/backups auditáveis antes de migrações ou exclusões destrutivas. Jamais usar revisão do Place como substituto do contrato de dados.
