@@ -68,3 +68,14 @@ Uma falha crítica de save, spawn, R6 ou nado bloqueia `T1-R1 validated`, mesmo 
 - [ ] Sair de fato e reentrar no Mundo 1: seed e posição devem continuar, sem criar segundo save.
 
 Código corrigido em `9e07bcd44f7326be264b8e17ee78aca4a047b8dd`, publicado como revisão 4 em https://github.com/Sllay/Roblox-Studios/actions/runs/44978003846 e leitura independente confirmada em https://github.com/Sllay/Roblox-Studios/actions/runs/44978130381.
+
+## Reteste v5 (bug Terrain/session) — obrigatório
+
+- [ ] Sair totalmente de todas as sessões antigas; abrir https://www.roblox.com/games/90623742498445 .
+- [ ] Jogar mostra `ENTRE REINOS • v5` e Mundo 1 com a seed do mundo registrada (não excluir).
+- [ ] Tocar **Entrar** no Mundo 1. Verificar se o menu fecha e o personagem aparece em cima do terreno.
+- [ ] Se houver falha, registrar **texto exato** e `(etapa: terrain)`, `[geração: fase]`, seed e indicação v5. Não criar/excluir outros mundos.
+- [ ] Se entrar, verificar câmera, controles, rio, nado, velocidade, FPS, e depois sair/reentrar e confirmar seed/posição.
+- [ ] Não considerar T1-R1 validado com base no CI + Luau Execution. A entrada real do jogador é o gate pendente.
+
+Evidência da publicação https://github.com/Sllay/Roblox-Studios/actions/runs/44978951305; readback source v5 https://github.com/Sllay/Roblox-Studios/actions/runs/44979034609; cinco seeds testadas na engine, mas falha no jogo real ainda não isolada.
