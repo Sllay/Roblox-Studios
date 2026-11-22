@@ -38,3 +38,25 @@ local legacy = S.newWorld(11, 100, {x=0,y=15,z=0})
 legacy.schemaVersion = 999
 assert(not S.validWorld(legacy))
 print("ENTRE_REINOS_PURE: deterministic world, 6 independent slots and schema assertions passed")
+-- Session lock and retry decisions are tested with the same pure module used on the server.
+local P = require("../places/main/src/ReplicatedStorage/SlotLeasePolicy")
+assert(P.foreignLease(nil, "a", 100) == false)
+assert(P.foreignLease({token="a", expiresAt=200}, "a", 100) == false)
+assert(P.foreignLease({token="b", expiresAt=200}, "a", 100) == true)
+assert(P.foreignLease({token="b", expiresAt=100}, "a", 100) == false)
+assert(P.foreignLease({token="b", expiresAt=99}, "a", 100) == false)
+assert(P.foreignLease({token="b", expiresAt="invalid"}, "a", 100) == true)
+assert(P.foreignLease("bad schema", "a", 100) == true)
+assert(P.writeDecision(nil, "a", 0, 1, "op1") == "conflict")
+local owned = {revision=7, lock={token="a",expiresAt=200}, lastWriteId="older"}
+assert(P.writeDecision(owned, "a", 7, 8, "op1") == "apply")
+assert(P.writeDecision(owned, "b", 7, 8, "op1") == "conflict")
+assert(P.writeDecision(owned, "a", 6, 7, "op1") == "conflict")
+local saved = {revision=8, lock={token="a",expiresAt=200}, lastWriteId="op1"}
+assert(P.writeDecision(saved, "a", 7, 8, "op1") == "already_applied")
+saved.lock = nil
+assert(P.writeDecision(saved, "a", 7, 8, "op1") == "already_applied")
+saved.lock = {token="b",expiresAt=200}
+assert(P.writeDecision(saved, "a", 7, 8, "op1") == "conflict")
+print("ENTRE_REINOS_LEASE: ownership, expiry, revision and retry assertions passed")
+

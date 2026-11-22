@@ -202,9 +202,8 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
                 pendingDeletion = nil
                 local answer = request("delete", index)
                 if answer then
-                    task.wait(0.4)
-                    local latest = request("list", nil)
-                    if latest then buildRows(latest.slots) end
+                    summaries[index] = answer.summary
+                    buildRows(summaries)
                 end
             end)
         end

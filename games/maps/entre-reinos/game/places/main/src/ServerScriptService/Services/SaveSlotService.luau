@@ -6,6 +6,7 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Slots = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("SlotModel"))
 local WorldProfile = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
+local Policy = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("SlotLeasePolicy"))
 local store = DataStoreService:GetDataStore("EntreReinos_WorldSlots_v1")
 local SaveSlotService = {}
 
@@ -26,14 +27,7 @@ local function cloneRecord(source: {[string]: any}): {[string]: any}
 end
 
 local function lockedByOther(data: any, token: string, now: number): boolean
-    if type(data) ~= "table" or data.lock == nil then
-        return false
-    end
-    if type(data.lock) ~= "table" or type(data.lock.token) ~= "string"
-        or type(data.lock.expiresAt) ~= "number" then
-        return true -- Unknown lock metadata: fail closed.
-    end
-    return data.lock.token ~= token and data.lock.expiresAt > now
+    return Policy.foreignLease(if type(data) == "table" then data.lock else nil, token, now)
 end
 
 local function seedValue(): number
@@ -51,7 +45,8 @@ function SaveSlotService.list(player: Player): (boolean, any)
             return false, "datastore_unavailable"
         end
         local summary = Slots.summary(value, index)
-        if type(value) == "table" and value.lock and value.lock.expiresAt then
+        if type(value) == "table" and type(value.lock) == "table"
+            and type(value.lock.expiresAt) == "number" then
             summary.inUse = value.lock.expiresAt > os.time()
         end
         result[index] = summary
@@ -196,18 +191,10 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
     local pending = s.pending
     local success, result = pcall(function()
         return store:UpdateAsync(Slots.key(player.UserId, s.index), function(old)
-            if type(old) ~= "table" then return nil end
-            if old.lastWriteId == pending.id and old.revision == pending.record.revision then
-                -- Retried after ambiguous response; do not increment twice.
-                if old.lock == nil or old.lock.token == s.token then
-                    return old
-                end
-                return nil
-            end
-            if not Slots.validWorld(old) or not old.lock or old.lock.token ~= s.token then
-                return nil
-            end
-            if old.revision ~= s.data.revision then return nil end
+            if not Slots.validWorld(old) then return nil end
+            local decision = Policy.writeDecision(old, s.token, s.data.revision, pending.record.revision, pending.id)
+            if decision == "already_applied" then return old end
+            if decision ~= "apply" then return nil end
             return pending.record
         end)
     end)
