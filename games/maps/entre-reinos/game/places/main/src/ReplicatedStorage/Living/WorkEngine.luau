@@ -145,7 +145,34 @@ local function walk(npc: any, destX: number, dt: number): boolean
     return math.abs(destX-npc.x)<=NEAR
 end
 
-function Engine.place(state: any, typeId: string, x: number): (boolean, any)
+-- Pure planning: only server-selected candidate positions are tested. Never
+-- mutate a saved world, reserve materials, or add a blueprint during search.
+function Engine.findPlacement(state: any, typeId: string, nearX: number): (boolean, any)
+    local def=Structures.get(typeId)
+    if not def then return false,"invalid_structure" end
+    if type(nearX)~="number" or nearX~=nearX or math.abs(nearX)==math.huge then
+        return false,"invalid_position"
+    end
+    if #state.buildings>=120 then return false,"building_limit" end
+
+    -- Search nearest valid spot on the X gameplay lane, checking both sides.
+    -- 48 studs is bounded and keeps new blueprints around the player.
+    local origin=math.round(nearX/2)*2
+    for step=0,24 do
+        local candidate=origin+step*2
+        local allowed=Engine.canPlace(state,typeId,candidate)
+        if allowed then return true,candidate end
+        if step>0 then
+            candidate=origin-step*2
+            allowed=Engine.canPlace(state,typeId,candidate)
+            if allowed then return true,candidate end
+        end
+    end
+    return false,"no_available_build_site"
+end
+
+-- Shared preflight for planner and final atomic server-side placement.
+function Engine.canPlace(state: any, typeId: string, x: number): (boolean, string?)
     local def=Structures.get(typeId)
     if not def then return false,"invalid_structure" end
     if type(x)~="number" or x~=x or x< -112 or x>112 then
@@ -155,8 +182,9 @@ function Engine.place(state: any, typeId: string, x: number): (boolean, any)
     local center=World.sample(state.seed,x,0)
     local left=World.sample(state.seed,x-def.footprint/2,0)
     local right=World.sample(state.seed,x+def.footprint/2,0)
-    if center.wet or left.wet or right.wet or center.shore or
-        math.abs(left.height-right.height)>def.maxSlope then
+    if center.wet or left.wet or right.wet
+        or center.shore or left.shore or right.shore
+        or math.abs(left.height-right.height)>def.maxSlope then
         return false,"invalid_footprint_or_slope"
     end
     for _,b in ipairs(state.buildings) do
@@ -165,6 +193,14 @@ function Engine.place(state: any, typeId: string, x: number): (boolean, any)
             return false,"overlapping_footprint"
         end
     end
+    return true,nil
+end
+
+function Engine.place(state: any, typeId: string, x: number): (boolean, any)
+    local valid,reason=Engine.canPlace(state,typeId,x)
+    if not valid then return false,reason end
+    local def=Structures.get(typeId)
+    local center=World.sample(state.seed,x,0)
     local b={id=state.nextBuildingId,typeId=typeId,x=x,y=center.height,
         state="blueprint",progress=0,health=def.health,
         delivered={},claimed={},stored=Inventory.new(if def.storageMass>0 then def.storageMass else 1)}
