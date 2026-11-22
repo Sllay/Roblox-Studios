@@ -4,6 +4,7 @@
 local Inventory=require("./Inventory")
 local Professions=require("./ProfessionDefs")
 local Items=require("./ItemDefs")
+local R3=require("./R3Engine")
 local Living={}
 Living.VERSION=1
 
@@ -49,6 +50,7 @@ function Living.valid(state: any): boolean
         or type(state.stats)~="table" or not finite(state.elapsed)
         or not finite(state.nextBuildingId) then return false end
     if #state.npcs>50 or #state.buildings>120 or #state.sites>256 then return false end
+    if state.r3~=nil and not R3.valid(state.r3) then return false end
     for _,n in ipairs(state.npcs) do
         if type(n)~="table" or not finite(n.id) or not finite(n.x)
             or type(n.name)~="string" or not Professions.get(n.profession)
