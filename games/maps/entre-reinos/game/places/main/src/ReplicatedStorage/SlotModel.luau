@@ -4,6 +4,35 @@ local Living = require("./Living/LivingModel")
 local Slots = {}
 Slots.COUNT = 6
 Slots.SCHEMA_VERSION = 1
+-- These are data contracts, not Roblox Place revisions.
+-- Cosmetic/gameplay changes keep these versions untouched.
+Slots.SAVE_FORMAT_VERSION = 1
+Slots.RULESET_VERSION = 1
+Slots.MIN_RULESET_VERSION = 1
+
+function Slots.compatibility(data: any): (boolean, string)
+    if type(data)~="table" or data.deleted==true then
+        return false,"missing_save"
+    end
+    local format=if data.saveFormatVersion==nil then 1 else data.saveFormatVersion
+    local rules=if data.rulesetVersion==nil then 1 else data.rulesetVersion
+    if type(format)~="number" or format%1~=0 or
+        type(rules)~="number" or rules%1~=0 then
+        return false,"invalid_save_version"
+    end
+    if format>Slots.SAVE_FORMAT_VERSION or rules>Slots.RULESET_VERSION then
+        return false,"newer_save_protected"
+    end
+    if format<1 or rules<Slots.MIN_RULESET_VERSION then
+        return false,"migration_required"
+    end
+    if format<Slots.SAVE_FORMAT_VERSION or rules<Slots.RULESET_VERSION then
+        -- Future major changes need explicit, tested migration paths before
+        -- this guard can be lifted.
+        return false,"migration_required"
+    end
+    return true,if data.saveFormatVersion==nil then "legacy_compatible" else "compatible"
+end
 
 local function finite(value: any): boolean
     return type(value) == "number" and value == value and value ~= math.huge and value ~= -math.huge
@@ -25,6 +54,8 @@ function Slots.newWorld(seed: number, now: number, spawn: {x: number, y: number,
     return {
         schemaVersion = Slots.SCHEMA_VERSION,
         generatorVersion = 1,
+        saveFormatVersion = Slots.SAVE_FORMAT_VERSION,
+        rulesetVersion = Slots.RULESET_VERSION,
         seed = seed,
         createdAt = now,
         updatedAt = now,
@@ -43,6 +74,8 @@ function Slots.validWorld(data: any): boolean
     if data.schemaVersion ~= Slots.SCHEMA_VERSION or data.generatorVersion ~= 1 then
         return false
     end
+    local compatible=Slots.compatibility(data)
+    if not compatible then return false end
     if not finite(data.seed) or data.seed % 1 ~= 0 or data.seed < 1 or data.seed > 2147483646 then
         return false
     end
@@ -78,6 +111,12 @@ function Slots.summary(data: any, index: number)
     if type(data) ~= "table" or data.deleted == true then
         return {index = index, exists = false}
     end
+    local compatible,reason=Slots.compatibility(data)
+    if not compatible then
+        return {index=index,exists=true,incompatible=true,compatibility=reason,
+            saveFormatVersion=data.saveFormatVersion or 1,
+            rulesetVersion=data.rulesetVersion or 1}
+    end
     if not Slots.validWorld(data) then
         return {index = index, exists = false, corrupt = true}
     end
@@ -85,6 +124,9 @@ function Slots.summary(data: any, index: number)
         index = index, exists = true,
         seed = data.seed, updatedAt = data.updatedAt,
         revision = data.revision, worldDay = math.floor(data.clockSeconds / 240) + 1,
+        saveFormatVersion=data.saveFormatVersion or 1,
+        rulesetVersion=data.rulesetVersion or 1,
+        compatibility=reason,
     }
 end
 
