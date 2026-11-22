@@ -63,7 +63,7 @@ local function activate(player: Player, record: any)
     local ok, message = WorldService.activate(record.seed)
     if not ok then
         warn("[EntreReinos] World did not activate: ", message)
-        local released, releaseReason = SaveSlotService.save(player, true)
+        local released, releaseReason = SaveSlotService.abortActivation(player)
         if not released then warn("[EntreReinos] Lease release not confirmed: ", releaseReason) end
         return {ok = false, error = message}
     end

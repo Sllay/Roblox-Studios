@@ -1,6 +1,6 @@
 --!strict
-local W = require("../../games/maps/entre-reinos/game/places/main/src/ReplicatedStorage/WorldProfile")
-local S = require("../../games/maps/entre-reinos/game/places/main/src/ReplicatedStorage/SlotModel")
+local W = require("../places/main/src/ReplicatedStorage/WorldProfile")
+local S = require("../places/main/src/ReplicatedStorage/SlotModel")
 assert(W.validSeed(1) and W.validSeed(2147483646))
 assert(not W.validSeed(0) and not W.validSeed(1.5) and not W.validSeed(math.huge))
 assert(W.signature(42) == "1:42")
