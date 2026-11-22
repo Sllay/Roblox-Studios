@@ -153,3 +153,11 @@ Correção v9 em desenvolvimento:
 - Diagnóstico de FPS/seed é opção opt-in, inicialmente desligada; preserva o recurso para medir desempenho sem ocupar a tela em jogo normal.
 - Fontes de materiais pertencem à vila, bolsas dos trabalhadores são outro custodiante e material entregue à obra não está mais livre. Não apresentar fontes distribuídas no mapa como inventário pessoal do jogador; não habilitar ação apenas com base em um total global quando requer proximidade.
 - Preservar simulação, economia, slots, Terrain e natação. Validar CI e UI no mobile em staging antes de encerrar T1-R3.
+
+
+## 22/11/2026 — Auditoria de completude dos 3 ciclos e proteção de escopo
+- [FIXADO] O criador pediu inspeção dos sistemas incompletos e das mecânicas cuja conclusão não esteja claramente atribuída a um runner. Não terminar T1/T2/T3 e descobrir só depois que o jogo está quebrado ou composto por placeholders.
+- [DECISÃO DE ENGENHARIA] `docs/FEATURE_COMPLETENESS_AUDIT.md` registra 58 requisitos de lançamento medieval solo, com um owner e uma definição verificável de conclusão, e expõe os gaps atuais. A CI recusa requisitos órfãos e falsos `VALIDADO`, além de verificar o fechamento cumulativo.
+- [FIXADO] T1 pode entregar fundação, mas nenhum fundamento parcial pode ser declarado concluído; refinamento fica na mesma temporada. Até T2 todos os sistemas base devem estar COMPLETOS, T3 é variedade/polimento. Nenhuma aprovação sem Roblox/mobile quando pertinente.
+- [ABERTO] Morte/respawn/política de drops, mundo descarregado, remuneração/impostos, parâmetros de montarias, portal e decisões de balanceamento precisam de aprovação de design; não esconder lacuna com valor aleatório.
+- [FIXADO] Exclusão de saves permanece voluntária/confirmada; schema de dados separado de revisão do Place. Implementar migrações recuperáveis e política de backups antes de alterações destrutivas.
