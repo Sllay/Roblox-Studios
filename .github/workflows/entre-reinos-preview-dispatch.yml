@@ -1,0 +1,73 @@
+name: Entre Reinos T1-R1 staging preview dispatch (single approved release)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/entre-reinos-preview-dispatch.yml
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: roblox-place-write-entre-reinos-main-staging
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify one-time reviewed staging target, default-scene baseline and user approval
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("games/maps/entre-reinos")
+          manifest=json.loads((root/"game.manifest.json").read_text())
+          targets=json.loads((root/"deploy.targets.json").read_text())["environments"]
+          scene=json.loads((root/"docs/sync/main/staging.summary.json").read_text())
+          assert manifest["places"][0]["slug"]=="main"
+          assert manifest["places"][0].get("fullPlaceBuildAuthoritative") is True
+          assert str(targets["staging"]["universeId"])=="10769712413"
+          assert str(targets["staging"]["placeIds"]["main"])=="90623742498445"
+          assert targets["production"]["universeId"] is None
+          assert targets["production"]["placeIds"]["main"] is None
+          assert str(scene["universeId"])=="10769712413"
+          assert str(scene["placeId"])=="90623742498445"
+          assert scene["loadedVersion"]==1 and scene["total"]==179
+          assert scene["stateDigest"]=="0b52f3641643afdc4d547d83339161f79b57ed38dfe03eb0dc67ce0aeffa96cd"
+          allowed={("Camera","Camera"),("Baseplate","Part"),("Terrain","Terrain"),("SpawnLocation","SpawnLocation")}
+          assert {(x["name"],x["class"]) for x in scene["workspaceRoots"]}==allowed
+          print("ONE_TIME_PREVIEW_GUARD_PASS: staging default scene v1, verified IDs, production null")
+          PY
+      - name: Verify CI result for reviewed code before dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          status="$(gh api repos/Sllay/Roblox-Studios/actions/runs/44975531400 --jq .conclusion)"
+          [[ "$status" == success ]] || { echo "::error::Reviewed CI not successful"; exit 1; }
+          echo "CI_GATE_PASS"
+      - name: Request official manual-gated publishing workflow (staging only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X POST repos/Sllay/Roblox-Studios/actions/workflows/publish.yml/dispatches --input - <<'JSON'
+          {
+            "ref": "main",
+            "inputs": {
+              "game": "entre-reinos",
+              "place": "main",
+              "environment": "staging",
+              "confirm_publish": "true",
+              "confirm_full_place_replacement": "true"
+            }
+          }
+          JSON
+          echo "DISPATCH_REQUESTED: official publish.yml will independently validate and confirm Roblox isPublished=true"
