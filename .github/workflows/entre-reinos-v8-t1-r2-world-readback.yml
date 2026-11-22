@@ -1,0 +1,127 @@
+name: Entre Reinos T1-R2 v8 live Place readback and isolated NPC work probe
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/entre-reinos-v8-t1-r2-world-readback.yml]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Verify saved v8 scripts and execute actual engine NPC/material simulation
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import json,os
+          from cloud_tasks import run_task
+          lua='''
+          local H=game:GetService("HttpService")
+          local Players=game:GetService("Players")
+          local S=game:GetService("ServerScriptService")
+          local R=game:GetService("ReplicatedStorage")
+          local SP=game:GetService("StarterPlayer")
+          local services=S:FindFirstChild("Services")
+          local core=R:FindFirstChild("Game")
+          local living=core and core:FindFirstChild("Living")
+          local client=SP:FindFirstChild("StarterPlayerScripts")
+          local function check(parent,name,text)
+              local obj=parent and parent:FindFirstChild(name)
+              if not obj then return false end
+              if text==nil then return true end
+              local success,src=pcall(function()return obj.Source end)
+              return success and type(src)=="string" and string.find(src,text,1,true)~=nil
+          end
+          local checks={
+              boot=check(S,"Boot","pcall(LivingService.start,"),
+              saveSnapshot=check(services,"SaveSlotService","LivingModel.clone(state)"),
+              services=check(services,"LivingService","Work.step(state,0.1)"),
+              npcRig=check(services,"LivingService","CreateHumanoidModelFromDescriptionAsync("),
+              nativeSwim=check(services,"CharacterService","animateSource:Clone()"),
+              jobs=check(living,"WorkEngine","function Engine.step("),
+              finiteResources=check(living,"WorkEngine","site.remaining-=n"),
+              escrow=check(living,"WorkEngine","b.claimed[chosenItem]"),
+              livingSchema=check(living,"LivingModel","function Living.restore("),
+              inventory=check(living,"Inventory","function Inv.transfer("),
+              items=check(living,"ItemDefs","Items.all"),
+              professions=check(living,"ProfessionDefs","Professions.all"),
+              structures=check(living,"StructureDefs","Structures.all"),
+              slotCompatible=check(core,"SlotModel","if data.living ~= nil"),
+              mobileBuild=check(client,"BuildMenu","remote:InvokeServer(action,arg)"),
+              clientWired=check(client,"ClientBoot","BuildMenu.start(player)"),
+          }
+          local enginePassed=false
+          local engineError=""
+          local delivered=0
+          local built=0
+          local repaired=0
+          local livingValid=false
+          local npcCount=0
+          local nativeR6=false
+          local codeOk,result=pcall(function()
+              local model=require(living:WaitForChild("LivingModel"))
+              local engine=require(living:WaitForChild("WorkEngine"))
+              local state=model.new(516639272)
+              npcCount=#state.npcs
+              local ok,b=engine.place(state,"shelter",18)
+              assert(ok)
+              for i=1,4500 do engine.step(state,0.1) end
+              assert(b.state=="complete")
+              delivered=state.stats.delivered
+              built=state.stats.built
+              local bag=require(living:WaitForChild("Inventory"))
+              for _,npc in ipairs(state.npcs) do assert(bag.valid(npc.inventory)) end
+              assert(delivered==11 and built==1)
+              local snap=model.clone(state)
+              assert(model.valid(snap))
+              local resumed=model.restore(snap,state.seed)
+              assert(resumed and resumed.buildings[1].state=="complete")
+              assert(engine.damage(resumed,1,12))
+              for i=1,500 do engine.step(resumed,0.1) end
+              repaired=resumed.stats.repaired
+              assert(repaired>=1)
+              livingValid=model.valid(resumed)
+              enginePassed=true
+          end)
+          if not codeOk then engineError=tostring(result):sub(1,400) end
+          local r6Ok, rigResult=pcall(function()
+              local desc=Instance.new("HumanoidDescription")
+              local avatar=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R6)
+              local h=avatar:FindFirstChildOfClass("Humanoid")
+              nativeR6=h~=nil and h.RigType==Enum.HumanoidRigType.R6
+                  and avatar:FindFirstChild("Torso")~=nil
+              avatar:Destroy()
+              desc:Destroy()
+          end)
+          return H:JSONEncode({
+              universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
+              version=game.PlaceVersion,checks=checks,
+              enginePassed=enginePassed,engineError=engineError,npcCount=npcCount,
+              delivered=delivered,built=built,repaired=repaired,livingValid=livingValid,
+              nativeR6=nativeR6,r6CallOk=r6Ok,
+              r6Error=if r6Ok then "" else tostring(rigResult):sub(1,300)
+          })
+          '''
+          r=run_task("10769712413","90623742498445",
+                os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],lua,read_version=8)
+          print("ENTRE_REINOS_R2_V8_READBACK",json.dumps({
+              "version":r["loadedVersion"],"checks":r["checks"],"npcCount":r["npcCount"],
+              "enginePassed":r["enginePassed"],"engineError":r["engineError"],
+              "delivered":r["delivered"],"built":r["built"],
+              "repaired":r["repaired"],"livingValid":r["livingValid"],
+              "nativeR6":r["nativeR6"],"r6CallOk":r["r6CallOk"]
+          },sort_keys=True))
+          assert r["loadedVersion"]==8,"Unexpected Place revision"
+          assert all(r["checks"].values()),"Missing server/client modules in saved Place"
+          assert r["enginePassed"] and r["npcCount"]==4 and r["delivered"]==11
+          assert r["built"]==1 and r["repaired"]>=1 and r["livingValid"]
+          assert r["nativeR6"] and r["r6CallOk"],"Roblox native R6 model could not be constructed"
+          print("ENTRE_REINOS_R2_V8_READBACK_PASS")
+          PY
