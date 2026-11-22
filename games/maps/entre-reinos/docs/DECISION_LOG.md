@@ -145,3 +145,11 @@ Correção v9 em desenvolvimento:
 - Feedback futuro sobre world depth, subbiomas, espelhamento de árvores, encosta/muralhas e assets foi especificado em `docs/DESIGN_WORLD_DEPTH_AND_MIRRORING.md`. Não expandir agora bounds do Terrain sem migração de seed e benchmark.
 
 **Gate:** publicar staging apenas após CI de Python/Luau/Rojo verde e snapshot do Place v8, confirmar v9 e leitura independente. Não marcar natação e FPS mobile como testados sem o criador.
+
+
+## 22/11/2026 — T1-R3 UI de jogo, não painel de desenvolvimento
+- FIXADO pelo criador, após playtest da staging v12: a barra de nove botões e os menus flutuantes dev obstruem a visão, não explicam recursos, saldo, opções, crafting nem ações. Código sem apresentação utilizável não constitui experiência de jogo aceita.
+- UX de jogo mobile/PC: HUD discreto persistente para dia, estado da ameaça, moedas, flechas e materiais realmente disponíveis; dois controles de combate fora dos botões nativos de joystick/salto; ação contextual para interações; painel único da vila com abas de obras, fontes/estoques, cidadãos e oficina; custos, requisitos, progresso e falhas em português. Sem janelas dev abertas automaticamente.
+- Diagnóstico de FPS/seed é opção opt-in, inicialmente desligada; preserva o recurso para medir desempenho sem ocupar a tela em jogo normal.
+- Fontes de materiais pertencem à vila, bolsas dos trabalhadores são outro custodiante e material entregue à obra não está mais livre. Não apresentar fontes distribuídas no mapa como inventário pessoal do jogador; não habilitar ação apenas com base em um total global quando requer proximidade.
+- Preservar simulação, economia, slots, Terrain e natação. Validar CI e UI no mobile em staging antes de encerrar T1-R3.
