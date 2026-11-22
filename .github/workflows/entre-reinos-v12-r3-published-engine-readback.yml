@@ -84,6 +84,7 @@ jobs:
           end)
           if not ok then probe.issue=tostring(errorMessage):sub(1,300) end
           return H:JSONEncode({revision=game.PlaceVersion,
+              universeId=tostring(game.GameId),
               placeId=tostring(game.PlaceId),checks=checks,probe=probe})
           '''
           r=run_task("10769712413","90623742498445",
