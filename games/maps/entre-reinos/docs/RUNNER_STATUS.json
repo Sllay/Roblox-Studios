@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-22",
-  "note": "T1-R1 accepted by creator; R6 Animate restoration code included in staging v8 but native swim visual still needs mobile retest. T1-R2 v8 staging preview published: 4 NPC R6, resources, weighted bags, wood/stone gathering, blueprint deliveries, builds, repairs, backward-compatible living save; CI and unsaved Roblox engine proof green. T1-R2 not validated pending live test and deeper R2 scope.",
+  "note": "R2 user v8 found NPCs buried and moving at ~8Hz, oversized dark tags, R6 water walk/fall. v9 published in Entre Reinos staging, CI green, independent Roblox engine readback PASS 16/16; R6 feet 0.14 studs above generated Terrain on test rig, native water detected; NPC client 60Hz interpolation and R6 stroke fallback need mobile visual approval. Deep background/subbiomes/forest density mirroring versioned in design, not prematurely implemented.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -22,12 +22,12 @@
         "status": "preview_published",
         "previewRunner": "T1-R2",
         "isSeasonFinal": false,
-        "commit": "2fb5a87c",
+        "commit": "b581f51264286b2092e46700b8d3345aa9ed245e",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 8,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033471243",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033671441"
+        "revisionId": 9,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45036519730",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45036652831"
       },
       "userReview": "not_requested",
       "refinementCycles": [],
@@ -75,14 +75,14 @@
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "unsaved_Roblox_engine_R6_NPC_FSM_4_workers_11_deliveries_1_build_1_repair_pass",
-            "mobile": "awaiting_creator_roblox_client_review"
+            "runtime": "v9_Roblox_engine_native_3chunks_596waterCells_R6_feet_0.14stud_pass; 16_source_checks",
+            "mobile": "awaiting_creator_v9_NPC_swimming_visual"
           },
           "blockers": [
-            "Creator mobile preview: loading world after v8, four NPC R6 visible/moving, construction UI accessible without overlapping native joystick",
-            "Create a shelter: verify actual NPC path, finite harvesting, separate bag delivery, material/status progress and final model; inspect mobile FPS and animation smoothness",
-            "Save/leave/reenter World 1 seed 516639272 to check NPC state and partly built structures persist; builder/storage/free-footprint systems still need full R2 polishing",
-            "R1 stock native swimming animation handoff shipped with v8; verify visually it plays in water (no synthetic Motor6D edit)"
+            "Creator mobile retest v9: NPC feet above grass and smoothly moving at 60FPS (server simulation 0.1s, client visual interpolation per frame)",
+            "Avatar R6 visually performs swimming strokes and exits into walk/idle, no Freefall inside water; physical jump/joystick unchanged",
+            "3D labels text-only with black outline, no large dark rectangles; right-side FPS HUD, closer camera; verify no occlusion",
+            "R2 jobs/world persistence/LOD and builder material delivery still require review before T1-R2 validated; T1-R3 remains planned"
           ],
           "deliverables": [
             "Server-only 4 NPC R6 models and bounded Heartbeat simulation",
@@ -92,14 +92,14 @@
             "BuildMenu for mobile and saved living snapshots in six existing slot keys, backward compatible with R1 schema"
           ],
           "previewPublication": {
-            "status": "published_v8",
+            "status": "published_v9",
             "placeId": "90623742498445",
             "universeId": "10769712413",
-            "revision": 8,
-            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033471243",
-            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033671441",
+            "revision": 9,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45036519730",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45036652831",
             "verifiedChecks": 16,
-            "scope": "4 native R6 NPC worker visuals + deterministic pure work engine + worksite finite resources + blueprint build/repair + 6-slot living persistence"
+            "fix": "R6 model foot offset from actual leg bounds & Terrain raycast, server pose attributes + client 60Hz render interpolation, text-only stroked small world labels, volume-based swim detection and R6 visual stroke fallback, closer camera, dark 3D silhouette trees"
           }
         },
         {
@@ -119,7 +119,7 @@
           "blockers": []
         }
       ],
-      "previewUserReview": "awaiting_creator_T1_R2_preview_v8"
+      "previewUserReview": "awaiting_creator_R2_mobile_v9_clearance_animation"
     },
     {
       "id": "T2",
@@ -251,7 +251,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R2_in_progress_staging_v8_preview_published_awaiting_creator_test",
+  "programStage": "T1_R2_mobile_v9_NPC_water_corrections_published_awaiting_creator",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -277,23 +277,24 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "bd4a91ab520360940bfcbb0c8acb5e7bf9949cff",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033200114",
+    "codeCommit": "4fa12e33b5b65243f743ce8d1b7552be59542492",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45036214420",
     "ciConclusion": "success",
-    "publishedVersion": 8,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033471243",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45033671441",
+    "publishedVersion": 9,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45036519730",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45036652831",
     "verifiedModules": 16,
     "seedTested": 516639272,
-    "probeNPCs": 4,
-    "probeDeliveredMaterials": 11,
-    "probeBuildingsCompleted": 1,
-    "probeRepairs": 1,
-    "probeR6ModelCreated": true,
-    "runtime": "isolated Roblox Luau execution: NPC work simulation passed, native R6 model creation passed; not a Player/live server test",
-    "mobile": "awaiting_creator_T1_R2_preview",
-    "staging": "published_v8",
-    "swimVisual": "awaiting_creator"
+    "engineInitialChunks": 3,
+    "engineWaterCells": 596,
+    "engineR6FootClearanceStuds": 0.1399993896484375,
+    "actualRigR6": true,
+    "nativeWaterRuleValid": true,
+    "liveNPCPresentation": "awaiting_mobile_creator",
+    "liveR6SwimStrokes": "awaiting_mobile_creator",
+    "mobile": "awaiting_creator_T1_R2_v9",
+    "staging": "published_v9",
+    "productionUnchanged": true
   },
   "remoteIdentity": {
     "status": "verified",
