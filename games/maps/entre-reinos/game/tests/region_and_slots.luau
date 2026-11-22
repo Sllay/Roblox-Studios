@@ -60,3 +60,23 @@ saved.lock = {token="b",expiresAt=200}
 assert(P.writeDecision(saved, "a", 7, 8, "op1") == "conflict")
 print("ENTRE_REINOS_LEASE: ownership, expiry, revision and retry assertions passed")
 
+
+-- The lobby and reserved-world gateway share a pure, versioned ticket contract.
+local R = require("../places/main/src/ReplicatedStorage/WorldRoute")
+assert(R.isWorldServer("guid", 0))
+assert(not R.isWorldServer("", 0))
+assert(not R.isWorldServer("guid", 5))
+local accepted = {kind=R.KIND,protocol=R.PROTOCOL,slot=1,ownerUserId=421,
+    reservedId="reserved-guid",sourcePlaceId=90623742498445}
+assert(R.validArrival(accepted,421,90623742498445,"reserved-guid"))
+assert(not R.validArrival(accepted,422,90623742498445,"reserved-guid"))
+assert(not R.validArrival(accepted,421,90623742498446,"reserved-guid"))
+assert(not R.validArrival(accepted,421,90623742498445,"another-reserved-guid"))
+assert(not R.validArrival(nil,421,90623742498445,"reserved-guid"))
+local wrongSlot = table.clone(accepted)
+wrongSlot.slot = 7
+assert(not R.validArrival(wrongSlot,421,90623742498445,"reserved-guid"))
+local wrongProtocol = table.clone(accepted)
+wrongProtocol.protocol = 2
+assert(not R.validArrival(wrongProtocol,421,90623742498445,"reserved-guid"))
+print("ENTRE_REINOS_ROUTE: lobby-to-reserved server auth contract passed")

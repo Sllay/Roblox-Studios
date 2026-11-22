@@ -13,13 +13,14 @@ local Characters = require(services:WaitForChild("CharacterService"))
 local shared = ReplicatedStorage:WaitForChild("Game")
 local Profile = require(shared:WaitForChild("WorldProfile"))
 local Slots = require(shared:WaitForChild("SlotModel"))
+local Route = require(shared:WaitForChild("WorldRoute"))
 
 local rpc = Instance.new("RemoteFunction")
 rpc.Name = "ER_WorldSlots"
 rpc.Parent = shared
 
 -- Dedicated destination is a RESERVED server. VIP servers are not world sessions.
-local worldServer = game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0
+local worldServer = Route.isWorldServer(game.PrivateServerId, game.PrivateServerOwnerId)
 local busy: {[Player]: boolean} = {}
 local activePlayer: Player? = nil
 local activeSlot: number? = nil
@@ -131,14 +132,7 @@ local function startWorld(player: Player)
     local ticket = if type(join) == "table" then join.TeleportData else nil
     -- TeleportData is a routing hint, never a source of saved seed or ownership.
     -- The record is always fetched by the destination from player.UserId.
-    if type(ticket) ~= "table"
-        or ticket.kind ~= "EntreReinosWorld"
-        or ticket.protocol ~= 1
-        or not Slots.validIndex(ticket.slot)
-        or ticket.ownerUserId ~= player.UserId
-        or ticket.sourcePlaceId ~= game.PlaceId
-        or type(ticket.reservedId) ~= "string"
-        or ticket.reservedId ~= game.PrivateServerId then
+    if not Route.validArrival(ticket, player.UserId, game.PlaceId, game.PrivateServerId) then
         player:Kick("Entrada no servidor do mundo inválida. Abra seu mundo pelo lobby.")
         return
     end
