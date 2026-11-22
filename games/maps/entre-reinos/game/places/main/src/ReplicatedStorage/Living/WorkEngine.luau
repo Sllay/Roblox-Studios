@@ -292,6 +292,12 @@ function Engine.step(state: any, dt: number)
                             b.state="building"
                             if b.progress>=def.buildSeconds then
                                 b.state="complete"
+                                -- A ruin becomes physically usable only after
+                                -- a completely new material-backed rebuild.
+                                if b.ruined==true then
+                                    b.ruined=false
+                                    b.health=def.health
+                                end
                                 state.stats.built+=1
                                 table.insert(state.events,{kind="completed",buildingId=b.id,time=state.elapsed})
                                 clearJob(npc,state)
