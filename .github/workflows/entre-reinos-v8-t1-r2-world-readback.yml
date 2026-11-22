@@ -47,7 +47,7 @@ jobs:
               nativeSwim=check(services,"CharacterService","animateSource:Clone()"),
               jobs=check(living,"WorkEngine","function Engine.step("),
               finiteResources=check(living,"WorkEngine","site.remaining-=n"),
-              escrow=check(living,"WorkEngine","b.claimed[chosenItem]"),
+              escrow=check(living,"WorkEngine","winner.claimed[chosenItem]"),
               livingSchema=check(living,"LivingModel","function Living.restore("),
               inventory=check(living,"Inventory","function Inv.transfer("),
               items=check(living,"ItemDefs","Items.all"),
