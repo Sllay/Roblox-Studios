@@ -11,6 +11,7 @@ local Camera = require(script.Parent:WaitForChild("SideCamera"))
 local Menu = require(script.Parent:WaitForChild("SlotMenu"))
 local Loading = require(script.Parent:WaitForChild("WorldLoadingUI"))
 local BuildMenu = require(script.Parent:WaitForChild("BuildMenu"))
+local NPCPresentation = require(script.Parent:WaitForChild("NPCPresentation"))
 local slots = ReplicatedStorage:WaitForChild("Game"):WaitForChild("ER_WorldSlots")
 
 local function startDiagnostics()
@@ -68,6 +69,7 @@ if mode == "world" then
         Lane.start(player)
         Camera.start(player)
         BuildMenu.start(player)
+        NPCPresentation.start()
         if savedOptions.debug ~= false then startDiagnostics() end
         print("[EntreReinos] Reserved world ready, seed ", player:GetAttribute("ER_Seed"))
     end)
