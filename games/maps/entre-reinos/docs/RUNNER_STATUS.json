@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-22",
-  "note": "22/11 T1-R3 v13: creator rejected developer-like nine-button UI. Single immersive village journal + compact 2-button combat + contextual interaction + truthful regional sources, NPC bags/reserved/committed summary + real near-site crafting, construction progress, optional FPS. Staging v13 published; independent Roblox v13 engine readback PASS all 13 source checks and 5 mounted/catalog/inventory/legacy checks. Mobile visual/UI playtest remains pending; game/production untouched.",
+  "note": "22/11: staging v14 published Place 90623742498445 and CI success. User mandated full audit of all 3 seasons and any mechanics left incomplete even after nine runners. Comprehensive 58-criterion cumulative feature-closure matrix created; test gate passes; T1 foundational flows remain PARTIAL/ABSENT, including warehouse-to-build transfer, galpao stock destruction, manual site choice, founding castle and warehouses, fully acted prologue, death/recovery, and real mobile QA. T2/T3 keep explicit ownership. No user saves deleted, no production changes.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -22,14 +22,15 @@
         "status": "preview_published",
         "previewRunner": "T1-R3",
         "isSeasonFinal": false,
-        "commit": "9b8b19cadf7ea89fc24bbb8363dd38ae774b02b9",
+        "commit": "c68db2cbd9229c94652127d27af6da6db88cb971",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 13,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044458402",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044562948"
+        "revisionId": 14,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
+        "independentReadback": "https://github.com/Sllay/Roblox-Studios/actions/runs/45053031856",
+        "readbackStatus": "pending"
       },
-      "userReview": "not_requested",
+      "userReview": "pending_mobile_v14_creator_review_and_feature_completeness",
       "refinementCycles": [],
       "runners": [
         {
@@ -111,13 +112,15 @@
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "v13_independent_engine_13_source_5_game_ui_mounted_inventory_conservation_migration_checks_pass",
-            "mobile": "awaiting_creator_mobile_game_ui_layout_context_action_real_controls_FPS"
+            "runtime": "v14_staging_published_and_pure_luau_CI_green; independent_readback_pending",
+            "mobile": "not_approved: T1 foundational gameplay and UX incomplete"
           },
           "blockers": [
-            "Player mobile v13: visual grade UX, safe zone for native jump/thumbstick, spacing and visibility of village journal + contextual/combat actions",
-            "Player mobile v13: manually confirm resource stock vs NPC inventory, building requirements, crafting near source, coin and defense real behavior",
-            "Legacy Mundo 1 save/reconnect + fresh slot tutorial (without deleting existing saves), NPC 60FPS fluidity after prior v12 work"
+            "T1-F: warehouses must supply actual resources to new construction; destroy stored stock without duplication",
+            "T1-F: manual build placement preview/cancel and actual starter castle with two stockpiles/districts",
+            "T1-F: duke escort/infection/hesitation, full playable tutorial, repair/raid and coronation",
+            "T1-F: death/recovery policy, world-save restore backups/migration and explicit no automatic wipe",
+            "Creator mobile review: NPC steps/AI, river swimming, mark timber, galpao storage crafting, day/night, visual structures and HUD"
           ],
           "deliverables": [
             "Native client per-frame NPC velocity integration with bounded authoritative correction",
@@ -127,19 +130,18 @@
             "R3HUD mobile combat and defense buttons, day/night lighting, existing slots preserved"
           ],
           "previewPublication": {
-            "status": "published_v13",
+            "status": "published_v14",
             "placeId": "90623742498445",
             "universeId": "10769712413",
-            "revision": 13,
-            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044458402",
-            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044562948",
-            "verifiedSourceChecks": 13,
-            "engineProbe": "mounted_build_journal_costs_actual_sources_and_R3_migration_pass",
-            "mobile": "pending"
+            "revision": 14,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45053031856",
+            "readbackStatus": "pending",
+            "mobile": "not_approved"
           }
         }
       ],
-      "previewUserReview": "awaiting_creator_review_of_v13_immersive_UI_R3"
+      "previewUserReview": "creator_reported_v13_logistics_and_visual_incompleteness_and_initiated_v14_refinement; user acceptance pending"
     },
     {
       "id": "T2",
@@ -271,7 +273,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R3_v13_immersive_ui_staging_published_engine_verified_awaiting_creator_mobile_review",
+  "programStage": "T1_R3_v14_published_no_creator_approval_feature_completeness_audited_T1_refinement_required",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -298,10 +300,10 @@
   },
   "latestEvidence": {
     "codeCommit": "e0abafa4275ca49a9ec2e732af38d14014517ba0",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044388022",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052486884",
     "ciConclusion": "success",
-    "publishedVersion": 13,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044458402",
+    "publishedVersion": 14,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
     "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45044562948",
     "verifiedModules": 13,
     "seedTested": 516639272,
@@ -311,10 +313,13 @@
     "actualRigR6": true,
     "nativeWaterRuleValid": true,
     "liveNPCPresentation": "v12_frame_integrated_unverified_mobile",
-    "liveR6SwimStrokes": "user_confirmed_native_water_fixed_v10",
-    "mobile": "awaiting_creator_R3_v13_UI",
-    "staging": "published_v13_immersive_UI",
-    "productionUnchanged": true
+    "liveR6SwimStrokes": "creator_confirmed_native_water_fixed",
+    "mobile": "T1_R3_v14_not_yet_approved",
+    "staging": "published_v14_T1_R3_refinement",
+    "productionUnchanged": true,
+    "completenessAuditPath": "docs/FEATURE_COMPLETENESS_AUDIT.md",
+    "completenessCiUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052959871",
+    "featureLaunchReadiness": "blocked_by_T1_19_partial_1_absent"
   },
   "remoteIdentity": {
     "status": "verified",
@@ -331,5 +336,41 @@
       "baselineDigest": "0b52f3641643afdc4d547d83339161f79b57ed38dfe03eb0dc67ce0aeffa96cd",
       "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/44975381075"
     }
+  },
+  "completenessAudit": {
+    "path": "docs/FEATURE_COMPLETENESS_AUDIT.md",
+    "requirementsTotal": 58,
+    "t1": {
+      "partial": 19,
+      "absent": 1,
+      "validated": 0
+    },
+    "t2": {
+      "planned": 24,
+      "validated": 0
+    },
+    "t3": {
+      "planned": 14,
+      "validated": 0
+    },
+    "ciGate": "tests/test_entre_reinos_feature_completeness.py",
+    "ciPass": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052959871",
+    "requiredBeforeT1Approval": [
+      "ER-001",
+      "ER-002",
+      "ER-005",
+      "ER-007",
+      "ER-008",
+      "ER-009",
+      "ER-010",
+      "ER-014",
+      "ER-015",
+      "ER-017",
+      "ER-018",
+      "ER-019",
+      "ER-020"
+    ],
+    "requirement": "All release requirements must have owner and real engine, mobile, save/load and human approval evidence; incomplete T1/T2 systems may not be pushed to T3.",
+    "next": "After mobile review, carry missing T1 fundamental flows through T1-F1/F2/F3; do not initiate T2 until approved."
   }
 }
