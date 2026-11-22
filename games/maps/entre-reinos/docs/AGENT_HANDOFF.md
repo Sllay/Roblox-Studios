@@ -124,3 +124,16 @@ Diagnóstico do bug já corrigido: WorldService estava sob `src/game/places/main
 - Marcado somente **preview publicado para teste**, NÃO runner validado. T1-R1 runtime/mobile pendente. No próximo chat, pedir relato de R6, Terrain, travessia e 6 saves; corrigir bug de causa raiz e testar.
 - Plano da validação: `docs/TEST_PLAN_T1_R1_STAGING.md`; não confundir com publicação final da temporada depois de T1-R3.
 - Plano físico do personagem: normal do PlaneConstraint corresponde ao eixo **X** do Attachment0, transformado para Z pela rotação Y de pi/2; consistente com corredor X/Y. Fonte Roblox oficial: https://create.roblox.com/docs/physics/constraints/plane.
+
+## CORREÇÃO URGENTE R6 publicada — staging v3 (21/11/2026)
+
+Usuário testou v2 e relatou que o menu não deixava criar mundo porque Roblox iniciava em R15. Bug confirmado no `Boot.server.luau` (gate configuracao R6). Corrigido na revisão Roblox **3**.
+
+- Código: commit `01e90365974e3241b49e489a83a3adb28fad9999`. Novo `ServerScriptService/Services/CharacterService.luau` chamado por Boot antes de criar/abrir slot, produz R6 verdadeiro com método oficial `Players:CreateHumanoidModelFromDescriptionAsync(HumanoidDescription, Enum.HumanoidRigType.R6)`, atribui Player.Character e trata respawn R15. Não modifica RigType do modelo R15.
+- API oficial comprovada no alvo (sem gravar Place): https://github.com/Sllay/Roblox-Studios/actions/runs/44976095162 mostrou Model R6, Torso, HumanoidRootPart.
+- CI compilação e unit tests: https://github.com/Sllay/Roblox-Studios/actions/runs/44976179460 sucesso.
+- Publicação staging v3: https://github.com/Sllay/Roblox-Studios/actions/runs/44976293591, Roblox respondeu SUCCESS Place 90623742498445 revision 3.
+- Leitura independente v3: https://github.com/Sllay/Roblox-Studios/actions/runs/44976379375, 11/11 arquivos do game publicados, inclusive CharacterService.
+- User deve **sair por completo e abrir nova sessão** em https://www.roblox.com/games/90623742498445, criar Mundo 1, verificar avatar R6, geração Terrain/natação e seis slots.
+- Runner T1-R1 **ainda in_progress**: teste runtime do ciclo de vida Player.Character real e todo gameplay ainda pendentes. Não começar T1-R2 até correções e aprovação.
+- O código não depende mais de mudar Avatar Settings. Se aparecer erro `r6_creation_failed`, pedir evidência, não exigir editar configuração nem excluir mundo.

@@ -5,7 +5,7 @@ Ambiente: **Universe 10769712413, Place 90623742498445**, somente após confirma
 ## 1. Entrada e menus
 - [ ] A tela mostra ENTRE REINOS e os botões Jogar, Opções e Voltar.
 - [ ] Em Jogar aparecem exatamente seis slots independentes, vazios antes de primeiro uso.
-- [ ] O jogador está em rig **R6**. Se aparecer a mensagem de configuração R6, não prossiga: registrar erro e corrigir Avatar Settings do Place.
+- [ ] Ao criar/abrir Mundo 1, o servidor produz **R6 automaticamente** mesmo que o avatar inicial entre R15. Se surgir erro `r6_creation_failed`, registrar tela e não excluir slot.
 - [ ] Criar slot 1 abre mundo sem tela travada/erro de DataStore.
 
 ## 2. Mundo 100% 3D
@@ -46,5 +46,13 @@ Uma falha crítica de save, spawn, R6 ou nado bloqueia `T1-R1 validated`, mesmo 
 ## Teste antecipado oficialmente publicado
 
 - Place confirmado no Roblox revisão 2: https://www.roblox.com/games/90623742498445
-- Se surgir `configure_R6_avatar_in_experience_settings`, não excluir o mundo: corrigir Avatar Settings R6 para esta experiência. Fonte: https://create.roblox.com/docs/studio/avatar-settings.
+- Na versão 3, o código não exige mais Avatar Settings R6: faz a troca oficial do Model inteiro. Se surgir `r6_creation_failed` ou `r6_assignment_failed`, não excluir nenhum slot; enviar o erro. Fonte: https://create.roblox.com/docs/reference/engine/classes/Players.
 - Readback remoto do código foi validado; isso NÃO garante que gameplay/render e DataStore passem no celular.
+
+## Correção R6 v3 — reteste prioritário
+
+- Revisão Roblox **3** publicada em https://github.com/Sllay/Roblox-Studios/actions/runs/44976293591; leitura de todos os serviços confirmada em https://github.com/Sllay/Roblox-Studios/actions/runs/44976379375.
+- Fechar a sessão da versão anterior antes de entrar de novo (novo servidor).
+- Prioridade absoluta: Menu > Jogar > Criar Mundo 1, verificar se não há mais recusa de R6 e se a geração do mundo começa.
+- Se o R6 carregar sem animação, travar no ar ou não controlar, relatar separadamente: modelo e movimento são sistemas diferentes.
+- Se DataStore falhar, não deletar mundos para tentar reparar. Tratar como outro bug.

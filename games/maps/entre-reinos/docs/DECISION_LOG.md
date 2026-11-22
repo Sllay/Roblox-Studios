@@ -48,3 +48,11 @@ Estados: FIXADO, PROPOSTA, FUTURO, ABERTO. Criador tem prioridade sobre sugestõ
 - Leitura independente da versão salva retornou v2 e todos os 11 nós de T1-R1, https://github.com/Sllay/Roblox-Studios/actions/runs/44975725822.
 - Baseline da cena padrão anterior v1 foi capturado e auditado, sem alterações no Black Island ou produção.
 - O T1-R1 **não** está validado; testagem real de física/água/câmera/R6 e seis DataStore slots no mobile pendente.
+
+## 21/11/2026 — Hotfix R6 v3 e independência de Avatar Settings
+
+- O criador reportou que a revisão 2 recusava criar o mundo exigindo Avatar Settings R6; era bloqueio do nosso código, não problema do jogador.
+- FIXADO: os personagens R6 do Entre Reinos devem nascer com rig real produzido pelo servidor e serão independentes do avatar inicial (R15/R6) configurado na experiência.
+- Não falsificar rig modificando `Humanoid.RigType`; usar API `Players:CreateHumanoidModelFromDescriptionAsync` após verificação oficial.
+- Colocar produção do R6 antes de `SaveSlotService.create/open` para garantir que erro não afete persistência.
+- Publicação staging 3 confirmada em https://github.com/Sllay/Roblox-Studios/actions/runs/44976293591; readback independente https://github.com/Sllay/Roblox-Studios/actions/runs/44976379375. R6 em cliente e gameplay ainda requerem teste do criador.
