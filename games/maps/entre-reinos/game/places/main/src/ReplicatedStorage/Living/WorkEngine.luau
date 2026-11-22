@@ -314,19 +314,45 @@ function Engine.step(state: any, dt: number)
 end
 
 function Engine.summary(state: any): any
+    -- Real inventory custody. Sources are NOT the player's backpack, and
+    -- resources already delivered to structures are NOT free stock.
+    local sources={wood=0,stone=0,iron=0,food=0}
+    local carried={wood=0,stone=0,iron=0,food=0}
+    local reserved={wood=0,stone=0,iron=0,food=0}
+    local committed={wood=0,stone=0,iron=0,food=0}
+    for _,site in ipairs(state.sites) do
+        sources[site.item]=(sources[site.item] or 0)+site.remaining
+    end
+    for _,npc in ipairs(state.npcs) do
+        for item,count in pairs(npc.inventory.items) do
+            carried[item]=(carried[item] or 0)+count
+        end
+    end
+    for _,b in ipairs(state.buildings) do
+        for item,count in pairs(b.claimed) do
+            reserved[item]=(reserved[item] or 0)+count
+        end
+        for item,count in pairs(b.delivered) do
+            committed[item]=(committed[item] or 0)+count
+        end
+    end
     local buildings={}
     for _,b in ipairs(state.buildings) do
         local def=Structures.get(b.typeId)
-        table.insert(buildings,{id=b.id,name=def.label,state=b.state,
-            x=b.x,progress=math.floor(b.progress/def.buildSeconds*100),
+        table.insert(buildings,{id=b.id,name=def.label,typeId=b.typeId,
+            state=b.state,x=b.x,
+            progress=math.floor(b.progress/def.buildSeconds*100),
             health=b.health,delivered=table.clone(b.delivered)})
     end
     local workers={}
     for _,n in ipairs(state.npcs) do
         table.insert(workers,{id=n.id,name=n.name,profession=n.profession,
-            state=n.state,carryWeight=Inventory.weight(n.inventory),
+            state=n.state,defense=n.defense or "none",
+            carryWeight=Inventory.weight(n.inventory),
             carrying=table.clone(n.inventory.items)})
     end
-    return {buildings=buildings,workers=workers,stats=table.clone(state.stats)}
+    return {buildings=buildings,workers=workers,stats=table.clone(state.stats),
+        resources={sources=sources,carried=carried,reserved=reserved,
+            committed=committed}}
 end
 return Engine
