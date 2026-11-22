@@ -1,0 +1,58 @@
+{
+  "classes": {
+    "Atmosphere": 1,
+    "BloomEffect": 1,
+    "Camera": 1,
+    "Decal": 1,
+    "DepthOfFieldEffect": 1,
+    "Folder": 1,
+    "InputAction": 30,
+    "InputBinding": 70,
+    "InputContext": 4,
+    "LocalScript": 1,
+    "ModuleScript": 56,
+    "Part": 1,
+    "Script": 4,
+    "Sky": 1,
+    "SpawnLocation": 1,
+    "StarterCharacterScripts": 1,
+    "StarterPlayerScripts": 1,
+    "SunRaysEffect": 1,
+    "Terrain": 1,
+    "Texture": 1
+  },
+  "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
+  "loadedVersion": 1,
+  "placeId": "90623742498445",
+  "schemaVersion": 1,
+  "stateDigest": "0b52f3641643afdc4d547d83339161f79b57ed38dfe03eb0dc67ce0aeffa96cd",
+  "terrain": {},
+  "total": 179,
+  "universeId": "10769712413",
+  "workspaceRoots": [
+    {
+      "class": "Camera",
+      "key": "path:[\"Workspace\",[{\"class\":\"Camera\",\"name\":\"Camera\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "Camera"
+    },
+    {
+      "class": "Part",
+      "key": "path:[\"Workspace\",[{\"class\":\"Part\",\"name\":\"Baseplate\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "Baseplate"
+    },
+    {
+      "class": "Terrain",
+      "key": "path:[\"Workspace\",[{\"class\":\"Terrain\",\"name\":\"Terrain\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "Terrain"
+    },
+    {
+      "class": "SpawnLocation",
+      "key": "path:[\"Workspace\",[{\"class\":\"SpawnLocation\",\"name\":\"SpawnLocation\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "SpawnLocation"
+    }
+  ]
+}
