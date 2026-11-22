@@ -13,10 +13,10 @@
     "Terrain": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 4,
+  "loadedVersion": 5,
   "placeId": "90623742498445",
   "schemaVersion": 1,
-  "stateDigest": "4d05a02e98f46663c576321f6ea0a5916a4b4d69d73db61a71a9f7521c411591",
+  "stateDigest": "51f51f527e50f01a16edaec7fad6107d01f9549be4486fdb97d54f67f4065b3c",
   "terrain": {},
   "total": 68,
   "universeId": "10769712413",
