@@ -25,29 +25,6 @@ local function part(parent: Instance, name: string, size: Vector3, position: Vec
     return p
 end
 
-local function tree(parent: Instance, x: number, z: number, y: number, scale: number, silhouette: boolean)
-    local model = Instance.new("Model")
-    model.Name = if silhouette then "ForegroundSilhouette" else "BackgroundTree"
-    local black = Color3.new(0, 0, 0)
-    local bark = if silhouette then black else Color3.fromRGB(81, 55, 47)
-    local leaves = if silhouette then black else Color3.fromRGB(65, 112, 73)
-    part(model, "Trunk", Vector3.new(1.7, 8, 1.7) * scale, Vector3.new(x, y + 4 * scale, z), bark)
-    for tier = 1, 3 do
-        local crown = part(model, "NeedleCrown", Vector3.new(6.6 - tier, 4.3, 6.6 - tier) * scale,
-            Vector3.new(x, y + (5.5 + tier * 2.2) * scale, z), leaves, Enum.PartType.Ball)
-        crown.Transparency = 0
-    end
-    if not silhouette then
-        -- An interactable tree can later expose T1-R2 jobs through a lane-side anchor.
-        local anchor = part(model, "WorkAnchor", Vector3.new(2, 3, 2),
-            Vector3.new(x, WorldProfile.sample(model:GetAttribute("Seed") or 1, x, 0).height + 2, 0),
-            Color3.new(0, 0, 0))
-        anchor.Transparency = 1
-        anchor:SetAttribute("InteractionKind", "Tree")
-    end
-    model.Parent = parent
-end
-
 local function buildDecorations(seed: number)
     local folder = Instance.new("Folder")
     folder.Name = "ER_World_3D"
@@ -79,7 +56,7 @@ local function buildDecorations(seed: number)
         local x = -120 + i * 23
         local z = 40
         local surface = WorldProfile.sample(seed, x, z)
-        if not surface.wet then
+        if not surface.wet and math.abs(x) > 35 then
             local grass = Instance.new("WedgePart")
             grass.Name = "BlackForegroundGrass"
             grass.Size = Vector3.new(2.7, 5 + (i % 3) * 2, 3.5)
@@ -170,7 +147,7 @@ function WorldService.activate(seed: number): (boolean, string?)
         return false, "terrain_write_uncertain"
     end
     local okVerify, readback = pcall(function()
-        return Terrain:ReadVoxelChannels(region, resolution, {"SolidOccupancy", "LiquidOccupancy"})
+        return Terrain:ReadVoxelChannels(region, resolution, {"SolidOccupancy", "LiquidOccupancy", "SolidMaterial"})
     end)
     if not okVerify or type(readback) ~= "table" then
         return false, "terrain_readback_failed"
@@ -183,6 +160,10 @@ function WorldService.activate(seed: number): (boolean, string?)
                 if math.abs(readback.SolidOccupancy[ix][iy][iz] - solids[ix][iy][iz]) > 0.02
                     or math.abs(readback.LiquidOccupancy[ix][iy][iz] - liquids[ix][iy][iz]) > 0.02 then
                     return false, "terrain_readback_diff"
+                end
+                if solids[ix][iy][iz] > 0.01
+                    and readback.SolidMaterial[ix][iy][iz] ~= materials[ix][iy][iz] then
+                    return false, "terrain_material_readback_diff"
                 end
                 if readback.SolidOccupancy[ix][iy][iz] > 0.5 then seenSolid = true end
                 if readback.LiquidOccupancy[ix][iy][iz] > 0.5 then seenWater = true end
