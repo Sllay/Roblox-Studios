@@ -300,6 +300,7 @@ function UI.start(player: Player)
         "Moradores têm inventários próprios. Aproxime-se para entregar um arco ou uma lança.",2,53)
     local workerRows: {[number]: TextButton}={}
     local selectedNpcId=0
+    local updateVillage: ()->()
     local selectedWorker=label(villagersPage,"Selected","Selecione um morador.",12,C.secondary)
     selectedWorker.LayoutOrder=500
     selectedWorker.Size=UDim2.new(1,-10,0,43)
@@ -431,6 +432,10 @@ function UI.start(player: Player)
             showJournal(true,"villagers")
         elseif contextKind=="wood" or contextKind=="market" then
             showJournal(true,"workshop")
+        elseif contextKind=="story" then
+            local phase=player:GetAttribute("ER_R3Phase")
+            if phase=="evacuation" then request("prologue","evacuate")
+            elseif phase=="coronation" then request("prologue","coronation") end
         end
     end
     interact.Activated:Connect(interactNow)
@@ -482,7 +487,11 @@ function UI.start(player: Player)
     local function updateContext()
         contextKind="none"
         contextTarget=0
-        if (nearby.coinId or 0)>0 then
+        local phase=player:GetAttribute("ER_R3Phase")
+        if phase=="evacuation" or phase=="coronation" then
+            contextKind="story"
+            interact.Text=if phase=="evacuation" then "EVACUAR" else "ACEITAR COROA"
+        elseif (nearby.coinId or 0)>0 then
             contextKind="coin"
             contextTarget=nearby.coinId
             interact.Text="RECOLHER MOEDA"
@@ -500,7 +509,7 @@ function UI.start(player: Player)
         interact.Visible=contextKind~="none" and not journal.Visible
     end
 
-    local function updateVillage()
+    function updateVillage()
         local resources=if snapshot then snapshot.resources else nil
         local sources=if resources then resources.sources else nil
         local carried=if resources then resources.carried else nil
@@ -610,21 +619,9 @@ function UI.start(player: Player)
         "ER_R3Wallet","ER_R3Arrows","ER_R3Warning","ER_R3Phase","ER_R3Raid"}) do
         player:GetAttributeChangedSignal(name):Connect(function()
             redraw()
-            updateVillage()
+            if name=="ER_R3Phase" then updateVillage() end
         end)
     end
-    local function prologueAction()
-        local phase=player:GetAttribute("ER_R3Phase")
-        if phase=="guard" then request("attack",nil)
-        elseif phase=="evacuation" then request("prologue","evacuate")
-        elseif phase=="coronation" then request("prologue","coronation")
-        end
-    end
-    warning.InputBegan:Connect(function(input: InputObject)
-        if input.UserInputType==Enum.UserInputType.MouseButton1 then
-            prologueAction()
-        end
-    end)
     UserInputService.InputBegan:Connect(function(input: InputObject,processed: boolean)
         if processed or not gui.Parent then return end
         if input.KeyCode==Enum.KeyCode.F then request("attack",nil)
