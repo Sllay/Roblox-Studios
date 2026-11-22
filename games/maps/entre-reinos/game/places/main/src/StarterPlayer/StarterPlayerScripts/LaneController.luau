@@ -1,39 +1,22 @@
 --!strict
--- T1-R1: use Roblox's ORIGINAL joystick, jump button, keyboard and gamepad.
--- Do not bind touch buttons, disable PlayerModule, or override native jump.
--- Only project the standard movement vector onto our physics-driven XY lane.
+-- Use the Roblox joystick, jump and Humanoid swimming controller unchanged.
+-- Entre Reinos only remaps 2.5D input: on land X walks, in native water
+-- joystick forward/backward becomes Humanoid:Move's vertical Y direction.
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Projection = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("InputProjection"))
-local Water = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WaterRules"))
-local SwimVisual = require(script.Parent:WaitForChild("R6SwimVisual"))
 local Controller = {}
 
 local active = false
 local controls: any = nil
-local root: BasePart? = nil
 local humanoid: Humanoid? = nil
 local turn: AlignOrientation? = nil
-local swim: LinearVelocity? = nil
-local swimFiltered = Vector2.zero
-local lastSwimming = -1e9
-local lastStateRequest = -1e9
-local currentSeed: number? = nil
-local swimmingVisual=false
 local lastFacing = -math.pi / 2
 
-local function cleanCharacter()
-    root = nil
-    humanoid = nil
-    turn = nil
-    swim = nil
-    swimFiltered = Vector2.zero
-    swimmingVisual=false
-    SwimVisual.setActive(false)
-end
-
 local function attachCharacter(character: Model)
-    cleanCharacter()
+    humanoid = nil
+    if turn then turn:Destroy() end
+    turn = nil
     local h = character:WaitForChild("Humanoid", 10)
     local r = character:WaitForChild("HumanoidRootPart", 10)
     if not h or not h:IsA("Humanoid") or not r or not r:IsA("BasePart") then return end
@@ -43,8 +26,6 @@ local function attachCharacter(character: Model)
         return
     end
     humanoid = h
-    root = r
-    SwimVisual.attach(character)
     h.AutoRotate = false
     h.WalkSpeed = 13
 
@@ -58,20 +39,6 @@ local function attachCharacter(character: Model)
     orientation.CFrame = CFrame.Angles(0, lastFacing, 0)
     orientation.Parent = r
     turn = orientation
-
-    local velocity = Instance.new("LinearVelocity")
-    velocity.Name = "ER_SwimXY"
-    velocity.Attachment0 = attachment
-    velocity.RelativeTo = Enum.ActuatorRelativeTo.World
-    velocity.VelocityConstraintMode = Enum.VelocityConstraintMode.Plane
-    velocity.PrimaryTangentAxis = Vector3.xAxis
-    velocity.SecondaryTangentAxis = Vector3.yAxis
-    velocity.MaxForce = 100000
-    velocity.ForceLimitsEnabled = false
-    velocity.PlaneVelocity = Vector2.zero
-    velocity.Enabled = false
-    velocity.Parent = r
-    swim = velocity
 end
 
 local function readNativeInput(h: Humanoid): (number, number)
@@ -83,59 +50,25 @@ local function readNativeInput(h: Humanoid): (number, number)
             return Projection.toLane(vector.X, vector.Z)
         end
     end
-    -- Robust fallback for changed/missing PlayerModule implementations:
-    -- the Roblox default controller still drives Humanoid.MoveDirection.
     local motion = h.MoveDirection
     return Projection.toLane(motion.X, motion.Z)
 end
 
-local function update(dt: number)
+local function update(_dt: number)
     local h = humanoid
-    local r = root
     local o = turn
-    local v = swim
-    if not h or not r or not o or not v or h.Health <= 0 then return end
+    if not h or not o or h.Health <= 0 then return end
     local x, y = readNativeInput(h)
-    local now=os.clock()
-    local state=h:GetState()
-    local inWaterNow=state==Enum.HumanoidStateType.Swimming
-    if currentSeed==nil then
-        local id=game:GetService("Players").LocalPlayer:GetAttribute("ER_Seed")
-        if type(id)=="number" then currentSeed=id end
-    end
-    local volumeWet=currentSeed~=nil
-        and Water.submerged(currentSeed,r.Position.X,r.Position.Y,r.Position.Z)
-    if inWaterNow or volumeWet then lastSwimming=now end
-    local swimming=inWaterNow or volumeWet or (now-lastSwimming<0.18)
-    -- Humanoid state can transition to Freefall at voxel boundaries.
-    -- Request the real Roblox Swimming state only while actually submerged.
-    if volumeWet and not inWaterNow and now-lastStateRequest>0.55 then
-        lastStateRequest=now
-        h:ChangeState(Enum.HumanoidStateType.Swimming)
-    end
-    if swimmingVisual~=swimming then
-        swimmingVisual=swimming
-        SwimVisual.setActive(swimming)
-    end
-    if swimming then
-        -- Native joystick up/down becomes upward/downward water movement.
-        -- A diagonal thumbstick gesture is a normalized diagonal X/Y swim.
-        local target = Vector2.new(x, y) * 12
-        swimFiltered = swimFiltered:Lerp(target, 1 - math.exp(-8 * math.min(dt, 0.1)))
-        v.PlaneVelocity = swimFiltered
-        v.Enabled = true
-        h:Move(Vector3.zero, false)
-    else
-        v.Enabled = false
-        swimFiltered = Vector2.zero
-        -- On land, X moves and Y only turns the character toward/away from
-        -- the 3D background. Never allow an independent Z walking direction.
-        h:Move(Vector3.new(x, 0, 0), false)
-    end
+    local swimming = h:GetState() == Enum.HumanoidStateType.Swimming
+
+    -- Native Roblox Humanoid controls all water physics, transitions,
+    -- buoyancy and the character's own Animate script. No LinearVelocity,
+    -- manual ChangeState, Motor6D transforms, or animation suppression.
+    -- Y remap is only sent while Roblox itself reports Swimming.
+    h:Move(Vector3.new(x, if swimming then y else 0, 0), false)
     lastFacing = Projection.facing(x, y, swimming, lastFacing)
     o.CFrame = CFrame.Angles(0, lastFacing, 0)
-    -- Native Roblox TouchJump/spacebar/gamepad jump are handled by PlayerModule.
-    -- We deliberately do not write Humanoid.Jump here.
+    -- Leave jump and native Swimming state fully owned by Roblox.
 end
 
 function Controller.start(player: Player)
@@ -147,8 +80,6 @@ function Controller.start(player: Player)
         local ok, module = pcall(require, playerModule)
         if ok and module and type(module.GetControls) == "function" then
             controls = module:GetControls()
-            -- NEVER call controls:Disable(): that hides Roblox joystick/jump.
-            -- The native control module remains enabled.
         else
             warn("[EntreReinos] PlayerModule unavailable; using Humanoid.MoveDirection")
         end
@@ -157,14 +88,12 @@ function Controller.start(player: Player)
     end
     player.CharacterAdded:Connect(attachCharacter)
     if player.Character then task.spawn(attachCharacter, player.Character) end
-    -- PlayerModule's normal control step runs at Input priority. Project its
-    -- analog movement one step later, while retaining its jump handling.
     RunService:BindToRenderStep("ER_Lane", Enum.RenderPriority.Input.Value + 1, update)
 end
 
 function Controller.mode(): string
     if not active then return "Menu" end
-    if swimmingVisual then
+    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Swimming then
         return "Swim"
     end
     return "Ground"
