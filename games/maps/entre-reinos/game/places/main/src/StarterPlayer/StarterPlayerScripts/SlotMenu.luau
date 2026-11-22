@@ -130,7 +130,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
         frame.Parent = pane
         pages[pageName] = frame
     end
-    local options = {wide = false, debug = true}
+    local options = {wide = false, debug = false}
     local busy = false
     local selected: number? = nil
     local activeSlot: number? = nil
@@ -337,7 +337,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
         options.wide = not options.wide
         zoom.Text = if options.wide then "Câmera: ampla" else "Câmera: padrão"
     end)
-    local diagnostics = button(pages.options, "Debug", "Indicadores FPS: ligados", UDim2.new(0.8, 0, 0, 42), UDim2.new(0.1, 0, 0.54, 0))
+    local diagnostics = button(pages.options, "Debug", "Indicadores FPS: desligados", UDim2.new(0.8, 0, 0, 42), UDim2.new(0.1, 0, 0.54, 0))
     diagnostics.Activated:Connect(function()
         options.debug = not options.debug
         diagnostics.Text = if options.debug then "Indicadores FPS: ligados" else "Indicadores FPS: desligados"
