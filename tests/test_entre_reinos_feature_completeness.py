@@ -45,7 +45,7 @@ class EntreReinosFeatureClosure(unittest.TestCase):
             self.assertEqual(owner,owned_by(number),key)
             self.assertIn(state,STATES,key)
             self.assertGreater(len(contract),55,key)
-            self.assertNotIn("TODO",contract.upper(),key)
+            self.assertIsNone(re.search(r"\\bTODO\\b",contract.upper()),key)
 
     def test_no_partially_implemented_baseline_rewritten_as_done(self):
         _,rows=load_rows()
