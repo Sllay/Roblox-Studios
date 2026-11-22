@@ -55,6 +55,7 @@ local function register(model: Model)
         render=CFrame.new(pose),
         snapshot=pose,
         arrivedAt=os.clock(),
+        smoothedVelocity=0,
         walk=track,
     }
     model.Destroying:Connect(function() remove(model) end)
@@ -92,14 +93,19 @@ function Presentation.start()
                 item.snapshot=pose
                 item.arrivedAt=t
             end
-            local velocity=model:GetAttribute("ER_NPCVelocityX")
-            if type(velocity)~="number" then velocity=0 end
+            local targetVelocity=model:GetAttribute("ER_NPCVelocityX")
+            if type(targetVelocity)~="number" then targetVelocity=0 end
+            -- Dampen changes of direction but never let irregular 10 Hz
+            -- packet spacing pulse a moving resident back to zero speed.
+            item.smoothedVelocity+=(targetVelocity-item.smoothedVelocity)
+                *(1-math.exp(-12*math.clamp(dt,0,0.10)))
+            local velocity=item.smoothedVelocity
             local facing=model:GetAttribute("ER_NPCFacing")
             if type(facing)~="number" then facing=0 end
             -- Limit extrapolation to one server snapshot interval, avoiding
             -- runaway on network stalls or when a worker stops for a job.
-            local ahead=math.clamp(t-item.arrivedAt,0,0.13)
-            local predicted=pose+Vector3.new(velocity*ahead,0,0)
+            local ahead=math.clamp(t-item.arrivedAt,0,0.26)
+            local predicted=pose+Vector3.new(math.clamp(velocity*ahead,-2,2),0,0)
             local desired=CFrame.new(predicted)*CFrame.Angles(0,facing,0)
             local blend=1-math.exp(-17*math.clamp(dt,0,0.10))
             if (item.render.Position-desired.Position).Magnitude>10 then
