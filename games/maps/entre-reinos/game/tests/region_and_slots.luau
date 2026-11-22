@@ -105,14 +105,5 @@ assert(Input.facing(0,-1,false,0)==math.pi)
 assert(Input.facing(0,1,true,math.pi/2)==math.pi/2)
 print("ENTRE_REINOS_NATIVE_INPUT: analog X/Y, swim Z-to-height, diagonal and facing tests passed")
 
--- v9: a native water body must be identified from the same generated seed
--- even if classic R6 Humanoid temporarily enters Freefall while submerged.
-local Water=require("../places/main/src/ReplicatedStorage/WaterRules")
-local riverSeed=516639272
-assert(Water.submerged(riverSeed,76,9,0))
-assert(Water.submerged(riverSeed,76,-4,0))
-assert(not Water.submerged(riverSeed,76,18,0))
-assert(not Water.submerged(riverSeed,-50,9,0))
-assert(not Water.submerged(riverSeed,76,-40,0))
-assert(not Water.submerged(0,76,9,0))
-print("ENTRE_REINOS_R6_WATER: wet R6 root, shore, false-air and seed boundaries passed")
+-- Water and swimming state are now exclusively owned by native Terrain/Humanoid.
+-- InputProjection is the only custom translation for vertical swim controls.
