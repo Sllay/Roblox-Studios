@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-22",
-  "note": "22/11: staging v14 published Place 90623742498445 and CI success. User mandated full audit of all 3 seasons and any mechanics left incomplete even after nine runners. Comprehensive 58-criterion cumulative feature-closure matrix created; test gate passes; T1 foundational flows remain PARTIAL/ABSENT, including warehouse-to-build transfer, galpao stock destruction, manual site choice, founding castle and warehouses, fully acted prologue, death/recovery, and real mobile QA. T2/T3 keep explicit ownership. No user saves deleted, no production changes.",
+  "note": "2026-11-23: creator reports arrow crafting impossible despite village timber HUD. Root cause v14: global village wood was misread as owned player wood, but crafting only searched near sites/galpaos and disabled the button silently. v15 introduces finite, persisted playerBag in optional R3 v1 migration, authorized pickup near real trees/galpaos, 2 wood -> 6 arrows craft anywhere from owned bag, real source transfers, nearest-tree direction and actionable mobile UI. Published STAGING v15 with CI and independent Roblox engine success (27/27 source, 15/15 executed probes). Mobile creator playtest pending; T1 core remains partially complete, T2 must not start. No saves wiped, no production changes.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -20,18 +20,37 @@
       "status": "in_progress",
       "stagingPublication": {
         "status": "preview_published",
-        "previewRunner": "T1-R3",
+        "previewRunner": "T1-F1",
         "isSeasonFinal": false,
-        "commit": "c68db2cbd9229c94652127d27af6da6db88cb971",
+        "commit": "880191f0752d5f678176bcb841e7669f61bcebf0",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 14,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
-        "independentReadback": "https://github.com/Sllay/Roblox-Studios/actions/runs/45053031856",
+        "revisionId": 15,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109178317",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
         "readbackStatus": "success"
       },
-      "userReview": "pending_mobile_v14_creator_review_and_feature_completeness",
-      "refinementCycles": [],
+      "userReview": "awaiting_creator_v15_mobile_arrow_crafting_and_all_T1_refinement",
+      "refinementCycles": [
+        {
+          "id": "T1-F1",
+          "status": "in_progress",
+          "scope": "T1 foundational closures and mobile craft fix, not T2-R1",
+          "receipt": "docs/runner-receipts/T1-F1.md",
+          "publishedPreview": "staging_v15",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109127316",
+          "readbackRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
+          "validation": "code_and_roblox_engine_pass; mobile_pending",
+          "remaining": [
+            "ER-008 galpao-to-building stock consumption and finite ruin salvage",
+            "ER-009 manual building preview/cancel",
+            "ER-010 castle and two starter galpaos/districts",
+            "ER-015 fully playable cinematic/interactive prologue",
+            "ER-019 death/recovery policy and functionality",
+            "ER-002 backup/restore and real compatible save migrations"
+          ]
+        }
+      ],
       "runners": [
         {
           "id": "T1-R1",
@@ -112,8 +131,8 @@
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "v14_independent_Roblox_engine_readback_SUCCESS plus CI pure tests; mobile gameplay still unapproved",
-            "mobile": "not_approved: T1 foundational gameplay and UX incomplete"
+            "runtime": "v15 independent Roblox engine PASS (27/27 published scripts, 15/15 execution incl personal wood bag/craft/save migration); creator gameplay still pending",
+            "mobile": "not_approved; creator asked for arrow bug fix"
           },
           "blockers": [
             "T1-F: warehouses must supply actual resources to new construction; destroy stored stock without duplication",
@@ -130,19 +149,19 @@
             "R3HUD mobile combat and defense buttons, day/night lighting, existing slots preserved"
           ],
           "previewPublication": {
-            "status": "published_v14",
+            "status": "published_v15",
             "placeId": "90623742498445",
             "universeId": "10769712413",
-            "revision": 14,
-            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
-            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45053031856",
+            "revision": 15,
+            "publishRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109178317",
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
             "readbackStatus": "success",
-            "mobile": "not_approved",
-            "verifiedReadbackProbe": "published_v14_modules_mounted_galpao_real_deposit_crafting_marked_tree_second_night_save_format_protection"
+            "mobile": "pending_creator_validation",
+            "verifiedReadbackProbe": "wood_to_player_bag_six_arrows_anywhere_bag_save_and_v14_migration_success"
           }
         }
       ],
-      "previewUserReview": "creator_reported_v13_logistics_and_visual_incompleteness_and_initiated_v14_refinement; user acceptance pending"
+      "previewUserReview": "creator_approved_v13_UI_but_reported_v14_arrow_crafting_unusable; v15_fix_not_yet_player_approved"
     },
     {
       "id": "T2",
@@ -274,7 +293,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_R3_v14_published_no_creator_approval_feature_completeness_audited_T1_refinement_required",
+  "programStage": "T1_F1_v15_arrow_crafting_staging_verified_awaiting_mobile_acceptance",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -300,13 +319,13 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "e0abafa4275ca49a9ec2e732af38d14014517ba0",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052486884",
+    "codeCommit": "880191f0752d5f678176bcb841e7669f61bcebf0",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109127316",
     "ciConclusion": "success",
-    "publishedVersion": 14,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052543242",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45053031856",
-    "verifiedModules": 13,
+    "publishedVersion": 15,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109178317",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
+    "verifiedModules": 27,
     "seedTested": 516639272,
     "engineInitialChunks": 3,
     "engineWaterCells": 596,
@@ -315,12 +334,12 @@
     "nativeWaterRuleValid": true,
     "liveNPCPresentation": "v12_frame_integrated_unverified_mobile",
     "liveR6SwimStrokes": "creator_confirmed_native_water_fixed",
-    "mobile": "T1_R3_v14_not_yet_approved",
-    "staging": "published_v14_T1_R3_refinement",
+    "mobile": "pending_creator_v15_craft_and_inventory",
+    "staging": "published_v15_T1_F1_arrow_crafting_fix",
     "productionUnchanged": true,
     "completenessAuditPath": "docs/FEATURE_COMPLETENESS_AUDIT.md",
     "completenessCiUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052959871",
-    "featureLaunchReadiness": "blocked_by_T1_19_partial_1_absent",
+    "featureLaunchReadiness": "T1_still_blocked_19_partial_1_absent",
     "v14IndependentReadback": "success"
   },
   "remoteIdentity": {
