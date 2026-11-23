@@ -675,6 +675,7 @@ function UI.start(player: Player)
         snapshot=response.data
         nearby=if type(response.nearby)=="table" then response.nearby else {}
         hud=if type(response.hud)=="table" then response.hud else {}
+        redraw()
         updateVillage()
     end
     -- 1 read-only overview every 3 s, not a network request each frame.
