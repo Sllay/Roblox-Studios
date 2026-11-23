@@ -168,3 +168,9 @@ Correção v9 em desenvolvimento:
 - [FIXADO] Estado inicial de inventário do jogador é separado de fontes naturais, estoques de galpão, bolsas dos NPCs, reservas e materiais já gastos. Coleta física e transferência em galpão têm validação do servidor; criar flechas consome 2 unidades realmente carregadas, produz 6 flechas, aplica capacidade/cooldown e funciona longe da fonte quando o item está na bolsa.
 - [FIXADO] Atualização de save compatível deve migrar por adição sem apagar/recriar mundos antigos; revisão de Place não implica novo DataStore. O menu informa quantidade da bolsa e caminho até árvore acessível, sem esconder/desabilitar ação sem explicação.
 - [ESTADO] v15 publicada somente em staging, testes Luau/CI e motor Roblox passados; jogo mobile do criador ainda não aprovado. A nova preocupação do criador reforça a auditoria ER-001…058: T1-F1/F2/F3 antes de T2-R1.
+
+## 23/11/2026 — execução candidata T1-F1
+
+- [TÉCNICO] O ruleset 2 identifica o armazenamento de castelo inicial e trabalhos com retirada de galpão. O save anterior é copiado por revisão antes da promoção. Formato e gerador continuam em 1. Publicação/recuperação ainda exigem evidência do ambiente.
+- [ABERTO] Cancelamento após entrega pode devolver itens ao estoque de origem, exigir recolhimento físico ou aplicar uma fração aprovada. A primeira opção exige tratar lotação e galpão destruído. A segunda mantém o material no mapa e exige trabalho de recolhimento. A terceira precisa de justificativa de custo. O candidato permite cancelar antes da entrega.
+- [ABERTO] A divisão do estoque de uma ruína entre perda, roubo e material recuperável continua pendente. A custódia isolada preserva a contabilidade e impede consumo até definição da divisão.

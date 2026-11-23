@@ -42,13 +42,37 @@
           "readbackRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
           "validation": "code_and_roblox_engine_pass; mobile_pending",
           "remaining": [
-            "ER-008 galpao-to-building stock consumption and finite ruin salvage",
-            "ER-009 manual building preview/cancel",
-            "ER-010 castle and two starter galpaos/districts",
-            "ER-015 fully playable cinematic/interactive prologue",
-            "ER-019 death/recovery policy and functionality",
-            "ER-002 backup/restore and real compatible save migrations"
-          ]
+            "ER-001/002 verify DataStore backup and restoration with an old test slot, and reconnect",
+            "ER-007/008 confirm marked timber, warehouse logistics and approve ruin recovery rules",
+            "ER-009 verify placement and cancellation in a touch client and decide refunds after delivery",
+            "ER-010/011 connect settlement districts to gameplay and review presentation",
+            "ER-016/017 verify crafting and trade in live touch play"
+          ],
+          "candidate": {
+            "base": "6d18e19a3f0b0ff92486e9f7400500e3264c282d",
+            "commit": "233e0a781ccc70546c9c4aacd5cb3107573f6025",
+            "branch": "entre-reinos/t1-f1-integridade",
+            "audit": "docs/T1_F1_CODE_AUDIT.md",
+            "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45285763613",
+            "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45285764016",
+            "stagingIdentityRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45285045552",
+            "validation": {
+              "ci": "pass",
+              "engine": "isolated_domain_and_terrain_pass",
+              "datastore": "pending",
+              "mobile": "pending"
+            }
+          }
+        },
+        {
+          "id": "T1-F2",
+          "status": "planned",
+          "scope": "NPC presentation, defense, playable prologue and approved recovery"
+        },
+        {
+          "id": "T1-F3",
+          "status": "planned",
+          "scope": "Integrated regressions, Roblox staging, performance and mobile review"
         }
       ],
       "runners": [
@@ -293,7 +317,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_F1_v15_arrow_crafting_staging_verified_awaiting_mobile_acceptance",
+  "programStage": "T1_F1_structural_candidate_engine_probe_pass_staging_v15",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -392,6 +416,6 @@
       "ER-020"
     ],
     "requirement": "All release requirements must have owner and real engine, mobile, save/load and human approval evidence; incomplete T1/T2 systems may not be pushed to T3.",
-    "next": "After mobile review, carry missing T1 fundamental flows through T1-F1/F2/F3; do not initiate T2 until approved."
+    "next": "Finish T1-F1 candidate gates and open design decisions before F2. T2 remains blocked until T1 approval."
   }
 }

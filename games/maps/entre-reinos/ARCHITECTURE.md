@@ -112,3 +112,11 @@ No mesmo Place em staging, a função de servidor é decidida por `WorldRoute.is
 Ao chegar, autenticar roteamento, criar R6, abrir save com `UpdateAsync` e lease, gerar chunks nativos 2,3,4, exibir UI opaca progressiva e iniciar simulação só após terreno/corpo prontos. O chunk1 oeste usa `World.ensureNear` enquanto o usuário se desloca; cada chunk possui readback de sólido/líquido/material, evita sobrescrever Terrain. Voltar ao lobby com `TeleportOptions.ForcePublicServer`.
 
 Os testes automáticos e o Roblox Luau edit session passaram, v6 publicada, mas teleport e gameplay reais aguardam teste mobile. `Players.MaxPlayers=1` já observado no Place, sem mutação de configurações. Não levar essa arquitetura para o Black Island.
+
+## T1-F1 — contratos candidatos de save, custódia e colocação
+
+`WorkEngine` calcula reservas de oferta a partir dos trabalhos serializados e reconcilia a demanda da obra ao reabrir. Um trabalho de retirada em `gather` pode referenciar uma fonte natural por `siteId` ou galpão por `storageId`; depois da retirada, o estado `deliver` é sustentado pela bolsa. Entrega ao galpão reserva massa até o depósito. A destruição separa `ruinedStock` do inventário utilizável. A partição de recuperação continua uma decisão de design. Transações de economia e obras usam as mesmas consultas de disponibilidade.
+
+O cliente pede prévia para o X escolhido. O servidor guarda a prévia mais recente, amarra confirmação ao ID e verifica novamente as regras de faixa, posição relativa, previsão do terreno e apoio nativo antes de materializar a obra. O jogador pode liberar o terreno até a entrega do primeiro material. Castelos de campanhas recém-inicializadas vinculam a tesouraria ao comércio local. O servidor usa o ponto histórico de comércio para campanhas anteriores sem castelo.
+
+O ruleset 2 protege a gravação de estados que o runtime v15 não interpreta. Mantém as seis chaves e o formato 1. O backup pré-promoção é gravado separadamente com identidade da geração e revisão do slot, e a promoção falha se o backup não for confirmado. A recuperação operacional precisa de teste em DataStore de staging antes de publicação.

@@ -104,6 +104,19 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 15. **Regras ainda ABERTAS na Bíblia**: morte/respawn, relógio offline, economia e salários, curva de raids/portais, seleção de reinos/escala, balanceamento de montaria, preços/recibos, recuperação de armazém. São decisões de design a registrar em `DECISION_LOG.md`, não valores arbitrários adotados como definitivos.
 16. **Ambiente real como prova** (todos): cada fluxo precisa de evidência da CI + Roblox engine + vídeo/captura e medição no mobile do criador, quando aplicável; não transformar o estado de `success` do GitHub em certificado visual.
 
+## Evidências candidatas T1-F1 — 23/11/2026
+
+| IDs | Avanço verificado na branch | Evidência restante |
+| --- | --- | --- |
+| ER-001/002 | Snapshot validado antes de escrever. Testes de limite da v15, versão legada/futura, identidade do backup e lease. | DataStore real, recuperação operacional, reconexão e seis slots em partida. |
+| ER-006/007/008 | Obras consomem estoque finito. Reserva de oferta/demanda/capacidade, reload em trânsito, árvore marcada e estoque de ruína isolado passaram em Luau e motor isolado. | Efeitos e alcance em partida, regras e recuperação da ruína. |
+| ER-009 | Prévia a X escolhido, confirmação no mesmo ponto, teste de ocupação/rota e cancelamento antes da entrega. | RPC com cliente real, prévia touch, colisões e estorno após entrega conforme decisão. |
+| ER-010/011 | Castelo, dois galpões, muralhas e abrigo inicial exercitados em sete seeds no VM, com apoio no Terrain observado em seis edifícios de uma seed no motor. | Ligações funcionais de distritos, outros anéis, visual e colisão aprovados. |
+| ER-014/016/017 | Raid isolou estoque real após perda de galpão. Crafting e venda debitam materiais disponíveis e o HUD reaproveita a consulta do servidor. | Defesa e uso de HUD/munição em partida touch. |
+| ER-003–005, 012–015 e 018–020 | A auditoria de código [classificou todos os requisitos](T1_F1_CODE_AUDIT.md). | Runtime/mobile, prólogo interativo, derrota/recuperação e ensaio integrado permanecem abertos. |
+
+As evidências são do candidato sobre uma sessão descartável da v15. Nenhum estado VALIDADO foi adicionado. [Recibo T1-F1](runner-receipts/T1-F1.md)
+
 ## Regra de evidências e dependências
 
 Para passar de PARCIAL/PLANEJADO para VALIDADO, anexar em `runner-receipts/`: (a) escopo/IDs, (b) script/asset/versão realmente publicados, (c) testes de origem→reserva→transporte→consumo/alteração de mundo, (d) save/load antes e depois e em versão anterior, (e) rejeição de abuso e casos limite, (f) execução Roblox com usuário, (g) controle e performance mobile, (h) decisão do criador. Efeitos só visuais não aprovam a mecânica, UI sozinha não aprova economia, campos de dados não aprovam jogo, smoke test não aprova fluxo completo.
