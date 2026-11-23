@@ -162,6 +162,10 @@ local function startWorld(player: Player)
         warn("[EntreReinos][World] Slot open failure: ", code)
         return
     end
+    if player.Parent~=Players then
+        Saves.abortActivation(player)
+        return
+    end
     -- IMPORTANT: no conditional expression returning multiple values;
     -- explicit branch above checks (success, record) separately.
 
@@ -192,6 +196,7 @@ local function startWorld(player: Player)
     if not char then
         player:SetAttribute("ER_LoadError", "character_not_ready")
         stage(player, "failed", nil, "Personagem não carregado; o save está preservado.")
+        Saves.abortActivation(player)
         return
     end
     local attached, okLane, reasonLane = pcall(attachLane, player, char)
@@ -200,6 +205,7 @@ local function startWorld(player: Player)
         player:SetAttribute("ER_LoadError", errorCode or "lane_setup_failed")
         stage(player, "failed", nil, "Falha na física do personagem; o save foi preservado.")
         warn("[EntreReinos][World] XY lane failed: ", reasonLane or okLane)
+        Saves.abortActivation(player)
         return
     end
 
@@ -215,6 +221,7 @@ local function startWorld(player: Player)
         player:SetAttribute("ER_LoadError", reason or "living_start_failed")
         stage(player, "failed", nil, "Falha ao carregar moradores; save preservado.")
         warn("[EntreReinos][Living] Startup failed: ", livingError or livingOk)
+        Saves.abortActivation(player)
         return
     end
     -- Simulation only starts after terrain, R6 and living state are ready.

@@ -200,9 +200,15 @@ function UI.start(player: Player)
     content.Name="JournalContent"
     content.BackgroundTransparency=1
     content.Position=UDim2.fromOffset(12,93)
-    content.Size=UDim2.new(1,-24,1,-108)
+    content.Size=UDim2.new(1,-24,1,-145)
     content.ClipsDescendants=true
     content.Parent=journal
+
+    local exitWorld=button(journal,"SaveAndReturn","SALVAR E VOLTAR")
+    exitWorld.AnchorPoint=Vector2.new(0.5,1)
+    exitWorld.Position=UDim2.new(0.5,0,1,-10)
+    exitWorld.Size=UDim2.new(1,-24,0,34)
+    exitWorld.BackgroundColor3=C.surface
 
     local toast=label(gui,"GameFeedback","",13,C.paper)
     toast.TextXAlignment=Enum.TextXAlignment.Center
@@ -222,6 +228,33 @@ function UI.start(player: Player)
             if token==toastSerial then toast.Visible=false end
         end)
     end
+
+    local returning=false
+    exitWorld.Activated:Connect(function()
+        if returning then return end
+        local slots=ReplicatedStorage.Game:FindFirstChild("ER_WorldSlots")
+        if not slots or not slots:IsA("RemoteFunction") then
+            notify("Conexão com o mundo indisponível.")
+            return
+        end
+        returning=true
+        exitWorld.Text="SALVANDO…"
+        local ok,answer=pcall(function() return slots:InvokeServer("return") end)
+        if not ok or type(answer)~="table" or not answer.ok then
+            returning=false
+            exitWorld.Text="SALVAR E VOLTAR"
+            notify(if ok and type(answer)=="table" and answer.error=="teleport_request_failed"
+                then "Progresso salvo. A volta ao lobby falhou."
+                else "Não foi possível confirmar a saída. Tente novamente.")
+            return
+        end
+        exitWorld.Text="VOLTANDO…"
+        task.delay(12,function()
+            if not gui.Parent then return end
+            returning=false
+            exitWorld.Text="SALVAR E VOLTAR"
+        end)
+    end)
 
     local snapshot: any=nil
     local nearby: any={}

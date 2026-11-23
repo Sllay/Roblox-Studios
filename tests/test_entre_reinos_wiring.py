@@ -367,6 +367,14 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('hud.playerWood or 0',hud)
         self.assertIn('player_bag_full=',hud)
 
+    def test_t1_f1_save_and_return_uses_world_slot_rpc(self):
+        boot = read("ServerScriptService/Boot.server.luau")
+        hud = read("StarterPlayer/StarterPlayerScripts/R3HUD.luau")
+        self.assertIn('"SaveAndReturn","SALVAR E VOLTAR"', hud)
+        self.assertIn('slots:InvokeServer("return")', hud)
+        return_path = boot.split("local function returnLobby", 1)[1].split("rpc.OnServerInvoke", 1)[0]
+        self.assertLess(return_path.index("Saves.save(player,false)"), return_path.index("TeleportService:TeleportAsync"))
+
     def test_user_production_target_is_unset(self):
         targets = json.loads((GAME / "deploy.targets.json").read_text())["environments"]
         self.assertEqual(str(targets["staging"]["universeId"]), "10769712413")
