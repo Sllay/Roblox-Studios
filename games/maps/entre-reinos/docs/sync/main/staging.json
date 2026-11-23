@@ -1,5 +1,5 @@
 {
-  "loadedVersion": 14,
+  "loadedVersion": 15,
   "placeId": "90623742498445",
   "records": {
     "environment:lighting": {
@@ -194,8 +194,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 18765,
-        "sourceHash": "kPLcrPHjvdnpx+pwZJi0OD1+Cr7UtMlF5X/HSrMtJks="
+        "sourceBytes": 21409,
+        "sourceHash": "bVDsoPsAwSaYzHFAvOSgfn38uCT+Rs+PZKuluD4w0Yg="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -563,8 +563,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 12264,
-        "sourceHash": "iptPoEklv33xFeSfLU+ryWxnqQIt4AKV4PdkyfiBs6U="
+        "sourceBytes": 12558,
+        "sourceHash": "g74CI0mIwEh2RRHMN285Lr80CeSMWmalD8ghHPW7mYE="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -590,8 +590,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 27798,
-        "sourceHash": "lGRCQk76NrylIAhBeWzAhRAIMXJnYmH88kpOJx5vmj0="
+        "sourceBytes": 28575,
+        "sourceHash": "7eLTg0xfLak6zNJOCbT/8yUK32G1USXhK/TaM47axiI="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2474,8 +2474,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 28351,
-        "sourceHash": "iEF7i8DGfL5GXL3yiP0konCHgXAwRroIUBPZM6uN/oI="
+        "sourceBytes": 30820,
+        "sourceHash": "M+tkVCmmAo2ojgco+vLrcp+qWNfIbVaSPkOx4qCuync="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2806,7 +2806,7 @@
     "Teams",
     "ReplicatedFirst"
   ],
-  "stateDigest": "96872399bdcf8a594aa97e34f3408a5d9b52893bd7907a403de2c696a5250f40",
+  "stateDigest": "bfce2066f2b79d60b8e5889aa20a7c65b71249753e2a68fb5bc9705e27ca37c8",
   "total": 84,
   "universeId": "10769712413"
 }
