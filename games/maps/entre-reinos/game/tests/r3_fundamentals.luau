@@ -82,6 +82,64 @@ for _=1,2 do assert(R3.craftArrows(fresh,timber.x)) end
 assert(d.arrows==30 and R3.craftArrows(fresh,timber.x)==false,
     "finite ammo capacity blocks excess inventory")
 
+-- T1-F1: user reported that the on-screen arrow recipe could never
+-- fire. Ownership must be clear: a forest site is NOT a player inventory.
+local personal=Living.new(seed)
+local bag=R3.ensure(personal,false)
+local forest=personal.sites[1]
+local World=require("../places/main/src/ReplicatedStorage/WorldProfile")
+local treeY=World.sample(seed,forest.x,0).height+3
+local sourceBefore=forest.remaining
+assert(not R3.takeWood(personal,0,treeY),
+    "player cannot withdraw wood from an arbitrary faraway tree")
+assert(not R3.takeWood(personal,forest.x,treeY+100),
+    "player may not gather wood far below/above the terrain")
+assert(R3.takeWood(personal,forest.x,treeY))
+assert(forest.remaining==sourceBefore-2 and bag.playerBag.items.wood==2)
+assert(R3.summary(personal).playerWood==2)
+assert(R3.craftArrows(personal,0),
+    "player should craft anywhere from wood already carried")
+assert(bag.arrows==18 and bag.playerBag.items.wood==nil)
+assert(forest.remaining==sourceBefore-2)
+assert(R3.takeWood(personal,forest.x,treeY))
+local carried=Living.clone(personal)
+local reentered=Living.restore(carried,seed)
+assert(reentered and reentered.r3.playerBag.items.wood==2,
+    "picked-up wood must persist across slot reload")
+assert(R3.ensure(reentered,false).playerBag.items.wood==2)
+assert(Living.valid(reentered))
+local noBag=Living.clone(reentered)
+noBag.r3.playerBag=nil -- v14 save has no playerBag: must migrate safely.
+assert(Living.valid(noBag))
+local beforeOld=noBag.sites[1].remaining
+R3.ensure(noBag,false)
+assert(noBag.r3.playerBag.items.wood==nil)
+assert(noBag.sites[1].remaining==beforeOld,
+    "migration may never grant or delete resources")
+assert(R3.ensure(noBag,false)==noBag.r3,
+    "reopening cannot reset a player's bag")
+local snapshot=Living.clone(reentered)
+snapshot.r3.playerBag.maxMass=1
+assert(not Living.valid(snapshot),
+    "overweight crafted/gathered player bag must fail save validation")
+-- Harvest stored wood with exactly one transfer, never duplicates.
+local warehousePickup=Living.new(seed)
+local warehouseData=R3.ensure(warehousePickup,false)
+local placedStorage,depot=Work.place(warehousePickup,"stockpile",18)
+assert(placedStorage)
+depot.state="complete"
+assert(require("../places/main/src/ReplicatedStorage/Living/Inventory")
+    .add(depot.stored,"wood",4))
+local fromStock=depot.stored.items.wood
+local depotY=World.sample(seed,depot.x,0).height+3
+assert(R3.takeWood(warehousePickup,depot.x,depotY))
+assert(depot.stored.items.wood==fromStock-2)
+assert(warehouseData.playerBag.items.wood==2)
+assert(R3.craftArrows(warehousePickup,0))
+assert(warehouseData.playerBag.items.wood==nil)
+assert(depot.stored.items.wood==fromStock-2)
+assert(Living.valid(warehousePickup))
+
 -- Wall exists as a true collision gate in the 2.5D raid lane.
 local blocked=Living.new(seed)
 local bstate=R3.ensure(blocked,false)
