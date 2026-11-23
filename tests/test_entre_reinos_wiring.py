@@ -345,6 +345,33 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertNotIn('Humanoid:Move', hud)
         self.assertNotIn('Humanoid:TakeDamage', hud)
 
+    def test_t1_f1_arrow_crafting_has_real_player_inventory_and_clickable_ui(self):
+        r3 = read("ReplicatedStorage/Living/R3Engine.luau")
+        combat = read("ServerScriptService/Services/CombatService.luau")
+        living = read("ServerScriptService/Services/LivingService.luau")
+        hud = read("StarterPlayer/StarterPlayerScripts/R3HUD.luau")
+        for fragment in [
+            'playerBag=Inventory.new(24)',
+            'if state.r3.playerBag==nil then',
+            'function R3.takeWood(state: any,x: number,y: number)',
+            'Inventory.add(d.playerBag,"wood",2)',
+            'Inventory.transfer(b.stored,d.playerBag,"wood",2)',
+            'if Inventory.count(d.playerBag,"wood")>=2 then',
+            'Inventory.take(d.playerBag,"wood",2)',
+            'playerWood=if d.playerBag then Inventory.count(d.playerBag,"wood")',
+        ]:
+            self.assertIn(fragment,r3)
+        self.assertIn('elseif action=="take_wood" then',combat)
+        self.assertIn('R3.takeWood(state,root.Position.X,root.Position.Y)',combat)
+        self.assertIn('or action=="take_wood"',living)
+        self.assertIn('nearby.nearestWoodDistance=',living)
+        self.assertIn('collectButton=button(workshop,"TakeWood"',hud)
+        self.assertIn('craftButton.Active=true',hud)
+        self.assertIn('request("take_wood",nil)',hud)
+        self.assertIn('redraw()\n        updateVillage()',hud)
+        self.assertIn('hud.playerWood or 0',hud)
+        self.assertIn('player_bag_full=',hud)
+
     def test_user_production_target_is_unset(self):
         targets = json.loads((GAME / "deploy.targets.json").read_text())["environments"]
         self.assertEqual(str(targets["staging"]["universeId"]), "10769712413")
