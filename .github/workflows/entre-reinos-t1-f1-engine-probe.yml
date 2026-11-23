@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/entre-reinos-t1-f1-engine-probe.yml
       - games/maps/entre-reinos/game/places/main/src/ReplicatedStorage/**
+      - games/maps/entre-reinos/game/places/main/src/ServerScriptService/**
       - games/maps/entre-reinos/game/tests/**
   workflow_dispatch:
     inputs:
@@ -111,6 +112,8 @@ jobs:
           parts.append(f"local function loadSaveService(game)\n{save_service}\nend")
           parts.append((game / "game/tests/staging_datastore.luau").read_text())
 
+          living_service = (game / "game/places/main/src/ServerScriptService/Services/LivingService.luau").read_text()
+          placement = living_service.split("local function placementGround(",1)[1].split("\nactions.OnServerInvoke=",1)[0]
           parts.append("""
           local seed=516639272
           local service=require(game:GetService("ServerScriptService"):WaitForChild("Services"):WaitForChild("WorldService"))
@@ -128,15 +131,51 @@ jobs:
                   "starter building lacks Terrain support: "..b.typeId)
           end
           assert(not work.canPlace(state,"wall",76))
+          local function probePlacement()
+              local Work,WorldService=work,service
+              local Structures,Profile=loadCandidate("StructureDefs"),loadCandidate("WorldProfile")
+              local groundCast=params
+              groundCast.IgnoreWater=true
+              local state=loadCandidate("LivingModel").new(seed)
+              local function placementGround(__PLACEMENT__
+              local mockCharacter=Instance.new("Model")
+              local root=Instance.new("Part")
+              root.Anchored=true
+              root.Position=Vector3.new(18,24,0)
+              root.Parent=mockCharacter
+              mockCharacter.Parent=workspace
+              local ok,y=placementGround("shelter",18,root)
+              assert(ok,tostring(y))
+              local solid=Instance.new("Part")
+              solid.Anchored=true
+              solid.CanCollide=true
+              solid.Position=Vector3.new(18,y+3,Structures.DEPTH_Z)
+              solid.Parent=workspace
+              local free,why=placementGround("shelter",18,root)
+              assert(not free and why=="solid_obstruction",tostring(why))
+              solid:Destroy()
+              local placed,b=Work.place(state,"shelter",18,y)
+              assert(placed and b.x==18 and b.y==y)
+              assert(not placementGround("house",18,root))
+              local water,waterReason=placementGround("wall",76,root)
+              assert(not water and waterReason=="invalid_footprint_or_slope")
+              workspace.Terrain:FillBlock(CFrame.new(34,23,Structures.DEPTH_Z),
+                  Vector3.new(4,12,12),Enum.Material.Rock)
+              local uneven,slopeReason=placementGround("shelter",38,root)
+              assert(not uneven and slopeReason=="invalid_footprint_or_slope",tostring(slopeReason))
+              mockCharacter:Destroy()
+              return true
+          end
+          local placementVerified=probePlacement()
           return game:GetService("HttpService"):JSONEncode({
               universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
               version=game.PlaceVersion,domainSuites=3,starterBuildings=#state.buildings,datastore=datastoreResult,
-              terrainChunks=service.getChunkCount(),seed=seed
+              terrainChunks=service.getChunkCount(),seed=seed,placementVerified=placementVerified
           })
-          """)
+          """.replace("__PLACEMENT__",placement))
           report = run_task(staging["universeId"], staging["placeIds"]["main"],
                             os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=int(os.getenv("ER_PROBE_REVISION", "15")))
           print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
-          assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5
+          assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5 and report["placementVerified"]
           assert report["datastore"]["actual"] and report["datastore"]["delivered"] == 11
           PY
