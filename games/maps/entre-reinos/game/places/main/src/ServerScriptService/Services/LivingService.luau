@@ -574,7 +574,8 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
         local overview=Work.summary(state)
         local character=player.Character
         local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
-        local nearby={wood=0,canTrade=false,npcId=0,coinId=0}
+        local nearby={wood=0,canTrade=false,npcId=0,coinId=0,
+            nearestWoodDistance=-1,nearestWoodDirection=""}
         if root and root:IsA("BasePart") then
             local x=root.Position.X
             nearby.canTrade=math.abs(x)<=24
@@ -586,19 +587,32 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
                     nearby.npcId=npc.id
                 end
             end
+            local nearestWood=math.huge
             for _,site in ipairs(state.sites) do
-                if site.item=="wood" and math.abs(site.x-x)<=9 then
-                    -- Crafting consumes two pieces from ONE nearby site.
-                    -- Sum of several depleted sites must never imply craftability.
-                    nearby.wood=math.max(nearby.wood,site.remaining)
+                if site.item=="wood" and site.remaining>=2 then
+                    local distance=math.abs(site.x-x)
+                    if distance<nearestWood then
+                        nearestWood=distance
+                        nearby.nearestWoodDistance=math.floor(distance+0.5)
+                        nearby.nearestWoodDirection=if site.x<x then "esquerda"
+                            else "direita"
+                    end
+                    local surface=Profile.sample(state.seed,site.x,0).height
+                    if distance<=9 and math.abs(root.Position.Y-(surface+3))<=11 then
+                        -- Do not claim that two depleted sources add up to
+                        -- one craftable batch; use one real source at a time.
+                        nearby.wood=math.max(nearby.wood,site.remaining)
+                    end
                 end
             end
             for _,b in ipairs(state.buildings) do
                 if b.typeId=="stockpile" and b.state=="complete"
                     and b.health>0 and b.stored
                     and math.abs(b.x-x)<=12 then
-                    nearby.wood=math.max(nearby.wood,
-                        b.stored.items.wood or 0)
+                    if math.abs(root.Position.Y-(b.y+3))<=12 then
+                        nearby.wood=math.max(nearby.wood,
+                            b.stored.items.wood or 0)
+                    end
                 end
             end
             local closestCoin=6
@@ -614,7 +628,7 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
     end
     if action=="attack" or action=="bow" or action=="drop_coin"
         or action=="pickup_coin" or action=="arm_defender"
-        or action=="trade" or action=="craft_arrows"
+        or action=="trade" or action=="craft_arrows" or action=="take_wood"
         or action=="prologue" or action=="r3_status" then
         return Combat.action(player,action,typeId)
     end
