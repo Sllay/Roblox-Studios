@@ -32,6 +32,9 @@ function R3.valid(d: any): boolean
         if not finite(e.x) or not finite(e.hp) or not finite(e.side)
             or not finite(e.id) or not finite(e.loot) then return false end
     end
+    if d.playerBag~=nil and not Inventory.valid(d.playerBag) then
+        return false
+    end
     for _,drop in ipairs(d.drops) do
         if not finite(drop.id) or not finite(drop.x) or not finite(drop.value)
             or drop.value<=0 or drop.value%1~=0 or type(drop.claimed)~="boolean" then
@@ -44,12 +47,17 @@ end
 function R3.ensure(state: any, newCampaign: boolean)
     if state.r3~=nil then
         assert(R3.valid(state.r3),"unsupported_r3_schema")
+        -- Safe additive upgrade of already persisted R3 worlds, NOT a wipe.
+        if state.r3.playerBag==nil then
+            state.r3.playerBag=Inventory.new(24)
+        end
         return state.r3
     end
     -- Existing R2 saves enter sandbox; a truly fresh campaign gets the
     -- interactive prologue. No previous world is reset or overwritten.
     state.r3={
         version=R3.VERSION, wallet=0, treasury=24, arrows=12,
+        playerBag=Inventory.new(24),
         enemies={}, drops={}, ledger={}, nextEnemyId=1,nextDropId=1,
         lastNight= -1, night=0, raidActive=false, raidWarning="",
         prologue={stage=if newCampaign then "guard" else "sandbox",time=0},
@@ -94,10 +102,62 @@ function R3.drop(state: any,x: number,value: number): (boolean, any)
     return true,drop.id
 end
 
+-- The player's bag is independent of the village's standing timber:
+-- physical, finite extraction -> a real carried item -> a real recipe.
+function R3.takeWood(state: any,x: number,y: number): (boolean, any)
+    if not finite(x) or not finite(y) then return false,"invalid_position" end
+    local d=R3.ensure(state,false)
+    if Inventory.weight(d.playerBag)+2*Items.get("wood").mass
+        >d.playerBag.maxMass then
+        return false,"player_bag_full"
+    end
+    local best=nil
+    local bestDistance=math.huge
+    for _,source in ipairs(state.sites) do
+        if source.item=="wood" and source.remaining>=2 then
+            local distance=math.abs(x-source.x)
+            local ground=World.sample(state.seed,source.x,0).height
+            if distance<=11 and math.abs(y-(ground+3))<=11
+                and distance<bestDistance then
+                best=source
+                bestDistance=distance
+            end
+        end
+    end
+    if best then
+        if not Inventory.add(d.playerBag,"wood",2) then
+            return false,"player_bag_full"
+        end
+        best.remaining-=2
+        ledger(d,"wood_from_tree",0,tostring(best.id))
+        return true,Inventory.count(d.playerBag,"wood")
+    end
+    for _,b in ipairs(state.buildings) do
+        if b.typeId=="stockpile" and b.state=="complete" and b.health>0
+            and b.stored and Inventory.count(b.stored,"wood")>=2
+            and math.abs(x-b.x)<=13 and math.abs(y-(b.y+3))<=12 then
+            if not Inventory.transfer(b.stored,d.playerBag,"wood",2) then
+                return false,"player_bag_full"
+            end
+            ledger(d,"wood_from_galpao",0,tostring(b.id))
+            return true,Inventory.count(d.playerBag,"wood")
+        end
+    end
+    return false,"wood_source_too_far"
+end
+
 function R3.craftArrows(state: any,x: number): (boolean, any)
     if not finite(x) then return false,"invalid_position" end
-    local d=state.r3
+    local d=R3.ensure(state,false)
     if d.arrows>24 then return false,"ammo_capacity" end
+    if Inventory.count(d.playerBag,"wood")>=2 then
+        if not Inventory.take(d.playerBag,"wood",2) then
+            return false,"wood_stock_required"
+        end
+        d.arrows+=6
+        ledger(d,"arrow_crafting",0,"player_bag")
+        return true,d.arrows
+    end
     -- A completed galpão offers the normal craft interaction. Move actual
     -- stored timber out of its finite inventory before producing arrows.
     for _,b in ipairs(state.buildings) do
@@ -463,6 +523,9 @@ end
 function R3.summary(state: any): any
     local d=state.r3
     return {wallet=d.wallet,treasury=d.treasury,arrows=d.arrows,
+        playerWood=if d.playerBag then Inventory.count(d.playerBag,"wood") else 0,
+        bagMass=if d.playerBag then Inventory.weight(d.playerBag) else 0,
+        bagCapacity=if d.playerBag then d.playerBag.maxMass else 24,
         clock=state.elapsed%R3.DAY,day=math.floor(state.elapsed/R3.DAY)+1,
         night=(state.elapsed%R3.DAY)>=R3.NIGHT_START
             and (state.elapsed%R3.DAY)<R3.NIGHT_END,
