@@ -297,3 +297,7 @@ Correção v9 em desenvolvimento:
 A branch `entre-reinos/t1-f1-integridade` partiu da main `6d18e19`. A auditoria de código dos ER-001–020 está em [T1_F1_CODE_AUDIT.md](T1_F1_CODE_AUDIT.md). Os commits `2bca423` e `233e0a7` entregam proteção de snapshot, retirada de estoque para obras, reservas persistidas, árvore marcada, isolamento de ruínas, comércio/fabricação com custódia, colocação pelo jogador e assentamento inicial. Consultar [recibo T1-F1](runner-receipts/T1-F1.md) antes de continuar.
 
 O candidato grava ruleset 2 após confirmar o backup do último estado legado. O staging continua v15. O probe isolado passou com três suítes Luau, seis edifícios apoiados sobre Terrain e três chunks. O próximo gate depende de validar DataStore/backup e fluxos de partida touch, das regras de recuperação de ruínas/estorno e das ligações entre vila inicial e distritos. T1-F2/F3 não iniciados e T2 continua bloqueada. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45285763613) · [Motor](https://github.com/Sllay/Roblox-Studios/actions/runs/45285764016)
+
+## Staging T1-F1 disponível para playtest
+
+O PR #10 foi integrado em `7983bc57a987837f4bb073bb017c20bfd41edbc1`. A revisão **16** de staging tem CI, probe de DataStore/Terrain e readback independente. Use o roteiro no [recibo da T1-F1](runner-receipts/T1-F1.md). A confirmação do criador em touch e a decisão final sobre estorno/ruínas continuam abertas. T1-F2/F3 permanecem planejados e T2 segue bloqueada.

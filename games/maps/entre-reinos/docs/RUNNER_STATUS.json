@@ -22,44 +22,43 @@
         "status": "preview_published",
         "previewRunner": "T1-F1",
         "isSeasonFinal": false,
-        "commit": "880191f0752d5f678176bcb841e7669f61bcebf0",
+        "commit": "7983bc57a987837f4bb073bb017c20bfd41edbc1",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 15,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109178317",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
-        "readbackStatus": "success"
+        "revisionId": 16,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289196024",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289311446",
+        "readbackStatus": "success",
+        "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289315255"
       },
-      "userReview": "awaiting_creator_v15_mobile_arrow_crafting_and_all_T1_refinement",
+      "userReview": "awaiting_creator_v16_staging_playtest",
       "refinementCycles": [
         {
           "id": "T1-F1",
           "status": "in_progress",
           "scope": "T1 foundational closures and mobile craft fix, not T2-R1",
           "receipt": "docs/runner-receipts/T1-F1.md",
-          "publishedPreview": "staging_v15",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109127316",
-          "readbackRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
-          "validation": "code_and_roblox_engine_pass; mobile_pending",
+          "publishedPreview": "staging_v16",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289046275",
+          "readbackRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289311446",
+          "validation": "ci_engine_and_real_isolated_datastore_pass; staging_published; mobile_pending",
           "remaining": [
-            "ER-001/002 verify DataStore backup and restoration with an old test slot, and reconnect",
-            "ER-007/008 confirm marked timber, warehouse logistics and approve ruin recovery rules",
-            "ER-009 verify placement and cancellation in a touch client and decide refunds after delivery",
-            "ER-010/011 connect settlement districts to gameplay and review presentation",
-            "ER-016/017 verify crafting and trade in live touch play"
+            "Creator touch/visual playtest: placement, marked timber, inventory, combat controls and save-return-reopen",
+            "Approve final refund rules and the lost, stolen and recoverable split of isolated ruin stock",
+            "Keep T1-F2/T1-F3 and T2 separate from the staging preview approval"
           ],
           "candidate": {
-            "base": "6d18e19a3f0b0ff92486e9f7400500e3264c282d",
-            "commit": "233e0a781ccc70546c9c4aacd5cb3107573f6025",
+            "base": "db4cd44e28662b85532901888fe6d105c57730c1",
+            "commit": "7983bc57a987837f4bb073bb017c20bfd41edbc1",
             "branch": "entre-reinos/t1-f1-integridade",
             "audit": "docs/T1_F1_CODE_AUDIT.md",
-            "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45285763613",
-            "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45285764016",
+            "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289046275",
+            "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45288815373",
             "stagingIdentityRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45285045552",
             "validation": {
               "ci": "pass",
-              "engine": "isolated_domain_and_terrain_pass",
-              "datastore": "pending",
+              "engine": "native_placement_and_integrated_economy_pass",
+              "datastore": "real_isolated_backup_lease_retry_and_reopen_pass",
               "mobile": "pending"
             }
           }
@@ -185,7 +184,21 @@
           }
         }
       ],
-      "previewUserReview": "creator_approved_v13_UI_but_reported_v14_arrow_crafting_unusable; v15_fix_not_yet_player_approved"
+      "previewUserReview": "creator_approved_v13_UI_but_reported_v14_arrow_crafting_unusable; v15_fix_not_yet_player_approved",
+      "stagingPublicationHistory": [
+        {
+          "status": "preview_published",
+          "previewRunner": "T1-F1",
+          "isSeasonFinal": false,
+          "commit": "880191f0752d5f678176bcb841e7669f61bcebf0",
+          "placeId": "90623742498445",
+          "universeId": "10769712413",
+          "revisionId": 15,
+          "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109178317",
+          "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
+          "readbackStatus": "success"
+        }
+      ]
     },
     {
       "id": "T2",
@@ -317,7 +330,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_F1_structural_candidate_engine_probe_pass_staging_v15",
+  "programStage": "T1_F1_staging_v16_published_and_verified_awaiting_creator",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -343,12 +356,12 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "880191f0752d5f678176bcb841e7669f61bcebf0",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109127316",
+    "codeCommit": "7983bc57a987837f4bb073bb017c20bfd41edbc1",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289046275",
     "ciConclusion": "success",
-    "publishedVersion": 15,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109178317",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
+    "publishedVersion": 16,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289196024",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289311446",
     "verifiedModules": 27,
     "seedTested": 516639272,
     "engineInitialChunks": 3,
@@ -358,13 +371,17 @@
     "nativeWaterRuleValid": true,
     "liveNPCPresentation": "v12_frame_integrated_unverified_mobile",
     "liveR6SwimStrokes": "creator_confirmed_native_water_fixed",
-    "mobile": "pending_creator_v15_craft_and_inventory",
-    "staging": "published_v15_T1_F1_arrow_crafting_fix",
+    "mobile": "pending_creator_v16_staging_playtest",
+    "staging": "published_v16_T1_F1_playtest",
     "productionUnchanged": true,
     "completenessAuditPath": "docs/FEATURE_COMPLETENESS_AUDIT.md",
     "completenessCiUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052959871",
     "featureLaunchReadiness": "T1_still_blocked_19_partial_1_absent",
-    "v14IndependentReadback": "success"
+    "v14IndependentReadback": "success",
+    "postPublishSceneSyncRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289315255",
+    "postPublishStateDigest": "459f8671281c43e7f353dfe0dd15a6dabf138184fcc6f955e70f22771dff222c",
+    "finalEngineProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/45288815373",
+    "engineChunksAfterWestStreaming": 4
   },
   "remoteIdentity": {
     "status": "verified",
@@ -416,6 +433,6 @@
       "ER-020"
     ],
     "requirement": "All release requirements must have owner and real engine, mobile, save/load and human approval evidence; incomplete T1/T2 systems may not be pushed to T3.",
-    "next": "Finish T1-F1 candidate gates and open design decisions before F2. T2 remains blocked until T1 approval."
+    "next": "Creator staging review and open refund/ruin decisions. T1 remains in progress and T2 remains blocked."
   }
 }
