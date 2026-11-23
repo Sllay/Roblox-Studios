@@ -7,7 +7,7 @@ Slots.SCHEMA_VERSION = 1
 -- These are data contracts, not Roblox Place revisions.
 -- Cosmetic/gameplay changes keep these versions untouched.
 Slots.SAVE_FORMAT_VERSION = 1
-Slots.RULESET_VERSION = 1
+Slots.RULESET_VERSION = 2
 Slots.MIN_RULESET_VERSION = 1
 
 function Slots.compatibility(data: any): (boolean, string)
@@ -26,11 +26,9 @@ function Slots.compatibility(data: any): (boolean, string)
     if format<1 or rules<Slots.MIN_RULESET_VERSION then
         return false,"migration_required"
     end
-    if format<Slots.SAVE_FORMAT_VERSION or rules<Slots.RULESET_VERSION then
-        -- Future major changes need explicit, tested migration paths before
-        -- this guard can be lifted.
-        return false,"migration_required"
-    end
+    if format<Slots.SAVE_FORMAT_VERSION then return false,"migration_required" end
+    if rules==1 and Slots.RULESET_VERSION==2 then return true,"legacy_compatible" end
+    if rules~=Slots.RULESET_VERSION then return false,"migration_required" end
     return true,if data.saveFormatVersion==nil then "legacy_compatible" else "compatible"
 end
 
@@ -45,6 +43,10 @@ end
 function Slots.key(userId: number, index: number): string
     assert(userId > 0 and userId % 1 == 0 and Slots.validIndex(index), "invalid world key")
     return "u:" .. tostring(userId) .. ":s:" .. tostring(index)
+end
+
+function Slots.legacyBackupKey(data: any): string
+    return tostring(data.createdAt)..":"..tostring(data.seed)..":"..tostring(data.revision)
 end
 
 function Slots.newWorld(seed: number, now: number, spawn: {x: number, y: number, z: number})

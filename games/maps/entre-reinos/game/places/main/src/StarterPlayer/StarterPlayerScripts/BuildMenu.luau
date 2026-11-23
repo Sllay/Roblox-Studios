@@ -12,7 +12,14 @@ local cream=Color3.fromRGB(245,232,203)
 local muted=Color3.fromRGB(178,186,166)
 local errors={
     rate_limited="Aguarde um instante antes de outra obra.",
-    no_available_build_site="Sem terreno livre próximo. Caminhe até outra área.",
+    build_too_far="Aproxime-se do local da obra.",
+    outside_region="O local fica fora da região jogável.",
+    occupied_by_tree="Uma árvore ocupa o local. Marque-a para corte.",
+    no_worker_route="Os moradores não têm rota terrestre até o local.",
+    terrain_not_ready="O terreno está carregando. Tente novamente.",
+    preview_changed="Escolha o local novamente.",
+    materials_already_delivered="A entrega começou e a obra está em andamento.",
+    building_not_found="A obra já foi removida.",
     invalid_footprint_or_slope="Terreno úmido ou inclinado demais.",
     overlapping_footprint="Outra construção ocupa o local.",
     building_limit="Limite de construções atingido.",
@@ -36,8 +43,24 @@ local function text(parent: Instance,content: string,size: number,color: Color3)
     return t
 end
 
+local function actionButton(parent: Instance,name: string,caption: string): TextButton
+    local button=Instance.new("TextButton")
+    button.Name=name
+    button.Text=caption
+    button.Font=Enum.Font.GothamSemibold
+    button.TextSize=13
+    button.TextColor3=cream
+    button.BackgroundColor3=Color3.fromRGB(50,64,54)
+    button.BorderSizePixel=0
+    button.Parent=parent
+    local corner=Instance.new("UICorner")
+    corner.CornerRadius=UDim.new(0,8)
+    corner.Parent=button
+    return button
+end
+
 function Menu.mount(parent: GuiObject,remote: RemoteFunction,
-        notify: (string)->(),refresh: ()->()): any
+        notify: (string)->(),refresh: ()->(),player: Player,closeJournal: ()->()): any
     local list=Instance.new("ScrollingFrame")
     list.Name="ConstructionCatalog"
     list.Size=UDim2.fromScale(1,1)
@@ -59,7 +82,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
     intro.Size=UDim2.new(1,-10,0,26)
     intro.Font=Enum.Font.GothamBold
     intro.LayoutOrder=0
-    local hint=text(list,"Os moradores levam recursos reais até a obra. Os valores abaixo são das fontes da região, não da sua bolsa.",11,muted)
+    local hint=text(list,"Escolha o local. Os moradores levam os materiais e começam a obra após completar a entrega.",11,muted)
     hint.Size=UDim2.new(1,-12,0,48)
     hint.LayoutOrder=1
 
@@ -67,14 +90,156 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
     activeInfo.LayoutOrder=2
     activeInfo.Size=UDim2.new(1,-12,0,72)
     activeInfo.TextWrapped=true
+    local cancelOrder=actionButton(list,"CancelWork","")
+    cancelOrder.LayoutOrder=3
+    cancelOrder.Size=UDim2.new(1,-12,0,40)
+    cancelOrder.Visible=false
+    local cancelId: number?=nil
+    local confirmCancel: number?=nil
+
+    local overlay=Instance.new("Frame")
+    overlay.Name="BuildPlacement"
+    overlay.AnchorPoint=Vector2.new(0.5,1)
+    overlay.Position=UDim2.new(0.5,0,1,-70)
+    overlay.Size=UDim2.new(1,-30,0,86)
+    overlay.BackgroundTransparency=1
+    overlay.Visible=false
+    overlay.Parent=parent:FindFirstAncestorOfClass("ScreenGui")
+    local constraint=Instance.new("UISizeConstraint")
+    constraint.MaxSize=Vector2.new(335,86)
+    constraint.Parent=overlay
+    local caption=text(overlay,"",13,cream)
+    caption.TextXAlignment=Enum.TextXAlignment.Center
+    caption.TextStrokeTransparency=0.2
+    caption.Size=UDim2.new(1,0,0,38)
+    local previous=actionButton(overlay,"Left","◀")
+    local following=actionButton(overlay,"Right","▶")
+    local confirm=actionButton(overlay,"Confirm","Confirmar")
+    local leave=actionButton(overlay,"Close","Sair")
+    for i,button in ipairs({previous,following,confirm,leave}) do
+        button.Position=UDim2.new((i-1)*0.25,2,0,42)
+        button.Size=UDim2.new(0.25,-4,0,42)
+    end
+
     local snapshot: any=nil
     local busy=false
+    local selected: string?=nil
+    local candidate=0
+    local previewId: number?=nil
+    local ghost: Part?=nil
+    local cast=RaycastParams.new()
+    cast.FilterType=Enum.RaycastFilterType.Include
+    cast.FilterDescendantsInstances={workspace.Terrain}
+    cast.IgnoreWater=true
+
+    local function playerX(): number?
+        local character=player.Character
+        local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
+        return if root and root:IsA("BasePart") then root.Position.X else nil
+    end
+
+    local function call(action: string,arg: any,x: number?): any
+        busy=true
+        local ok,result=pcall(function() return remote:InvokeServer(action,arg,x) end)
+        busy=false
+        if ok and type(result)=="table" then return result end
+        return {ok=false,error="connection_failed"}
+    end
+
+    local function closePreview()
+        selected=nil
+        previewId=nil
+        overlay.Visible=false
+        if ghost then ghost:Destroy() end
+        ghost=nil
+    end
+
+    local function updatePreview()
+        if busy or not selected then return end
+        local id=selected
+        local def=Structures.get(id)
+        previewId=nil
+        confirm.BackgroundColor3=Color3.fromRGB(79,70,66)
+        caption.Text="Verificando o terreno…"
+        local result=call("build_preview",id,candidate)
+        if selected~=id then return end
+        local x=if result.ok then result.x else candidate
+        local hit=workspace:Raycast(Vector3.new(x,70,Structures.DEPTH_Z),Vector3.new(0,-120,0),cast)
+        local y=if result.ok then result.y elseif hit then hit.Position.Y else 17
+        local preview=ghost
+        if not preview then
+            preview=Instance.new("Part")
+            preview.Name="ER_LocalBlueprint"
+            preview.Anchored=true
+            preview.CanCollide=false
+            preview.CanQuery=false
+            preview.CanTouch=false
+            preview.CastShadow=false
+            preview.Transparency=0.73
+            preview.Material=Enum.Material.ForceField
+            preview.Parent=workspace
+            ghost=preview
+        end
+        preview.Size=Vector3.new(def.footprint,def.height,7)
+        preview.Position=Vector3.new(x,y+def.height/2,Structures.DEPTH_Z)
+        preview.Color=if result.ok then Color3.fromRGB(138,217,123) else Color3.fromRGB(248,121,105)
+        if result.ok then
+            previewId=result.previewId
+            confirm.BackgroundColor3=Color3.fromRGB(58,101,67)
+            caption.Text=def.label.." · terreno livre"
+        else
+            caption.Text=errors[result.error] or "Local indisponível."
+        end
+    end
+
+    previous.Activated:Connect(function()
+        if busy or not selected then return end
+        candidate=math.max(-120,candidate-2)
+        updatePreview()
+    end)
+    following.Activated:Connect(function()
+        if busy or not selected then return end
+        candidate=math.min(120,candidate+2)
+        updatePreview()
+    end)
+    leave.Activated:Connect(closePreview)
+    confirm.Activated:Connect(function()
+        if busy or not selected then return end
+        if not previewId then
+            updatePreview()
+            return
+        end
+        local result=call("build",previewId)
+        if result.ok then
+            closePreview()
+            notify("Obra marcada. Os moradores vão entregar os materiais.")
+            refresh()
+        else
+            caption.Text=errors[result.error] or "Não foi possível confirmar a obra."
+        end
+    end)
+    overlay.Destroying:Connect(closePreview)
+
+    cancelOrder.Activated:Connect(function()
+        if busy or not cancelId then return end
+        if confirmCancel~=cancelId then
+            confirmCancel=cancelId
+            cancelOrder.Text="Confirmar cancelamento #"..tostring(cancelId)
+            return
+        end
+        local result=call("build_cancel",cancelId)
+        confirmCancel=nil
+        cancelOrder.Text="Cancelar obra #"..tostring(cancelId)
+        notify(if result.ok then "Obra cancelada. Os moradores mantêm sua carga."
+            else errors[result.error] or "Não foi possível cancelar a obra.")
+        refresh()
+    end)
     local cards: {[string]: {button: TextButton,materials: TextLabel}}={}
     for i,id in ipairs(order) do
         local def=Structures.get(id)
         local card=Instance.new("TextButton")
         card.Name="Construct_"..id
-        card.LayoutOrder=i+2
+        card.LayoutOrder=i+3
         card.Size=UDim2.new(1,-12,0,78)
         card.BackgroundColor3=Color3.fromRGB(50,64,54)
         card.BorderSizePixel=0
@@ -94,7 +259,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         title.Font=Enum.Font.GothamSemibold
         title.Position=UDim2.fromOffset(13,7)
         title.Size=UDim2.new(1,-74,0,24)
-        local marker=text(card,"CRIAR",10,amber)
+        local marker=text(card,"LOCAR",10,amber)
         marker.Font=Enum.Font.GothamBold
         marker.TextXAlignment=Enum.TextXAlignment.Right
         marker.AnchorPoint=Vector2.new(1,0)
@@ -107,29 +272,43 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         cards[id]={button=card,materials=materials}
         card.Activated:Connect(function()
             if busy then return end
-            busy=true
-            card.Active=false
-            local ok,result=pcall(function() return remote:InvokeServer("build",id) end)
-            card.Active=true
-            busy=false
-            if not ok or type(result)~="table" then
-                notify(errors.connection_failed)
+            local x=playerX()
+            if not x then
+                notify(errors.character_not_ready)
                 return
             end
-            if result.ok then
-                notify(def.label.." encomendada. Moradores buscarão os materiais.")
-                refresh()
-            else
-                notify(errors[tostring(result.error)] or
-                    ("Não foi possível construir: "..tostring(result.error)))
-            end
+            candidate=math.round(x)
+            selected=id
+            overlay.Visible=true
+            closeJournal()
+            updatePreview()
         end)
     end
 
     local api={}
+    api.closePreview=closePreview
     function api.update(data: any)
         snapshot=data
         local buildings=if snapshot then snapshot.buildings else nil
+        local closest: number?=nil
+        local distance=Structures.PLACEMENT_RANGE
+        local x=playerX()
+        if x and buildings then
+            for _,b in ipairs(buildings) do
+                local delta=math.abs(b.x-x)
+                if b.canCancel and delta<=distance then
+                    distance=delta
+                    closest=b.id
+                end
+            end
+        end
+        if closest~=cancelId then confirmCancel=nil end
+        cancelId=closest
+        cancelOrder.Visible=cancelId~=nil
+        if cancelId then
+            cancelOrder.Text=(if confirmCancel then "Confirmar cancelamento #" else "Cancelar obra #")
+                ..tostring(cancelId)
+        end
         if buildings and #buildings>0 then
             local parts={}
             local shown=0

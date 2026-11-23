@@ -25,7 +25,10 @@ local siteDisplays: {[string]: BillboardGui}={}
 local connection: RBXScriptConnection?=nil
 local simulationAccumulator=0
 local drawAccumulator=0
-local lastActionAt: {[Player]: number}={}
+local lastActionAt=0
+local lastPreviewAt=0
+local buildPreview: any=nil
+local previewId=0
 -- Non-physical R6 residents. Logical work coordinates remain untouched.
 local GHOST_GROUP="ER_GhostNPC"
 if not PhysicsService:IsCollisionGroupRegistered(GHOST_GROUP) then
@@ -195,7 +198,7 @@ end
 local function buildPiece(model: Model,b: any,name: string,
         size: Vector3,offset: Vector3,color: Color3,tilt: number?): Part
     local p=makePart(model,name,size,color)
-    p.CFrame=CFrame.new(b.x+offset.X,b.y+offset.Y,-10+offset.Z)
+    p.CFrame=CFrame.new(b.x+offset.X,b.y+offset.Y,Structures.DEPTH_Z+offset.Z)
         *CFrame.Angles(0,0,tilt or 0)
     p:SetAttribute("ER_StructurePiece",true)
     p.CastShadow=true
@@ -253,6 +256,19 @@ local function buildVisual(b: any)
             buildPiece(model,b,"SupplyCrate",Vector3.new(2.5,2.4,2.4),
                 Vector3.new(i*3,1.7,-0.2),Color3.fromRGB(155,112,70))
         end
+    elseif b.typeId=="castle" then
+        buildPiece(model,b,"Keep",Vector3.new(12,14,7),Vector3.new(0,7,0),stone)
+        for _,side in ipairs({-1,1}) do
+            buildPiece(model,b,"Tower",Vector3.new(4.4,18,8),
+                Vector3.new(side*6,9,0),pale)
+            for notch=-1,1 do
+                buildPiece(model,b,"Merlon",Vector3.new(1,2,1.2),
+                    Vector3.new(side*6+notch*1.35,19,4),stone)
+            end
+        end
+        buildPiece(model,b,"Gate",Vector3.new(3.2,6,0.8),Vector3.new(0,3,3.7),wood)
+        buildPiece(model,b,"Pennant",Vector3.new(2,3,0.25),Vector3.new(0,15.5,3.7),
+            Color3.fromRGB(116,53,48))
     elseif b.typeId=="fence" then
         for i=-2,2 do
             buildPiece(model,b,"Palisade",Vector3.new(0.75,5.8,1.2),
@@ -361,13 +377,18 @@ local function createSiteVisual(site: any)
         prompt.RequiresLineOfSight=false
         prompt.HoldDuration=0.35
         prompt.Parent=trunk
+        local lastMarkAt=0
         prompt.Triggered:Connect(function(player: Player)
             if owner~=player or not state or site.remaining<=0
                 or player:GetAttribute("ER_WorldLoaded")~=true then return end
             local char=player.Character
             local root=if char then char:FindFirstChild("HumanoidRootPart") else nil
-            if not root or not root:IsA("BasePart")
-                or (root.Position-trunk.Position).Magnitude>16 then return end
+            local humanoid=if char then char:FindFirstChildOfClass("Humanoid") else nil
+            local now=os.clock()
+            if not root or not root:IsA("BasePart") or not humanoid or humanoid.Health<=0
+                or now-lastMarkAt<0.4
+                or (root.Position-trunk.Position).Magnitude>14 then return end
+            lastMarkAt=now
             site.marked=not (site.marked==true)
             high.Enabled=site.marked and site.remaining>0
             prompt.ActionText=if site.marked then "Desmarcar corte" else "Marcar corte"
@@ -416,7 +437,9 @@ local function draw()
         syncBuild(b)
     end
     for _,site in ipairs(state.sites) do
+        if not siteDisplays[site.id] then createSiteVisual(site) end
         local g=siteDisplays[site.id]
+        if g then g.Enabled=site.remaining>0 end
         local info=if g then g:FindFirstChild("Remaining") else nil
         if info and info:IsA("TextLabel") then
             info.Text=if site.item=="wood" then
@@ -463,6 +486,9 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
     if not upgraded then
         warn("[EntreReinos][R3] Cannot migrate existing world: ",r3Result)
         return false,"r3_schema_conflict"
+    end
+    if worldRecord.living==nil then
+        Work.initializeVillage(loaded)
     end
     owner=player
     state=loaded
@@ -555,6 +581,9 @@ function Service.stop(player: Player)
     if connection then connection:Disconnect() end
     connection=nil
     Combat.stop()
+    buildPreview=nil
+    lastPreviewAt=0
+    lastActionAt=0
     owner=nil
     state=nil
     figures={}
@@ -564,7 +593,35 @@ function Service.stop(player: Player)
     visualization=nil
 end
 
-actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
+local function placementGround(typeId: string, x: number, root: BasePart): (boolean, any)
+    local allowed,reason=Work.canPlace(state,typeId,x)
+    if not allowed then return false,reason end
+    if math.abs(x-root.Position.X)>Structures.PLACEMENT_RANGE then
+        return false,"build_too_far"
+    end
+    local definition=Structures.get(typeId)
+    local streamed=WorldService.ensureNear(state.seed,x-definition.footprint/2)
+    if not streamed then return false,"terrain_not_ready" end
+    local minHeight=math.huge
+    local maxHeight=-math.huge
+    local centerHeight=0
+    for _,offset in ipairs({Vector2.zero,Vector2.new(-1,-1),Vector2.new(-1,1),
+        Vector2.new(1,-1),Vector2.new(1,1)}) do
+        local origin=Vector3.new(x+offset.X*definition.footprint/2,70,
+            Structures.DEPTH_Z+offset.Y*3.5)
+        local hit=workspace:Raycast(origin,Vector3.new(0,-120,0),groundCast)
+        if not hit or hit.Position.Y<=Profile.WATER_SURFACE then
+            return false,"invalid_footprint_or_slope"
+        end
+        minHeight=math.min(minHeight,hit.Position.Y)
+        maxHeight=math.max(maxHeight,hit.Position.Y)
+        if offset==Vector2.zero then centerHeight=hit.Position.Y end
+    end
+    if maxHeight-minHeight>definition.maxSlope then return false,"invalid_footprint_or_slope" end
+    return true,centerHeight
+end
+
+actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: any): any
     if owner~=player or not state or player:GetAttribute("ER_WorldLoaded")~=true then
         return {ok=false,error="world_not_loaded"}
     end
@@ -574,11 +631,14 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
         local overview=Work.summary(state)
         local character=player.Character
         local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
-        local nearby={wood=0,canTrade=false,npcId=0,coinId=0,
+        local nearby={wood=0,canTrade=false,canSellWood=false,canCraftArrows=false,npcId=0,coinId=0,
             nearestWoodDistance=-1,nearestWoodDirection=""}
         if root and root:IsA("BasePart") then
             local x=root.Position.X
-            nearby.canTrade=math.abs(x)<=24
+            local y=root.Position.Y
+            nearby.canTrade=R3.marketNear(state,x,y)
+            nearby.canSellWood=nearby.canTrade and R3.canSell(state,"wood",x,y)
+            nearby.canCraftArrows=R3.arrowMaterial(state,x,y)~=nil
             local closestNPC=15
             for _,npc in ipairs(state.npcs) do
                 local distance=math.abs(npc.x-x)
@@ -629,34 +689,63 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
         or action=="pickup_coin" or action=="arm_defender"
         or action=="trade" or action=="craft_arrows" or action=="take_wood"
         or action=="prologue" or action=="r3_status" then
-        return Combat.action(player,action,typeId)
+        return Combat.action(player,action,arg)
     end
-    if action~="build" then return {ok=false,error="invalid_action"} end
-    if type(typeId)~="string" or not Structures.get(typeId) then
-        return {ok=false,error="invalid_structure"}
-    end
-    local now=os.clock()
-    if lastActionAt[player] and now-lastActionAt[player]<0.65 then
-        return {ok=false,error="rate_limited"}
+    if action~="build" and action~="build_preview" and action~="build_cancel" then
+        return {ok=false,error="invalid_action"}
     end
     local character=player.Character
     local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
-    if not root or not root:IsA("BasePart") then
+    local humanoid=if character then character:FindFirstChildOfClass("Humanoid") else nil
+    if not root or not root:IsA("BasePart") or not humanoid or humanoid.Health<=0 then
         return {ok=false,error="character_not_ready"}
     end
-    -- The client sends only the structure type. Search from the player's
-    -- real, server-observed position; never accept a client supplied X.
     if math.abs(root.Position.Z-Profile.LANE_Z)>4 then
         return {ok=false,error="outside_playable_lane"}
     end
-    local available,site=Work.findPlacement(state,typeId,root.Position.X+15)
-    if not available then return {ok=false,error=site} end
-    local placed,result=Work.place(state,typeId,site)
+    local now=os.clock()
+    if action=="build_preview" then
+        if now-lastPreviewAt<0.15 then return {ok=false,error="rate_limited"} end
+        lastPreviewAt=now
+        buildPreview=nil
+        local def=Structures.get(arg)
+        if not def or def.buildable==false then return {ok=false,error="invalid_structure"} end
+        if type(candidateX)~="number" or candidateX~=candidateX or math.abs(candidateX)>120 then
+            return {ok=false,error="outside_region"}
+        end
+        local x=math.round(candidateX)
+        local available,height=placementGround(arg,x,root)
+        if not available then return {ok=false,error=height} end
+        previewId+=1
+        buildPreview={id=previewId,x=x,typeId=arg}
+        return {ok=true,previewId=previewId,x=x,y=height}
+    end
+    if action=="build" and buildPreview and arg==buildPreview.id and buildPreview.result then
+        return buildPreview.result
+    end
+    if now-lastActionAt<0.65 then return {ok=false,error="rate_limited"} end
+    lastActionAt=now
+    if action=="build_cancel" then
+        for _,b in ipairs(state.buildings) do
+            if b.id==arg and math.abs(b.x-root.Position.X)>Structures.PLACEMENT_RANGE then
+                return {ok=false,error="build_too_far"}
+            end
+        end
+        local cancelled,reason=Work.cancel(state,arg)
+        if cancelled and buildings[arg] then
+            buildings[arg]:Destroy()
+            buildings[arg]=nil
+        end
+        return {ok=cancelled,error=reason}
+    end
+    local plan=buildPreview
+    if not plan or arg~=plan.id then return {ok=false,error="preview_changed"} end
+    local available,height=placementGround(plan.typeId,plan.x,root)
+    if not available then return {ok=false,error=height} end
+    local placed,result=Work.place(state,plan.typeId,plan.x,height)
     if not placed then return {ok=false,error=result} end
-    -- Failed placement is never rate limited. Only successful orders enter
-    -- cooldown, so the user may retry an unavailable spot immediately.
-    lastActionAt[player]=now
+    plan.result={ok=true,buildingId=result.id,x=result.x,typeId=plan.typeId}
     buildVisual(result)
-    return {ok=true,buildingId=result.id,x=result.x,typeId=typeId}
+    return plan.result
 end
 return Service

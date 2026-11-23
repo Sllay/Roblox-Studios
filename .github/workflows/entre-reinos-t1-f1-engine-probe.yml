@@ -1,0 +1,90 @@
+name: Entre Reinos T1-F1 isolated engine probe
+
+on:
+  push:
+    branches: [entre-reinos/t1-f1-integridade]
+    paths:
+      - .github/workflows/entre-reinos-t1-f1-engine-probe.yml
+      - games/maps/entre-reinos/game/places/main/src/ReplicatedStorage/**
+      - games/maps/entre-reinos/game/tests/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Run candidate domain checks and native Terrain probe in unsaved staging session
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          from cloud_tasks import run_task
+
+          game = Path("games/maps/entre-reinos")
+          staging = json.loads((game / "deploy.targets.json").read_text())["environments"]["staging"]
+          src = game / "game/places/main/src/ReplicatedStorage"
+          names = ("WorldProfile", "SlotModel", "SlotLeasePolicy", "WorldRoute", "InputProjection",
+                   "ItemDefs", "ProfessionDefs", "StructureDefs", "Inventory",
+                   "WorkEngine", "R3Engine", "LivingModel")
+          paths = {p.stem: p for p in src.rglob("*.luau")}
+          parts = ["""
+          local modules = {}
+          local cache = {}
+          local function loadCandidate(name)
+              if cache[name] == nil then cache[name] = assert(modules[name],name)() end
+              return cache[name]
+          end
+          """]
+
+          def candidate(source):
+              return re.sub(r'require\("([./][^"]*)"\)',
+                            lambda match: f'loadCandidate("{Path(match[1]).name}")', source)
+
+          for name in names:
+              parts.append(f'modules["{name}"]=function()\n{candidate(paths[name].read_text())}\nend')
+          for test in ("region_and_slots", "living_work_r2", "r3_fundamentals"):
+              source = candidate((game / "game/tests" / (test + ".luau")).read_text())
+              parts.append(f"do\n{source}\nend")
+
+          parts.append("""
+          local seed=516639272
+          local service=require(game:GetService("ServerScriptService"):WaitForChild("Services"):WaitForChild("WorldService"))
+          local activated,errorCode=service.activate(seed)
+          assert(activated,errorCode)
+          local params=RaycastParams.new()
+          params.FilterType=Enum.RaycastFilterType.Include
+          params.FilterDescendantsInstances={workspace.Terrain}
+          local state=loadCandidate("LivingModel").new(seed)
+          local work=loadCandidate("WorkEngine")
+          assert(work.initializeVillage(state))
+          for _,b in ipairs(state.buildings) do
+              local hit=workspace:Raycast(Vector3.new(b.x,70,-10),Vector3.new(0,-120,0),params)
+              assert(hit and hit.Material~=Enum.Material.Water and math.abs(b.y-hit.Position.Y)<=3,
+                  "starter building lacks Terrain support: "..b.typeId)
+          end
+          assert(not work.canPlace(state,"wall",76))
+          return game:GetService("HttpService"):JSONEncode({
+              universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
+              version=game.PlaceVersion,domainSuites=3,starterBuildings=#state.buildings,
+              terrainChunks=service.getChunkCount(),seed=seed
+          })
+          """)
+          report = run_task(staging["universeId"], staging["placeIds"]["main"],
+                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=15)
+          print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
+          assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5
+          PY

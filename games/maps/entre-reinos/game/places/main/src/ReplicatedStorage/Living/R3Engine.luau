@@ -13,6 +13,8 @@ R3.NIGHT_START=160
 R3.NIGHT_END=235
 R3.MAX_ENEMIES=12
 R3.MAX_DROPS=48
+R3.ARROW_RECIPE=table.freeze({wood=2,output=6,capacity=30})
+R3.TRADE_PRICES=table.freeze({wood=1,stone=2,iron=3,food=1})
 
 local function finite(value: any): boolean
     return type(value)=="number" and value==value
@@ -31,14 +33,15 @@ function R3.valid(d: any): boolean
         or #d.enemies>R3.MAX_ENEMIES or #d.drops>R3.MAX_DROPS
         or #d.ledger>80 then return false end
     for _,e in ipairs(d.enemies) do
-        if not finite(e.x) or not finite(e.hp) or not finite(e.side)
+        if type(e)~="table" or not finite(e.x) or not finite(e.hp)
+            or (e.side~=-1 and e.side~=1) or not finite(e.attackClock)
             or not finite(e.id) or not finite(e.loot) then return false end
     end
     if d.playerBag~=nil and not Inventory.valid(d.playerBag) then
         return false
     end
     for _,drop in ipairs(d.drops) do
-        if not finite(drop.id) or not finite(drop.x) or not finite(drop.value)
+        if type(drop)~="table" or not finite(drop.id) or not finite(drop.x) or not finite(drop.value)
             or drop.value<=0 or drop.value%1~=0 or type(drop.claimed)~="boolean" then
             return false
         end
@@ -147,71 +150,90 @@ function R3.takeWood(state: any,x: number,y: number): (boolean, any)
     return false,"wood_source_too_far"
 end
 
-function R3.craftArrows(state: any,x: number): (boolean, any)
-    if not finite(x) then return false,"invalid_position" end
-    local d=R3.ensure(state,false)
-    if d.arrows>24 then return false,"ammo_capacity" end
-    if Inventory.count(d.playerBag,"wood")>=2 then
-        if not Inventory.take(d.playerBag,"wood",2) then
-            return false,"wood_stock_required"
-        end
-        d.arrows+=6
-        ledger(d,"arrow_crafting",0,"player_bag")
-        return true,d.arrows
-    end
-    -- A completed galpão offers the normal craft interaction. Move actual
-    -- stored timber out of its finite inventory before producing arrows.
-    for _,b in ipairs(state.buildings) do
-        if math.abs(b.x-x)<=12 and Work.stockAvailable(state,b,"wood")>=2 then
-            if not Inventory.take(b.stored,"wood",2) then
-                return false,"wood_stock_required"
-            end
-            d.arrows+=6
-            ledger(d,"arrow_crafting",0,"galpao:"..tostring(b.id))
-            return true,d.arrows
-        end
-    end
-    -- Backwards compatible: at a nearby natural timber source the player
-    -- may still craft a small primitive bundle without a galpão.
-    for _,site in ipairs(state.sites) do
-        if site.item=="wood" and Work.sourceAvailable(state,site)>=2 and math.abs(site.x-x)<=9 then
-            site.remaining-=2
-            d.arrows+=6
-            ledger(d,"arrow_crafting",0,tostring(site.id))
-            return true,d.arrows
-        end
-    end
-    return false,"wood_stock_required"
+local function depotInReach(b: any, x: number, y: number?, radius: number): boolean
+    return math.abs(b.x-x)<=radius and (y==nil or math.abs(y-(b.y+3))<=12)
 end
 
-function R3.trade(state: any,item: string,x: number): (boolean, any)
-    -- Small local exchange backed by a finite village stock AND the
-    -- persisted ducal treasury; no infinite coins from trees or kills.
-    if not finite(x) or math.abs(x)>24 then return false,"too_far_from_market" end
-    local price=if item=="wood" then 1 else if item=="stone" then 2
-        else if item=="iron" then 3 else if item=="food" then 1 else 0
-    if price==0 then return false,"unknown_trade_item" end
-    local d=state.r3
-    if d.treasury<price then return false,"treasury_empty" end
+function R3.arrowMaterial(state: any,x: number,y: number?): (string?, any)
+    local cost=R3.ARROW_RECIPE.wood
+    if Inventory.count(state.r3.playerBag,"wood")>=cost then return "bag",state.r3.playerBag end
     for _,b in ipairs(state.buildings) do
-        if math.abs(b.x-x)<=24 and Work.stockAvailable(state,b,item)>=1 then
-            if not Inventory.take(b.stored,item,1) then
-                return false,"resource_unavailable"
-            end
-            d.treasury-=price
-            d.wallet+=price
-            ledger(d,"trade_income",price,"galpao:"..tostring(b.id)..":"..item)
-            return true,price
+        if depotInReach(b,x,y,12) and Work.stockAvailable(state,b,"wood")>=cost then
+            return "warehouse",b
         end
     end
-    -- The market can buy an item the player actually brought to town.
-    if d.playerBag and Inventory.take(d.playerBag,item,1) then
-        d.treasury-=price
-        d.wallet+=price
-        ledger(d,"trade_income",price,"player_bag:"..item)
-        return true,price
+    for _,site in ipairs(state.sites) do
+        if site.item=="wood" and math.abs(site.x-x)<=9
+            and Work.sourceAvailable(state,site)>=cost
+            and (y==nil or math.abs(y-(World.sample(state.seed,site.x,0).height+3))<=11) then
+            return "source",site
+        end
     end
-    return false,"resource_unavailable"
+    return nil,nil
+end
+
+function R3.craftArrows(state: any,x: number,y: number?): (boolean, any)
+    if not finite(x) or (y~=nil and not finite(y)) then return false,"invalid_position" end
+    local d=R3.ensure(state,false)
+    local recipe=R3.ARROW_RECIPE
+    if d.arrows+recipe.output>recipe.capacity then return false,"ammo_capacity" end
+    local kind,source=R3.arrowMaterial(state,x,y)
+    local reference: string
+    if kind=="bag" then
+        if not Inventory.take(source,"wood",recipe.wood) then return false,"wood_stock_required" end
+        reference="player_bag"
+    elseif kind=="warehouse" then
+        if not Inventory.take(source.stored,"wood",recipe.wood) then return false,"wood_stock_required" end
+        reference="galpao:"..tostring(source.id)
+    elseif kind=="source" then
+        source.remaining-=recipe.wood
+        reference=tostring(source.id)
+    else
+        return false,"wood_stock_required"
+    end
+    d.arrows+=recipe.output
+    ledger(d,"arrow_crafting",0,reference)
+    return true,d.arrows
+end
+
+local function tradeStock(state: any,item: string,x: number,y: number?): any
+    for _,b in ipairs(state.buildings) do
+        if depotInReach(b,x,y,24) and Work.stockAvailable(state,b,item)>=1 then return b end
+    end
+    return nil
+end
+
+function R3.marketNear(state: any,x: number,y: number?): boolean
+    for _,b in ipairs(state.buildings) do
+        if b.typeId=="castle" then
+            return b.health>0 and not b.ruined and depotInReach(b,x,y,24)
+        end
+    end
+    -- Saves anteriores à vila inicial mantêm o ponto de comércio no centro.
+    return math.abs(x)<=24 and (y==nil or math.abs(y-(World.sample(state.seed,0,0).height+3))<=12)
+end
+
+function R3.canSell(state: any,item: string,x: number,y: number?): boolean
+    local bag=state.r3.playerBag
+    return (bag~=nil and Inventory.count(bag,item)>=1) or tradeStock(state,item,x,y)~=nil
+end
+
+function R3.trade(state: any,item: string,x: number,y: number?): (boolean, any)
+    if not finite(x) or (y~=nil and not finite(y)) or not R3.marketNear(state,x,y) then
+        return false,"too_far_from_market"
+    end
+    local price=R3.TRADE_PRICES[item]
+    if not price then return false,"unknown_trade_item" end
+    local d=state.r3
+    if d.treasury<price then return false,"treasury_empty" end
+    local depot=tradeStock(state,item,x,y)
+    local stock=if depot then depot.stored else d.playerBag
+    if not stock or not Inventory.take(stock,item,1) then return false,"resource_unavailable" end
+    d.treasury-=price
+    d.wallet+=price
+    local reference=if depot then "galpao:"..tostring(depot.id) else "player_bag"
+    ledger(d,"trade_income",price,reference..":"..item)
+    return true,price
 end
 
 function R3.pickup(state: any,id: any,x: number): (boolean, any)

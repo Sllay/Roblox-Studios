@@ -172,6 +172,29 @@ local function trackWorld(player: Player, s: any, record: any): number
     return now
 end
 
+local function backupLegacy(player: Player, session: any): (boolean, string?)
+    local data=session.data
+    local backup=cloneRecord(data)
+    backup.lock=nil
+    local key=Slots.legacyBackupKey(data)
+    local ok,stored=pcall(function()
+        local backups=DataStoreService:GetDataStore("EntreReinos_RulesetBackups_v1",
+            Slots.key(player.UserId,session.index))
+        return backups:UpdateAsync(key,function(existing)
+            if existing==nil then return backup end
+            -- Retries after a lost response reuse the first confirmed backup.
+            -- A different generation or unknown record cannot be overwritten.
+            if not Slots.validWorld(existing) or (existing.rulesetVersion or 1)~=1
+                or existing.seed~=backup.seed or existing.createdAt~=backup.createdAt
+                or existing.revision~=backup.revision or existing.lastWriteId~=backup.lastWriteId then return nil end
+            return existing
+        end)
+    end)
+    if not ok then return false,"backup_unavailable" end
+    if not Slots.validWorld(stored) then return false,"backup_conflict" end
+    return true,nil
+end
+
 function SaveSlotService.save(player: Player, release: boolean?): (boolean, string?)
     local s = sessions[player]
     if not s then
@@ -188,6 +211,7 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
     s.busy = true
     if not s.pending then
         local record = cloneRecord(s.data)
+        local upgrading = false
         if livingSnapshotProvider and player:GetAttribute("ER_WorldLoaded") == true then
             local invoked, state = pcall(livingSnapshotProvider, player)
             if not invoked or (state ~= nil and not LivingModel.valid(state)) then
@@ -199,6 +223,9 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
                 -- Materialize a deep copy. DataStore's UpdateAsync may retry
                 -- while the live NPC simulation is still ticking.
                 record.living = LivingModel.clone(state)
+                upgrading = (s.data.rulesetVersion or 1)<Slots.RULESET_VERSION
+                record.rulesetVersion = Slots.RULESET_VERSION
+                record.saveFormatVersion = Slots.SAVE_FORMAT_VERSION
             end
         end
         local capturedAt = trackWorld(player, s, record)
@@ -209,6 +236,13 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
         if not Slots.validWorld(record) then
             s.busy = false
             return false, "world_snapshot_invalid"
+        end
+        if upgrading then
+            local backedUp,reason=backupLegacy(player,s)
+            if not backedUp then
+                s.busy = false
+                return false,reason
+            end
         end
         s.pending = {record = record, id = id, releasing = release == true}
         s.lastClock = capturedAt
@@ -263,7 +297,10 @@ function SaveSlotService.index(player: Player): number?
 end
 
 function SaveSlotService.autosave(player: Player)
-    if not sessions[player] then return end
+    if not sessions[player] or player:GetAttribute("ER_WorldLoaded")~=true then return end
+    if DataStoreService:GetRequestBudgetForRequestType(Enum.DataStoreRequestType.UpdateAsync)<1 then
+        return
+    end
     local success, reason = SaveSlotService.save(player, false)
     if not success then
         warn("[EntreReinos] Autosave not confirmed: ", reason)

@@ -184,43 +184,38 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('LivingService.stop(player)', boot)
         self.assertIn('record.living = LivingModel.clone(state)', saves)
         self.assertIn('not Living.valid(data.living) or data.living.seed ~= data.seed', slots)
-        self.assertIn('actions.OnServerInvoke=function(player: Player,action: any,typeId: any)', living)
+        self.assertIn('actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: any)', living)
         self.assertIn('owner~=player', living)
-        self.assertIn('Work.findPlacement(state,typeId,root.Position.X+15)', living)
-        self.assertIn('Work.place(state,typeId,site)', living)
-        self.assertLess(living.index('Work.findPlacement(state,typeId,root.Position.X+15)'),
-                        living.index('Work.place(state,typeId,site)'))
-        self.assertGreater(living.index('lastActionAt[player]=now'),
-                           living.index('Work.place(state,typeId,site)'))
+        self.assertIn('Work.canPlace(state,typeId,x)', living)
+        self.assertIn('Work.place(state,plan.typeId,plan.x,height)', living)
         self.assertIn('local function actorX(npc: any)', living)
         self.assertIn('RunService.Heartbeat:Connect', living)
         self.assertIn('Players:CreateHumanoidModelFromDescriptionAsync(', living)
         self.assertIn('R3HUD.start(player)', client)
         self.assertNotIn('BuildMenu.start(player)', client)
 
-    def test_v11_nearest_valid_build_plot_and_human_feedback(self):
+    def test_t1_f1_manual_build_preview_and_confirmation(self):
         engine = read("ReplicatedStorage/Living/WorkEngine.luau")
         living = read("ServerScriptService/Services/LivingService.luau")
         ui = read("StarterPlayer/StarterPlayerScripts/BuildMenu.luau")
         pure = (GAME / "game/tests/living_work_r2.luau").read_text()
-        self.assertIn('function Engine.findPlacement(', engine)
-        self.assertIn('function Engine.canPlace(', engine)
         self.assertIn('local valid,reason=Engine.canPlace(state,typeId,x)', engine)
-        self.assertIn('or center.shore or left.shore or right.shore', engine)
-        self.assertIn('return false,"no_available_build_site"', engine)
-        self.assertIn('Work.findPlacement(state,typeId,root.Position.X+15)', living)
-        self.assertIn('function Menu.mount(parent: GuiObject,remote: RemoteFunction,', ui)
-        self.assertIn('local busy=false', ui)
+        self.assertIn('sample.wet or sample.shore', engine)
+        self.assertIn('no_worker_route', engine)
+        self.assertIn('local available,height=placementGround(plan.typeId,plan.x,root)', living)
+        self.assertIn('local placed,result=Work.place(state,plan.typeId,plan.x,height)', living)
+        self.assertIn('return buildPreview.result', living)
+        self.assertIn('call("build_preview",id,candidate)', ui)
+        self.assertIn('call("build",previewId)', ui)
         self.assertIn('if busy then return end', ui)
-        self.assertIn('no_available_build_site=', ui)
-        self.assertIn('ENTRE_REINOS_V11_PLOTS:', pure)
-        self.assertNotIn('lastActionAt[player]=now\\n    local character=', living)
+        self.assertIn('ENTRE_REINOS_T1_F1_PLACEMENT:', pure)
+        self.assertIn('ENTRE_REINOS_T1_F1_CANCEL:', pure)
 
     def test_r2_no_client_minting_no_future_economy(self):
         menu = read("StarterPlayer/StarterPlayerScripts/BuildMenu.luau")
         engine = read("ReplicatedStorage/Living/WorkEngine.luau")
         inventory = read("ReplicatedStorage/Living/Inventory.luau")
-        self.assertIn('remote:InvokeServer("build",id)', menu)
+        self.assertIn('call("build",previewId)', menu)
         self.assertNotIn('DataStoreService', menu)
         self.assertNotIn('UpdateAsync(', menu)
         self.assertIn('site.remaining-=n', engine)
@@ -289,7 +284,7 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('R3.step(state,0.1,x)', server)
         self.assertIn('h:TakeDamage(damage)', server)
         self.assertIn('Lighting.ClockTime=', server)
-        self.assertIn('return Combat.action(player,action,typeId)', server)
+        self.assertIn('return Combat.action(player,action,arg)', server)
         self.assertIn('if state.r3~=nil and not R3.valid(state.r3)', living)
         self.assertIn('function R3.pickup(', engine)
         self.assertIn('function R3.trade(', engine)
@@ -329,7 +324,7 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('task.wait(3)', hud)
         self.assertIn('contextKind="story"', hud)
         self.assertIn('item=="wood"', server)
-        self.assertIn('nearby.canTrade=math.abs(x)<=24', server)
+        self.assertIn('nearby.canTrade=R3.marketNear(state,x,y)', server)
         self.assertIn('return {ok=true,data=overview,hud=R3.summary(state),nearby=nearby}', server)
         self.assertIn('resources={sources=sources,carried=carried,reserved=reserved,', work)
         self.assertIn('committed=committed,stored=deposited,isolated=isolated,markedTrees=markedTrees}', work)
@@ -356,8 +351,8 @@ class EntreReinosWiring(unittest.TestCase):
             'function R3.takeWood(state: any,x: number,y: number)',
             'Inventory.add(d.playerBag,"wood",2)',
             'Inventory.transfer(b.stored,d.playerBag,"wood",2)',
-            'if Inventory.count(d.playerBag,"wood")>=2 then',
-            'Inventory.take(d.playerBag,"wood",2)',
+            'if Inventory.count(state.r3.playerBag,"wood")>=cost then',
+            'Inventory.take(source,"wood",recipe.wood)',
             'playerWood=if d.playerBag then Inventory.count(d.playerBag,"wood")',
         ]:
             self.assertIn(fragment,r3)

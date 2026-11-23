@@ -107,6 +107,17 @@ local function freeUnits(bag: any, item: string): number
     return math.floor((bag.maxMass-Inventory.weight(bag))/Items.get(item).mass)
 end
 
+local function storageSpace(state: any, depot: any, item: string, except: any?): number
+    local space=depot.stored.maxMass-Inventory.weight(depot.stored)
+    for _,npc in ipairs(state.npcs) do
+        if npc~=except and npc.storageId==depot.id and npc.carryItem
+            and (npc.state=="store_gather" or npc.state=="store_deliver") then
+            space-=npc.reserved*Items.get(npc.carryItem).mass
+        end
+    end
+    return math.max(0,math.floor(space/Items.get(item).mass))
+end
+
 local function assignStorage(npc: any,state: any): boolean
     -- Low priority after construction. Stocking is not a free resource mint:
     -- resources first enter a real worker bag, then a finite galpão inventory.
@@ -115,24 +126,23 @@ local function assignStorage(npc: any,state: any): boolean
     local source=nil
     local distance=math.huge
     for _,b in ipairs(state.buildings) do
-        if storeBuilding(state,b.id) then
+        if Engine.usableStorage(b) then
             for _,id in ipairs({"wood","stone","iron","food"}) do
-                local current=Inventory.count(b.stored,id)
+                if storageSpace(state,b,id)<=0 then continue end
                 local carried=Inventory.count(npc.inventory,id)
-                if freeUnits(b.stored,id)>0 and (carried>0
-                    or (current<STOCK_TARGET[id] and freeUnits(npc.inventory,id)>0)) then
-                    -- Return already-carried items before gathering any more.
-                    local s=if carried>0 then nil else availableSource(state,id,npc.x)
-                    if carried>0 or s then
-                        local score=math.abs(npc.x-b.x)
-                            +(if s then math.abs(s.x-b.x) else 0)
-                            -(if carried>0 then 500 else 0)
-                        if score<distance then
-                            distance=score
-                            best=b
-                            item=id
-                            source=s
-                        end
+                local s=if carried==0 and freeUnits(npc.inventory,id)>0
+                    then availableSource(state,id,npc.x) else nil
+                local ordered=s and s.marked==true and id=="wood"
+                if carried>0 or (s and (ordered or Inventory.count(b.stored,id)<STOCK_TARGET[id])) then
+                    local score=math.abs(npc.x-b.x)
+                        +(if s then math.abs(s.x-b.x) else 0)
+                        -(if carried>0 then 500 else 0)
+                        -(if ordered then 250 else 0)
+                    if score<distance then
+                        distance=score
+                        best=b
+                        item=id
+                        source=s
                     end
                 end
             end
@@ -142,9 +152,10 @@ local function assignStorage(npc: any,state: any): boolean
         local available=if source then Engine.sourceAvailable(state,source)
             else Inventory.count(npc.inventory,item)
         local free=freeUnits(npc.inventory,item)
-        local maxCount=freeUnits(best.stored,item)
-        local amount=if source then math.min(available,free,maxCount,
-            STOCK_TARGET[item]-Inventory.count(best.stored,item),
+        local maxCount=storageSpace(state,best,item)
+        local target=if source and source.marked==true and item=="wood" then maxCount
+            else STOCK_TARGET[item]-Inventory.count(best.stored,item)
+        local amount=if source then math.min(available,free,maxCount,target,
             Professions.gatherYield(npc.profession,item))
             else math.min(available,maxCount)
         if amount>0 then
@@ -257,47 +268,37 @@ local function walk(npc: any, destX: number, dt: number): boolean
     return math.abs(destX-npc.x)<=NEAR
 end
 
--- Pure planning: only server-selected candidate positions are tested. Never
--- mutate a saved world, reserve materials, or add a blueprint during search.
-function Engine.findPlacement(state: any, typeId: string, nearX: number): (boolean, any)
-    local def=Structures.get(typeId)
-    if not def then return false,"invalid_structure" end
-    if type(nearX)~="number" or nearX~=nearX or math.abs(nearX)==math.huge then
-        return false,"invalid_position"
-    end
-    if #state.buildings>=120 then return false,"building_limit" end
-
-    -- Search nearest valid spot on the X gameplay lane, checking both sides.
-    -- 48 studs is bounded and keeps new blueprints around the player.
-    local origin=math.round(nearX/2)*2
-    for step=0,24 do
-        local candidate=origin+step*2
-        local allowed=Engine.canPlace(state,typeId,candidate)
-        if allowed then return true,candidate end
-        if step>0 then
-            candidate=origin-step*2
-            allowed=Engine.canPlace(state,typeId,candidate)
-            if allowed then return true,candidate end
-        end
-    end
-    return false,"no_available_build_site"
-end
-
--- Shared preflight for planner and final atomic server-side placement.
+-- Pure footprint and route checks shared by preview and confirmation.
 function Engine.canPlace(state: any, typeId: string, x: number): (boolean, string?)
     local def=Structures.get(typeId)
     if not def then return false,"invalid_structure" end
-    if type(x)~="number" or x~=x or x< -112 or x>112 then
+    if type(x)~="number" or x~=x or math.abs(x)+def.footprint/2>120 then
         return false,"outside_region"
     end
     if #state.buildings>=120 then return false,"building_limit" end
-    local center=World.sample(state.seed,x,0)
-    local left=World.sample(state.seed,x-def.footprint/2,0)
-    local right=World.sample(state.seed,x+def.footprint/2,0)
-    if center.wet or left.wet or right.wet
-        or center.shore or left.shore or right.shore
-        or math.abs(left.height-right.height)>def.maxSlope then
-        return false,"invalid_footprint_or_slope"
+    local low=math.huge
+    local high=-math.huge
+    for _,z in ipairs({World.LANE_Z,Structures.DEPTH_Z-3.5,Structures.DEPTH_Z+3.5}) do
+        for step=-2,2 do
+            local sample=World.sample(state.seed,x+step*def.footprint/4,z)
+            if sample.wet or sample.shore then return false,"invalid_footprint_or_slope" end
+            low=math.min(low,sample.height)
+            high=math.max(high,sample.height)
+        end
+    end
+    if high-low>def.maxSlope then return false,"invalid_footprint_or_slope" end
+    local direction=if x<0 then -1 else 1
+    for distance=4,math.abs(x),4 do
+        if World.sample(state.seed,distance*direction,World.LANE_Z).wet then
+            return false,"no_worker_route"
+        end
+    end
+    for _,site in ipairs(state.sites) do
+        if site.item=="wood" and site.remaining>0 and not site.salvage
+            and not string.match(site.id,"salvage_")
+            and math.abs(x-site.x)<def.footprint/2+2 then
+            return false,"occupied_by_tree"
+        end
     end
     for _,b in ipairs(state.buildings) do
         local other=Structures.get(b.typeId)
@@ -308,18 +309,61 @@ function Engine.canPlace(state: any, typeId: string, x: number): (boolean, strin
     return true,nil
 end
 
-function Engine.place(state: any, typeId: string, x: number): (boolean, any)
+function Engine.place(state: any, typeId: string, x: number, groundY: number?): (boolean, any)
     local valid,reason=Engine.canPlace(state,typeId,x)
     if not valid then return false,reason end
     local def=Structures.get(typeId)
-    local center=World.sample(state.seed,x,0)
-    local b={id=state.nextBuildingId,typeId=typeId,x=x,y=center.height,
+    local center=World.sample(state.seed,x,Structures.DEPTH_Z)
+    local b={id=state.nextBuildingId,typeId=typeId,x=x,y=groundY or center.height,
         state="blueprint",progress=0,health=def.health,
         delivered={},claimed={},stored=Inventory.new(if def.storageMass>0 then def.storageMass else 1)}
     state.nextBuildingId+=1
     table.insert(state.buildings,b)
     table.insert(state.events,{kind="placed",buildingId=b.id,time=state.elapsed})
     return true,b
+end
+
+function Engine.canCancel(b: any): boolean
+    return b~=nil and b.state=="blueprint" and b.progress==0 and b.ruined~=true
+        and next(b.delivered)==nil
+end
+
+function Engine.cancel(state: any, id: number): (boolean, string?)
+    for i,b in ipairs(state.buildings) do
+        if b.id==id then
+            if not Engine.canCancel(b) then return false,"materials_already_delivered" end
+            Engine.releaseBuildingJobs(state,id)
+            table.remove(state.buildings,i)
+            return true,nil
+        end
+    end
+    return false,"building_not_found"
+end
+
+function Engine.initializeVillage(state: any): boolean
+    if #state.buildings>0 or state.nextBuildingId~=1 then return false end
+    local plan={
+        {typeId="castle",x=0},
+        {typeId="stockpile",x=-17}, {typeId="stockpile",x=17},
+        {typeId="wall",x=-33}, {typeId="wall",x=33},
+        {typeId="shelter",x=-55},
+    }
+    for _,entry in ipairs(plan) do
+        local id=entry.typeId
+        local placed,b=Engine.place(state,id,entry.x)
+        if not placed then
+            -- The shelter is optional on a steep seed. All core buildings
+            -- fit on the deterministic central plateau.
+            assert(id=="shelter","invalid starter village layout")
+            continue
+        end
+        local def=Structures.get(id)
+        b.state="complete"
+        b.progress=def.buildSeconds
+        b.delivered=table.clone(def.cost)
+    end
+    table.clear(state.events)
+    return true
 end
 
 function Engine.damage(state: any, buildingId: number, amount: number): boolean
@@ -363,10 +407,13 @@ function Engine.step(state: any, dt: number)
                     or source.item~=item then
                     clearJob(npc,state)
                 elseif walk(npc,source.x,dt) then
-                    local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc))
+                    local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc),
+                        storageSpace(state,storage,item,npc))
                     if n>0 and Inventory.add(npc.inventory,item,n) then
                         source.remaining-=n
                         state.stats.gathered+=n
+                        npc.reserved=n
+                        npc.siteId=nil
                         npc.state="store_deliver"
                     else
                         clearJob(npc,state)
@@ -379,10 +426,7 @@ function Engine.step(state: any, dt: number)
                     clearJob(npc,state)
                 elseif walk(npc,storage.x,dt) then
                     local carried=Inventory.count(npc.inventory,item)
-                    local availableMass=storage.stored.maxMass-
-                        Inventory.weight(storage.stored)
-                    local amount=math.min(carried,math.floor(availableMass/
-                        Items.get(item).mass))
+                    local amount=math.min(carried,npc.reserved,storageSpace(state,storage,item,npc))
                     if amount>0 and Inventory.transfer(npc.inventory,
                         storage.stored,item,amount) then
                         state.stats.stored=(state.stats.stored or 0)+amount
@@ -493,7 +537,7 @@ function Engine.summary(state: any): any
         end
     end
     for _,b in ipairs(state.buildings) do
-        if Engine.usableStorage(b) then
+        if b.typeId=="stockpile" and b.stored and not b.ruined and b.state~="ruined" then
             for item,count in pairs(b.stored.items) do
                 deposited[item]=(deposited[item] or 0)+count
             end
@@ -512,7 +556,7 @@ function Engine.summary(state: any): any
     for _,b in ipairs(state.buildings) do
         local def=Structures.get(b.typeId)
         table.insert(buildings,{id=b.id,name=def.label,typeId=b.typeId,
-            state=b.state,x=b.x,
+            state=b.state,x=b.x,canCancel=Engine.canCancel(b),
             progress=math.floor(b.progress/def.buildSeconds*100),
             health=b.health,delivered=table.clone(b.delivered),
             stored=if b.stored then table.clone(b.stored.items) else {}})

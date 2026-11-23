@@ -59,10 +59,12 @@ end
 local function array(value: any, limit: number): boolean
     if type(value)~="table" or #value>limit then return false end
     local n=#value
+    local count=0
     for index in pairs(value) do
         if not units(index) or index<1 or index>n then return false end
+        count+=1
     end
-    return true
+    return count==n
 end
 
 function Living.valid(state: any): boolean
@@ -120,9 +122,18 @@ function Living.restore(data: any, seed: number): any
         end
         seen[site.id]=true
     end
+    local buildings={}
     for _,building in ipairs(restored.buildings) do
+        buildings[building.id]=building
+        building.claimed={}
         if building.ruined or building.state=="ruined" then
             R3.isolateRuinedStock(building)
+        end
+    end
+    for _,npc in ipairs(restored.npcs) do
+        local b=if npc.jobId~=nil then buildings[npc.jobId] else nil
+        if b and npc.carryItem and (npc.state=="gather" or npc.state=="deliver") then
+            b.claimed[npc.carryItem]=(b.claimed[npc.carryItem] or 0)+npc.reserved
         end
     end
     return restored

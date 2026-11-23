@@ -216,3 +216,23 @@ assert(reopened.r3.stats.killed==fresh.r3.stats.killed)
 saved.r3.wallet=-5
 assert(not Living.valid(saved),"invalid R3 ledger must block save")
 print("ENTRE_REINOS_T1_R3: prologue, combat, raids, walls, trade, loot, equip, save passed")
+
+local damagedDepot=Living.new(seed)
+local raiders=R3.ensure(damagedDepot,false)
+local made,building=Work.place(damagedDepot,"stockpile",0)
+assert(made)
+building.state="complete"
+building.progress=Structures.get("stockpile").buildSeconds
+building.health=1
+assert(Inventory.add(building.stored,"wood",7))
+assert(not R3.craftArrows(damagedDepot,0,70),"warehouse must be in vertical reach")
+assert(not R3.trade(damagedDepot,"wood",0,70),"market must be in vertical reach")
+assert(R3.spawnWave(damagedDepot,2))
+for _=1,300 do R3.step(damagedDepot,0.1,0) end
+assert(building.state=="ruined" and building.ruinedStock.wood==7)
+assert(Inventory.count(building.stored,"wood")==0 and Work.stockAvailable(damagedDepot,building,"wood")==0)
+assert(not R3.takeWood(damagedDepot,0,building.y+3))
+assert(raiders.wallet==0 and raiders.treasury==24)
+local ruins=Living.restore(damagedDepot,seed)
+assert(ruins and ruins.buildings[1].ruinedStock.wood==7)
+print("ENTRE_REINOS_T1_F1_RAID: a raid isolates seven stored units exactly once and blocks withdrawal")

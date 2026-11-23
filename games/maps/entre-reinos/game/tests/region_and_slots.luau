@@ -35,8 +35,8 @@ assert(S.summary(nil, 1).exists == false)
 assert(S.summary({deleted = true}, 1).exists == false)
 assert(S.summary({foo = 1}, 1).corrupt)
 local legacy = S.newWorld(11, 100, {x=0,y=15,z=0})
-assert(S.SAVE_FORMAT_VERSION==1 and S.RULESET_VERSION==1)
-assert(legacy.saveFormatVersion==1 and legacy.rulesetVersion==1)
+assert(S.SAVE_FORMAT_VERSION==1 and S.RULESET_VERSION==2)
+assert(legacy.saveFormatVersion==1 and legacy.rulesetVersion==2)
 local v1=S.newWorld(11,100,{x=0,y=15,z=0})
 v1.saveFormatVersion=nil
 v1.rulesetVersion=nil
@@ -136,3 +136,15 @@ local wrongSeed: any = S.newWorld(42, 100, W.spawn(42))
 wrongSeed.living = Living.new(43)
 assert(not S.validWorld(wrongSeed), "population from another seed cannot replace the slot")
 print("ENTRE_REINOS_T1_F1_SAVE: legacy boundary, protected corrupt slots and population seed passed")
+
+local current = S.newWorld(42, 100, W.spawn(42))
+current.rulesetVersion = 1
+assert(S.validWorld(current) and S.summary(current, 1).compatibility=="legacy_compatible")
+local legacyBackup = S.legacyBackupKey(current)
+current.revision += 1
+assert(S.legacyBackupKey(current)~=legacyBackup)
+current.revision -= 1
+current.createdAt = 101
+assert(S.legacyBackupKey(current)~=legacyBackup)
+assert(P.foreignLease({token="b",expiresAt=math.huge}, "a", 100))
+print("ENTRE_REINOS_T1_F1_RULESET: old saves readable, per-generation backup identity and future guard")

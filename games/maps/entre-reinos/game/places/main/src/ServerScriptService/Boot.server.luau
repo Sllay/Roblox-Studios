@@ -237,8 +237,28 @@ local function startWorld(player: Player)
     print("[EntreReinos] Reserved world started: slot=", index, " seed=", record.seed)
 end
 
+local function closeWorldSave(player: Player): (boolean, string?)
+    if player:GetAttribute("ER_WorldLoaded")~=true then
+        return Saves.abortActivation(player)
+    end
+    for attempt=1,3 do
+        if not Saves.active(player) then return true,nil end
+        local saved,reason=Saves.save(player,true)
+        if saved or (reason~="datastore_unavailable" and reason~="backup_unavailable") then
+            return saved,reason
+        end
+        if attempt==3 then return false,reason end
+        task.wait(attempt)
+    end
+    return false,"datastore_unavailable"
+end
+
 local function returnLobby(player: Player): (boolean, string?)
     if not worldServer then return false, "not_in_world_server" end
+    if player:GetAttribute("ER_WorldLoaded")==true then
+        local saved,reason=Saves.save(player,false)
+        if not saved then return false,reason end
+    end
     local options = Instance.new("TeleportOptions")
     options.ForcePublicServer = true
     local ok, reason = pcall(function()
@@ -261,9 +281,12 @@ rpc.OnServerInvoke = function(player: Player, action: any, index: any): any
                 error = player:GetAttribute("ER_LoadError"), serverRevision = game.PlaceVersion}
         end
         if action == "return" then
-            local ok, reason = returnLobby(player)
-            return if ok then {ok = true, teleporting = true}
-                else {ok = false, error = reason}
+            if busy[player] then return {ok=false,error="request_busy"} end
+            busy[player]=true
+            local invoked,ok,reason=pcall(returnLobby,player)
+            busy[player]=nil
+            return if invoked and ok then {ok = true, teleporting = true}
+                else {ok = false, error = if invoked then reason else "server_operation_failed"}
         end
         return {ok = false, error = "world_server_lobby_disabled"}
     end
@@ -358,7 +381,7 @@ Players.PlayerRemoving:Connect(function(player)
     busy[player] = nil
     pendingTeleport[player] = nil
     if worldServer and Saves.active(player) then
-        local ok, reason = Saves.save(player, true)
+        local ok, reason = closeWorldSave(player)
         if not ok then warn("[EntreReinos][World] Exit save not confirmed: ", reason) end
     end
     if worldServer then LivingService.stop(player) end
@@ -371,7 +394,7 @@ game:BindToClose(function()
     if not worldServer then return end
     for _, player in ipairs(Players:GetPlayers()) do
         if Saves.active(player) then
-            local ok, reason = Saves.save(player, true)
+            local ok, reason = closeWorldSave(player)
             if not ok then warn("[EntreReinos] Shutdown save not confirmed: ", reason) end
         end
     end

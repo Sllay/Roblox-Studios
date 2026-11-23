@@ -33,7 +33,7 @@ local errorTexts={
     drop_not_found="Moeda não encontrada.",
     invalid_coin_drop="Não há moedas disponíveis na bolsa.",
     treasury_empty="O tesouro da vila está sem moedas.",
-    resource_unavailable="Recurso indisponível nas fontes.",
+    resource_unavailable="Leve madeira na bolsa ou abasteça um galpão próximo.",
     wood_stock_required="Faltam 2 madeiras na bolsa. Colete na árvore ou no galpão.",
     wood_source_too_far="Sem madeira próxima. Siga a indicação da árvore na oficina.",
     player_bag_full="Sua bolsa está cheia. Use a madeira antes de recolher mais.",
@@ -232,6 +232,7 @@ function UI.start(player: Player)
     local tabsUI: {[string]: TextButton}={}
     local pages: {[string]: GuiObject}={}
     local builders: any=nil
+    local closeJournal: ()->()=function() end
 
     local refreshStatus: ()->()
     local function request(action: string,arg: any?)
@@ -274,7 +275,7 @@ function UI.start(player: Player)
 
     local builds=BuildMenu.mount(content,remote,notify,function()
         task.defer(function() refreshStatus() end)
-    end)
+    end,player,function() closeJournal() end)
     builders=builds
     pages.build=content:FindFirstChild("ConstructionCatalog") :: GuiObject
 
@@ -370,7 +371,7 @@ function UI.start(player: Player)
         end
     end)
     craftButton.Activated:Connect(function()
-        if (hud.playerWood or 0)<2 and (nearby.wood or 0)<2 then
+        if (hud.playerWood or 0)<2 and nearby.canCraftArrows~=true then
             local dist=nearby.nearestWoodDistance or -1
             if dist>=0 then
                 notify("Madeira disponível "..tostring(dist).." studs à "..
@@ -414,12 +415,14 @@ function UI.start(player: Player)
     local refreshContext: ()->()=function() end
 
     local function showJournal(value: boolean,nextTab: string?)
+        if value then builds.closePreview() end
         journal.Visible=value
         openJournal.Text=if value then "FECHAR" else "VILA"
         if nextTab then showTab(nextTab) end
         if value then task.defer(function() refreshStatus() end) end
         refreshContext()
     end
+    closeJournal=function() showJournal(false,nil) end
     openJournal.Activated:Connect(function()
         showJournal(not journal.Visible,if not journal.Visible then "build" else nil)
     end)
@@ -647,16 +650,16 @@ function UI.start(player: Player)
         collectButton.Active=true
         craftButton.Active=true
         collectButton.BackgroundColor3=if siteWood>=2 then C.raised else C.surface
-        local canCraft=(bagWood>=2 or siteWood>=2) and
+        local canCraft=(bagWood>=2 or nearby.canCraftArrows==true) and
             (player:GetAttribute("ER_R3Arrows") or 0)<=24
         craftButton.BackgroundColor3=if canCraft then C.raised else C.surface
-        tradeInfo.Text="VENDER MADEIRA  ·  1 unidade por 1 moeda, paga pelo tesouro"..
-            "\nComércio no centro: "..(if nearby.canTrade then "próximo" else "longe")..
-            "   ·   Tesouro: "..tostring(hud.treasury or "?")
-        tradeButton.Active=nearby.canTrade==true and (hud.treasury or 0)>=1
-            and sources~=nil
-            and ((sources.wood or 0)+(if stocked then stocked.wood or 0 else 0))>=1
-        tradeButton.BackgroundColor3=if tradeButton.Active then C.raised else C.surface
+        local tradeStatus=if not nearby.canTrade then "Aproxime-se do centro da vila."
+            elseif (hud.treasury or 0)<1 then "O tesouro não tem moedas."
+            elseif not nearby.canSellWood then "Traga madeira na bolsa ou abasteça um galpão próximo."
+            else "Madeira disponível para venda."
+        tradeInfo.Text="1 MADEIRA POR 1 MOEDA\n"..tradeStatus
+        tradeButton.BackgroundColor3=if nearby.canTrade and nearby.canSellWood
+            and (hud.treasury or 0)>=1 then C.raised else C.surface
         coinsInfo.Text="SUA BOLSA  ·  "..tostring(player:GetAttribute("ER_R3Wallet") or 0)..
             " moedas. Soltar uma moeda deixa um item físico no chão."
         dropCoin.Active=(player:GetAttribute("ER_R3Wallet") or 0)>0
