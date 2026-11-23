@@ -1,5 +1,5 @@
 {
-  "loadedVersion": 15,
+  "loadedVersion": 16,
   "placeId": "90623742498445",
   "records": {
     "environment:lighting": {
@@ -66,8 +66,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 2300,
-        "sourceHash": "3vezA7mCB8FAHaBCFGG7k6a28JJs/yeiP3aVKdL2IHs="
+        "sourceBytes": 2331,
+        "sourceHash": "MfRozNnt8MAxLA8lwPwi0g12rjs4EyVttlmTxr0CYYE="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -130,8 +130,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 3344,
-        "sourceHash": "zc2vdT+KZ3H4VG+UvziXVZSFtaDHt9v1h+kzeWjtCec="
+        "sourceBytes": 5798,
+        "sourceHash": "vwoFLn8/gKTLsJD9Hr22BFZ6Z2fruiPPH3UlSYu3f14="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -194,8 +194,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 21409,
-        "sourceHash": "bVDsoPsAwSaYzHFAvOSgfn38uCT+Rs+PZKuluD4w0Yg="
+        "sourceBytes": 22739,
+        "sourceHash": "XeZdwTjNvP9IC6zTF4j8HnFWb8N4IBVTwTsvGtmB0Ao="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -226,8 +226,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 1529,
-        "sourceHash": "eWyPh1hpedh9JumfoG2Vv1qMuvy3YBJWOyRxo2k7Hgw="
+        "sourceBytes": 1766,
+        "sourceHash": "zure+nYPx5XbRR/cpI3CL/eQV296PgqPcMsTdTwmYiw="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -258,8 +258,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 20189,
-        "sourceHash": "Je6fbpjuA94c5yiQ9MjeM39LZF4DbZVhpuJurf3bRI0="
+        "sourceBytes": 25393,
+        "sourceHash": "SdqGzP6b62pYbE5bi0VUM6bgsxpLGuRGkv/9jqwDCp8="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -363,8 +363,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 1222,
-        "sourceHash": "ufAnGKHA5P5q/uQJRIYgARt6YivK1uJ7a2Ec77I5o5o="
+        "sourceBytes": 1246,
+        "sourceHash": "K+ox+PFEr1G2aJejZOygZvn59CcUOZxKuwZeoQl+5Mo="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -390,8 +390,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 5118,
-        "sourceHash": "FUhG0BkGFOm7rCtUNB/0q6ihsbRxLIEKvqddCJ5VNsk="
+        "sourceBytes": 5572,
+        "sourceHash": "UvLgZBV8lSOXe6vaNm4BWmC0dw4elK0fWpHp22ec+gs="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -563,8 +563,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 12558,
-        "sourceHash": "g74CI0mIwEh2RRHMN285Lr80CeSMWmalD8ghHPW7mYE="
+        "sourceBytes": 12590,
+        "sourceHash": "xH7d/0YuKibP8U0SIxt7GuYmjqAl4HzecB9SXSY3qvM="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -590,8 +590,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 28575,
-        "sourceHash": "7eLTg0xfLak6zNJOCbT/8yUK32G1USXhK/TaM47axiI="
+        "sourceBytes": 33269,
+        "sourceHash": "JSbBNqKYdd6/bIvhdmM24vhiRdjZNhSIukYIksLS9Ow="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -617,8 +617,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 14207,
-        "sourceHash": "sPnVxZ0aIoQfDL8vI4W5IUBltYogv38m6WPV0t23Jm0="
+        "sourceBytes": 16325,
+        "sourceHash": "BSigHZdtKpDi0D+LJED/ItT10jCLtT+0ptR8bbriEIk="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -687,8 +687,8 @@
       "properties": {
         "enabled": true,
         "runContext": "Legacy",
-        "sourceBytes": 17270,
-        "sourceHash": "Pe02GrYwsJleSlYl/UNC9tP/pz+j0KXu+a7owgIRKPM="
+        "sourceBytes": 18425,
+        "sourceHash": "Z7m6tUODamjn3aGCJ0s5kvFHAiRMuTU32HPN7yfaIdk="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -852,8 +852,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 7664,
-        "sourceHash": "sejezq1QkG0JH8y6WjxJLuno/h9dVcMd7FJ878wLp/E="
+        "sourceBytes": 14919,
+        "sourceHash": "OM5ih3ECuzDW5R+ktl6mO+wcbTWnihYeMd37VJfm2ZU="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2474,8 +2474,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 30820,
-        "sourceHash": "M+tkVCmmAo2ojgco+vLrcp+qWNfIbVaSPkOx4qCuync="
+        "sourceBytes": 32724,
+        "sourceHash": "0TBbsYSgZ5cPGUze0wsV+RSI8fXiqioioJ79IoeG6U0="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2528,8 +2528,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 17723,
-        "sourceHash": "dheQnJkcMf8mHcUYM8c8jGKzj9pGbKI6yEVj/vFTjx8="
+        "sourceBytes": 17814,
+        "sourceHash": "2z8jlTJrkxefxlLuq9CNL4XoCQUdVtcmUpXLFtDVHHE="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2806,7 +2806,7 @@
     "Teams",
     "ReplicatedFirst"
   ],
-  "stateDigest": "bfce2066f2b79d60b8e5889aa20a7c65b71249753e2a68fb5bc9705e27ca37c8",
+  "stateDigest": "459f8671281c43e7f353dfe0dd15a6dabf138184fcc6f955e70f22771dff222c",
   "total": 84,
   "universeId": "10769712413"
 }
