@@ -159,9 +159,10 @@ jobs:
               assert(not placementGround("house",18,root))
               local water,waterReason=placementGround("wall",76,root)
               assert(not water and waterReason=="invalid_footprint_or_slope")
-              workspace.Terrain:FillBlock(CFrame.new(34,23,Structures.DEPTH_Z),
-                  Vector3.new(4,12,12),Enum.Material.Rock)
-              local uneven,slopeReason=placementGround("shelter",38,root)
+              assert(placementGround("shelter",0,root),"dry slope fixture must initially be valid")
+              workspace.Terrain:FillBlock(CFrame.new(-8,24,Structures.DEPTH_Z),
+                  Vector3.new(12,16,18),Enum.Material.Rock)
+              local uneven,slopeReason=placementGround("shelter",0,root)
               assert(not uneven and slopeReason=="invalid_footprint_or_slope",tostring(slopeReason))
               mockCharacter:Destroy()
               return true
