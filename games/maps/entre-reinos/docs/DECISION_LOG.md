@@ -161,3 +161,10 @@ Correção v9 em desenvolvimento:
 - [FIXADO] T1 pode entregar fundação, mas nenhum fundamento parcial pode ser declarado concluído; refinamento fica na mesma temporada. Até T2 todos os sistemas base devem estar COMPLETOS, T3 é variedade/polimento. Nenhuma aprovação sem Roblox/mobile quando pertinente.
 - [ABERTO] Morte/respawn/política de drops, mundo descarregado, remuneração/impostos, parâmetros de montarias, portal e decisões de balanceamento precisam de aprovação de design; não esconder lacuna com valor aleatório.
 - [FIXADO] Exclusão de saves permanece voluntária/confirmada; schema de dados separado de revisão do Place. Implementar migrações recuperáveis e política de backups antes de alterações destrutivas.
+
+
+## 23/11/2026 — T1-F1: a madeira da vila NÃO é automaticamente do jogador
+- [EVIDÊNCIA] A UI v14 mostrava madeira regional e impedia silenciosamente a fabricação quando não havia fonte ou galpão no raio do avatar. Jogador reportou que não conseguia criar nenhuma flecha apesar do número de madeira no HUD.
+- [FIXADO] Estado inicial de inventário do jogador é separado de fontes naturais, estoques de galpão, bolsas dos NPCs, reservas e materiais já gastos. Coleta física e transferência em galpão têm validação do servidor; criar flechas consome 2 unidades realmente carregadas, produz 6 flechas, aplica capacidade/cooldown e funciona longe da fonte quando o item está na bolsa.
+- [FIXADO] Atualização de save compatível deve migrar por adição sem apagar/recriar mundos antigos; revisão de Place não implica novo DataStore. O menu informa quantidade da bolsa e caminho até árvore acessível, sem esconder/desabilitar ação sem explicação.
+- [ESTADO] v15 publicada somente em staging, testes Luau/CI e motor Roblox passados; jogo mobile do criador ainda não aprovado. A nova preocupação do criador reforça a auditoria ER-001…058: T1-F1/F2/F3 antes de T2-R1.
