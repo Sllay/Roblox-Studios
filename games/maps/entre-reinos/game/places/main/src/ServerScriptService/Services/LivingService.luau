@@ -598,7 +598,7 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
                             else "direita"
                     end
                     local surface=Profile.sample(state.seed,site.x,0).height
-                    if distance<=9 and math.abs(root.Position.Y-(surface+3))<=11 then
+                    if distance<=11 and math.abs(root.Position.Y-(surface+3))<=11 then
                         -- Do not claim that two depleted sources add up to
                         -- one craftable batch; use one real source at a time.
                         nearby.wood=math.max(nearby.wood,site.remaining)
@@ -608,7 +608,7 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
             for _,b in ipairs(state.buildings) do
                 if b.typeId=="stockpile" and b.state=="complete"
                     and b.health>0 and b.stored
-                    and math.abs(b.x-x)<=12 then
+                    and math.abs(b.x-x)<=13 then
                     if math.abs(root.Position.Y-(b.y+3))<=12 then
                         nearby.wood=math.max(nearby.wood,
                             b.stored.items.wood or 0)
