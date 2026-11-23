@@ -174,3 +174,5 @@ Correção v9 em desenvolvimento:
 - [TÉCNICO] O ruleset 2 identifica o armazenamento de castelo inicial e trabalhos com retirada de galpão. O save anterior é copiado por revisão antes da promoção. Formato e gerador continuam em 1. Publicação/recuperação ainda exigem evidência do ambiente.
 - [ABERTO] Cancelamento após entrega pode devolver itens ao estoque de origem, exigir recolhimento físico ou aplicar uma fração aprovada. A primeira opção exige tratar lotação e galpão destruído. A segunda mantém o material no mapa e exige trabalho de recolhimento. A terceira precisa de justificativa de custo. O candidato permite cancelar antes da entrega.
 - [ABERTO] A divisão do estoque de uma ruína entre perda, roubo e material recuperável continua pendente. A custódia isolada preserva a contabilidade e impede consumo até definição da divisão.
+
+- [PROVISÓRIO PARA STAGING] Cancelar obra incompleta converte cada material entregue em uma pilha recuperável no ponto da obra. A provisão evita perda e crédito simultâneo a outros estoques. O procedimento definitivo de estorno e a partição das ruínas continuam [ABERTO].

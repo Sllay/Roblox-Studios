@@ -124,3 +124,7 @@ Para passar de PARCIAL/PLANEJADO para VALIDADO, anexar em `runner-receipts/`: (a
 O fechamento é **cumulativo**: regressões em T3 reabrem ER-001…044. Mesmo com ER-045…058 validados, um ER-008 ou ER-015 ainda PARCIAL bloqueia o lançamento. Requisitos FUTURO fora da primeira versão solo (PvP, co-op multiplayer, segredos privados e eras futuras) NÃO fazem parte do escopo de fechamento; são um backlog separado, sem vazamento de lore privada.
 
 **Contratos prioritários de implementação:** concluir ER-007/008/009/010/014/015/019 e ER-001/002/017 antes de marcar T1 aprovado; completar ER-021…044 até final de T2; completar ER-045…058 e reler TODA a matriz em T3-R3.
+
+### Gate técnico de playtest T1-F1
+
+A T1-F1 passou pelo DataStore real com namespaces sintéticos e cobriu a recuperação de uma gravação com resposta perdida, o backup pré-migração, a reabertura com reserva ativa e o fluxo fonte → NPC → galpão → obra. A partida touch, o teleporte com cliente e a regra final de ruínas/estorno continuam pendentes. Centro, Oeste e Leste agora são associados às muralhas iniciais e usados para identificar a localização das obras. Os estados ER continuam sujeitos às provas de lançamento. [Recibo do refinamento](runner-receipts/T1-F1.md)

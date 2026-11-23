@@ -159,11 +159,39 @@ jobs:
               assert(not placementGround("house",18,root))
               local water,waterReason=placementGround("wall",76,root)
               assert(not water and waterReason=="invalid_footprint_or_slope")
-              assert(placementGround("shelter",0,root),"dry slope fixture must initially be valid")
-              workspace.Terrain:FillBlock(CFrame.new(-8,24,Structures.DEPTH_Z),
-                  Vector3.new(12,16,18),Enum.Material.Rock)
-              local uneven,slopeReason=placementGround("shelter",0,root)
-              assert(not uneven and slopeReason=="invalid_footprint_or_slope",tostring(slopeReason))
+              -- Read a natural slope from the generated western chunk. In
+              -- edit sessions a second in-place Terrain sculpt need not
+              -- update the raycast representation synchronously.
+              assert(WorldService.ensureNear(seed,-104))
+              local probeDef=table.clone(Structures.get("shelter"))
+              assert(Structures.register("slope_probe",probeDef))
+              probeDef=Structures.get("slope_probe")
+              local testedSlope=false
+              for x=-110,-49 do
+                  local low,high=math.huge,-math.huge
+                  for _,dx in ipairs({-5,5}) do
+                      for _,dz in ipairs({-3.5,3.5}) do
+                          local hit=workspace:Raycast(Vector3.new(x+dx,70,Structures.DEPTH_Z+dz),
+                              Vector3.new(0,-120,0),groundCast)
+                          if hit then
+                              low=math.min(low,hit.Position.Y)
+                              high=math.max(high,hit.Position.Y)
+                          end
+                      end
+                  end
+                  local rise=high-low
+                  if rise>0.3 then
+                      probeDef.maxSlope=rise-0.2
+                      if Work.canPlace(state,"slope_probe",x) then
+                          root.Position=Vector3.new(x,24,0)
+                          local uneven,slopeReason=placementGround("slope_probe",x,root)
+                          assert(not uneven and slopeReason=="invalid_footprint_or_slope",tostring(slopeReason))
+                          testedSlope=true
+                          break
+                      end
+                  end
+              end
+              assert(testedSlope,"no native slope fixture in seeded terrain")
               mockCharacter:Destroy()
               return true
           end
