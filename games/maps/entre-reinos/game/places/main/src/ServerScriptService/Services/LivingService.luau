@@ -618,6 +618,15 @@ local function placementGround(typeId: string, x: number, root: BasePart): (bool
         if offset==Vector2.zero then centerHeight=hit.Position.Y end
     end
     if maxHeight-minHeight>definition.maxSlope then return false,"invalid_footprint_or_slope" end
+    local overlap=OverlapParams.new()
+    overlap.RespectCanCollide=true
+    overlap.MaxParts=1
+    overlap.FilterType=Enum.RaycastFilterType.Exclude
+    overlap.FilterDescendantsInstances={workspace.Terrain,root.Parent :: Instance}
+    local occupied=workspace:GetPartBoundsInBox(
+        CFrame.new(x,centerHeight+definition.height/2+0.3,Structures.DEPTH_Z),
+        Vector3.new(definition.footprint,definition.height,7),overlap)
+    if #occupied>0 then return false,"solid_obstruction" end
     return true,centerHeight
 end
 
@@ -636,6 +645,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         if root and root:IsA("BasePart") then
             local x=root.Position.X
             local y=root.Position.Y
+            nearby.district=Work.districtAt(state,x)
             nearby.canTrade=R3.marketNear(state,x,y)
             nearby.canSellWood=nearby.canTrade and R3.canSell(state,"wood",x,y)
             nearby.canCraftArrows=R3.arrowMaterial(state,x,y)~=nil
@@ -718,7 +728,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         if not available then return {ok=false,error=height} end
         previewId+=1
         buildPreview={id=previewId,x=x,typeId=arg}
-        return {ok=true,previewId=previewId,x=x,y=height}
+        return {ok=true,previewId=previewId,x=x,y=height,district=Work.districtAt(state,x)}
     end
     if action=="build" and buildPreview and arg==buildPreview.id and buildPreview.result then
         return buildPreview.result

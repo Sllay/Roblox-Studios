@@ -18,7 +18,9 @@ local errors={
     no_worker_route="Os moradores não têm rota terrestre até o local.",
     terrain_not_ready="O terreno está carregando. Tente novamente.",
     preview_changed="Escolha o local novamente.",
-    materials_already_delivered="A entrega começou e a obra está em andamento.",
+    building_cannot_cancel="Só uma obra em andamento pode ser cancelada.",
+    no_recovery_space="Não há espaço para deixar o material da obra no terreno.",
+    solid_obstruction="Um objeto sólido ocupa o local.",
     building_not_found="A obra já foi removida.",
     invalid_footprint_or_slope="Terreno úmido ou inclinado demais.",
     overlapping_footprint="Outra construção ocupa o local.",
@@ -186,7 +188,8 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         if result.ok then
             previewId=result.previewId
             confirm.BackgroundColor3=Color3.fromRGB(58,101,67)
-            caption.Text=def.label.." · terreno livre"
+            caption.Text=def.label.." · terreno livre"..
+                (if result.district then " · "..result.district else "")
         else
             caption.Text=errors[result.error] or "Local indisponível."
         end
@@ -230,7 +233,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         local result=call("build_cancel",cancelId)
         confirmCancel=nil
         cancelOrder.Text="Cancelar obra #"..tostring(cancelId)
-        notify(if result.ok then "Obra cancelada. Os moradores mantêm sua carga."
+        notify(if result.ok then "Obra cancelada. O material entregue ficou no local."
             else errors[result.error] or "Não foi possível cancelar a obra.")
         refresh()
     end)
@@ -317,7 +320,8 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
                     shown+=1
                     if shown<=3 then
                         table.insert(parts,b.name.." #"..tostring(b.id)..
-                            " · "..tostring(b.progress).."%")
+                            " · "..tostring(b.progress).."%"..
+                            (if b.district then " · "..b.district else ""))
                     end
                 end
             end

@@ -324,20 +324,42 @@ function Engine.place(state: any, typeId: string, x: number, groundY: number?): 
 end
 
 function Engine.canCancel(b: any): boolean
-    return b~=nil and b.state=="blueprint" and b.progress==0 and b.ruined~=true
-        and next(b.delivered)==nil
+    return b~=nil and (b.state=="blueprint" or b.state=="building") and b.ruined~=true
 end
 
 function Engine.cancel(state: any, id: number): (boolean, string?)
     for i,b in ipairs(state.buildings) do
         if b.id==id then
-            if not Engine.canCancel(b) then return false,"materials_already_delivered" end
+            if not Engine.canCancel(b) then return false,"building_cannot_cancel" end
+            -- Staging policy: delivered material remains in a physical
+            -- recovery pile at the site. No credit to a second inventory.
+            local returns={}
+            for item,amount in pairs(b.delivered) do
+                if amount>0 then
+                    table.insert(returns,{id="cancelled_"..tostring(id).."_"..item,
+                        item=item,x=b.x,remaining=amount,salvage=true})
+                end
+            end
+            if #state.sites+#returns>256 then return false,"no_recovery_space" end
             Engine.releaseBuildingJobs(state,id)
             table.remove(state.buildings,i)
+            for _,site in ipairs(returns) do table.insert(state.sites,site) end
             return true,nil
         end
     end
     return false,"building_not_found"
+end
+
+function Engine.districtAt(state: any,x: number): string?
+    local left,right=nil,nil
+    for _,b in ipairs(state.buildings) do
+        if b.districtBoundary=="west" then left=b.x end
+        if b.districtBoundary=="east" then right=b.x end
+    end
+    if not left or not right then return nil end
+    if x<left then return "Oeste" end
+    if x>right then return "Leste" end
+    return "Centro"
 end
 
 function Engine.initializeVillage(state: any): boolean
@@ -361,6 +383,9 @@ function Engine.initializeVillage(state: any): boolean
         b.state="complete"
         b.progress=def.buildSeconds
         b.delivered=table.clone(def.cost)
+        if id=="wall" then
+            b.districtBoundary=if entry.x<0 then "west" else "east"
+        end
     end
     table.clear(state.events)
     return true
@@ -556,7 +581,7 @@ function Engine.summary(state: any): any
     for _,b in ipairs(state.buildings) do
         local def=Structures.get(b.typeId)
         table.insert(buildings,{id=b.id,name=def.label,typeId=b.typeId,
-            state=b.state,x=b.x,canCancel=Engine.canCancel(b),
+            state=b.state,x=b.x,canCancel=Engine.canCancel(b),district=Engine.districtAt(state,b.x),
             progress=math.floor(b.progress/def.buildSeconds*100),
             health=b.health,delivered=table.clone(b.delivered),
             stored=if b.stored then table.clone(b.stored.items) else {}})

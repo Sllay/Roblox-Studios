@@ -605,7 +605,7 @@ function UI.start(player: Player)
         if not sources then
             stock.Text="FONTES DA VILA  ·  consultando..."
         else
-            stock.Text="VILA  ·  MADEIRA "..tostring(sources.wood or 0).."+"..
+            stock.Text=(nearby.district or "Vila").."  ·  MADEIRA "..tostring(sources.wood or 0).."+"..
                 tostring(if stocked then stocked.wood or 0 else 0)..
                 "   PEDRA "..tostring(sources.stone or 0)..
                 "   FERRO "..tostring(sources.iron or 0)..

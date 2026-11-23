@@ -8,6 +8,11 @@ on:
       - games/maps/entre-reinos/game/places/main/src/ReplicatedStorage/**
       - games/maps/entre-reinos/game/tests/**
   workflow_dispatch:
+    inputs:
+      revision:
+        description: Published staging revision to verify
+        type: number
+        required: true
 
 permissions:
   contents: read
@@ -25,8 +30,12 @@ jobs:
       - name: Run candidate domain checks and native Terrain probe in unsaved staging session
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ER_PROBE_REVISION: ${{ inputs.revision || 15 }}
+          ER_READBACK: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           PYTHONPATH=tools python - <<'PY'
+          import base64
+          import hashlib
           import json
           import os
           import re
@@ -41,6 +50,38 @@ jobs:
                    "ItemDefs", "ProfessionDefs", "StructureDefs", "Inventory",
                    "WorkEngine", "R3Engine", "LivingModel")
           paths = {p.stem: p for p in src.rglob("*.luau")}
+          if os.environ["ER_READBACK"] == "true":
+              checks = {}
+              for script in src.parent.rglob("*.luau"):
+                  rel = list(script.relative_to(src.parent).parts)
+                  if rel[0] == "ReplicatedStorage":
+                      rel.insert(1, "Game")
+                  rel[-1] = script.name.split(".")[0]
+                  checks["/".join(rel)] = base64.b64encode(hashlib.sha256(script.read_bytes()).digest()).decode()
+              source = """
+              local Http=game:GetService("HttpService")
+              local enc=game:GetService("EncodingService")
+              local checks=Http:JSONDecode(__CHECKS__)
+              local matches=0
+              for path,expected in pairs(checks) do
+                  local inst=game
+                  for segment in string.gmatch(path,"[^/]+") do
+                      inst=inst and inst:FindFirstChild(segment)
+                  end
+                  assert(inst and inst:IsA("LuaSourceContainer"),"missing script "..path)
+                  local digest=enc:ComputeBufferHash(buffer.fromstring(inst.Source),Enum.HashAlgorithm.Sha256)
+                  assert(buffer.tostring(enc:Base64Encode(digest))==expected,"source hash differs: "..path)
+                  matches+=1
+              end
+              return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
+                  placeVersion=game.PlaceVersion,sourceMatches=matches})
+              """.replace("__CHECKS__",json.dumps(json.dumps(checks)))
+              report=run_task(staging["universeId"], staging["placeIds"]["main"],
+                              os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source)
+              assert report["loadedVersion"] == int(os.environ["ER_PROBE_REVISION"]), report
+              assert report["sourceMatches"] == len(checks)
+              print("ENTRE_REINOS_T1_F1_PUBLISHED", json.dumps(report,sort_keys=True))
+              raise SystemExit(0)
           parts = ["""
           local modules = {}
           local cache = {}
@@ -64,7 +105,7 @@ jobs:
           for name, module in (("Slots", "SlotModel"), ("WorldProfile", "WorldProfile"),
                                ("Policy", "SlotLeasePolicy"), ("LivingModel", "LivingModel")):
               save_service, count = re.subn(
-                  rf"local {name} = require\(ReplicatedStorage:.*?\)\n",
+                  rf"local {name} = require\(ReplicatedStorage:[^\n]*(?:\n +:[^\n]*)?\)\n",
                   f'local {name} = loadCandidate("{module}")\n', save_service, flags=re.S)
               assert count == 1, name
           parts.append(f"local function loadSaveService(game)\n{save_service}\nend")
@@ -94,7 +135,7 @@ jobs:
           })
           """)
           report = run_task(staging["universeId"], staging["placeIds"]["main"],
-                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=15)
+                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=int(os.getenv("ER_PROBE_REVISION", "15")))
           print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
           assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5
           assert report["datastore"]["actual"] and report["datastore"]["delivered"] == 11

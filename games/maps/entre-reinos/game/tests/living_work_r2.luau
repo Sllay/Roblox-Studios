@@ -88,6 +88,8 @@ for _,worldSeed in ipairs({1,42,1009,870001,516639272,123456789,2147483646}) do
     assert(village.buildings[1].typeId=="castle")
     assert(W.usableStorage(village.buildings[2]) and W.usableStorage(village.buildings[3]))
     assert(village.buildings[4].x<0 and village.buildings[5].x>0)
+    assert(W.districtAt(village,0)=="Centro")
+    assert(W.districtAt(village,-40)=="Oeste" and W.districtAt(village,40)=="Leste")
     local savedVillage=S.restore(village,worldSeed)
     assert(savedVillage and not W.initializeVillage(savedVillage))
     assert(#savedVillage.buildings==#village.buildings)
@@ -275,7 +277,13 @@ for _=1,800 do
     if next(replacement.delivered) then break end
 end
 assert(next(replacement.delivered))
-assert(not W.cancel(cancelling,replacement.id),"delivered materials must not disappear")
+local woodBeforeCancel=total(cancelling,"wood")
+local stoneBeforeCancel=total(cancelling,"stone")
+assert(W.cancel(cancelling,replacement.id))
+assert(not W.cancel(cancelling,replacement.id))
+local recovered=assert(S.restore(cancelling,seed))
+assert(total(recovered,"wood")==woodBeforeCancel and total(recovered,"stone")==stoneBeforeCancel)
+assert(recovered.sites[#recovered.sites].salvage==true)
 print("ENTRE_REINOS_T1_F1_CANCEL: abort releases reservations without losing or minting materials")
 
 local marked=S.new(seed)
