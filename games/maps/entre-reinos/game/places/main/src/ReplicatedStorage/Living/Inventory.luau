@@ -48,7 +48,7 @@ function Inv.transfer(source: any, dest: any, id: string, amount: number): boole
 end
 function Inv.valid(bag: any): boolean
     if type(bag)~="table" or type(bag.items)~="table"
-        or type(bag.maxMass)~="number" or bag.maxMass<1 then return false end
+        or type(bag.maxMass)~="number" or not (bag.maxMass>=1 and bag.maxMass<=100000) then return false end
     local mass=0
     for id,amount in pairs(bag.items) do
         local def=Items.get(id)

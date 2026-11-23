@@ -3,6 +3,7 @@
 -- optional living is versioned independently and migrated on demand.
 local Inventory=require("./Inventory")
 local Professions=require("./ProfessionDefs")
+local Structures=require("./StructureDefs")
 local Items=require("./ItemDefs")
 local R3=require("./R3Engine")
 local Living={}
@@ -43,35 +44,98 @@ function Living.new(seed: number): any
         stats={gathered=0,delivered=0,built=0,repaired=0},
     }
 end
+local function units(n: any): boolean
+    return finite(n) and n>=0 and n%1==0
+end
+
+local function counts(items: any): boolean
+    if type(items)~="table" then return false end
+    for item,count in pairs(items) do
+        if not Items.get(item) or not units(count) then return false end
+    end
+    return true
+end
+
+local function array(value: any, limit: number): boolean
+    if type(value)~="table" or #value>limit then return false end
+    local n=#value
+    local count=0
+    for index in pairs(value) do
+        if not units(index) or index<1 or index>n then return false end
+        count+=1
+    end
+    return count==n
+end
+
 function Living.valid(state: any): boolean
     if type(state)~="table" or state.version~=Living.VERSION
-        or not finite(state.seed) or type(state.npcs)~="table"
-        or type(state.buildings)~="table" or type(state.sites)~="table"
-        or type(state.stats)~="table" or not finite(state.elapsed)
-        or not finite(state.nextBuildingId) then return false end
-    if #state.npcs>50 or #state.buildings>120 or #state.sites>256 then return false end
+        or not finite(state.seed) or not array(state.npcs,50)
+        or not array(state.buildings,120) or not array(state.sites,256)
+        or not array(state.events,100) or not finite(state.elapsed)
+        or state.elapsed<0 or not units(state.nextBuildingId)
+        or state.nextBuildingId<1 or type(state.stats)~="table" then return false end
+    for _,field in ipairs({"gathered","delivered","built","repaired"}) do
+        if not units(state.stats[field]) then return false end
+    end
+    if state.stats.stored~=nil and not units(state.stats.stored) then return false end
     if state.r3~=nil and not R3.valid(state.r3) then return false end
+    local npcIds={}
     for _,n in ipairs(state.npcs) do
-        if type(n)~="table" or not finite(n.id) or not finite(n.x)
+        if type(n)~="table" or not units(n.id) or npcIds[n.id] or not finite(n.x)
             or type(n.name)~="string" or not Professions.get(n.profession)
             or not Inventory.valid(n.inventory) or not finite(n.health)
-            or not finite(n.hunger) or not finite(n.fatigue) then return false end
+            or not finite(n.hunger) or not finite(n.fatigue) or not units(n.reserved)
+            or (n.carryItem~=nil and not Items.get(n.carryItem)) then return false end
+        npcIds[n.id]=true
     end
     for _,site in ipairs(state.sites) do
-        if not Items.get(site.item) or not finite(site.remaining)
-            or site.remaining<0 or not finite(site.x) then return false end
+        -- Older ruins may contain duplicate salvage IDs. Restore disambiguates them.
+        if type(site)~="table" or type(site.id)~="string" or not Items.get(site.item)
+            or not units(site.remaining) or not finite(site.x) then return false end
     end
+    local buildingIds={}
     for _,b in ipairs(state.buildings) do
-        if type(b)~="table" or not finite(b.id) or not finite(b.x)
-            or type(b.typeId)~="string" or type(b.delivered)~="table"
+        if type(b)~="table" or not units(b.id) or b.id>=state.nextBuildingId
+            or buildingIds[b.id] or not finite(b.x) or not finite(b.y)
+            or not Structures.get(b.typeId) or not counts(b.delivered) or not counts(b.claimed)
             or not finite(b.progress) or not finite(b.health)
+            or (b.ruinedStock~=nil and (b.typeId~="stockpile" or not counts(b.ruinedStock)))
+            or (b.ruinCount~=nil and not units(b.ruinCount))
             or (b.stored~=nil and not Inventory.valid(b.stored)) then return false end
+        buildingIds[b.id]=true
     end
     return true
 end
 function Living.restore(data: any, seed: number): any
     if data==nil then return Living.new(seed) end
-    if Living.valid(data) and data.seed==seed then return Living.clone(data) end
-    return nil
+    if not Living.valid(data) or data.seed~=seed then return nil end
+    local restored=Living.clone(data)
+    local ids={}
+    for _,site in ipairs(restored.sites) do ids[site.id]=true end
+    local seen={}
+    for index,site in ipairs(restored.sites) do
+        if seen[site.id] then
+            local id="legacy_salvage_"..tostring(index)
+            while ids[id] do id..="_" end
+            ids[id]=true
+            site.id=id
+        end
+        seen[site.id]=true
+    end
+    local buildings={}
+    for _,building in ipairs(restored.buildings) do
+        buildings[building.id]=building
+        building.claimed={}
+        if building.ruined or building.state=="ruined" then
+            R3.isolateRuinedStock(building)
+        end
+    end
+    for _,npc in ipairs(restored.npcs) do
+        local b=if npc.jobId~=nil then buildings[npc.jobId] else nil
+        if b and npc.carryItem and (npc.state=="gather" or npc.state=="deliver") then
+            b.claimed[npc.carryItem]=(b.claimed[npc.carryItem] or 0)+npc.reserved
+        end
+    end
+    return restored
 end
 return Living

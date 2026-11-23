@@ -1,7 +1,11 @@
 --!strict
 -- Costs are donated from the NPC backpack only; never mint resources on placement.
 local Structures = {}
+Structures.DEPTH_Z = -10
+Structures.PLACEMENT_RANGE = 36
 Structures.all = {
+    castle = {label="Castelo", footprint=17, maxSlope=4, cost={wood=20,stone=36},
+        buildSeconds=80, health=840, storageMass=0, kind="treasury", height=22, buildable=false},
     shelter = {label="Abrigo", footprint=10, maxSlope=5, cost={wood=8,stone=3},
         buildSeconds=20, health=120, storageMass=0, kind="habitation", height=11},
     house = {label="Casa", footprint=14, maxSlope=5, cost={wood=16,stone=8},

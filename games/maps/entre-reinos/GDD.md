@@ -143,3 +143,9 @@ O jogo medieval solo completo sera construido em tres temporadas de 3 runners ca
 - T3 CONTEUDO E POLIMENTO: mais biomas, edificios, NPCs, monstros, montarias, eventos, bosses e localidades; equilibrio, UI mobile, acessibilidade, efeitos/animacoes, performance, tests de regressao, seguranca, monetizacao opcional (se elegivel) e release candidate.
 
 Ordem exata, referencias por runner e gates: docs/SEASON_RUNNERS.md. As fontes e evidencias do jogo original ficam em docs/research; nossas formulas/arquitetura original em ROBLOX_ADAPTATION.md. Depois de cada R3 publicar apenas staging verificado e pedir avaliacao do criador, com tres runners de refinamento se necessario. Sistema multi-jogador/PvP e lore privada continuam fora da versao medieval inicial.
+
+## T1-F1 — interação candidata de construção e estoque
+
+O caderno da vila abre uma prévia verde ou vermelha para a estrutura selecionada. O jogador escolhe o ponto na faixa jogável e confirma a posição após a validação do terreno. Uma obra pode ser cancelada antes de receber material, liberando os trabalhadores e suas reservas. Estorno após entrega segue em aberto.
+
+Novas populações partem de um assentamento com castelo, tesouraria, dois galpões vazios e muralhas laterais. Moradores podem abastecer obras com suas bolsas, com recursos reservados nos galpões ou com novas coletas. Madeiras marcadas têm prioridade quando houver demanda ou espaço para receber o corte. Destroços de galpão isolam os itens que estavam armazenados até ser definida a recuperação.

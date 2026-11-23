@@ -7,7 +7,7 @@ Slots.SCHEMA_VERSION = 1
 -- These are data contracts, not Roblox Place revisions.
 -- Cosmetic/gameplay changes keep these versions untouched.
 Slots.SAVE_FORMAT_VERSION = 1
-Slots.RULESET_VERSION = 1
+Slots.RULESET_VERSION = 2
 Slots.MIN_RULESET_VERSION = 1
 
 function Slots.compatibility(data: any): (boolean, string)
@@ -26,11 +26,9 @@ function Slots.compatibility(data: any): (boolean, string)
     if format<1 or rules<Slots.MIN_RULESET_VERSION then
         return false,"migration_required"
     end
-    if format<Slots.SAVE_FORMAT_VERSION or rules<Slots.RULESET_VERSION then
-        -- Future major changes need explicit, tested migration paths before
-        -- this guard can be lifted.
-        return false,"migration_required"
-    end
+    if format<Slots.SAVE_FORMAT_VERSION then return false,"migration_required" end
+    if rules==1 and Slots.RULESET_VERSION==2 then return true,"legacy_compatible" end
+    if rules~=Slots.RULESET_VERSION then return false,"migration_required" end
     return true,if data.saveFormatVersion==nil then "legacy_compatible" else "compatible"
 end
 
@@ -45,6 +43,10 @@ end
 function Slots.key(userId: number, index: number): string
     assert(userId > 0 and userId % 1 == 0 and Slots.validIndex(index), "invalid world key")
     return "u:" .. tostring(userId) .. ":s:" .. tostring(index)
+end
+
+function Slots.legacyBackupKey(data: any): string
+    return tostring(data.createdAt)..":"..tostring(data.seed)..":"..tostring(data.revision)
 end
 
 function Slots.newWorld(seed: number, now: number, spawn: {x: number, y: number, z: number})
@@ -65,6 +67,12 @@ function Slots.newWorld(seed: number, now: number, spawn: {x: number, y: number,
         regions = {},
         storyFlags = {},
     }
+end
+
+function Slots.validPosition(x: any, y: any, z: any): boolean
+    -- v15 could write positions up to ±121 at the world boundary.
+    return finite(x) and finite(y) and z == 0
+        and math.abs(x) <= 121 and y >= -24 and y <= 76
 end
 
 function Slots.validWorld(data: any): boolean
@@ -89,10 +97,7 @@ function Slots.validWorld(data: any): boolean
         return false
     end
     local p = data.position
-    if type(p) ~= "table" or not finite(p.x) or not finite(p.y) or p.z ~= 0 then
-        return false
-    end
-    if math.abs(p.x) > 120 or p.y < -24 or p.y > 76 then
+    if type(p) ~= "table" or not Slots.validPosition(p.x, p.y, p.z) then
         return false
     end
     if type(data.regions) ~= "table" or type(data.storyFlags) ~= "table" then
@@ -101,15 +106,18 @@ function Slots.validWorld(data: any): boolean
     -- Schema 1 worlds from T1-R1 do not have living; they remain readable.
     -- Population itself has its own migratable schema and must never silently
     -- be discarded when a newer/unknown population record is encountered.
-    if data.living ~= nil and not Living.valid(data.living) then
+    if data.living ~= nil and (not Living.valid(data.living) or data.living.seed ~= data.seed) then
         return false
     end
     return true
 end
 
 function Slots.summary(data: any, index: number)
-    if type(data) ~= "table" or data.deleted == true then
+    if data == nil or (type(data) == "table" and data.deleted == true) then
         return {index = index, exists = false}
+    end
+    if type(data) ~= "table" then
+        return {index = index, exists = true, corrupt = true}
     end
     local compatible,reason=Slots.compatibility(data)
     if not compatible then
@@ -118,7 +126,7 @@ function Slots.summary(data: any, index: number)
             rulesetVersion=data.rulesetVersion or 1}
     end
     if not Slots.validWorld(data) then
-        return {index = index, exists = false, corrupt = true}
+        return {index = index, exists = true, corrupt = true}
     end
     return {
         index = index, exists = true,

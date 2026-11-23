@@ -249,7 +249,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             label.TextXAlignment = Enum.TextXAlignment.Left
             if summary.incompatible then
                 label.Text="Mundo "..tostring(index).." · Versão incompatível (protegido)"
-            elseif summary.exists then
+            elseif summary.exists and not summary.corrupt then
                 label.Text = "Mundo " .. tostring(index) .. "  •  Dia " .. tostring(summary.worldDay or 1)
                 if type(summary.seed) == "number" then
                     label.Text ..= "  •  Seed " .. tostring(summary.seed)
@@ -271,7 +271,7 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             end
             choose.Active = not summary.corrupt and not summary.incompatible
                 and (activeSlot == nil or activeSlot == index)
-            if summary.incompatible then choose.Text="Protegido" end
+            if summary.incompatible or summary.corrupt then choose.Text="Protegido" end
             choose.Activated:Connect(function()
                 if summary.corrupt or summary.incompatible or busy then return end
                 if activeSlot and activeSlot ~= index then
@@ -299,9 +299,9 @@ function SlotMenu.start(remote: RemoteFunction, onWorldLoaded: (any, any) -> ())
             end)
             local remove = button(row, "Delete", "Excluir", UDim2.new(0.22, 0, 0, 34), UDim2.new(0.76, 0, 0.5, -17))
             remove.BackgroundColor3 = Color3.fromRGB(101, 53, 49)
-            remove.Active = summary.exists and not summary.incompatible
+            remove.Active = summary.exists and not summary.incompatible and not summary.corrupt
                 and activeSlot == nil
-            remove.Visible = summary.exists and not summary.incompatible
+            remove.Visible = summary.exists and not summary.incompatible and not summary.corrupt
                 and activeSlot == nil
             remove.Activated:Connect(function()
                 if busy then return end

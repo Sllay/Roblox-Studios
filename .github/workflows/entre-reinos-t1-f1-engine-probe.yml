@@ -1,0 +1,210 @@
+name: Entre Reinos T1-F1 isolated engine probe
+
+on:
+  push:
+    branches: [entre-reinos/t1-f1-integridade]
+    paths:
+      - .github/workflows/entre-reinos-t1-f1-engine-probe.yml
+      - games/maps/entre-reinos/game/places/main/src/ReplicatedStorage/**
+      - games/maps/entre-reinos/game/places/main/src/ServerScriptService/**
+      - games/maps/entre-reinos/game/tests/**
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Published staging revision to verify
+        type: number
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Run candidate domain checks and native Terrain probe in unsaved staging session
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ER_PROBE_REVISION: ${{ inputs.revision || 15 }}
+          ER_READBACK: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          from cloud_tasks import run_task
+
+          game = Path("games/maps/entre-reinos")
+          staging = json.loads((game / "deploy.targets.json").read_text())["environments"]["staging"]
+          src = game / "game/places/main/src/ReplicatedStorage"
+          names = ("WorldProfile", "SlotModel", "SlotLeasePolicy", "WorldRoute", "InputProjection",
+                   "ItemDefs", "ProfessionDefs", "StructureDefs", "Inventory",
+                   "WorkEngine", "R3Engine", "LivingModel")
+          paths = {p.stem: p for p in src.rglob("*.luau")}
+          if os.environ["ER_READBACK"] == "true":
+              checks = {}
+              for script in src.parent.rglob("*.luau"):
+                  rel = list(script.relative_to(src.parent).parts)
+                  if rel[0] == "ReplicatedStorage":
+                      rel.insert(1, "Game")
+                  rel[-1] = script.name.split(".")[0]
+                  checks["/".join(rel)] = base64.b64encode(hashlib.sha256(script.read_bytes()).digest()).decode()
+              source = """
+              local Http=game:GetService("HttpService")
+              local enc=game:GetService("EncodingService")
+              local checks=Http:JSONDecode(__CHECKS__)
+              local matches=0
+              for path,expected in pairs(checks) do
+                  local inst=game
+                  for segment in string.gmatch(path,"[^/]+") do
+                      inst=inst and inst:FindFirstChild(segment)
+                  end
+                  assert(inst and inst:IsA("LuaSourceContainer"),"missing script "..path)
+                  local digest=enc:ComputeBufferHash(buffer.fromstring(inst.Source),Enum.HashAlgorithm.Sha256)
+                  assert(buffer.tostring(enc:Base64Encode(digest))==expected,"source hash differs: "..path)
+                  matches+=1
+              end
+              return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
+                  placeVersion=game.PlaceVersion,sourceMatches=matches})
+              """.replace("__CHECKS__",json.dumps(json.dumps(checks)))
+              report=run_task(staging["universeId"], staging["placeIds"]["main"],
+                              os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source)
+              assert report["loadedVersion"] == int(os.environ["ER_PROBE_REVISION"]), report
+              assert report["sourceMatches"] == len(checks)
+              print("ENTRE_REINOS_T1_F1_PUBLISHED", json.dumps(report,sort_keys=True))
+              raise SystemExit(0)
+          parts = ["""
+          local modules = {}
+          local cache = {}
+          local function loadCandidate(name)
+              if cache[name] == nil then cache[name] = assert(modules[name],name)() end
+              return cache[name]
+          end
+          """]
+
+          def candidate(source):
+              return re.sub(r'require\("([./][^"]*)"\)',
+                            lambda match: f'loadCandidate("{Path(match[1]).name}")', source)
+
+          for name in names:
+              parts.append(f'modules["{name}"]=function()\n{candidate(paths[name].read_text())}\nend')
+          for test in ("region_and_slots", "living_work_r2", "r3_fundamentals"):
+              source = candidate((game / "game/tests" / (test + ".luau")).read_text())
+              parts.append(f"do\n{source}\nend")
+
+          save_service = (game / "game/places/main/src/ServerScriptService/Services/SaveSlotService.luau").read_text()
+          for name, module in (("Slots", "SlotModel"), ("WorldProfile", "WorldProfile"),
+                               ("Policy", "SlotLeasePolicy"), ("LivingModel", "LivingModel")):
+              save_service, count = re.subn(
+                  rf"local {name} = require\(ReplicatedStorage:[^\n]*(?:\n +:[^\n]*)?\)\n",
+                  f'local {name} = loadCandidate("{module}")\n', save_service, flags=re.S)
+              assert count == 1, name
+          parts.append(f"local function loadSaveService(game)\n{save_service}\nend")
+          parts.append((game / "game/tests/staging_datastore.luau").read_text())
+
+          living_service = (game / "game/places/main/src/ServerScriptService/Services/LivingService.luau").read_text()
+          placement = living_service.split("local function placementGround(",1)[1].split("\nactions.OnServerInvoke=",1)[0]
+          parts.append("""
+          local seed=516639272
+          local service=require(game:GetService("ServerScriptService"):WaitForChild("Services"):WaitForChild("WorldService"))
+          local activated,errorCode=service.activate(seed)
+          assert(activated,errorCode)
+          local params=RaycastParams.new()
+          params.FilterType=Enum.RaycastFilterType.Include
+          params.FilterDescendantsInstances={workspace.Terrain}
+          local state=loadCandidate("LivingModel").new(seed)
+          local work=loadCandidate("WorkEngine")
+          assert(work.initializeVillage(state))
+          for _,b in ipairs(state.buildings) do
+              local hit=workspace:Raycast(Vector3.new(b.x,70,-10),Vector3.new(0,-120,0),params)
+              assert(hit and hit.Material~=Enum.Material.Water and math.abs(b.y-hit.Position.Y)<=3,
+                  "starter building lacks Terrain support: "..b.typeId)
+          end
+          assert(not work.canPlace(state,"wall",76))
+          local function probePlacement()
+              local Work,WorldService=work,service
+              local Structures,Profile=loadCandidate("StructureDefs"),loadCandidate("WorldProfile")
+              local groundCast=params
+              groundCast.IgnoreWater=true
+              local state=loadCandidate("LivingModel").new(seed)
+              local function placementGround(__PLACEMENT__
+              local mockCharacter=Instance.new("Model")
+              local root=Instance.new("Part")
+              root.Anchored=true
+              root.Position=Vector3.new(18,24,0)
+              root.Parent=mockCharacter
+              mockCharacter.Parent=workspace
+              local ok,y=placementGround("shelter",18,root)
+              assert(ok,tostring(y))
+              local solid=Instance.new("Part")
+              solid.Anchored=true
+              solid.CanCollide=true
+              solid.Position=Vector3.new(18,y+3,Structures.DEPTH_Z)
+              solid.Parent=workspace
+              local free,why=placementGround("shelter",18,root)
+              assert(not free and why=="solid_obstruction",tostring(why))
+              solid:Destroy()
+              local placed,b=Work.place(state,"shelter",18,y)
+              assert(placed and b.x==18 and b.y==y)
+              assert(not placementGround("house",18,root))
+              local water,waterReason=placementGround("wall",76,root)
+              assert(not water and waterReason=="invalid_footprint_or_slope")
+              -- Read a natural slope from the generated western chunk. In
+              -- edit sessions a second in-place Terrain sculpt need not
+              -- update the raycast representation synchronously.
+              assert(WorldService.ensureNear(seed,-104))
+              local probeDef=table.clone(Structures.get("shelter"))
+              assert(Structures.register("slope_probe",probeDef))
+              probeDef=Structures.get("slope_probe")
+              local testedSlope=false
+              for x=-110,-49 do
+                  local low,high=math.huge,-math.huge
+                  for _,dx in ipairs({-5,5}) do
+                      for _,dz in ipairs({-3.5,3.5}) do
+                          local hit=workspace:Raycast(Vector3.new(x+dx,70,Structures.DEPTH_Z+dz),
+                              Vector3.new(0,-120,0),groundCast)
+                          if hit then
+                              low=math.min(low,hit.Position.Y)
+                              high=math.max(high,hit.Position.Y)
+                          end
+                      end
+                  end
+                  local rise=high-low
+                  if rise>0.3 then
+                      probeDef.maxSlope=rise-0.2
+                      if Work.canPlace(state,"slope_probe",x) then
+                          root.Position=Vector3.new(x,24,0)
+                          local uneven,slopeReason=placementGround("slope_probe",x,root)
+                          assert(not uneven and slopeReason=="invalid_footprint_or_slope",tostring(slopeReason))
+                          testedSlope=true
+                          break
+                      end
+                  end
+              end
+              assert(testedSlope,"no native slope fixture in seeded terrain")
+              mockCharacter:Destroy()
+              return true
+          end
+          local placementVerified=probePlacement()
+          return game:GetService("HttpService"):JSONEncode({
+              universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
+              version=game.PlaceVersion,domainSuites=3,starterBuildings=#state.buildings,datastore=datastoreResult,
+              terrainChunks=service.getChunkCount(),seed=seed,placementVerified=placementVerified
+          })
+          """.replace("__PLACEMENT__",placement))
+          report = run_task(staging["universeId"], staging["placeIds"]["main"],
+                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=int(os.getenv("ER_PROBE_REVISION", "15")))
+          print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
+          assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5 and report["placementVerified"]
+          assert report["datastore"]["actual"] and report["datastore"]["delivered"] == 11
+          PY

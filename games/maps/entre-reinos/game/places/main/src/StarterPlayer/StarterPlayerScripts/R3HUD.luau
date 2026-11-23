@@ -33,7 +33,7 @@ local errorTexts={
     drop_not_found="Moeda não encontrada.",
     invalid_coin_drop="Não há moedas disponíveis na bolsa.",
     treasury_empty="O tesouro da vila está sem moedas.",
-    resource_unavailable="Recurso indisponível nas fontes.",
+    resource_unavailable="Leve madeira na bolsa ou abasteça um galpão próximo.",
     wood_stock_required="Faltam 2 madeiras na bolsa. Colete na árvore ou no galpão.",
     wood_source_too_far="Sem madeira próxima. Siga a indicação da árvore na oficina.",
     player_bag_full="Sua bolsa está cheia. Use a madeira antes de recolher mais.",
@@ -200,9 +200,15 @@ function UI.start(player: Player)
     content.Name="JournalContent"
     content.BackgroundTransparency=1
     content.Position=UDim2.fromOffset(12,93)
-    content.Size=UDim2.new(1,-24,1,-108)
+    content.Size=UDim2.new(1,-24,1,-145)
     content.ClipsDescendants=true
     content.Parent=journal
+
+    local exitWorld=button(journal,"SaveAndReturn","SALVAR E VOLTAR")
+    exitWorld.AnchorPoint=Vector2.new(0.5,1)
+    exitWorld.Position=UDim2.new(0.5,0,1,-10)
+    exitWorld.Size=UDim2.new(1,-24,0,34)
+    exitWorld.BackgroundColor3=C.surface
 
     local toast=label(gui,"GameFeedback","",13,C.paper)
     toast.TextXAlignment=Enum.TextXAlignment.Center
@@ -223,6 +229,33 @@ function UI.start(player: Player)
         end)
     end
 
+    local returning=false
+    exitWorld.Activated:Connect(function()
+        if returning then return end
+        local slots=ReplicatedStorage.Game:FindFirstChild("ER_WorldSlots")
+        if not slots or not slots:IsA("RemoteFunction") then
+            notify("Conexão com o mundo indisponível.")
+            return
+        end
+        returning=true
+        exitWorld.Text="SALVANDO…"
+        local ok,answer=pcall(function() return slots:InvokeServer("return") end)
+        if not ok or type(answer)~="table" or not answer.ok then
+            returning=false
+            exitWorld.Text="SALVAR E VOLTAR"
+            notify(if ok and type(answer)=="table" and answer.error=="teleport_request_failed"
+                then "Progresso salvo. A volta ao lobby falhou."
+                else "Não foi possível confirmar a saída. Tente novamente.")
+            return
+        end
+        exitWorld.Text="VOLTANDO…"
+        task.delay(12,function()
+            if not gui.Parent then return end
+            returning=false
+            exitWorld.Text="SALVAR E VOLTAR"
+        end)
+    end)
+
     local snapshot: any=nil
     local nearby: any={}
     local hud: any={}
@@ -232,6 +265,7 @@ function UI.start(player: Player)
     local tabsUI: {[string]: TextButton}={}
     local pages: {[string]: GuiObject}={}
     local builders: any=nil
+    local closeJournal: ()->()=function() end
 
     local refreshStatus: ()->()
     local function request(action: string,arg: any?)
@@ -274,7 +308,7 @@ function UI.start(player: Player)
 
     local builds=BuildMenu.mount(content,remote,notify,function()
         task.defer(function() refreshStatus() end)
-    end)
+    end,player,function() closeJournal() end)
     builders=builds
     pages.build=content:FindFirstChild("ConstructionCatalog") :: GuiObject
 
@@ -370,7 +404,7 @@ function UI.start(player: Player)
         end
     end)
     craftButton.Activated:Connect(function()
-        if (hud.playerWood or 0)<2 and (nearby.wood or 0)<2 then
+        if (hud.playerWood or 0)<2 and nearby.canCraftArrows~=true then
             local dist=nearby.nearestWoodDistance or -1
             if dist>=0 then
                 notify("Madeira disponível "..tostring(dist).." studs à "..
@@ -414,12 +448,14 @@ function UI.start(player: Player)
     local refreshContext: ()->()=function() end
 
     local function showJournal(value: boolean,nextTab: string?)
+        if value then builds.closePreview() end
         journal.Visible=value
         openJournal.Text=if value then "FECHAR" else "VILA"
         if nextTab then showTab(nextTab) end
         if value then task.defer(function() refreshStatus() end) end
         refreshContext()
     end
+    closeJournal=function() showJournal(false,nil) end
     openJournal.Activated:Connect(function()
         showJournal(not journal.Visible,if not journal.Visible then "build" else nil)
     end)
@@ -565,10 +601,11 @@ function UI.start(player: Player)
         local reserved=if resources then resources.reserved else nil
         local committed=if resources then resources.committed else nil
         local stocked=if resources then resources.stored else nil
+        local isolated=if resources then resources.isolated else nil
         if not sources then
             stock.Text="FONTES DA VILA  ·  consultando..."
         else
-            stock.Text="VILA  ·  MADEIRA "..tostring(sources.wood or 0).."+"..
+            stock.Text=(nearby.district or "Vila").."  ·  MADEIRA "..tostring(sources.wood or 0).."+"..
                 tostring(if stocked then stocked.wood or 0 else 0)..
                 "   PEDRA "..tostring(sources.stone or 0)..
                 "   FERRO "..tostring(sources.iron or 0)..
@@ -581,7 +618,9 @@ function UI.start(player: Player)
                 "  ·  Nas bolsas "..tostring(if carried then carried[item] or 0 else "?")..
                 "\nReservado "..tostring(if reserved then reserved[item] or 0 else "?")..
                 "  ·  Aplicado "..tostring(if committed then committed[item] or 0 else "?")..
-                "  ·  No galpão "..tostring(if stocked then stocked[item] or 0 else "?")
+                "  ·  No galpão "..tostring(if stocked then stocked[item] or 0 else "?")..
+                (if isolated and (isolated[item] or 0)>0 then
+                    "\nIsolado nas ruínas "..tostring(isolated[item]) else "")
         end
         if builders then builders.update(snapshot) end
 
@@ -605,7 +644,8 @@ function UI.start(player: Player)
                 end
                 local stateName={
                     gather="coletando",deliver="transportando",build="construindo",
-                    idle="disponível",rest="descansando"}
+                    idle="disponível",rest="descansando",
+                    store_gather="buscando estoque",store_deliver="levando ao galpão"}
                 local role=if w.defense=="bow" then " · arqueiro"
                     else if w.defense=="spear" then " · lanceiro" else ""
                 local profession=Professions.get(w.profession)
@@ -643,16 +683,16 @@ function UI.start(player: Player)
         collectButton.Active=true
         craftButton.Active=true
         collectButton.BackgroundColor3=if siteWood>=2 then C.raised else C.surface
-        local canCraft=(bagWood>=2 or siteWood>=2) and
+        local canCraft=(bagWood>=2 or nearby.canCraftArrows==true) and
             (player:GetAttribute("ER_R3Arrows") or 0)<=24
         craftButton.BackgroundColor3=if canCraft then C.raised else C.surface
-        tradeInfo.Text="VENDER MADEIRA  ·  1 unidade por 1 moeda, paga pelo tesouro"..
-            "\nComércio no centro: "..(if nearby.canTrade then "próximo" else "longe")..
-            "   ·   Tesouro: "..tostring(hud.treasury or "?")
-        tradeButton.Active=nearby.canTrade==true and (hud.treasury or 0)>=1
-            and sources~=nil
-            and ((sources.wood or 0)+(if stocked then stocked.wood or 0 else 0))>=1
-        tradeButton.BackgroundColor3=if tradeButton.Active then C.raised else C.surface
+        local tradeStatus=if not nearby.canTrade then "Aproxime-se do centro da vila."
+            elseif (hud.treasury or 0)<1 then "O tesouro não tem moedas."
+            elseif not nearby.canSellWood then "Traga madeira na bolsa ou abasteça um galpão próximo."
+            else "Madeira disponível para venda."
+        tradeInfo.Text="1 MADEIRA POR 1 MOEDA\n"..tradeStatus
+        tradeButton.BackgroundColor3=if nearby.canTrade and nearby.canSellWood
+            and (hud.treasury or 0)>=1 then C.raised else C.surface
         coinsInfo.Text="SUA BOLSA  ·  "..tostring(player:GetAttribute("ER_R3Wallet") or 0)..
             " moedas. Soltar uma moeda deixa um item físico no chão."
         dropCoin.Active=(player:GetAttribute("ER_R3Wallet") or 0)>0
