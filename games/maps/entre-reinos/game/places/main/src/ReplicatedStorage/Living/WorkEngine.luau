@@ -47,13 +47,28 @@ local function clearJob(npc: any, state: any)
     npc.reserved=0
     npc.state="idle"
 end
+function Engine.releaseBuildingJobs(state: any, buildingId: number)
+    for _,npc in ipairs(state.npcs) do
+        if npc.jobId==buildingId or npc.storageId==buildingId then clearJob(npc,state) end
+    end
+end
+
+function Engine.sourceAvailable(state: any, site: any, except: any?): number
+    local remaining=site.remaining
+    for _,npc in ipairs(state.npcs) do
+        if npc~=except and npc.siteId==site.id and npc.carryItem==site.item
+            and (npc.state=="gather" or npc.state=="store_gather") then
+            remaining-=npc.reserved
+        end
+    end
+    return math.max(0,remaining)
+end
+
 local function availableSource(state: any, item: string, x: number): any
     local best=nil
     local bestDist=math.huge
     for _,site in ipairs(state.sites) do
-        if site.item==item and site.remaining>0 then
-            -- Player-marked harvest trees are preferred by carpenters.
-            -- Marking never duplicates wood or bypasses the NPC bag.
+        if site.item==item and Engine.sourceAvailable(state,site)>0 then
             local distance=math.abs(x-site.x)
                 -(if item=="wood" and site.marked==true then 80 else 0)
             if distance<bestDist then
@@ -64,14 +79,34 @@ local function availableSource(state: any, item: string, x: number): any
     end
     return best
 end
+
 local STOCK_TARGET={wood=24,stone=15,iron=10,food=20}
-local function storeBuilding(state: any, id: any): any
-    for _,b in ipairs(state.buildings) do
-        if b.id==id and b.typeId=="stockpile" and b.state=="complete"
-            and b.health>0 and b.stored then return b end
-    end
-    return nil
+function Engine.usableStorage(b: any): boolean
+    return b~=nil and b.typeId=="stockpile" and b.state=="complete"
+        and b.health>0 and b.ruined~=true and b.stored~=nil
 end
+
+local function storeBuilding(state: any, id: any): any
+    local b=findBuilding(state,id)
+    return if Engine.usableStorage(b) then b else nil
+end
+
+function Engine.stockAvailable(state: any, b: any, item: string, except: any?): number
+    if not Engine.usableStorage(b) then return 0 end
+    local count=Inventory.count(b.stored,item)
+    for _,npc in ipairs(state.npcs) do
+        if npc~=except and npc.storageId==b.id and npc.carryItem==item
+            and npc.state=="gather" then
+            count-=npc.reserved
+        end
+    end
+    return math.max(0,count)
+end
+
+local function freeUnits(bag: any, item: string): number
+    return math.floor((bag.maxMass-Inventory.weight(bag))/Items.get(item).mass)
+end
+
 local function assignStorage(npc: any,state: any): boolean
     -- Low priority after construction. Stocking is not a free resource mint:
     -- resources first enter a real worker bag, then a finite galpão inventory.
@@ -83,18 +118,20 @@ local function assignStorage(npc: any,state: any): boolean
         if storeBuilding(state,b.id) then
             for _,id in ipairs({"wood","stone","iron","food"}) do
                 local current=Inventory.count(b.stored,id)
-                local stockedSpace=b.stored.maxMass-Inventory.weight(b.stored)
-                local def=Items.get(id)
-                if current<STOCK_TARGET[id] and stockedSpace>=def.mass then
+                local carried=Inventory.count(npc.inventory,id)
+                if freeUnits(b.stored,id)>0 and (carried>0
+                    or (current<STOCK_TARGET[id] and freeUnits(npc.inventory,id)>0)) then
                     -- Return already-carried items before gathering any more.
-                    local carried=Inventory.count(npc.inventory,id)
                     local s=if carried>0 then nil else availableSource(state,id,npc.x)
-                    if carried>0 or (s and s.remaining>0) then
+                    if carried>0 or s then
                         local score=math.abs(npc.x-b.x)
                             +(if s then math.abs(s.x-b.x) else 0)
                             -(if carried>0 then 500 else 0)
                         if score<distance then
-                            distance=score;best=b;item=id;source=s
+                            distance=score
+                            best=b
+                            item=id
+                            source=s
                         end
                     end
                 end
@@ -102,12 +139,10 @@ local function assignStorage(npc: any,state: any): boolean
         end
     end
     if best and item then
-        local available=if source then source.remaining
+        local available=if source then Engine.sourceAvailable(state,source)
             else Inventory.count(npc.inventory,item)
-        local free=math.floor((npc.inventory.maxMass-
-            Inventory.weight(npc.inventory))/Items.get(item).mass)
-        local maxCount=math.floor((best.stored.maxMass-
-            Inventory.weight(best.stored))/Items.get(item).mass)
+        local free=freeUnits(npc.inventory,item)
+        local maxCount=freeUnits(best.stored,item)
         local amount=if source then math.min(available,free,maxCount,
             STOCK_TARGET[item]-Inventory.count(best.stored,item),
             Professions.gatherYield(npc.profession,item))
@@ -150,51 +185,59 @@ local function assign(npc: any, state: any): boolean
         npc.state="build"
         return true
     end
-    -- Choose a valid site/building pair. A worker claims quantities *before*
-    -- travelling; two NPCs therefore never reserve the same missing boards.
     local winner=nil
     local chosenItem=nil
     local source=nil
+    local storage=nil
+    local amount=0
     local bestUtility=-math.huge
+    local function consider(b: any,item: string,count: number,score: number,site: any,depot: any)
+        if count>0 and score>bestUtility then
+            winner=b
+            chosenItem=item
+            source=site
+            storage=depot
+            amount=count
+            bestUtility=score
+        end
+    end
     for _,b in ipairs(state.buildings) do
-        if b.state~="complete" then
+        if b.state=="blueprint" or b.state=="ruined" then
             local def=Structures.get(b.typeId)
-            if def then
-                for item,quantity in pairs(def.cost) do
-                    local missing=needed(b,item)
-                    if missing>0 then
-                        local s=availableSource(state,item,npc.x)
-                        if s then
-                            local score=200-(math.abs(npc.x-s.x)+math.abs(s.x-b.x))*0.35
-                                -npc.fatigue*0.15+math.min(25,missing*2)
-                                +(Professions.gatherYield(npc.profession,item)-1)*12
-                            if score>bestUtility then
-                                bestUtility=score
-                                winner=b
-                                chosenItem=item
-                                source=s
-                            end
-                        end
+            for _,item in ipairs({"wood","stone","iron","food"}) do
+                local missing=needed(b,item)
+                if missing<=0 or not def.cost[item] then continue end
+                consider(b,item,math.min(missing,Inventory.count(npc.inventory,item)),
+                    500-math.abs(npc.x-b.x),nil,nil)
+                local limit=math.min(missing,freeUnits(npc.inventory,item),
+                    Professions.gatherYield(npc.profession,item))
+                if limit<=0 then continue end
+                for _,depot in ipairs(state.buildings) do
+                    local free=Engine.stockAvailable(state,depot,item)
+                    if free>0 then
+                        consider(b,item,math.min(limit,free),
+                            325-(math.abs(npc.x-depot.x)+math.abs(depot.x-b.x))*0.35,nil,depot)
                     end
+                end
+                local site=availableSource(state,item,npc.x)
+                if site then
+                    local score=200-(math.abs(npc.x-site.x)+math.abs(site.x-b.x))*0.35
+                        -npc.fatigue*0.15+math.min(25,missing*2)
+                        +(Professions.gatherYield(npc.profession,item)-1)*12
+                    consider(b,item,math.min(limit,Engine.sourceAvailable(state,site)),score,site,nil)
                 end
             end
         end
     end
-    if winner and chosenItem and source then
-        local itemDef=Items.get(chosenItem)
-        local free=math.floor((npc.inventory.maxMass-Inventory.weight(npc.inventory))
-            /itemDef.mass)
-        local amount=math.min(needed(winner,chosenItem),free,
-            Professions.gatherYield(npc.profession,chosenItem),source.remaining)
-        if amount>0 then
-            winner.claimed[chosenItem]=(winner.claimed[chosenItem] or 0)+amount
-            npc.jobId=winner.id
-            npc.siteId=source.id
-            npc.carryItem=chosenItem
-            npc.reserved=amount
-            npc.state="gather"
-            return true
-        end
+    if winner and chosenItem then
+        winner.claimed[chosenItem]=(winner.claimed[chosenItem] or 0)+amount
+        npc.jobId=winner.id
+        npc.siteId=if source then source.id else nil
+        npc.storageId=if storage then storage.id else nil
+        npc.carryItem=chosenItem
+        npc.reserved=amount
+        npc.state=if source or storage then "gather" else "deliver"
+        return true
     end
     return assignStorage(npc,state)
 end
@@ -317,10 +360,10 @@ function Engine.step(state: any, dt: number)
                 local source=findSite(state,npc.siteId)
                 local item=npc.carryItem
                 if not storage or not source or not item
-                    or source.remaining<=0 then
+                    or source.item~=item then
                     clearJob(npc,state)
                 elseif walk(npc,source.x,dt) then
-                    local n=math.min(npc.reserved,source.remaining)
+                    local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc))
                     if n>0 and Inventory.add(npc.inventory,item,n) then
                         source.remaining-=n
                         state.stats.gathered+=n
@@ -352,13 +395,25 @@ function Engine.step(state: any, dt: number)
                 local item=npc.carryItem
                 if npc.state=="gather" and item then
                     local site=findSite(state,npc.siteId)
-                    if not site or site.remaining<=0 then
+                    local storage=storeBuilding(state,npc.storageId)
+                    if not storage and (not site or site.item~=item) then
                         clearJob(npc,state)
-                    elseif walk(npc,site.x,dt) then
-                        local n=math.min(npc.reserved,site.remaining)
-                        if n>0 and Inventory.add(npc.inventory,item,n) then
-                            site.remaining-=n
-                            state.stats.gathered+=n
+                    elseif walk(npc,if storage then storage.x else site.x,dt) then
+                        local available=if storage then Engine.stockAvailable(state,storage,item,npc)
+                            else Engine.sourceAvailable(state,site,npc)
+                        local n=math.min(npc.reserved,available)
+                        local pickedUp=n>0 and (if storage then
+                            Inventory.transfer(storage.stored,npc.inventory,item,n)
+                            else Inventory.add(npc.inventory,item,n))
+                        if pickedUp then
+                            if not storage then
+                                site.remaining-=n
+                                state.stats.gathered+=n
+                            end
+                            b.claimed[item]-=npc.reserved-n
+                            npc.reserved=n
+                            npc.siteId=nil
+                            npc.storageId=nil
                             npc.state="deliver"
                         else
                             clearJob(npc,state)
@@ -425,6 +480,7 @@ function Engine.summary(state: any): any
     local reserved={wood=0,stone=0,iron=0,food=0}
     local committed={wood=0,stone=0,iron=0,food=0}
     local deposited={wood=0,stone=0,iron=0,food=0}
+    local isolated={wood=0,stone=0,iron=0,food=0}
     for _,site in ipairs(state.sites) do
         sources[site.item]=(sources[site.item] or 0)+site.remaining
         if site.item=="wood" and site.marked==true and site.remaining>0 then
@@ -437,10 +493,13 @@ function Engine.summary(state: any): any
         end
     end
     for _,b in ipairs(state.buildings) do
-        if b.typeId=="stockpile" and b.stored then
+        if Engine.usableStorage(b) then
             for item,count in pairs(b.stored.items) do
                 deposited[item]=(deposited[item] or 0)+count
             end
+        end
+        for item,count in pairs(b.ruinedStock or {}) do
+            isolated[item]=(isolated[item] or 0)+count
         end
         for item,count in pairs(b.claimed) do
             reserved[item]=(reserved[item] or 0)+count
@@ -467,6 +526,6 @@ function Engine.summary(state: any): any
     end
     return {buildings=buildings,workers=workers,stats=table.clone(state.stats),
         resources={sources=sources,carried=carried,reserved=reserved,
-            committed=committed,stored=deposited,markedTrees=markedTrees}}
+            committed=committed,stored=deposited,isolated=isolated,markedTrees=markedTrees}}
 end
 return Engine

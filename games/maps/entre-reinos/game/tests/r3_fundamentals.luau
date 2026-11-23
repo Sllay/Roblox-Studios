@@ -59,8 +59,11 @@ assert(R3.trade(fresh,"fake",0)==false)
 local woodBefore=fresh.sites[1].remaining
 local treasuryBefore=d.treasury
 local balanceBefore=d.wallet
+assert(not R3.trade(fresh,"wood",0),"trade cannot sell raw materials from a remote site")
+local Inventory=require("../places/main/src/ReplicatedStorage/Living/Inventory")
+assert(Inventory.add(d.playerBag,"wood",1))
 assert(R3.trade(fresh,"wood",0))
-assert(fresh.sites[1].remaining==woodBefore-1)
+assert(Inventory.count(d.playerBag,"wood")==0 and fresh.sites[1].remaining==woodBefore)
 assert(d.treasury==treasuryBefore-1 and d.wallet==balanceBefore+1)
 assert(R3.trade(fresh,"wood",100)==false,"trade not possible outside village")
 assert(d.wallet+d.treasury==balanceBefore+treasuryBefore,

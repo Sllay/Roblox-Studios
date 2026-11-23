@@ -121,3 +121,18 @@ print("ENTRE_REINOS_NATIVE_INPUT: analog X/Y, swim Z-to-height, diagonal and fac
 
 -- Water and swimming state are now exclusively owned by native Terrain/Humanoid.
 -- InputProjection is the only custom translation for vertical swim controls.
+
+local boundary = S.newWorld(42, 100, W.spawn(42))
+for _, x in ipairs({-121, -120.5, 120.5, 121}) do
+    boundary.position.x = x
+    assert(S.validWorld(boundary), "v15 boundary position must remain loadable")
+end
+boundary.position.x = 121.01
+assert(not S.validWorld(boundary))
+assert(S.summary(boundary, 1).exists and S.summary(boundary, 1).corrupt)
+assert(S.summary("invalid payload", 1).exists and S.summary("invalid payload", 1).corrupt)
+local Living = require("../places/main/src/ReplicatedStorage/Living/LivingModel")
+local wrongSeed: any = S.newWorld(42, 100, W.spawn(42))
+wrongSeed.living = Living.new(43)
+assert(not S.validWorld(wrongSeed), "population from another seed cannot replace the slot")
+print("ENTRE_REINOS_T1_F1_SAVE: legacy boundary, protected corrupt slots and population seed passed")

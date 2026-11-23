@@ -67,6 +67,12 @@ function Slots.newWorld(seed: number, now: number, spawn: {x: number, y: number,
     }
 end
 
+function Slots.validPosition(x: any, y: any, z: any): boolean
+    -- v15 could write positions up to ±121 at the world boundary.
+    return finite(x) and finite(y) and z == 0
+        and math.abs(x) <= 121 and y >= -24 and y <= 76
+end
+
 function Slots.validWorld(data: any): boolean
     if type(data) ~= "table" then
         return false
@@ -89,10 +95,7 @@ function Slots.validWorld(data: any): boolean
         return false
     end
     local p = data.position
-    if type(p) ~= "table" or not finite(p.x) or not finite(p.y) or p.z ~= 0 then
-        return false
-    end
-    if math.abs(p.x) > 120 or p.y < -24 or p.y > 76 then
+    if type(p) ~= "table" or not Slots.validPosition(p.x, p.y, p.z) then
         return false
     end
     if type(data.regions) ~= "table" or type(data.storyFlags) ~= "table" then
@@ -101,15 +104,18 @@ function Slots.validWorld(data: any): boolean
     -- Schema 1 worlds from T1-R1 do not have living; they remain readable.
     -- Population itself has its own migratable schema and must never silently
     -- be discarded when a newer/unknown population record is encountered.
-    if data.living ~= nil and not Living.valid(data.living) then
+    if data.living ~= nil and (not Living.valid(data.living) or data.living.seed ~= data.seed) then
         return false
     end
     return true
 end
 
 function Slots.summary(data: any, index: number)
-    if type(data) ~= "table" or data.deleted == true then
+    if data == nil or (type(data) == "table" and data.deleted == true) then
         return {index = index, exists = false}
+    end
+    if type(data) ~= "table" then
+        return {index = index, exists = true, corrupt = true}
     end
     local compatible,reason=Slots.compatibility(data)
     if not compatible then
@@ -118,7 +124,7 @@ function Slots.summary(data: any, index: number)
             rulesetVersion=data.rulesetVersion or 1}
     end
     if not Slots.validWorld(data) then
-        return {index = index, exists = false, corrupt = true}
+        return {index = index, exists = true, corrupt = true}
     end
     return {
         index = index, exists = true,

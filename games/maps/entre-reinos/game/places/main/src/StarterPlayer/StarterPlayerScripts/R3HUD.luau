@@ -565,6 +565,7 @@ function UI.start(player: Player)
         local reserved=if resources then resources.reserved else nil
         local committed=if resources then resources.committed else nil
         local stocked=if resources then resources.stored else nil
+        local isolated=if resources then resources.isolated else nil
         if not sources then
             stock.Text="FONTES DA VILA  ·  consultando..."
         else
@@ -581,7 +582,9 @@ function UI.start(player: Player)
                 "  ·  Nas bolsas "..tostring(if carried then carried[item] or 0 else "?")..
                 "\nReservado "..tostring(if reserved then reserved[item] or 0 else "?")..
                 "  ·  Aplicado "..tostring(if committed then committed[item] or 0 else "?")..
-                "  ·  No galpão "..tostring(if stocked then stocked[item] or 0 else "?")
+                "  ·  No galpão "..tostring(if stocked then stocked[item] or 0 else "?")..
+                (if isolated and (isolated[item] or 0)>0 then
+                    "\nIsolado nas ruínas "..tostring(isolated[item]) else "")
         end
         if builders then builders.update(snapshot) end
 
@@ -605,7 +608,8 @@ function UI.start(player: Player)
                 end
                 local stateName={
                     gather="coletando",deliver="transportando",build="construindo",
-                    idle="disponível",rest="descansando"}
+                    idle="disponível",rest="descansando",
+                    store_gather="buscando estoque",store_deliver="levando ao galpão"}
                 local role=if w.defense=="bow" then " · arqueiro"
                     else if w.defense=="spear" then " · lanceiro" else ""
                 local profession=Professions.get(w.profession)

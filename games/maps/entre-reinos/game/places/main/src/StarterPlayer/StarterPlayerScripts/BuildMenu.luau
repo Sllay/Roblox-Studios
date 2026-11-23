@@ -152,6 +152,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         end
         local stocks=if snapshot and snapshot.resources then snapshot.resources.sources else nil
         local bags=if snapshot and snapshot.resources then snapshot.resources.carried else nil
+        local stocked=if snapshot and snapshot.resources then snapshot.resources.stored else nil
         local reserved=if snapshot and snapshot.resources then snapshot.resources.reserved else nil
         for _,id in ipairs(order) do
             local def=Structures.get(id)
@@ -160,7 +161,9 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
             for _,item in ipairs({"wood","stone","iron","food"}) do
                 local required=def.cost[item]
                 if required then
-                    local inWorld=if stocks then (stocks[item] or 0)+(if bags then bags[item] or 0 else 0) else 0
+                    local inWorld=if stocks then (stocks[item] or 0)
+                        +(if bags then bags[item] or 0 else 0)
+                        +(if stocked then stocked[item] or 0 else 0) else 0
                     local free=math.max(0,inWorld-(if reserved then reserved[item] or 0 else 0))
                     if stocks and free<required then low=true end
                     table.insert(rows,(names[item] or item).." "..tostring(required)

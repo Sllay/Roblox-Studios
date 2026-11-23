@@ -326,7 +326,7 @@ local function createSiteVisual(site: any)
     if not visualization then return end
     local pos=Profile.sample(state.seed,site.x,0)
     local anchor: BasePart
-    if site.item=="wood" then
+    if site.item=="wood" and not site.salvage and not string.match(site.id,"salvage_") then
         -- Distinct harvestable tree; background trees remain decoration.
         local tree=Instance.new("Model")
         tree.Name="HarvestableTree_"..tostring(site.id)
@@ -589,7 +589,8 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
             end
             local nearestWood=math.huge
             for _,site in ipairs(state.sites) do
-                if site.item=="wood" and site.remaining>=2 then
+                local available=Work.sourceAvailable(state,site)
+                if site.item=="wood" and available>=2 then
                     local distance=math.abs(site.x-x)
                     if distance<nearestWood then
                         nearestWood=distance
@@ -601,17 +602,15 @@ actions.OnServerInvoke=function(player: Player,action: any,typeId: any): any
                     if distance<=11 and math.abs(root.Position.Y-(surface+3))<=11 then
                         -- Do not claim that two depleted sources add up to
                         -- one craftable batch; use one real source at a time.
-                        nearby.wood=math.max(nearby.wood,site.remaining)
+                        nearby.wood=math.max(nearby.wood,available)
                     end
                 end
             end
             for _,b in ipairs(state.buildings) do
-                if b.typeId=="stockpile" and b.state=="complete"
-                    and b.health>0 and b.stored
-                    and math.abs(b.x-x)<=13 then
+                if Work.usableStorage(b) and math.abs(b.x-x)<=13 then
                     if math.abs(root.Position.Y-(b.y+3))<=12 then
                         nearby.wood=math.max(nearby.wood,
-                            b.stored.items.wood or 0)
+                            Work.stockAvailable(state,b,"wood"))
                     end
                 end
             end

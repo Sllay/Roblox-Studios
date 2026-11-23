@@ -134,7 +134,8 @@ function SaveSlotService.delete(player: Player, index: number): (boolean, any)
             if lockedByOther(old, token, now) then
                 return nil
             end
-            if type(old) == "table" and old.deleted ~= true and not Slots.validWorld(old) then
+            if old ~= nil and not (type(old) == "table" and old.deleted == true)
+                and not Slots.validWorld(old) then
                 return nil -- Never delete an unknown future schema automatically.
             end
             return {deleted = true, schemaVersion = Slots.SCHEMA_VERSION, deletedAt = now, deleteId = token}
@@ -149,28 +150,26 @@ function SaveSlotService.delete(player: Player, index: number): (boolean, any)
     return true, {index = index, exists = false}
 end
 
-local function trackWorld(player: Player, s: any)
+local function trackWorld(player: Player, s: any, record: any): number
     local now = os.clock()
     -- A failed world load must never record the menu spawn as game progress,
     -- nor advance the world's simulation clock while there is no active world.
     if player:GetAttribute("ER_WorldLoaded") ~= true then
-        s.lastClock = now
-        return
+        return now
     end
     local elapsed = math.clamp(now - s.lastClock, 0, 180)
-    s.lastClock = now
-    s.data.clockSeconds += elapsed
+    record.clockSeconds += elapsed
 
     local char = player.Character
     local root = if char then char:FindFirstChild("HumanoidRootPart") else nil
     local humanoid = if char then char:FindFirstChildOfClass("Humanoid") else nil
     if root and root:IsA("BasePart") and humanoid and humanoid.Health > 0 then
         local p = root.Position
-        if p.X == p.X and p.Y == p.Y and math.abs(p.Z) <= 2
-            and p.X >= -121 and p.X <= 121 and p.Y >= -24 and p.Y <= 76 then
-            s.data.position = {x = p.X, y = p.Y, z = 0}
+        if math.abs(p.Z) <= 2 and Slots.validPosition(p.X, p.Y, 0) then
+            record.position = {x = p.X, y = p.Y, z = 0}
         end
     end
+    return now
 end
 
 function SaveSlotService.save(player: Player, release: boolean?): (boolean, string?)
@@ -185,9 +184,11 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
     if s.busy then
         return false, "save_busy"
     end
+    if sessions[player] ~= s then return false, "no_session" end
     s.busy = true
     if not s.pending then
-        if livingSnapshotProvider then
+        local record = cloneRecord(s.data)
+        if livingSnapshotProvider and player:GetAttribute("ER_WorldLoaded") == true then
             local invoked, state = pcall(livingSnapshotProvider, player)
             if not invoked or (state ~= nil and not LivingModel.valid(state)) then
                 s.busy = false
@@ -197,17 +198,20 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
             if state ~= nil then
                 -- Materialize a deep copy. DataStore's UpdateAsync may retry
                 -- while the live NPC simulation is still ticking.
-                s.data.living = LivingModel.clone(state)
+                record.living = LivingModel.clone(state)
             end
         end
-        trackWorld(player, s)
-        local record = cloneRecord(s.data)
+        local capturedAt = trackWorld(player, s, record)
         record.revision = s.data.revision + 1
         record.updatedAt = os.time()
         local id = ownedToken() .. ":save:" .. tostring(record.revision)
         record.lastWriteId = id
-        record.lock = if release then nil else {token = s.token, expiresAt = os.time() + LOCK_SECONDS}
+        if not Slots.validWorld(record) then
+            s.busy = false
+            return false, "world_snapshot_invalid"
+        end
         s.pending = {record = record, id = id, releasing = release == true}
+        s.lastClock = capturedAt
     elseif release and not s.pending.releasing then
         -- First resolve an uncertain autosave before creating a release record.
         s.busy = false
@@ -222,7 +226,10 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
             local decision = Policy.writeDecision(old, s.token, s.data.revision, pending.record.revision, pending.id)
             if decision == "already_applied" then return old end
             if decision ~= "apply" then return nil end
-            return pending.record
+            local writing = table.clone(pending.record)
+            writing.lock = if pending.releasing then nil
+                else {token = s.token, expiresAt = os.time() + LOCK_SECONDS}
+            return writing
         end)
     end)
     s.busy = false

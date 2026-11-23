@@ -5,6 +5,7 @@ local World=require("../WorldProfile")
 local Structures=require("./StructureDefs")
 local Inventory=require("./Inventory")
 local Items=require("./ItemDefs")
+local Work=require("./WorkEngine")
 local R3={}
 R3.VERSION=1
 R3.DAY=240
@@ -115,7 +116,7 @@ function R3.takeWood(state: any,x: number,y: number): (boolean, any)
     local best=nil
     local bestDistance=math.huge
     for _,source in ipairs(state.sites) do
-        if source.item=="wood" and source.remaining>=2 then
+        if source.item=="wood" and Work.sourceAvailable(state,source)>=2 then
             local distance=math.abs(x-source.x)
             local ground=World.sample(state.seed,source.x,0).height
             if distance<=11 and math.abs(y-(ground+3))<=11
@@ -134,8 +135,7 @@ function R3.takeWood(state: any,x: number,y: number): (boolean, any)
         return true,Inventory.count(d.playerBag,"wood")
     end
     for _,b in ipairs(state.buildings) do
-        if b.typeId=="stockpile" and b.state=="complete" and b.health>0
-            and b.stored and Inventory.count(b.stored,"wood")>=2
+        if Work.stockAvailable(state,b,"wood")>=2
             and math.abs(x-b.x)<=13 and math.abs(y-(b.y+3))<=12 then
             if not Inventory.transfer(b.stored,d.playerBag,"wood",2) then
                 return false,"player_bag_full"
@@ -162,9 +162,7 @@ function R3.craftArrows(state: any,x: number): (boolean, any)
     -- A completed galpão offers the normal craft interaction. Move actual
     -- stored timber out of its finite inventory before producing arrows.
     for _,b in ipairs(state.buildings) do
-        if b.typeId=="stockpile" and b.state=="complete" and b.health>0
-            and b.stored and math.abs(b.x-x)<=12
-            and Inventory.count(b.stored,"wood")>=2 then
+        if math.abs(b.x-x)<=12 and Work.stockAvailable(state,b,"wood")>=2 then
             if not Inventory.take(b.stored,"wood",2) then
                 return false,"wood_stock_required"
             end
@@ -176,7 +174,7 @@ function R3.craftArrows(state: any,x: number): (boolean, any)
     -- Backwards compatible: at a nearby natural timber source the player
     -- may still craft a small primitive bundle without a galpão.
     for _,site in ipairs(state.sites) do
-        if site.item=="wood" and site.remaining>=2 and math.abs(site.x-x)<=9 then
+        if site.item=="wood" and Work.sourceAvailable(state,site)>=2 and math.abs(site.x-x)<=9 then
             site.remaining-=2
             d.arrows+=6
             ledger(d,"arrow_crafting",0,tostring(site.id))
@@ -196,9 +194,7 @@ function R3.trade(state: any,item: string,x: number): (boolean, any)
     local d=state.r3
     if d.treasury<price then return false,"treasury_empty" end
     for _,b in ipairs(state.buildings) do
-        if b.typeId=="stockpile" and b.state=="complete" and b.health>0
-            and b.stored and math.abs(b.x-x)<=24
-            and Inventory.count(b.stored,item)>=1 then
+        if math.abs(b.x-x)<=24 and Work.stockAvailable(state,b,item)>=1 then
             if not Inventory.take(b.stored,item,1) then
                 return false,"resource_unavailable"
             end
@@ -208,14 +204,12 @@ function R3.trade(state: any,item: string,x: number): (boolean, any)
             return true,price
         end
     end
-    for _,site in ipairs(state.sites) do
-        if site.item==item and site.remaining>=1 then
-            site.remaining-=1
-            d.treasury-=price
-            d.wallet+=price
-            ledger(d,"trade_income",price,item)
-            return true,price
-        end
+    -- The market can buy an item the player actually brought to town.
+    if d.playerBag and Inventory.take(d.playerBag,item,1) then
+        d.treasury-=price
+        d.wallet+=price
+        ledger(d,"trade_income",price,"player_bag:"..item)
+        return true,price
     end
     return false,"resource_unavailable"
 end
@@ -302,7 +296,7 @@ function R3.arm(state: any,npcId: any,weapon: string): (boolean, any)
             local cost=if weapon=="bow" then 3 else 2
             local source=nil
             for _,site in ipairs(state.sites) do
-                if site.item==required and site.remaining>=cost then
+                if site.item==required and Work.sourceAvailable(state,site)>=cost then
                     source=site
                     break
                 end
@@ -361,18 +355,32 @@ end
 -- An actual lost building requires rebuilding from finite materials.
 -- Salvage is a bounded fraction of material PREVIOUSLY consumed there;
 -- a persistent flag prevents repeated raids from creating infinite stocks.
+-- Keep destroyed stock out of circulation until the recovery split is approved.
+-- The same migration isolates remaining stock left in old v15 ruins.
+function R3.isolateRuinedStock(b: any)
+    if b.typeId~="stockpile" or not b.stored or next(b.stored.items)==nil then return end
+    b.ruinedStock=b.ruinedStock or {}
+    for item,amount in pairs(b.stored.items) do
+        b.ruinedStock[item]=(b.ruinedStock[item] or 0)+amount
+    end
+    b.stored.items={}
+end
+
 local function ruin(state: any,b: any)
     if b.health>0 or b.ruined==true then return end
     local def=Structures.get(b.typeId)
     if not def then return end
+    Work.releaseBuildingJobs(state,b.id)
     b.ruined=true
     b.state="ruined"
+    R3.isolateRuinedStock(b)
     b.progress=0
+    b.ruinCount=(b.ruinCount or 0)+1
     for item,amount in pairs(b.delivered) do
         local recover=math.min(amount,math.floor((def.cost[item] or 0)*0.2))
         if recover>0 and #state.sites<256 then
-            table.insert(state.sites,{id="salvage_"..tostring(b.id).."_"..item,
-                item=item,x=b.x,remaining=recover})
+            table.insert(state.sites,{id="salvage_"..tostring(b.id).."_"..item.."_"..tostring(b.ruinCount),
+                item=item,x=b.x,remaining=recover,salvage=true})
         end
     end
     b.delivered={}
