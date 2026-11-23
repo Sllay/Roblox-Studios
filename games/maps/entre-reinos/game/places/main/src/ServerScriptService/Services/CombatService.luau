@@ -226,6 +226,12 @@ function Combat.action(player: Player,action: string,arg: any): any
         local ok,result=R3.pickup(state,arg,root.Position.X)
         if ok then syncViews() end
         return {ok=ok,result=result,error=if not ok then result else nil}
+    elseif action=="take_wood" then
+        if not allowed("take_wood",0.35) then
+            return {ok=false,error="rate_limited"}
+        end
+        local ok,result=R3.takeWood(state,root.Position.X,root.Position.Y)
+        return {ok=ok,result=result,error=if not ok then result else nil}
     elseif action=="craft_arrows" then
         if not allowed("craft_arrows",0.65) then
             return {ok=false,error="rate_limited"}
