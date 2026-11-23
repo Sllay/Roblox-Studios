@@ -34,7 +34,9 @@ local errorTexts={
     invalid_coin_drop="Não há moedas disponíveis na bolsa.",
     treasury_empty="O tesouro da vila está sem moedas.",
     resource_unavailable="Recurso indisponível nas fontes.",
-    wood_stock_required="Aproxime-se de uma fonte com 2 madeiras.",
+    wood_stock_required="Faltam 2 madeiras na bolsa. Colete na árvore ou no galpão.",
+    wood_source_too_far="Sem madeira próxima. Siga a indicação da árvore na oficina.",
+    player_bag_full="Sua bolsa está cheia. Use a madeira antes de recolher mais.",
     ammo_capacity="Aljava cheia: gaste flechas antes de fabricar.",
     too_far_from_market="Troque recursos perto do centro da vila.",
     not_enough_equipment_materials="Faltam materiais para equipar.",
@@ -255,7 +257,9 @@ function UI.start(player: Player)
         elseif action=="trade" then
             notify("Madeira vendida; moedas recebidas do tesouro.")
         elseif action=="craft_arrows" then
-            notify("Seis flechas fabricadas com madeira real.")
+            notify("Seis flechas fabricadas: duas madeiras consumidas.")
+        elseif action=="take_wood" then
+            notify("Duas madeiras recolhidas na sua bolsa.")
         elseif action=="arm_defender" then
             notify("Morador equipado para defesa.")
         elseif action=="pickup_coin" then
@@ -336,20 +340,48 @@ function UI.start(player: Player)
     craftTitle.TextSize=15
     craftTitle.Font=Enum.Font.GothamBold
     craftTitle.TextColor3=C.paper
-    local craftInfo=rowText(workshop,"AmmoInfo","",2,66)
+    local craftInfo=rowText(workshop,"AmmoInfo","",2,97)
+    local collectButton=button(workshop,"TakeWood","RECOLHER 2 MADEIRAS")
+    collectButton.LayoutOrder=3
+    collectButton.Size=UDim2.new(1,-12,0,42)
     local craftButton=button(workshop,"CraftArrows","FABRICAR 6 FLECHAS")
-    craftButton.LayoutOrder=3
+    craftButton.LayoutOrder=4
     craftButton.Size=UDim2.new(1,-12,0,42)
-    local tradeInfo=rowText(workshop,"TradeInfo","",4,67)
+    local tradeInfo=rowText(workshop,"TradeInfo","",5,67)
     local tradeButton=button(workshop,"SellWood","VENDER 1 MADEIRA")
-    tradeButton.LayoutOrder=5
+    tradeButton.LayoutOrder=6
     tradeButton.Size=UDim2.new(1,-12,0,42)
-    local coinsInfo=rowText(workshop,"PurseInfo","",6,62)
+    local coinsInfo=rowText(workshop,"PurseInfo","",7,62)
     local dropCoin=button(workshop,"DropCoin","SOLTAR 1 MOEDA")
-    dropCoin.LayoutOrder=7
+    dropCoin.LayoutOrder=8
     dropCoin.Size=UDim2.new(1,-12,0,42)
 
-    craftButton.Activated:Connect(function() request("craft_arrows",nil) end)
+    collectButton.Activated:Connect(function()
+        if (nearby.wood or 0)>=2 then
+            request("take_wood",nil)
+        else
+            local dist=nearby.nearestWoodDistance or -1
+            if dist>=0 then
+                notify("Árvore com madeira a "..tostring(dist).." studs à "..
+                    tostring(nearby.nearestWoodDirection)..".")
+            else
+                notify("Madeira esgotada nas fontes conhecidas.")
+            end
+        end
+    end)
+    craftButton.Activated:Connect(function()
+        if (hud.playerWood or 0)<2 and (nearby.wood or 0)<2 then
+            local dist=nearby.nearestWoodDistance or -1
+            if dist>=0 then
+                notify("Madeira disponível "..tostring(dist).." studs à "..
+                    tostring(nearby.nearestWoodDirection)..". Aproxime-se e recolha.")
+            else
+                notify("Faltam duas madeiras na bolsa ou num galpão próximo.")
+            end
+            return
+        end
+        request("craft_arrows",nil)
+    end)
     tradeButton.Activated:Connect(function() request("trade","wood") end)
     dropCoin.Activated:Connect(function() request("drop_coin",nil) end)
 
@@ -434,7 +466,11 @@ function UI.start(player: Player)
         elseif contextKind=="npc" then
             selectedNpcId=contextTarget
             showJournal(true,"villagers")
-        elseif contextKind=="wood" or contextKind=="market" then
+        elseif contextKind=="wood" then
+            request("take_wood",nil)
+        elseif contextKind=="craft" then
+            request("craft_arrows",nil)
+        elseif contextKind=="market" then
             showJournal(true,"workshop")
         elseif contextKind=="story" then
             local phase=player:GetAttribute("ER_R3Phase")
@@ -464,7 +500,8 @@ function UI.start(player: Player)
         local isRaid=player:GetAttribute("ER_R3Raid")==true
         local message=player:GetAttribute("ER_R3Warning")
         vitals.Text="DIA "..tostring(day)..(if night then " · NOITE" else " · SOL")..
-            "    MOEDAS "..tostring(wallet).."    FLECHAS "..tostring(arrows)
+            " · MOEDAS "..tostring(wallet).." · FLECHAS "..tostring(arrows)..
+            " · BOLSA MAD "..tostring(hud.playerWood or 0)
         if type(message)~="string" then message="" end
         warning.Visible=(phase~="sandbox" or isRaid
             or player:GetAttribute("ER_R3Forecast")==true)
@@ -480,7 +517,7 @@ function UI.start(player: Player)
     end
 
     local orderButton=button(workshop,"StoryOrder","CONTINUAR O PRÓLOGO")
-    orderButton.LayoutOrder=8
+    orderButton.LayoutOrder=9
     orderButton.Size=UDim2.new(1,-12,0,42)
     orderButton.Visible=false
     orderButton.Activated:Connect(function()
@@ -509,7 +546,10 @@ function UI.start(player: Player)
             interact.Text="MORADOR"
         elseif (nearby.wood or 0)>=2 then
             contextKind="wood"
-            interact.Text="FABRICAR"
+            interact.Text="PEGAR MADEIRA"
+        elseif (hud.playerWood or 0)>=2 and (hud.arrows or 0)<=24 then
+            contextKind="craft"
+            interact.Text="CRIAR FLECHAS"
         elseif nearby.canTrade then
             contextKind="market"
             interact.Text="MERCADO"
@@ -585,12 +625,27 @@ function UI.start(player: Player)
             else if nearSelected then "Morador próximo: você pode equipá-lo."
             else "Selecione um morador próximo para equipar."
         equipBar.Visible=nearSelected
-        craftInfo.Text="FLECHAS  ·  2 madeiras de uma fonte próxima → 6 flechas"..
-            "\nMadeira ao alcance: "..tostring(nearby.wood or 0)..
-            "   ·   Sua aljava: "..tostring(player:GetAttribute("ER_R3Arrows") or 0)
-        craftButton.Active=(nearby.wood or 0)>=2
-            and (player:GetAttribute("ER_R3Arrows") or 0)<=24
-        craftButton.BackgroundColor3=if craftButton.Active then C.raised else C.surface
+        local dist=nearby.nearestWoodDistance or -1
+        local direction=if dist>=0 then
+            "Árvore: "..tostring(dist).." studs à "..
+                tostring(nearby.nearestWoodDirection or "esquerda")
+            else "Nenhuma árvore com estoque restante"
+        local bagWood=hud.playerWood or 0
+        local siteWood=nearby.wood or 0
+        craftInfo.Text="RECEITA: 2 MADEIRAS → 6 FLECHAS"..
+            "\nSua bolsa: "..tostring(bagWood).." madeira(s)  ·  Próximo: "..
+            tostring(siteWood)..
+            "\n"..direction
+        collectButton.Text=if siteWood>=2 then "PEGAR 2 MADEIRAS DA FONTE"
+            else "LOCALIZAR MADEIRA"
+        -- Clicking an unavailable recipe must explain WHY, not silently
+        -- swallow input by disabling a game action.
+        collectButton.Active=true
+        craftButton.Active=true
+        collectButton.BackgroundColor3=if siteWood>=2 then C.raised else C.surface
+        local canCraft=(bagWood>=2 or siteWood>=2) and
+            (player:GetAttribute("ER_R3Arrows") or 0)<=24
+        craftButton.BackgroundColor3=if canCraft then C.raised else C.surface
         tradeInfo.Text="VENDER MADEIRA  ·  1 unidade por 1 moeda, paga pelo tesouro"..
             "\nComércio no centro: "..(if nearby.canTrade then "próximo" else "longe")..
             "   ·   Tesouro: "..tostring(hud.treasury or "?")
