@@ -4,6 +4,7 @@
 local World=require("../WorldProfile")
 local Structures=require("./StructureDefs")
 local Inventory=require("./Inventory")
+local Items=require("./ItemDefs")
 local R3={}
 R3.VERSION=1
 R3.DAY=240
