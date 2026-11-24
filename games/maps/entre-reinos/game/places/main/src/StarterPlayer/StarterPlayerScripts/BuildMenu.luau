@@ -2,6 +2,7 @@
 -- Village construction catalog. Mounted inside the ONE game journal;
 -- this is deliberately not a second ScreenGui or developer overlay.
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
+local Profile=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
 local Structures=require(ReplicatedStorage:WaitForChild("Game")
     :WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Menu={}
@@ -101,9 +102,9 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
 
     local overlay=Instance.new("Frame")
     overlay.Name="BuildPlacement"
-    overlay.AnchorPoint=Vector2.new(0.5,1)
-    overlay.Position=UDim2.new(0.5,0,1,-70)
-    overlay.Size=UDim2.new(1,-30,0,86)
+    overlay.AnchorPoint=Vector2.new(0,0.5)
+    overlay.Position=UDim2.new(0,12,0.49,0)
+    overlay.Size=UDim2.fromOffset(218,86)
     overlay.BackgroundTransparency=1
     overlay.Visible=false
     overlay.Parent=parent:FindFirstAncestorOfClass("ScreenGui")
@@ -152,6 +153,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         selected=nil
         previewId=nil
         overlay.Visible=false
+        player:SetAttribute("ER_LocalPlacement",false)
         if ghost then ghost:Destroy() end
         ghost=nil
     end
@@ -197,12 +199,12 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
 
     previous.Activated:Connect(function()
         if busy or not selected then return end
-        candidate=math.max(-120,candidate-2)
+        candidate=math.max(-Profile.PLAY_EDGE,candidate-2)
         updatePreview()
     end)
     following.Activated:Connect(function()
         if busy or not selected then return end
-        candidate=math.min(120,candidate+2)
+        candidate=math.min(Profile.PLAY_EDGE,candidate+2)
         updatePreview()
     end)
     leave.Activated:Connect(closePreview)
@@ -283,6 +285,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
             candidate=math.round(x)
             selected=id
             overlay.Visible=true
+            player:SetAttribute("ER_LocalPlacement",true)
             closeJournal()
             updatePreview()
         end)

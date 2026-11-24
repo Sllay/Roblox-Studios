@@ -7,6 +7,7 @@ local World=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldPr
 local R3=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("R3Engine"))
 local living=ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living")
 local Trajectory=require(living:WaitForChild("Trajectory"))
+local Ballistics=require(living:WaitForChild("Ballistics"))
 local Structures=require(living:WaitForChild("StructureDefs"))
 local Combat={}
 local owner: Player?=nil
@@ -22,6 +23,13 @@ cast.FilterType=Enum.RaycastFilterType.Include
 cast.FilterDescendantsInstances={workspace.Terrain}
 cast.IgnoreWater=true
 local MAX_PROJECTILES=10
+local equipped="sword"
+local charge: any=nil
+local dialogue: Model?=nil
+local sequence=0
+local swingTrack: AnimationTrack?=nil
+local swingRig: Model?=nil
+local rigTemplate: Model?=nil
 local heightCache: {[number]: number}={}
 
 local function part(model: Model,name: string,size: Vector3,offset: Vector3,color: Color3): Part
@@ -52,75 +60,78 @@ local function groundAt(x: number): number
     return support.Position.Y
 end
 
+local function costume(m: Model,name: string,holder: BasePart,size: Vector3,offset: CFrame,color: Color3): Part
+    local piece=part(m,name,size,Vector3.zero,color)
+    piece.CFrame=holder.CFrame*offset
+    piece.Anchored=false
+    piece.Massless=true
+    local weld=Instance.new("WeldConstraint")
+    weld.Part0=holder
+    weld.Part1=piece
+    weld.Parent=piece
+    return piece
+end
+
 local function enemyModel(e: any): Model
-    local m=Instance.new("Model")
+    local template=assert(rigTemplate,"missing_r6_actor_template")
+    local m=template:Clone()
     m.Name=(if e.story then "Story_" else "Raider_")..tostring(e.id)
-    local root=part(m,"HumanoidRootPart",Vector3.new(1,1,1),
-        Vector3.zero,Color3.new(0,0,0))
-    root.Transparency=1
-    m.PrimaryPart=root
-    local isDuke=e.typeId=="infected_duke"
-    local isRoyal=e.typeId=="duke" or e.typeId=="guard"
-    local flesh=if isDuke then Color3.fromRGB(77,49,96)
-        elseif e.typeId=="duke" then Color3.fromRGB(107,48,55)
-        elseif e.typeId=="guard" then Color3.fromRGB(60,89,104)
-        else Color3.fromRGB(58,48,55)
-    part(m,"Torso",Vector3.new(2.3,2.8,1.3),Vector3.new(0,1.5,0),flesh)
-    part(m,"Head",Vector3.new(1.55,1.4,1.4),Vector3.new(0,3.6,0),
-        if isDuke then Color3.fromRGB(115,81,131)
-        elseif isRoyal then Color3.fromRGB(199,157,115) else Color3.fromRGB(53,61,59))
-    if isDuke or e.typeId=="duke" then
-        part(m,"DucalCrown",Vector3.new(1.8,0.4,1.6),
-            Vector3.new(0,4.55,0),Color3.fromRGB(196,157,66))
+    local root=m:FindFirstChild("HumanoidRootPart") :: BasePart
+    local head=m:FindFirstChild("Head") :: BasePart
+    local hand=m:FindFirstChild("Right Arm") :: BasePart
+    local torso=m:FindFirstChild("Torso") :: BasePart
+    local royal=e.typeId=="duke" or e.typeId=="infected_duke"
+    local infected=not e.story or e.typeId=="creature"
+    local id=if royal then 7 elseif type(e.id)=="number" then e.id else #tostring(e.id)
+    local skins={Color3.fromRGB(232,191,152),Color3.fromRGB(190,132,91),
+        Color3.fromRGB(149,101,72),Color3.fromRGB(104,68,49)}
+    local skin=skins[1+(state.seed+id)%#skins]
+    if infected then skin=skin:Lerp(Color3.fromRGB(127,139,116),0.26) end
+    local uniform=if royal then Color3.fromRGB(112,36,50)
+        elseif e.typeId=="guard" then Color3.fromRGB(58,85,114)
+        else Color3.fromRGB(111,91,65)
+    local colors=Instance.new("BodyColors")
+    for _,old in ipairs(m:GetChildren()) do if old:IsA("BodyColors") then old:Destroy() end end
+    colors.HeadColor3=skin
+    colors.LeftArmColor3=skin
+    colors.RightArmColor3=skin
+    colors.LeftLegColor3=Color3.fromRGB(78,62,53)
+    colors.RightLegColor3=colors.LeftLegColor3
+    colors.TorsoColor3=uniform
+    colors.Parent=m
+    torso.Color=uniform
+    local h=m:FindFirstChildOfClass("Humanoid") :: Humanoid
+    h.DisplayName=if e.story then e.label elseif royal then "Duque corrompido" else "Corrompido"
+    h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Subject
+    h.NameDisplayDistance=if e.story then 28 else 0
+    h.HealthDisplayDistance=0
+    if royal then
+        costume(m,"DucalCrown",head,Vector3.new(1.65,0.28,1.15),CFrame.new(0,0.64,0),Color3.fromRGB(213,168,70))
+        costume(m,"DucalSash",torso,Vector3.new(0.37,2.05,0.18),
+            CFrame.new(0,0,-0.56)*CFrame.Angles(0,0,0.38),Color3.fromRGB(232,186,92))
     end
-    part(m,"Left Arm",Vector3.new(0.7,2.5,0.9),Vector3.new(-1.5,1.45,0),flesh)
-    part(m,"Right Arm",Vector3.new(0.7,2.5,0.9),Vector3.new(1.5,1.45,0),flesh)
-    part(m,"Left Leg",Vector3.new(0.9,1.8,1),Vector3.new(-0.55,-0.7,0),flesh)
-    part(m,"Right Leg",Vector3.new(0.9,1.8,1),Vector3.new(0.55,-0.7,0),flesh)
-    if not isRoyal then
-        local hue=Color3.fromRGB(215,94,57)
-        part(m,"EyeL",Vector3.new(0.3,0.2,0.07),Vector3.new(-0.37,3.75,-0.73),hue)
-        part(m,"EyeR",Vector3.new(0.3,0.2,0.07),Vector3.new(0.37,3.75,-0.73),hue)
-    end
-    for _,child in ipairs(m:GetChildren()) do
-        if child:IsA("BasePart") and child~=root then
-            local joint=Instance.new("Motor6D")
-            joint.Name="ER_"..child.Name
-            joint.Part0=root
-            joint.Part1=child
-            local shoulder=if child.Name:find("Arm") then child.Size.Y*0.37
-                elseif child.Name:find("Leg") then child.Size.Y*0.45 else 0
-            joint.C0=child.CFrame*CFrame.new(0,shoulder,0)
-            joint.C1=CFrame.new(0,shoulder,0)
-            joint.Parent=root
-            child.Anchored=false
-            child.Massless=true
+    if infected then
+        for _,side in ipairs({-1,1}) do
+            local eye=costume(m,"CorruptedEye",head,Vector3.new(0.17,0.13,0.08),
+                CFrame.new(side*0.26,0.12,-0.52),Color3.fromRGB(226,120,60))
+            eye.Material=Enum.Material.Neon
         end
+        costume(m,"CorruptionMark",head,Vector3.new(0.34,0.15,0.1),
+            CFrame.new(0.35,-0.24,-0.51)*CFrame.Angles(0,0,-0.5),Color3.fromRGB(101,106,76))
     end
-    if e.story then
-        local gui=Instance.new("BillboardGui")
-        gui.Size=UDim2.fromOffset(160,24)
-        gui.StudsOffset=Vector3.new(0,5.8,0)
-        gui.MaxDistance=65
-        gui.Parent=root
-        local title=Instance.new("TextLabel")
-        title.BackgroundTransparency=1
-        title.Text=e.label
-        title.TextColor3=Color3.fromRGB(255,227,168)
-        title.TextStrokeTransparency=0.3
-        title.Font=Enum.Font.GothamSemibold
-        title.TextSize=13
-        title.Size=UDim2.fromScale(1,1)
-        title.Parent=gui
+    if e.typeId=="guard" or royal then
+        costume(m,"GuardBlade",hand,Vector3.new(0.25,2.5,0.14),CFrame.new(0,-1.65,-0.28),Color3.fromRGB(194,197,181)).Material=Enum.Material.Metal
+        costume(m,"GuardHilt",hand,Vector3.new(0.75,0.17,0.21),CFrame.new(0,-0.51,-0.28),Color3.fromRGB(127,84,39))
     end
+    m.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
+    m:SetAttribute("ER_NativeR6",true)
     m:SetAttribute("ER_NPCVisual",true)
     if not e.story then
         m:SetAttribute("ER_Enemy",true)
         m:SetAttribute("ER_EnemyId",e.id)
     end
-    local x=e.x
-    local y=groundAt(x)+1.6
-    local pose=Vector3.new(x,y,0)
+    local pose=Vector3.new(e.x,groundAt(e.x)+3.06,0)
+    m.PrimaryPart=root
     m:SetAttribute("ER_NPCPose",pose)
     m:SetAttribute("ER_NPCVelocityX",0)
     m:SetAttribute("ER_NPCFacing",if e.side<0 then -math.pi/2 else math.pi/2)
@@ -139,7 +150,10 @@ local function syncViews()
             model=enemyModel({id=actor.id,x=actor.x,typeId=actor.kind,story=true,label=actor.label,side=1})
             storyFigures[actor.id]=model
         end
-        model:SetAttribute("ER_NPCPose",Vector3.new(actor.x,groundAt(actor.x)+1.6,-1))
+        local last=model:GetAttribute("ER_NPCPose")
+        local velocity=if typeof(last)=="Vector3" then math.clamp((actor.x-last.X)/0.12,-6,6) else 0
+        model:SetAttribute("ER_NPCVelocityX",velocity)
+        model:SetAttribute("ER_NPCPose",Vector3.new(actor.x,groundAt(actor.x)+3.06,-1))
         model:SetAttribute("ER_NPCActivity",actor.activity)
         model:SetAttribute("ER_NPCFacing",if actor.kind=="creature" then -math.pi/2 else math.pi/2)
     end
@@ -151,7 +165,7 @@ local function syncViews()
         live[e.id]=true
         local model=enemies[e.id]
         if not model then model=enemyModel(e); enemies[e.id]=model end
-        local y=groundAt(e.x)+1.6
+        local y=groundAt(e.x)+3.06
         local velocity=e.motionX or 0
         model:SetAttribute("ER_NPCVelocityX",velocity)
         if math.abs(velocity)>0.1 then
@@ -206,11 +220,36 @@ local function cleanup()
     enemies={}
     arrows={}
     cooldowns={}
+    equipped="sword"
+    charge=nil
+    dialogue=nil
+    if swingTrack then swingTrack:Destroy() end
+    swingTrack,swingRig=nil,nil
     table.clear(heightCache)
 end
 
 function Combat.start(player: Player,living: any,worldFolder: Folder)
     cleanup()
+    if not rigTemplate then
+        local description=Instance.new("HumanoidDescription")
+        local ok,rig=pcall(function()
+            return Players:CreateHumanoidModelFromDescriptionAsync(description,Enum.HumanoidRigType.R6)
+        end)
+        description:Destroy()
+        assert(ok and rig and rig:IsA("Model"),"r6_actor_creation_failed")
+        for _,item in ipairs(rig:GetDescendants()) do
+            if item:IsA("BasePart") then
+                item.CanCollide=false
+                item.CanTouch=false
+                item.CanQuery=false
+                item.Anchored=item.Name=="HumanoidRootPart"
+            elseif item:IsA("BaseScript") then item:Destroy() end
+        end
+        local h=rig:FindFirstChildOfClass("Humanoid") :: Humanoid
+        h.AutoRotate=false
+        if not h:FindFirstChildOfClass("Animator") then Instance.new("Animator").Parent=h end
+        rigTemplate=rig
+    end
     owner=player
     state=living
     folder=worldFolder
@@ -263,7 +302,10 @@ local function sweep(origin: Vector3,goal: Vector3): (number?, number)
     for _,enemy in ipairs(state.r3.enemies) do
         local hit=Trajectory.intersection(origin.X,origin.Y,delta.X,delta.Y,
             enemy.x,groundAt(enemy.x)+0.35,1.25,5.4)
-        if enemy.hp>0 and hit and hit<limit then target=enemy.id; limit=hit end
+        if enemy.hp>0 and hit and hit<limit and math.abs(origin.Z+delta.Z*hit)<=2 then
+            target=enemy.id
+            limit=hit
+        end
     end
     return target,limit
 end
@@ -288,33 +330,158 @@ end
 function Combat.fireResident(npc: any,enemy: any): boolean
     local difference=enemy.x-npc.x
     local side=if difference<0 then -1 else 1
-    local origin=Vector3.new(npc.x+side*0.8,groundAt(npc.x)+3.5,0)
+    local depth=npc.z or 0
+    local localGround=World.sample(state.seed,npc.x,depth).height
+    local origin=Vector3.new(npc.x+side*0.8,localGround+3.5,depth)
     local flight=math.clamp(math.abs(enemy.x-origin.X)/42,0.4,0.72)
     local vertical=(groundAt(enemy.x)+3-origin.Y)/flight+workspace.Gravity*flight/2
-    return launch(origin,Vector3.new((enemy.x-origin.X)/flight,vertical,0),10)
+    return launch(origin,Vector3.new((enemy.x-origin.X)/flight,vertical,-depth/flight),10)
+end
+
+local function equipAvatar(root: BasePart): Trail?
+    local character=root.Parent
+    if not character or not character:IsA("Model") then return nil end
+    local old=character:FindFirstChild("ER_PlayerWeapon")
+    if old and old:GetAttribute("Mode")==equipped then return old:FindFirstChildOfClass("Trail") end
+    if old then old:Destroy() end
+    local hand=character:FindFirstChild("Right Arm")
+    if not hand or not hand:IsA("BasePart") then return nil end
+    local grip=CFrame.new(0,-0.72,-0.24)*CFrame.Angles(-math.pi/2,0,0)
+    local blade=costume(character,"ER_PlayerWeapon",hand,
+        if equipped=="sword" then Vector3.new(0.31,2.4,0.16) else Vector3.new(0.18,1.5,0.2),
+        grip*CFrame.new(0,1.2,0),if equipped=="sword" then Color3.fromRGB(206,213,201)
+            else Color3.fromRGB(137,89,43))
+    blade:SetAttribute("Mode",equipped)
+    if equipped=="bow" then
+        for side=-1,1,2 do
+            local limb=costume(character,"Limb",blade,Vector3.new(0.14,0.86,0.16),
+                CFrame.new(0,0.96*side,0.2)*CFrame.Angles(side*0.62,0,0),blade.Color)
+            limb.Parent=blade
+        end
+        return nil
+    end
+    blade.Material=Enum.Material.Metal
+    costume(character,"Hilt",blade,Vector3.new(0.74,0.14,0.25),
+        CFrame.new(0,-1.15,0),Color3.fromRGB(160,111,55)).Parent=blade
+    local base=Instance.new("Attachment")
+    base.Position=Vector3.new(0,-0.86,0)
+    base.Parent=blade
+    local tip=Instance.new("Attachment")
+    tip.Position=Vector3.new(0,1.15,0)
+    tip.Parent=blade
+    local trail=Instance.new("Trail")
+    trail.Attachment0=base
+    trail.Attachment1=tip
+    trail.Lifetime=0.14
+    trail.LightEmission=0.4
+    trail.Enabled=false
+    trail.Color=ColorSequence.new(Color3.fromRGB(255,232,175),Color3.fromRGB(176,211,226))
+    trail.Transparency=NumberSequence.new(0.2,1)
+    trail.Parent=blade
+    return trail
+end
+
+local function playSwing(human: Humanoid)
+    local character=human.Parent
+    if character~=swingRig then
+        if swingTrack then swingTrack:Destroy() end
+        swingRig=if character and character:IsA("Model") then character else nil
+        swingTrack=nil
+        local animator=human:FindFirstChildOfClass("Animator")
+        if animator then
+            local animation=Instance.new("Animation")
+            animation.AnimationId="rbxassetid://129967390"
+            local ok,track=pcall(function() return animator:LoadAnimation(animation) end)
+            animation:Destroy()
+            if ok then
+                track.Priority=Enum.AnimationPriority.Action
+                swingTrack=track
+            end
+        end
+    end
+    if swingTrack then swingTrack:Play(0.045) end
+end
+
+local function beginDialogue(player: Player,root: BasePart): any
+    if not allowed("duke",0.4) or R3.storyAction(state,root.Position.X)~="training" then
+        return {ok=false,error="too_far_from_story"}
+    end
+    if state.r3.prologue.scene and math.abs(root.Position.Y-(groundAt(root.Position.X)+3))>7 then
+        return {ok=false,error="too_far_from_story"}
+    end
+    local character=player.Character
+    if not character then return {ok=false,error="character_not_ready"} end
+    dialogue=character
+    charge=nil
+    return {ok=true}
 end
 
 function Combat.action(player: Player,action: string,arg: any): any
     if player~=owner or not state then return {ok=false,error="world_not_loaded"} end
     local root,h=playerRoot(player)
     if not root or not h then return {ok=false,error="character_not_ready"} end
+    if dialogue and dialogue~=player.Character then dialogue=nil end
+    if action=="duke_talk" then return beginDialogue(player,root) end
+    if action=="duke_close" then dialogue=nil; return {ok=true} end
+    if action=="duke_accept" then
+        if dialogue~=player.Character or R3.storyAction(state,root.Position.X)~="training" then
+            return {ok=false,error="too_far_from_story"}
+        end
+        dialogue=nil
+        local ok,result=R3.command(state,"training",root.Position.X)
+        return {ok=ok,error=if not ok then result else nil}
+    end
+    if dialogue then return {ok=false,error="dialogue_open"} end
     if action=="r3_status" then return {ok=true,data=R3.summary(state)} end
+    if action=="select_weapon" then
+        if arg~="sword" and arg~="bow" then return {ok=false,error="invalid_weapon"} end
+        if not allowed("weapon",0.18) then return {ok=false,error="rate_limited"} end
+        charge=nil
+        equipped=arg
+        equipAvatar(root)
+        return {ok=true}
+    end
     if action=="attack" then
-        if not allowed("attack",0.45) then return {ok=false,error="rate_limited"} end
+        if equipped~="sword" then return {ok=false,error="invalid_weapon"} end
+        if not allowed("attack",0.52) then return {ok=false,error="rate_limited"} end
+        local trail=equipAvatar(root)
+        playSwing(h)
+        if trail then trail.Enabled=true end
+        player:SetAttribute("ER_PlayerAttack",workspace:GetServerTimeNow())
+        task.wait(0.12)
+        if trail and trail.Parent then trail.Enabled=false end
+        if playerRoot(player)~=root or player~=owner or not state or dialogue or equipped~="sword" then
+            return {ok=false,error="action_unavailable"}
+        end
         local side=direction(root)
         local start=Vector3.new(root.Position.X-side*0.15,root.Position.Y,0)
         local target=sweep(start,start+Vector3.new(side*6,0,0))
-        player:SetAttribute("ER_PlayerAttack",workspace:GetServerTimeNow())
         local hit=target~=nil and R3.damageEnemy(state,target,16)
         return {ok=true,hit=hit,target=if hit then target else nil}
-    elseif action=="bow" then
+    elseif action=="bow_cancel" then
+        if charge and charge.id==arg then charge=nil end
+        return {ok=true}
+    elseif action=="bow_begin" then
+        if equipped~="bow" then return {ok=false,error="invalid_weapon"} end
         if state.r3.arrows<=0 then return {ok=false,error="no_arrows"} end
-        if not allowed("bow",0.85) then return {ok=false,error="rate_limited"} end
+        if not allowed("bow_begin",0.22) then return {ok=false,error="rate_limited"} end
+        sequence+=1
+        charge={id=sequence,root=root,at=workspace:GetServerTimeNow()}
+        return {ok=true,id=sequence,started=charge.at}
+    elseif action=="bow_release" then
+        local shot=charge
+        if not shot or shot.id~=arg then return {ok=false,error="action_unavailable"} end
+        charge=nil
+        local seconds=workspace:GetServerTimeNow()-shot.at
+        if equipped~="bow" or shot.root~=root or seconds<0 or seconds>Ballistics.MAX_HOLD then
+            return {ok=false,error="action_unavailable"}
+        end
+        if state.r3.arrows<=0 then return {ok=false,error="no_arrows"} end
+        if not allowed("bow",0.7) then return {ok=false,error="rate_limited"} end
         local side=direction(root)
         local pos=root.Position+Vector3.new(side*1.1,0.9,-root.Position.Z)
-        if not launch(pos,Vector3.new(side*64,30,0),14) then
-            return {ok=false,error="too_many_arrows"}
-        end
+        local vx,vy=Ballistics.velocity(seconds)
+        if not launch(pos,Vector3.new(side*vx,vy,0),14) then return {ok=false,error="too_many_arrows"} end
         player:SetAttribute("ER_PlayerBow",workspace:GetServerTimeNow())
         state.r3.arrows-=1
         state.r3.stats.shots+=1
@@ -361,7 +528,7 @@ function Combat.action(player: Player,action: string,arg: any): any
         if type(arg)~="string" or #arg>32 then return {ok=false,error="invalid_equipment"} end
         local id,weapon=string.match(arg,"^(%d+):(%a+)$")
         if not id then return {ok=false,error="invalid_equipment"} end
-        if math.abs(root.Position.X)>120 then return {ok=false,error="outside_region"} end
+        if math.abs(root.Position.X)>World.PLAY_EDGE then return {ok=false,error="outside_region"} end
         local npcId=tonumber(id)
         if not npcId then return {ok=false,error="invalid_equipment"} end
         local npc=nil
@@ -373,7 +540,7 @@ function Combat.action(player: Player,action: string,arg: any): any
         return {ok=ok,result=result,error=if not ok then result else nil}
     elseif action=="prologue" then
         if not allowed("command",0.5) then return {ok=false,error="rate_limited"} end
-        if type(arg)~="string" or #arg>16 then return {ok=false,error="action_unavailable"} end
+        if type(arg)~="string" or #arg>16 or arg=="training" then return {ok=false,error="action_unavailable"} end
         local ok,result=R3.command(state,arg,root.Position.X)
         syncViews()
         return {ok=ok,result=result,error=if not ok then result else nil}
@@ -394,7 +561,7 @@ function Combat.tick(dt: number)
         local target,alpha=sweep(a.p,nextPos)
         local impact=alpha<1
         if target then R3.damageEnemy(state,target,a.damage) end
-        if impact or a.age>3 or math.abs(nextPos.X)>126 or nextPos.Y< -28 then
+        if impact or a.age>3 or math.abs(nextPos.X)>World.BOUNDS.xMax or nextPos.Y< -28 then
             a.part:Destroy()
             table.remove(arrows,i)
         else
@@ -407,6 +574,10 @@ end
 
 function Combat.present()
     syncViews()
+    if owner then
+        local root=playerRoot(owner)
+        if root then equipAvatar(root) end
+    end
 end
 
 return Combat

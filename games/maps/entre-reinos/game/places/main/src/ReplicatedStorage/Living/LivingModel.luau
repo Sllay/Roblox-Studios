@@ -25,7 +25,10 @@ function Living.new(seed: number): any
     local npcs={}
     for i=1,#names do
         local p=Professions.get(jobs[i])
-        npcs[i]={id=i,name=names[i],profession=jobs[i],x=-3+(i-1)*3,
+        -- True persisted depth, not a renderer-only corridor index.
+        -- Seed/id jitter creates independent three-dimensional positions.
+        local z= -6+((seed%97+i*53)%131)/131*12
+        npcs[i]={id=i,name=names[i],profession=jobs[i],x=-3+(i-1)*3,z=z,
             inventory=Inventory.new(p.carryCapacity), health=100,
             hunger=0, fatigue=0, skill=1, state="idle", target=nil,
             carryItem=nil, reserved=0}
@@ -82,6 +85,11 @@ function Living.valid(state: any): boolean
     local npcIds={}
     for _,n in ipairs(state.npcs) do
         if type(n)~="table" or not units(n.id) or npcIds[n.id] or not finite(n.x)
+            or (n.z~=nil and (not finite(n.z) or math.abs(n.z)>32))
+            or (n.wanderX~=nil and not finite(n.wanderX))
+            or (n.wanderZ~=nil and not finite(n.wanderZ))
+            or (n.wanderUntil~=nil and not finite(n.wanderUntil))
+            or (n.wanderPause~=nil and not finite(n.wanderPause))
             or type(n.name)~="string" or not Professions.get(n.profession)
             or not Inventory.valid(n.inventory) or not finite(n.health)
             or not finite(n.hunger) or not finite(n.fatigue) or not units(n.reserved)
@@ -131,6 +139,9 @@ function Living.restore(data: any, seed: number): any
         end
     end
     for _,npc in ipairs(restored.npcs) do
+        if npc.z==nil then
+            npc.z= -6+((seed%97+npc.id*53)%131)/131*12
+        end
         local b=if npc.jobId~=nil then buildings[npc.jobId] else nil
         if b and npc.carryItem and (npc.state=="gather" or npc.state=="deliver") then
             b.claimed[npc.carryItem]=(b.claimed[npc.carryItem] or 0)+npc.reserved

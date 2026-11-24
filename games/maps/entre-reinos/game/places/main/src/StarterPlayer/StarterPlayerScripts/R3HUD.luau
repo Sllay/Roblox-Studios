@@ -8,6 +8,10 @@ local UserInputService=game:GetService("UserInputService")
 local BuildMenu=require(script.Parent:WaitForChild("BuildMenu"))
 local Professions=require(ReplicatedStorage:WaitForChild("Game")
     :WaitForChild("Living"):WaitForChild("ProfessionDefs"))
+local Gesture=require(script.Parent:WaitForChild("PressGesture"))
+local WeaponControls=require(script.Parent:WaitForChild("WeaponControls"))
+local DukeDialogue=require(script.Parent:WaitForChild("DukeDialogue"))
+local Ballistics=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("Ballistics"))
 local UI={}
 local started=false
 
@@ -45,6 +49,9 @@ local errorTexts={
     too_far_from_story="Aproxime-se da escolta ou do castelo.",
     already_equipped="Morador já equipado. Para recarregar um arco vazio, traga seis flechas.",
     too_many_arrows="Aguarde as flechas em voo.",
+    invalid_weapon="Selecione uma arma.",
+    hold_too_short="Segure a interação até preencher a barra.",
+    dialogue_open="Feche o diálogo para voltar ao jogo.",
 
     character_not_ready="Aguarde o personagem carregar.",
     world_not_loaded="O mundo está carregando.",
@@ -145,9 +152,12 @@ function UI.start(player: Player)
 
     -- A short top strip; everything else is either contextual or collapsible.
     local top=panel(gui,"KingdomVitals",C.background)
-    top.AnchorPoint=Vector2.new(0.5,0)
-    top.Position=UDim2.new(0.5,0,0,7)
-    top.Size=UDim2.fromOffset(340,35)
+    top.AnchorPoint=Vector2.new(1,0)
+    top.Position=UDim2.new(1,-10,0,7)
+    top.Size=UDim2.new(1,-105,0,35)
+    local topLimit=Instance.new("UISizeConstraint")
+    topLimit.MaxSize=Vector2.new(432,35)
+    topLimit.Parent=top
     top.BackgroundTransparency=0.14
     local vitals=label(top,"Vitals","DIA 1  ·  Moedas 0  ·  Flechas 12",13,C.paper)
     vitals.Font=Enum.Font.GothamSemibold
@@ -157,7 +167,10 @@ function UI.start(player: Player)
     local stockBar=panel(gui,"VillageStock",C.background)
     stockBar.AnchorPoint=Vector2.new(0.5,0)
     stockBar.Position=UDim2.new(0.5,0,0,49)
-    stockBar.Size=UDim2.fromOffset(420,25)
+    stockBar.Size=UDim2.new(1,-22,0,25)
+    local stockLimit=Instance.new("UISizeConstraint")
+    stockLimit.MaxSize=Vector2.new(450,25)
+    stockLimit.Parent=stockBar
     stockBar.BackgroundTransparency=0.2
     local stock=label(stockBar,"Stock","FONTES DA VILA  ·  consultando…",11,C.secondary)
     stock.Size=UDim2.new(1,-12,1,0)
@@ -219,7 +232,7 @@ function UI.start(player: Player)
     toast.TextStrokeColor3=Color3.new(0,0,0)
     toast.TextStrokeTransparency=0.18
     toast.AnchorPoint=Vector2.new(0.5,1)
-    toast.Position=UDim2.new(0.5,0,1,-96)
+    toast.Position=UDim2.new(0.5,0,0,148)
     toast.Size=UDim2.new(0,400,0,42)
     toast.Visible=false
     local toastSerial=0
@@ -465,47 +478,94 @@ function UI.start(player: Player)
     end)
     close.Activated:Connect(function() showJournal(false,nil) end)
 
-    -- Two primary gameplay actions, away from Roblox's native jump and
-    -- thumbstick; no nine-button grid in the middle of the viewport.
+    -- The right edge owns action controls. Native jump and thumbstick remain
+    -- in the bottom corners, and the live scene is unobstructed in the middle.
     local combat=Instance.new("Frame")
     combat.Name="CombatControls"
     combat.BackgroundTransparency=1
     combat.AnchorPoint=Vector2.new(1,0.5)
-    combat.Position=UDim2.new(1,-12,0.53,0)
-    combat.Size=UDim2.fromOffset(64,118)
+    combat.Position=UDim2.new(1,-10,0.60,0)
+    combat.Size=UDim2.fromOffset(114,106)
     combat.Parent=gui
-    local combatLayout=Instance.new("UIListLayout")
-    combatLayout.Padding=UDim.new(0,7)
-    combatLayout.HorizontalAlignment=Enum.HorizontalAlignment.Center
-    combatLayout.SortOrder=Enum.SortOrder.LayoutOrder
-    combatLayout.Parent=combat
-    local attack=button(combat,"Attack","GOLPE")
-    attack.LayoutOrder=1
-    attack.Size=UDim2.fromOffset(64,55)
-    attack.BackgroundColor3=Color3.fromRGB(83,57,51)
+    local sword=button(combat,"SwordSlot","1 ESPADA")
+    sword.Size=UDim2.fromOffset(56,44)
+    sword.TextSize=10
+    local bow=button(combat,"BowSlot","2 ARCO")
+    bow.Position=UDim2.fromOffset(58,0)
+    bow.Size=UDim2.fromOffset(56,44)
+    bow.TextSize=10
+    local attack=button(combat,"Attack","ATACAR")
+    attack.Position=UDim2.fromOffset(0,49)
+    attack.Size=UDim2.fromOffset(114,48)
+    attack.BackgroundColor3=Color3.fromRGB(105,65,48)
     attack.TextSize=12
-    local bow=button(combat,"Bow","ARCO")
-    bow.LayoutOrder=2
-    bow.Size=UDim2.fromOffset(64,55)
-    bow.TextSize=12
-    attack.Activated:Connect(function() request("attack",nil) end)
-    bow.Activated:Connect(function() request("bow",nil) end)
 
-    -- Only one contextual interaction, displayed when it can do something.
+    local function call(action: string,arg: any): any
+        local ok,result=pcall(function() return remote:InvokeServer(action,arg) end)
+        if not ok or type(result)~="table" then
+            notify("Conexão interrompida. Tente novamente.")
+            return {ok=false}
+        end
+        if not result.ok and action~="tree_cancel" and action~="bow_cancel" then
+            notify(errorTexts[tostring(result.error)] or "Essa ação está indisponível.")
+        end
+        return result
+    end
+    local cancelAttack=WeaponControls.mount(player,attack,sword,bow,call,notify)
+
     local interact=button(gui,"ContextAction","INTERAGIR")
-    interact.AnchorPoint=Vector2.new(0.5,1)
-    interact.Position=UDim2.new(0.5,0,1,-46)
-    interact.Size=UDim2.fromOffset(144,38)
+    interact.AnchorPoint=Vector2.new(1,1)
+    interact.Position=UDim2.new(1,-10,0.60,-58)
+    interact.Size=UDim2.fromOffset(114,46)
+    interact.TextSize=10
     interact.BackgroundColor3=C.surface
     interact.Visible=false
+    local track=Instance.new("Frame")
+    track.Position=UDim2.new(0,6,1,-5)
+    track.Size=UDim2.new(1,-12,0,2)
+    track.BackgroundColor3=C.raised
+    track.BorderSizePixel=0
+    track.Visible=false
+    track.Parent=interact
+    local fill=Instance.new("Frame")
+    fill.BackgroundColor3=C.gold
+    fill.BorderSizePixel=0
+    fill.Size=UDim2.fromScale(0,1)
+    fill.Parent=track
     local contextKind="none"
-    local contextTarget=0
+    local contextTarget: any=0
+    local pressedTree: any=nil
+    local talking=false
+    local function paintActions()
+        local open=not talking and not journal.Visible and player:GetAttribute("ER_LocalPlacement")~=true
+        combat.Visible=open
+        attack.Visible=open
+        if not open then cancelAttack() end
+        interact.Visible=open and contextKind~="none"
+        openJournal.Visible=not talking
+    end
+    player:GetAttributeChangedSignal("ER_LocalPlacement"):Connect(paintActions)
+    local openDialogue,closeDialogue=DukeDialogue.mount(gui,call,function(value)
+        talking=value
+        paintActions()
+    end)
+    player.CharacterRemoving:Connect(closeDialogue)
+
     local function interactNow()
         if contextKind=="coin" then
             request("pickup_coin",contextTarget)
         elseif contextKind=="npc" then
             selectedNpcId=contextTarget
             showJournal(true,"villagers")
+        elseif contextKind=="structure" then
+            for _,building in ipairs(snapshot and snapshot.buildings or {}) do
+                if building.id==contextTarget then
+                    local labels={complete="Pronto",blueprint="Entregas",building="Em obra",damaged="Danificado",ruined="Ruína"}
+                    notify(building.name.." · "..(labels[building.state] or building.state))
+                    break
+                end
+            end
+            showJournal(true,"build")
         elseif contextKind=="wood" then
             request("take_wood",nil)
         elseif contextKind=="craft" then
@@ -514,12 +574,90 @@ function UI.start(player: Player)
             showJournal(true,"workshop")
         elseif contextKind=="story" then
             local phase=player:GetAttribute("ER_R3Phase")
-            if phase=="guard" then request("prologue","training")
+            if phase=="guard" then openDialogue()
             elseif phase=="evacuation" then request("prologue","evacuate")
             elseif phase=="coronation" then request("prologue","coronation") end
         end
     end
-    interact.Activated:Connect(interactNow)
+    local function finishTree(press: any)
+        if not press.ticket then return end
+        if press.cancelled or pressedTree~=press then
+            call("tree_cancel",press.ticket)
+            return
+        end
+        pressedTree=nil
+        track.Visible=false
+        local action=if press.duration>=0.8 then "tree_mark" else "tree_take"
+        local result=call(action,press.ticket)
+        if result.ok then
+            if action=="tree_mark" then
+                notify(if result.marked then "Árvore marcada." else "Marcação removida.")
+            else notify("Madeira recolhida.") end
+            task.defer(function() refreshStatus() end)
+        end
+    end
+    local pressedKind=""
+    local pressedTarget: any=nil
+    local cancelInteract=Gesture.bind(interact,function()
+        pressedKind=contextKind
+        pressedTarget=contextTarget
+        if contextKind~="tree" then return end
+        if pressedTree then
+            pressedTree.cancelled=true
+            local previous=pressedTree
+            task.spawn(finishTree,previous)
+        end
+        local press={treeId=contextTarget,at=os.clock(),duration=0}
+        pressedTree=press
+        fill.Size=UDim2.fromScale(0,1)
+        track.Visible=true
+        task.spawn(function()
+            local result=call("tree_press",press.treeId)
+            if not result.ok then
+                if pressedTree==press then pressedTree=nil;track.Visible=false end
+                return
+            end
+            press.ticket=result.id
+            if press.released or press.cancelled or pressedTree~=press then finishTree(press) end
+        end)
+    end,function(cancelled)
+        local press=pressedTree
+        if press then
+            press.cancelled=cancelled or contextTarget~=press.treeId
+            press.duration=os.clock()-press.at
+            press.released=true
+            track.Visible=false
+            task.spawn(finishTree,press)
+        elseif not cancelled and contextKind==pressedKind
+            and contextTarget==pressedTarget and contextKind~="tree" then
+            task.spawn(interactNow)
+        end
+    end,{Enum.KeyCode.E,Enum.KeyCode.ButtonY})
+    RunService.RenderStepped:Connect(function()
+        local press=pressedTree
+        if not press or press.released then return end
+        local duration=os.clock()-press.at
+        if duration>Ballistics.MAX_HOLD then cancelInteract();return end
+        fill.Size=UDim2.fromScale(math.clamp(duration/0.8,0,1),1)
+    end)
+    local highlight=Instance.new("Highlight")
+    highlight.FillTransparency=1
+    highlight.OutlineTransparency=0.32
+    highlight.OutlineColor=C.gold
+    highlight.DepthMode=Enum.HighlightDepthMode.Occluded
+    highlight.Parent=workspace
+    local function highlightTarget()
+        local world=workspace:FindFirstChild("ER_LivingWorld")
+        local name=if contextKind=="tree" then "HarvestableTree_"..tostring(contextTarget) else nil
+        local target=if world and name then world:FindFirstChild(name) else nil
+        if world and contextKind=="structure" then
+            for _,model in ipairs(world:GetChildren()) do
+                if model:GetAttribute("ER_BuildingId")==contextTarget then target=model;break end
+            end
+        end
+        highlight.Adornee=target
+        highlight.Enabled=target~=nil and interact.Visible
+    end
 
     local warning=label(gui,"RaidBanner","",12,C.gold)
     warning.AnchorPoint=Vector2.new(0.5,0)
@@ -550,7 +688,7 @@ function UI.start(player: Player)
         local recovering=player:GetAttribute("ER_Recovering")==true
         warning.Visible=recovering or phase~="sandbox" or isRaid
             or player:GetAttribute("ER_R3Forecast")==true
-        warning.Text=if recovering then "Você caiu. A guarda o levará de volta ao castelo."
+        warning.Text=if talking then "" elseif recovering then "Você caiu. A guarda o levará de volta ao castelo."
             elseif isRaid and phase=="sandbox" then
                 "INVASÃO · "..tostring(enemies).." ameaças · "..message
             elseif phase=="guard" and message=="" then "Use a interação para iniciar o prólogo."
@@ -582,10 +720,18 @@ function UI.start(player: Player)
             contextKind="coin"
             contextTarget=nearby.coinId
             interact.Text="RECOLHER MOEDA"
+        elseif nearby.treeId then
+            contextKind="tree"
+            contextTarget=nearby.treeId
+            interact.Text=if nearby.treeMarked then "ÁRVORE\nSegure: desmarcar" else "ÁRVORE\nSegure: marcar"
         elseif (nearby.npcId or 0)>0 then
             contextKind="npc"
             contextTarget=nearby.npcId
             interact.Text="MORADOR"
+        elseif nearby.buildingId then
+            contextKind="structure"
+            contextTarget=nearby.buildingId
+            interact.Text="ESTRUTURA"
         elseif (nearby.wood or 0)>=2 then
             contextKind="wood"
             interact.Text="PEGAR MADEIRA"
@@ -596,7 +742,9 @@ function UI.start(player: Player)
             contextKind="market"
             interact.Text="MERCADO"
         end
-        interact.Visible=contextKind~="none" and not journal.Visible
+        if pressedTree and contextTarget~=pressedTree.treeId then cancelInteract() end
+        paintActions()
+        highlightTarget()
     end
     refreshContext=updateContext
 
@@ -749,11 +897,11 @@ function UI.start(player: Player)
     end
     UserInputService.InputBegan:Connect(function(input: InputObject,processed: boolean)
         if processed or not gui.Parent then return end
-        if input.KeyCode==Enum.KeyCode.F then request("attack",nil)
-        elseif input.KeyCode==Enum.KeyCode.R then request("bow",nil)
-        elseif input.KeyCode==Enum.KeyCode.E then interactNow()
-        elseif input.KeyCode==Enum.KeyCode.V then showJournal(not journal.Visible,nil)
+        if talking then
+            if input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB then closeDialogue() end
+            return
         end
+        if input.KeyCode==Enum.KeyCode.V then showJournal(not journal.Visible,nil) end
     end)
 
     -- Local animation only. The server keeps each coin's ID and pickup value.

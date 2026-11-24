@@ -181,3 +181,13 @@ Correção v9 em desenvolvimento:
 
 - [PROVISÓRIO PARA STAGING] O jogador retorna ao castelo com os recursos preservados. A ficha do morador morto conserva a carga e o equipamento fora da economia ativa. Retomar um slot entre morte e respawn aplica a mesma recuperação.
 - [ABERTO] Retenção total preserva progresso e reduz impacto da derrota. Uma perda parcial recuperável introduziria risco e exigiria um depósito físico persistente que só pode ser reivindicado uma vez. Uma penalidade irreversível exigiria regra explícita de balanceamento. O destino definitivo da ficha dos moradores e a partição de ruínas continuam sujeitos à aprovação do criador.
+
+
+## 24/11/2026 — Feedback v17: refinamento profundo de movimento, combat e mundo
+- [FIXADO PELO CRIADOR] NPCs R6 devem usar animações clássicas da Roblox, não senoides impostas em Motor6D. Moradores ociosos caminham livremente em área 3D real nos eixos X/Z dentro das muralhas; não podem ter pistas de Z fixas por ID ou simplesmente esperar em filas. Jogador continua 2.5D.
+- [FIXADO] NPCs humanos têm pele natural em gradiente claro→bronzeado→marrom escuro, nunca preta/branca pura. Inimigos iniciais são **humanos corrompidos** e o nobre infectado também permanece humano, visualmente reconhecível. Equipamentos reais e armas visíveis.
+- [FIXADO] Botão de interação contextual; tocar interage, manter pressionado marca/desmarca árvore com confirmação e feedback discreto, sem ProximityPrompt/texto persistente encobrindo o jogo.
+- [FIXADO] Hotbar com ESPADA e ARCO, munição numérica no arco, botão único de ataque. Espada anima e deixa rastro; arco tem alcance escalado por tempo de carga do botão e previsão parabólica com gravidade, dispara ao soltar.
+- [FIXADO] Nova missão fala com duque, interação de proximidade abre diálogo original com câmera aproximando os dois em painel de RPG (estética geral de Stardew Valley sem copiar arte), duque explica seu passeio fora do castelo; só após diálogo a escolta começa.
+- [FIXADO] Mundo com 17 chunks totais (um central e oito para cada lado) de 64 studs; iniciar com 5 (central, dois para cada lado), expandir progressivamente conforme deslocamento; preserve áreas/seeds/saves existentes e avalie streaming mobile.
+- [ESCOPO] Nova rodada de refinamento da T1 após v17: T1-F4/F5/F6; T2 bloqueada. Proposta técnica detalhada: `docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md`.

@@ -78,8 +78,8 @@ class EntreReinosWiring(unittest.TestCase):
         profile = read("ReplicatedStorage/WorldProfile.luau")
         boot = read("ServerScriptService/Boot.server.luau")
         self.assertIn("WorldProfile.CHUNK_STUDS = 64", profile)
-        self.assertIn("WorldProfile.CHUNK_COUNT = 4", profile)
-        self.assertIn("WorldProfile.INITIAL_CHUNKS = {2, 3, 4}", profile)
+        self.assertIn("WorldProfile.CHUNK_COUNT = 17", profile)
+        self.assertIn("WorldProfile.INITIAL_CHUNKS = {0, -1, 1, -2, 2}", profile)
         self.assertIn("for order, id in ipairs(Profile.INITIAL_CHUNKS)", world)
         self.assertIn("function World.ensureNear(seed: number, x: number)", world)
         self.assertIn("World.ensureNear(record.seed, root.Position.X)", boot)
@@ -240,7 +240,8 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertNotIn('model:PivotTo(desired)', living)
         self.assertIn('RunService:BindToRenderStep("ER_NPCPresentation"', visual)
         self.assertIn('model:PivotTo(item.render)', visual)
-        self.assertIn("RunService.PreSimulation:Connect", visual)
+        self.assertIn("animator:LoadAnimation(animation)", visual)
+        self.assertNotIn(".Transform=", visual)
         self.assertIn('NPCPresentation.start()', client)
 
     def test_v9_minimal_3d_world_text_and_water_state_separation(self):
@@ -250,10 +251,9 @@ class EntreReinosWiring(unittest.TestCase):
         work = read("ReplicatedStorage/Living/WorkEngine.luau")
         camera = read("StarterPlayer/StarterPlayerScripts/SideCamera.luau")
         world = read("ServerScriptService/Services/WorldService.luau")
-        self.assertIn('caption.BackgroundTransparency=1', living)
-        self.assertIn('caption.TextStrokeTransparency=0.08', living)
-        self.assertIn('bill.MaxDistance=40', living)
-        self.assertIn('gui.MaxDistance=23', living)
+        self.assertNotIn('Instance.new("ProximityPrompt")', living)
+        self.assertNotIn('Instance.new("BillboardGui")', living)
+        self.assertIn('treeInReach(root,press.siteId)', living)
         self.assertIn('h:GetState() == Enum.HumanoidStateType.Swimming', lane)
         self.assertIn('h:Move(Vector3.new(x, if swimming then y else 0, 0), false)', lane)
         self.assertNotIn('h:ChangeState(', lane)
@@ -261,7 +261,17 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertFalse((SRC/"StarterPlayer/StarterPlayerScripts/R6SwimVisual.luau").exists())
         self.assertFalse((SRC/"ReplicatedStorage/WaterRules.luau").exists())
         self.assertIn('npc.motionX=0', work)
-        self.assertIn('npc.motionX=(if diff>0 then 1 else -1)*travel/dt', work)
+        self.assertIn('npc.motionX=(bestX-npc.x)/dt', work)
+        self.assertIn('npc.motionZ=(bestZ-z)/dt', work)
+        self.assertIn('npc.x,npc.z=bestX,bestZ', work)
+        self.assertIn('wander(npc,state,dt)', work)
+        self.assertNotIn('return -2.9+((npc.id-1)%4)*1.8', living)
+        self.assertIn('return npc.z or 0', living)
+        self.assertIn('model:SetAttribute("ER_NativeR6",true)', living)
+        self.assertIn('loadTrack(animator,R6_WALK', npc)
+        self.assertIn('if item.native then', npc)
+        self.assertIn('ER_NPCVelocityZ', npc)
+        self.assertIn('SKIN_TONES={', living)
         self.assertIn('PhysicsService:CollisionGroupSetCollidable(GHOST_GROUP,GHOST_GROUP,false)', living)
         self.assertIn('PhysicsService:CollisionGroupSetCollidable(GHOST_GROUP,"Default",false)', living)
         self.assertIn('item.from:Lerp(item.to,fraction)', npc)
@@ -348,7 +358,7 @@ class EntreReinosWiring(unittest.TestCase):
         for fragment in [
             'playerBag=Inventory.new(24)',
             'if state.r3.playerBag==nil then',
-            'function R3.takeWood(state: any,x: number,y: number)',
+            'function R3.takeWood(state: any,x: number,y: number,siteId: string?)',
             'Inventory.add(d.playerBag,"wood",2)',
             'Inventory.transfer(b.stored,d.playerBag,"wood",2)',
             'if Inventory.count(state.r3.playerBag,"wood")>=cost then',

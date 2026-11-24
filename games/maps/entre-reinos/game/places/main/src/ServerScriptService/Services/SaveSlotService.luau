@@ -28,6 +28,7 @@ end
 local function cloneRecord(source: {[string]: any}): {[string]: any}
     local copy = table.clone(source)
     if source.position then copy.position = table.clone(source.position) end
+    if type(source.frontierPosition)=="table" then copy.frontierPosition=table.clone(source.frontierPosition) end
     if source.regions then copy.regions = table.clone(source.regions) end
     if source.storyFlags then copy.storyFlags = table.clone(source.storyFlags) end
     if source.living then copy.living = LivingModel.clone(source.living) end
@@ -152,6 +153,9 @@ end
 
 local function trackWorld(player: Player, s: any, record: any): number
     local now = os.clock()
+    if record.frontierPosition and record.frontierPosition.revision==record.revision then
+        record.frontierPosition.revision=record.revision+1
+    end
     -- A failed world load must never record the menu spawn as game progress,
     -- nor advance the world's simulation clock while there is no active world.
     if player:GetAttribute("ER_WorldLoaded") ~= true then
@@ -165,8 +169,13 @@ local function trackWorld(player: Player, s: any, record: any): number
     local humanoid = if char then char:FindFirstChildOfClass("Humanoid") else nil
     if root and root:IsA("BasePart") and humanoid and humanoid.Health > 0 then
         local p = root.Position
-        if math.abs(p.Z) <= 2 and Slots.validPosition(p.X, p.Y, 0) then
-            record.position = {x = p.X, y = p.Y, z = 0}
+        if math.abs(p.Z)<=2 and Slots.validTravel(p.X,p.Y,0) then
+            if Slots.validPosition(p.X,p.Y,0) then
+                record.position={x=p.X,y=p.Y,z=0}
+                record.frontierPosition=nil
+            else
+                record.frontierPosition={x=p.X,y=p.Y,z=0,revision=s.data.revision+1}
+            end
         end
     end
     return now

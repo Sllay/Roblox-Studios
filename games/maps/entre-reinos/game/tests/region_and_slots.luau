@@ -154,3 +154,22 @@ current.rulesetVersion=2
 assert(S.validWorld(current) and S.summary(current,1).compatibility=="legacy_compatible")
 current.rulesetVersion=4
 assert(not S.validWorld(current))
+
+assert(#W.INITIAL_CHUNKS==5 and W.CHUNK_COUNT==17)
+local expected=-544
+for chunk=-8,8 do
+    local left,right=W.chunkBounds(chunk)
+    assert(left==expected and right-left==64)
+    assert(W.chunkAt(left)==chunk and W.chunkAt(right-0.01)==chunk)
+    expected=right
+end
+assert(expected==544)
+local explored: any=S.newWorld(42,100,W.spawn(42))
+explored.frontierPosition={x=-483,y=23,z=0,revision=0}
+assert(S.validWorld(explored) and S.spawnPosition(explored).x==-483)
+assert(S.validPosition(explored.position.x,explored.position.y,explored.position.z))
+explored.revision=1 -- a prior runtime saved with its legacy position
+assert(S.spawnPosition(explored).x==0)
+explored.frontierPosition.x=600
+assert(not S.validWorld(explored))
+print("ENTRE_REINOS_T1_F6: signed chunks and revision-bound legacy-compatible frontier position")

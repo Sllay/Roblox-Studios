@@ -305,3 +305,11 @@ O PR #10 foi integrado em `7983bc57a987837f4bb073bb017c20bfd41edbc1`. A revisão
 ## T1-F2/F3 — staging v17
 
 O PR #11 foi integrado em `ad458775a6043e013c3795aef16ee51fda135a5b`. Staging v17 foi confirmado pela API, por readback de 29 scripts com execução em motor e por Scene Sync. O [recibo F3](runner-receipts/T1-F3.md) cobre ER-001–020 e contém o roteiro. O [recibo F2](runner-receipts/T1-F2.md) cobre as mudanças de gameplay e compatibilidade. O candidato está **awaiting_creator_review**. A T1 segue em andamento e T2-R1 está bloqueada.
+
+
+## 24/11/2026 — v17 reprovada no aspecto visual/movimento; novo refinamento T1-F4/F5/F6
+- Novo feedback de partida do criador tem prioridade sobre os recibos técnicos da v17. Diagnóstico exato e aceite técnico especificados em `docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md`.
+- **Falhas verificadas por código:** `LivingService.actorZ` fixava quatro faixas (sem `npc.z` de simulação), `WorkEngine.walk` movia apenas X, `NPCPresentation.poseLimbs` usava Transform trigonométrico, `CombatService.enemyModel` usava blocos escuros, `R3HUD` dois botões fixos sem hotbar, `CombatService` arco com velocidade constante, `Campaign.command("training")` iniciava escolta sem diálogo, `WorldProfile` quatro chunks / três iniciais.
+- Branch `entre-reinos/t1-f4-mobile-world-overhaul`, PR #12 draft, base main `279f89f9c261a0a8e05b658753e27e62b54d42ee`: implementados `npc.z` persistido/migrável, movimento X/Z para jobs e idle wandering, render sem faixas, 9 tons de pele determinísticos, animações clássicas R6 Animator (walk/idle/toolslash), teste de depth. CI inicial https://github.com/Sllay/Roblox-Studios/actions/runs/45493792506 — success, ainda SEM Roblox runtime/mobile e sem publicação.
+- **Ainda NÃO implementado:** humanos corrompidos R6, armas NPC visualmente verificadas, interação hold, HUD hotbar, arco de carga, efeitos de golpe, diálogo/câmera de duque, 17 chunks/5 iniciais. Fazer por etapas do refinamento; nunca confundir documentação com gameplay.
+- **Gate:** staging continua v17, produção e outros jogos intocados. Antes de merge/publicação, quality gate, testes no motor, validação de posse de saves, Scene Sync e fluxo oficial de staging. Não marcar T1 validada/T2 iniciada.

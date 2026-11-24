@@ -97,7 +97,7 @@ end
 function R3.drop(state: any,x: number,value: number): (boolean, any)
     local d=state.r3
     if not finite(x) or not finite(value) or value%1~=0 or value<1 or value>d.wallet
-        or math.abs(x)>120 then return false,"invalid_coin_drop" end
+        or math.abs(x)>World.PLAY_EDGE then return false,"invalid_coin_drop" end
     if #d.drops>=R3.MAX_DROPS then
         for i=#d.drops,1,-1 do
             if d.drops[i].claimed then table.remove(d.drops,i) end
@@ -112,7 +112,7 @@ end
 
 -- The player's bag is independent of the village's standing timber:
 -- physical, finite extraction -> a real carried item -> a real recipe.
-function R3.takeWood(state: any,x: number,y: number): (boolean, any)
+function R3.takeWood(state: any,x: number,y: number,siteId: string?): (boolean, any)
     if not finite(x) or not finite(y) then return false,"invalid_position" end
     local d=R3.ensure(state,false)
     if Inventory.weight(d.playerBag)+2*Items.get("wood").mass
@@ -122,7 +122,8 @@ function R3.takeWood(state: any,x: number,y: number): (boolean, any)
     local best=nil
     local bestDistance=math.huge
     for _,source in ipairs(state.sites) do
-        if source.item=="wood" and Work.sourceAvailable(state,source)>=2 then
+        if source.item=="wood" and (not siteId or source.id==siteId)
+            and Work.sourceAvailable(state,source)>=2 then
             local distance=math.abs(x-source.x)
             local ground=World.sample(state.seed,source.x,0).height
             if distance<=11 and math.abs(y-(ground+3))<=11
@@ -140,6 +141,7 @@ function R3.takeWood(state: any,x: number,y: number): (boolean, any)
         ledger(d,"wood_from_tree",0,tostring(best.id))
         return true,Inventory.count(d.playerBag,"wood")
     end
+    if siteId then return false,"wood_source_too_far" end
     for _,b in ipairs(state.buildings) do
         if Work.stockAvailable(state,b,"wood")>=2
             and math.abs(x-b.x)<=13 and math.abs(y-(b.y+3))<=12 then
@@ -511,14 +513,6 @@ function R3.playerDied(state: any)
     state.r3.awaitingRecovery=true
 end
 
-local function walkDry(state: any,npc: any,target: number,dt: number)
-    local movement=math.clamp(target-npc.x,-5*dt,5*dt)
-    local nextX=npc.x+movement
-    if World.sample(state.seed,nextX,0).wet then return end
-    npc.x=nextX
-    npc.motionX=movement/dt
-end
-
 local function shelterFor(state: any,npc: any,threat: any): any
     local best=nil
     local distance=math.huge
@@ -627,7 +621,7 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
         local nearest=nil
         local dist=math.huge
         for _,e in ipairs(d.enemies) do
-            local delta=math.abs(npc.x-e.x)
+            local delta=math.sqrt((npc.x-e.x)^2+(npc.z or 0)^2)
             if e.hp>0 and delta<dist then nearest=e; dist=delta end
         end
         local evacuating=story.scene and (story.stage=="evacuation" or story.stage=="last_ring")
@@ -644,10 +638,12 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
                     if b.typeId=="castle" and b.health>0 and not b.ruined then shelter=b; break end
                 end
             end
-            npc.activity=if shelter and math.abs(shelter.x-npc.x)<=2 then "sheltered" else "flee"
+            npc.activity=if shelter and (shelter.x-npc.x)^2+((npc.z or 0)+4.4)^2<=4
+                then "sheltered" else "flee"
             if npc.activity=="flee" then
                 local safe=if shelter then shelter.x elseif nearest then npc.x+(if npc.x>=nearest.x then 8 else -8) else 0
-                walkDry(state,npc,math.clamp(safe,-116,116),dt)
+                Work.walkResident(state,npc,math.clamp(safe,-116,116),dt,
+                    if shelter then -4.4 else math.clamp((npc.z or 0)+4,-3,15),7.2)
             end
         elseif nearest and npc.defense and npc.defenseClock<=0 then
             if npc.defense=="bow" and (npc.arrows or 0)>0 and dist>=4 and dist<=24 and fire

@@ -1,6 +1,7 @@
 --!strict
 -- T1-R1: pure persisted record contract. Every world is a separate DataStore key.
 local Living = require("./Living/LivingModel")
+local World=require("./WorldProfile")
 local Slots = {}
 Slots.COUNT = 6
 Slots.SCHEMA_VERSION = 1
@@ -75,6 +76,19 @@ function Slots.validPosition(x: any, y: any, z: any): boolean
         and math.abs(x) <= 121 and y >= -24 and y <= 76
 end
 
+function Slots.validTravel(x: any,y: any,z: any): boolean
+    return finite(x) and finite(y) and z==0
+        and math.abs(x)<=World.PLAY_EDGE and y>=-24 and y<=76
+end
+
+function Slots.spawnPosition(data: any): any
+    local p=data.frontierPosition
+    if type(p)=="table" and p.revision==data.revision and Slots.validTravel(p.x,p.y,p.z) then
+        return p
+    end
+    return data.position
+end
+
 function Slots.validWorld(data: any): boolean
     if type(data) ~= "table" then
         return false
@@ -100,6 +114,10 @@ function Slots.validWorld(data: any): boolean
     if type(p) ~= "table" or not Slots.validPosition(p.x, p.y, p.z) then
         return false
     end
+    local extended=data.frontierPosition
+    if extended~=nil and (type(extended)~="table" or not finite(extended.revision)
+        or extended.revision<0 or extended.revision%1~=0
+        or not Slots.validTravel(extended.x,extended.y,extended.z)) then return false end
     if type(data.regions) ~= "table" or type(data.storyFlags) ~= "table" then
         return false
     end

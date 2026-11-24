@@ -5,6 +5,11 @@ local Camera = {}
 local enabled = false
 local currentDistance = 88
 local desiredDistance = 88
+local conversationActor: Model?=nil
+
+function Camera.focusActor(actor: Model?)
+    conversationActor=actor
+end
 
 function Camera.setWide(wide: boolean)
     desiredDistance = if wide then 118 else 88
@@ -18,14 +23,18 @@ function Camera.start(player: Player)
         if not camera then return end
         camera.CameraType = Enum.CameraType.Scriptable
         camera.FieldOfView = 46
-        currentDistance += (desiredDistance - currentDistance) * (1 - math.exp(-5 * math.min(dt, 0.1)))
+        local talking=conversationActor~=nil and conversationActor.Parent~=nil
+        local distance=if talking then 30 else desiredDistance
+        currentDistance += (distance - currentDistance) * (1 - math.exp(-5 * math.min(dt, 0.1)))
         local character = player.Character
         local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
         if not root or not root:IsA("BasePart") then return end
         local p = root.Position
-        local focus = Vector3.new(p.X, p.Y + 7, -10)
+        local actor=conversationActor
+        local aim=if talking and actor then (p+actor:GetPivot().Position)/2 else p
+        local focus = Vector3.new(aim.X, aim.Y + (if talking then 0.5 else 7), if talking then -0.5 else -10)
         local targetCamera = CFrame.lookAt(
-            Vector3.new(p.X, p.Y + 14, currentDistance),
+            Vector3.new(aim.X, aim.Y + (if talking then 3 else 14), currentDistance),
             focus
         )
         local alpha = 1 - math.exp(-7 * math.min(dt, 0.1))

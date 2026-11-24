@@ -98,8 +98,20 @@ for _=1,1500 do Work.step(restored,0.1) end
 assert(restored.buildings[2].state=="complete")
 assert(restored.stats.delivered==11)
 second.setLivingProvider(function() return restored end)
+local traveller=Instance.new("Model")
+local root=Instance.new("Part")
+root.Name="HumanoidRootPart"
+root.CFrame=CFrame.new(411,30,0)
+root.Parent=traveller
+Instance.new("Humanoid").Parent=traveller
+player.Character=traveller
 assert(second.save(player,true))
+local reopenedAt,travel=first.open(player,1)
+assert(reopenedAt and travel.position.x==legacy.position.x)
+assert(Slots.spawnPosition(travel).x==411)
+assert(first.save(player,true))
+traveller:Destroy()
 for index=2,6 do assert(main:GetAsync(Slots.key(1,index))==nil) end
 -- Retain the legacy backup and synthetic slot for audit in this namespace.
 local datastoreResult={actual=true,locking=true,reconnected=true,backup=true,
-    failureRecovery=true,delivered=restored.stats.delivered,otherSlotsUntouched=true}
+    failureRecovery=true,delivered=restored.stats.delivered,otherSlotsUntouched=true,frontierReopen=true}

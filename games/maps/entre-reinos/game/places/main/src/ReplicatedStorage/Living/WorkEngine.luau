@@ -47,6 +47,7 @@ local function clearJob(npc: any, state: any)
     npc.reserved=0
     npc.actionProgress=nil
     npc.state="idle"
+    npc.steerSide=nil
 end
 function Engine.releaseWorker(state: any,npc: any)
     clearJob(npc,state)
@@ -261,19 +262,112 @@ local function assign(npc: any, state: any): boolean
     return assignStorage(npc,state)
 end
 
-local function walk(npc: any, destX: number, dt: number): boolean
+local function freeGround(state: any,npc: any,x: number,z: number): boolean
+    if math.abs(z)>20 then return false end
+    local current=World.sample(state.seed,npc.x,npc.z or 0)
+    local nextGround=World.sample(state.seed,x,z)
+    if nextGround.wet or math.abs(nextGround.height-current.height)>1.4 then return false end
+    for _,site in ipairs(state.sites) do
+        if site.item=="wood" and site.remaining>0 and not site.salvage then
+            local after=(x-site.x)^2+(z+6)^2
+            if after<1.26^2 and after<(npc.x-site.x)^2+((npc.z or 0)+6)^2 then return false end
+        end
+    end
+    for _,b in ipairs(state.buildings) do
+        if b.health<=0 or b.ruined then continue end
+        local width=Structures.get(b.typeId).footprint/2+0.45
+        local depth=Structures.DEPTH_Z
+        if math.abs(x-b.x)<width and math.abs(z-depth)<4.65 then
+            -- A legacy resident may have been saved inside a structure.
+            local wasInside=math.abs(npc.x-b.x)<width and math.abs((npc.z or 0)-depth)<4.65
+            if not wasInside or math.abs(z-depth)<=math.abs((npc.z or 0)-depth) then return false end
+        end
+    end
+    return true
+end
+
+local steering={0,0.61,-0.61,1.15,-1.15,1.84,-1.84}
+function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ: number?,speed: number?): boolean
+    local z=npc.z or 0
+    local targetZ=destZ or z
     npc.targetX=destX
-    local diff=destX-npc.x
-    if math.abs(diff)<=NEAR then return true end
-    local speed=Professions.get(npc.profession).moveSpeed
-    local travel=math.min(math.abs(diff),speed*dt)
-    npc.x+=if diff>0 then travel else -travel
-    -- Stable per-tick walking intent for client presentation: unlike
-    -- snapshot-distance / irregular network-interval estimates, this does
-    -- not alternate fast and slow merely because 1 or 2 ticks elapsed.
-    npc.motionX=(if diff>0 then 1 else -1)*travel/dt
+    npc.targetZ=targetZ
+    local dx,dz=destX-npc.x,targetZ-z
+    local distance=math.sqrt(dx*dx+dz*dz)
+    if distance<=NEAR then return true end
+    local travel=math.min(distance,(speed or Professions.get(npc.profession).moveSpeed)*dt)
+    local angle=math.atan2(dz,dx)
+    local bestX,bestZ=npc.x,z
+    local bestScore=-math.huge
+    for _,offset in ipairs(steering) do
+        local x=npc.x+math.cos(angle+offset)*travel
+        local nextZ=z+math.sin(angle+offset)*travel
+        if not freeGround(state,npc,x,nextZ) then continue end
+        local score=math.cos(offset)
+        for _,other in ipairs(state.npcs) do
+            if other==npc or other.health<=0 then continue end
+            local before=(npc.x-other.x)^2+(z-(other.z or 0))^2
+            local after=(x-other.x)^2+(nextZ-(other.z or 0))^2
+            if after<2.4 and after<before then score-=3*(2.4-after) end
+        end
+        -- Keep the chosen turning side while skirting corners.
+        if offset*(npc.steerSide or 0)>0 then score+=0.18 end
+        if score>bestScore then
+            bestScore,bestX,bestZ=score,x,nextZ
+        end
+        if score>=1 then break end
+    end
+    if bestScore==-math.huge then return false end
+    npc.motionX=(bestX-npc.x)/dt
+    npc.motionZ=(bestZ-z)/dt
+    local turn=dx*(bestZ-z)-dz*(bestX-npc.x)
+    npc.steerSide=if math.abs(turn)<0.01 then nil elseif turn>0 then 1 else -1
+    npc.x,npc.z=bestX,bestZ
     npc.fatigue=math.min(100,npc.fatigue+dt*0.03)
-    return math.abs(destX-npc.x)<=NEAR
+    return (destX-npc.x)^2+(targetZ-npc.z)^2<=NEAR^2
+end
+
+local function wander(npc: any,state: any,dt: number)
+    -- No job available: roam independently inside the central village's
+    -- open courtyard (inside west/east walls). This is saved NPC state,
+    -- not a modulo-ID lane drawn by the renderer.
+    if npc.wanderPause and state.elapsed<npc.wanderPause then
+        npc.activity="idle"
+        return
+    end
+    if npc.wanderX==nil or npc.wanderZ==nil then
+        local epoch=math.floor((state.elapsed+npc.id*1.6)/5)
+        for attempt=0,11 do
+            local targetX=((state.seed%997)*17+npc.id*53+epoch*71+attempt*19)%53-26
+            local targetZ=1+(((state.seed%89)*13+npc.id*29+epoch*31+attempt*7)%12)
+            local free=not World.sample(state.seed,targetX,targetZ).wet
+            if free then
+                for _,other in ipairs(state.npcs) do
+                    if other~=npc and other.health>0
+                        and math.sqrt((other.x-targetX)^2+
+                            ((other.z or 0)-targetZ)^2)<3.4 then
+                        free=false
+                        break
+                    end
+                end
+            end
+            if free then
+                npc.wanderX=targetX
+                npc.wanderZ=targetZ
+                break
+            end
+        end
+        if npc.wanderX==nil then
+            npc.wanderPause=state.elapsed+2
+            return
+        end
+    end
+    npc.activity="wander"
+    if Engine.walkResident(state,npc,npc.wanderX,dt,npc.wanderZ) then
+        npc.wanderX=nil
+        npc.wanderZ=nil
+        npc.wanderPause=state.elapsed+1.4+(npc.id%3)*0.6
+    end
 end
 
 local function working(npc: any,dt: number,activity: string): boolean
@@ -288,7 +382,7 @@ end
 function Engine.canPlace(state: any, typeId: string, x: number): (boolean, string?)
     local def=Structures.get(typeId)
     if not def then return false,"invalid_structure" end
-    if type(x)~="number" or x~=x or math.abs(x)+def.footprint/2>120 then
+    if type(x)~="number" or x~=x or math.abs(x)+def.footprint/2>World.PLAY_EDGE then
         return false,"outside_region"
     end
     if #state.buildings>=120 then return false,"building_limit" end
@@ -422,6 +516,7 @@ function Engine.step(state: any, dt: number)
     state.elapsed+=dt
     for _,npc in ipairs(state.npcs) do
         npc.motionX=0
+        npc.motionZ=0
         npc.activity=nil
         if npc.health<=0 then continue end
         npc.hunger=math.min(100,npc.hunger+dt*0.045)
@@ -440,7 +535,10 @@ function Engine.step(state: any, dt: number)
             npc.fatigue=math.max(0,npc.fatigue-dt*4)
             if npc.fatigue<20 then npc.state="idle" end
         else
-            if npc.state=="idle" then assign(npc,state) end
+            if npc.state=="idle" then
+                assign(npc,state)
+                if npc.state=="idle" then wander(npc,state,dt) end
+            end
             local b=findBuilding(state,npc.jobId)
             if npc.state=="store_gather" then
                 local storage=storeBuilding(state,npc.storageId)
@@ -449,7 +547,7 @@ function Engine.step(state: any, dt: number)
                 if not storage or not source or not item
                     or source.item~=item then
                     clearJob(npc,state)
-                elseif walk(npc,source.x,dt) and working(npc,dt,"collect") then
+                elseif Engine.walkResident(state,npc,source.x,dt,if source.item=="wood" then -6 else -4) and working(npc,dt,"collect") then
                     local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc),
                         storageSpace(state,storage,item,npc))
                     if n>0 and Inventory.add(npc.inventory,item,n) then
@@ -467,7 +565,7 @@ function Engine.step(state: any, dt: number)
                 local item=npc.carryItem
                 if not storage or not item then
                     clearJob(npc,state)
-                elseif walk(npc,storage.x,dt) then
+                elseif Engine.walkResident(state,npc,storage.x,dt,-4.4) then
                     local carried=Inventory.count(npc.inventory,item)
                     local amount=math.min(carried,npc.reserved,storageSpace(state,storage,item,npc))
                     if amount>0 and Inventory.transfer(npc.inventory,
@@ -485,7 +583,8 @@ function Engine.step(state: any, dt: number)
                     local storage=storeBuilding(state,npc.storageId)
                     if not storage and (not site or site.item~=item) then
                         clearJob(npc,state)
-                    elseif walk(npc,if storage then storage.x else site.x,dt)
+                    elseif Engine.walkResident(state,npc,if storage then storage.x else site.x,dt,
+                        if storage then -5 else if site.item=="wood" then -6 else -4)
                         and working(npc,dt,if storage then "load" else "collect") then
                         local available=if storage then Engine.stockAvailable(state,storage,item,npc)
                             else Engine.sourceAvailable(state,site,npc)
@@ -508,7 +607,7 @@ function Engine.step(state: any, dt: number)
                         end
                     end
                 elseif npc.state=="deliver" and item then
-                    if walk(npc,b.x,dt) then
+                    if Engine.walkResident(state,npc,b.x,dt,-4.4) then
                         local n=math.min(npc.reserved,Inventory.count(npc.inventory,item),
                             math.max(0,(Structures.get(b.typeId).cost[item] or 0)
                                 -(b.delivered[item] or 0)))
@@ -521,7 +620,7 @@ function Engine.step(state: any, dt: number)
                 elseif npc.state=="build" then
                     if not ready(b) then
                         clearJob(npc,state)
-                    elseif walk(npc,b.x,dt) then
+                    elseif Engine.walkResident(state,npc,b.x,dt,-4.4) then
                         npc.activity="build"
                         local def=Structures.get(b.typeId)
                         local rate=Professions.buildRate(npc.profession)
