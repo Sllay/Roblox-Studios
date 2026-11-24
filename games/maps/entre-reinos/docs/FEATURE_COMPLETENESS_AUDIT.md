@@ -132,3 +132,19 @@ A T1-F1 passou pelo DataStore real com namespaces sintéticos e cobriu a recuper
 ### Candidato T1-F2/F3 de staging
 
 A [revisão ER-001–020](runner-receipts/T1-F3.md#revisão-er-001020) documenta o que passou em CI, nos probes do motor e no DataStore sintético, e os limites do gate. A infraestrutura de morte passa de AUSENTE a PARCIAL. Nenhum requisito foi promovido a VALIDADO.
+
+### Candidato T1-F4/F5/F6 publicado no staging v18
+
+| Requisitos | Evidência técnica adicional | Evidência ainda pendente |
+|---|---|---|
+| ER-001/002 | SaveSlotService reabriu posição na fronteira com DataStore isolado, seis slots preservados e lease, backup e recuperação testados. | Teleporte e reabertura pelo cliente touch com save do criador. |
+| ER-003/004 | Terrain nativo, streaming ativo e geração em janelas de 64 studs. Expansão 5 → 17 sem regravar os chunks já gerados. | Câmera, terreno distante e natação em partida móvel. |
+| ER-005/006 | Posições X/Z persistentes, desvio local e rigs R6. | Fluidez visual e retomada de trabalho sob ameaça em partida. |
+| ER-007/008/009/010 | Marcação contextual com distância e replay verificados, integração de custódia e apoio nativo da vila e prévia de construção. | Ciclo completo no celular e regras definitivas de ruínas e estorno. |
+| ER-011 | Os seis edifícios de origem têm apoio verificado no Terrain. | Revisão de silhuetas, arte e legibilidade de estados no celular. |
+| ER-012/013/014 | Corrompidos humanos, combate no motor, carga, consumo de flecha, colisão e regressões de defesa. | Invasão e defesa em partida, rastros e poses R6. |
+| ER-015/017 | Hotbar compacta e abertura do prólogo por diálogo contextual com o duque. | Prólogo completo com o jogador, revisão visual e touch. |
+| ER-016/018/019 | Regressões de custódia, combate e reabertura em suíte integrada. | Ciclo integral na partida, resultados de derrota e políticas de perda. |
+| ER-020 | Readback de scripts e tempo de geração em sessão isolada. | FPS, frame pacing, memória e conforto dos comandos em celular. |
+
+Os estados canônicos ER-001–020 permanecem PARCIAIS enquanto as provas de jogo e as decisões abertas estiverem pendentes. [Recibo T1-F6](runner-receipts/T1-F6.md) · [Readback](https://github.com/Sllay/Roblox-Studios/actions/runs/45498431957)
