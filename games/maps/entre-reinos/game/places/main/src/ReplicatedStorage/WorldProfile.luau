@@ -49,7 +49,8 @@ function WorldProfile.sample(seed: number, x: number, z: number)
     local hills = (n1 * 15 + n2 * 5) * flat
     local distantRidge = depth * depth * (13 + 15 * math.abs(n1))
     local rim=math.clamp((math.abs(x)-522)/22,0,1)
-    local surface = math.min(62,16+hills+distantRidge+rim*rim*26)
+    local surface = 16 + hills + distantRidge
+    if rim>0 then surface=math.min(62,surface+rim*rim*26) end
     local riverCenter = WorldProfile.RIVER_BASE_X + 6 * math.noise(z * 0.018, s, 4.1)
     local riverDist = math.abs(x - riverCenter)
     local bankBlend = clamp((riverDist - WorldProfile.RIVER_HALF_WIDTH) / 11, 0, 1)
