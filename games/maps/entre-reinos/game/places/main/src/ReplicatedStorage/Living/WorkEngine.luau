@@ -376,7 +376,7 @@ end
 function Engine.canPlace(state: any, typeId: string, x: number): (boolean, string?)
     local def=Structures.get(typeId)
     if not def then return false,"invalid_structure" end
-    if type(x)~="number" or x~=x or math.abs(x)+def.footprint/2>120 then
+    if type(x)~="number" or x~=x or math.abs(x)+def.footprint/2>World.PLAY_EDGE then
         return false,"outside_region"
     end
     if #state.buildings>=120 then return false,"building_limit" end

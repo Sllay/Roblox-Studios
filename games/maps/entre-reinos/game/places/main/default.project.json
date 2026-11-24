@@ -26,6 +26,11 @@
     },
     "Workspace": {
       "$className": "Workspace",
+      "$properties": {
+        "StreamingEnabled": true,
+        "StreamingMinRadius": 64,
+        "StreamingTargetRadius": 160
+      },
       "$path": "src/Workspace"
     }
   }

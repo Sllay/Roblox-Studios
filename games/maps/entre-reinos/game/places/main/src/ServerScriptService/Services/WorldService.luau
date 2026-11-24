@@ -1,7 +1,6 @@
 --!strict
--- T1-R1. Deterministic 3D Terrain in four isolated X-chunks.
--- The private world server generates the central/eastern 3 chunks before spawning;
--- the western chunk streams when the player approaches. Lobby NEVER calls this service.
+-- T1-F6. The server keeps generated native Terrain intact. Roblox instance
+-- streaming owns client replication; it does not change the domain or saves.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Profile = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
 local Terrain = workspace.Terrain
@@ -65,7 +64,7 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
             wall.Name = "RegionEdge_" .. tostring(side)
             wall.Anchored = true
             wall.Size = Vector3.new(3, 120, 96)
-            wall.Position = Vector3.new(side * 126, 20, 0)
+            wall.Position = Vector3.new(side * (Profile.PLAY_EDGE + 2), 20, 0)
             wall.Transparency = 1
             wall.CanCollide = true
             wall.CanTouch = false
@@ -127,17 +126,36 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
             end
         end
     end
+    if math.abs(id)>=3 then
+        for i=1,5 do
+            local x=xmin+i*11+((seed+i*13+id*47)%5)-2
+            local z=-24-(i%3)*7
+            local surface=Profile.sample(seed,x,z)
+            if not surface.wet then
+                local tree=Instance.new("Model")
+                tree.Name="Forest_"..tostring(i)
+                local y=surface.height
+                part(tree,"Trunk",Vector3.new(1.5,9.2,1.5),
+                    Vector3.new(x,y+4.6,z),Color3.fromRGB(86,66,49))
+                for crown=1,3 do
+                    local width=7.5-crown*1.15
+                    part(tree,"Canopy",Vector3.new(width,4,width),
+                        Vector3.new(x,y+5+crown*2.1,z),Color3.fromRGB(56,102+crown*7,67),Enum.PartType.Ball)
+                end
+                tree.Parent=chunkFolder
+            end
+        end
+    end
     chunkFolder.Parent = scene
 end
 
 local function createChunk(seed: number, id: number): (boolean, string?)
     if generated[id] then return true, nil end
-    if id < 1 or id > Profile.CHUNK_COUNT then return fail("invalid_chunk") end
+    if math.abs(id)>Profile.CHUNK_RADIUS or id%1~=0 then return fail("invalid_chunk") end
     if failure then return false, failure end
     local b = Profile.BOUNDS
     local resolution = Profile.CELL
-    local xmin = b.xMin + (id - 1) * Profile.CHUNK_STUDS
-    local xmax = xmin + Profile.CHUNK_STUDS
+    local xmin,xmax = Profile.chunkBounds(id)
     local region = Region3.new(
         Vector3.new(xmin, b.yMin, b.zMin),
         Vector3.new(xmax, b.yMax, b.zMax))
@@ -166,12 +184,15 @@ local function createChunk(seed: number, id: number): (boolean, string?)
     for ix = 1, sx do
         solids[ix], liquids[ix], materials[ix] = {}, {}, {}
         local x = xmin + (ix - 0.5) * resolution
+        local columns={}
+        for iz=1,sz do
+            columns[iz]=Profile.sample(seed,x,b.zMin+(iz-0.5)*resolution)
+        end
         for iy = 1, sy do
             solids[ix][iy], liquids[ix][iy], materials[ix][iy] = {}, {}, {}
             local bottom = b.yMin + (iy - 1) * resolution
             for iz = 1, sz do
-                local z = b.zMin + (iz - 0.5) * resolution
-                local sample = Profile.sample(seed, x, z)
+                local sample=columns[iz]
                 local solid = math.clamp((sample.height - bottom) / resolution, 0, 1)
                 local candidate = if sample.riverDist < 23 then
                     math.clamp((Profile.WATER_SURFACE - bottom) / resolution, 0, 1) else 0
@@ -274,20 +295,30 @@ function World.activate(seed: number, progress: ((number, string) -> ())?): (boo
     return true, nil
 end
 
+function World.isLoadedAt(x: number): boolean
+    return generated[Profile.chunkAt(x)]==true
+end
+
 function World.ensureNear(seed: number, x: number): (boolean, string?)
-    if not active or currentSeed ~= seed then return false, "world_not_ready" end
-    if failure then return false, failure end
-    if generating then return false, "world_generation_in_progress" end
-    -- Only the far-west chunk is deferred in T1-R1. The river (east) is ready
-    -- before spawn, so swimming can be tested immediately.
-    if x < -24 and not generated[1] then
-        generating = true
-        local ok, reason = createChunk(seed, 1)
-        generating = false
-        if ok then phase = "ready" end
-        return ok, reason
+    if not active or currentSeed~=seed then return false,"world_not_ready" end
+    if failure then return false,failure end
+    if generating then return false,"world_generation_in_progress" end
+    if x~=x or math.abs(x)>Profile.BOUNDS.xMax then return false,"outside_region" end
+    local current=Profile.chunkAt(x)
+    local west,east=Profile.chunkAt(x-38),Profile.chunkAt(x+38)
+    local wanted={current}
+    for index=west,east do if index~=current then table.insert(wanted,index) end end
+    for _,index in ipairs(wanted) do
+        if not generated[index] then
+            generating=true
+            local invoked,ok,reason=pcall(createChunk,seed,index)
+            generating=false
+            if not invoked then return fail("terrain_stream_exception") end
+            if not ok then return false,reason end
+            phase="ready"
+        end
     end
-    return true, nil
+    return true,nil
 end
 
 return World

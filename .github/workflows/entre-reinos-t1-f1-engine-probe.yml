@@ -80,19 +80,25 @@ jobs:
                   return require(modules:WaitForChild(name))
               end
               local seed=516639272
-              assert(require(services:WaitForChild("WorldService")).activate(seed))
+              local worldService=require(services:WaitForChild("WorldService"))
+              assert(worldService.activate(seed))
               __NATIVE__
               local combat=probeCombat(seed,require(services:WaitForChild("CombatService")))
+              local world=probeWorld(worldService,require(modules.Parent:WaitForChild("WorldProfile")),seed)
               return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
-                  placeVersion=game.PlaceVersion,sourceMatches=matches,combat=combat})
+                  placeVersion=game.PlaceVersion,sourceMatches=matches,combat=combat,world=world,
+                  streamingEnabled=workspace.StreamingEnabled})
               """.replace("__CHECKS__",json.dumps(json.dumps(checks))).replace(
-                  "__NATIVE__", (game / "game/tests/staging_combat.luau").read_text())
+                  "__NATIVE__", (game / "game/tests/staging_combat.luau").read_text()+"\n"+
+                  (game / "game/tests/staging_world.luau").read_text())
 
               report=run_task(staging["universeId"], staging["placeIds"]["main"],
                               os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source)
               assert report["loadedVersion"] == int(os.environ["ER_PROBE_REVISION"]), report
               assert report["sourceMatches"] == len(checks)
               assert len(report["combat"])==8 and all(report["combat"].values())
+              assert report["world"]["initial"]==5 and report["world"]["complete"]==17
+              assert report["streamingEnabled"]
               print("ENTRE_REINOS_T1_F1_PUBLISHED", json.dumps(report,sort_keys=True))
               raise SystemExit(0)
           parts = ["""
@@ -133,11 +139,17 @@ jobs:
               assert count == 1, name
           parts.append(f"local function loadCombat()\n{combat_service}\nend")
           parts.append((game / "game/tests/staging_combat.luau").read_text())
+          parts.append((game / "game/tests/staging_world.luau").read_text())
+          world_source = (game / "game/places/main/src/ServerScriptService/Services/WorldService.luau").read_text()
+          world_source, count = re.subn(r"^local Profile = require\(.*\)$",
+              'local Profile = loadCandidate("WorldProfile")', world_source, flags=re.M)
+          assert count == 1
+          parts.append(f"local function loadWorldService()\n{world_source}\nend")
           living_service = (game / "game/places/main/src/ServerScriptService/Services/LivingService.luau").read_text()
           placement = living_service.split("local function placementGround(",1)[1].split("\nactions.OnServerInvoke=",1)[0]
           parts.append("""
           local seed=516639272
-          local service=require(game:GetService("ServerScriptService"):WaitForChild("Services"):WaitForChild("WorldService"))
+          local service=loadWorldService()
           local activated,errorCode=service.activate(seed)
           assert(activated,errorCode)
           local params=RaycastParams.new()
@@ -218,6 +230,7 @@ jobs:
           end
           local placementVerified=probePlacement()
           local combatVerified=probeCombat(seed,loadCombat())
+          local worldVerified=probeWorld(service,loadCandidate("WorldProfile"),seed)
           local core=loadCandidate("R3Engine")
           local profileStart=os.clock()
           for _,sampleSeed in ipairs({42,1009,seed}) do
@@ -236,7 +249,7 @@ jobs:
               universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
               version=game.PlaceVersion,domainSuites=3,starterBuildings=#state.buildings,datastore=datastoreResult,
               terrainChunks=service.getChunkCount(),seed=seed,
-              placementVerified=placementVerified,combat=combatVerified,domainTicks=3600,domainSimulationMs=simulationMs
+              placementVerified=placementVerified,combat=combatVerified,world=worldVerified,domainTicks=3600,domainSimulationMs=simulationMs
           })
           """.replace("__PLACEMENT__",placement))
           report = run_task(staging["universeId"], staging["placeIds"]["main"],
@@ -244,5 +257,6 @@ jobs:
           print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
           assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5 and report["placementVerified"]
           assert report["datastore"]["actual"] and report["datastore"]["delivered"] == 11
+          assert report["datastore"]["frontierReopen"] and report["world"]["complete"] == 17
           assert all(report["combat"].values()) and len(report["combat"]) == 8
           PY

@@ -123,6 +123,7 @@ local function enemyModel(e: any): Model
         costume(m,"GuardBlade",hand,Vector3.new(0.25,2.5,0.14),CFrame.new(0,-1.65,-0.28),Color3.fromRGB(194,197,181)).Material=Enum.Material.Metal
         costume(m,"GuardHilt",hand,Vector3.new(0.75,0.17,0.21),CFrame.new(0,-0.51,-0.28),Color3.fromRGB(127,84,39))
     end
+    m.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
     m:SetAttribute("ER_NativeR6",true)
     m:SetAttribute("ER_NPCVisual",true)
     if not e.story then
@@ -522,7 +523,7 @@ function Combat.action(player: Player,action: string,arg: any): any
         if type(arg)~="string" or #arg>32 then return {ok=false,error="invalid_equipment"} end
         local id,weapon=string.match(arg,"^(%d+):(%a+)$")
         if not id then return {ok=false,error="invalid_equipment"} end
-        if math.abs(root.Position.X)>120 then return {ok=false,error="outside_region"} end
+        if math.abs(root.Position.X)>World.PLAY_EDGE then return {ok=false,error="outside_region"} end
         local npcId=tonumber(id)
         if not npcId then return {ok=false,error="invalid_equipment"} end
         local npc=nil
@@ -555,7 +556,7 @@ function Combat.tick(dt: number)
         local target,alpha=sweep(a.p,nextPos)
         local impact=alpha<1
         if target then R3.damageEnemy(state,target,a.damage) end
-        if impact or a.age>3 or math.abs(nextPos.X)>126 or nextPos.Y< -28 then
+        if impact or a.age>3 or math.abs(nextPos.X)>World.BOUNDS.xMax or nextPos.Y< -28 then
             a.part:Destroy()
             table.remove(arrows,i)
         else

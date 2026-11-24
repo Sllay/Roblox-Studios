@@ -97,7 +97,7 @@ end
 function R3.drop(state: any,x: number,value: number): (boolean, any)
     local d=state.r3
     if not finite(x) or not finite(value) or value%1~=0 or value<1 or value>d.wallet
-        or math.abs(x)>120 then return false,"invalid_coin_drop" end
+        or math.abs(x)>World.PLAY_EDGE then return false,"invalid_coin_drop" end
     if #d.drops>=R3.MAX_DROPS then
         for i=#d.drops,1,-1 do
             if d.drops[i].claimed then table.remove(d.drops,i) end

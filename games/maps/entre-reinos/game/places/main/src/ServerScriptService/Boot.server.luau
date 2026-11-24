@@ -81,7 +81,7 @@ local function attachLane(player: Player, char: Model): (boolean, string?)
     local recovered=player:GetAttribute("ER_Recovering")==true
         or (player:GetAttribute("ER_WorldLoaded")~=true and data.living and data.living.r3
             and data.living.r3.awaitingRecovery==true)
-    local pos=if recovered then Profile.spawn(data.seed) else data.position
+    local pos=if recovered then Profile.spawn(data.seed) else Slots.spawnPosition(data)
     root.CFrame = CFrame.new(pos.x, pos.y + 1, Profile.LANE_Z)
     h.AutoRotate = false
     player:SetAttribute("ER_GeneratorVersion", Profile.GENERATOR_VERSION)
@@ -206,6 +206,14 @@ local function startWorld(player: Player)
         return
     end
 
+    local returnPosition=Slots.spawnPosition(record)
+    local loaded,streamReason=World.ensureNear(record.seed,returnPosition.x)
+    if not loaded then
+        player:SetAttribute("ER_LoadError",streamReason or "terrain_resume_failed")
+        stage(player,"failed",nil,"Região do save indisponível. Seu mundo foi preservado.")
+        Saves.abortActivation(player)
+        return
+    end
     stage(player, "spawn", 0.91, "Posicionando personagem no terreno...")
     local char = player.Character
     if not char then
@@ -243,11 +251,18 @@ local function startWorld(player: Player)
     player:SetAttribute("ER_WorldLoaded", true)
     stage(player, "ready", 1, "Mundo carregado")
     task.spawn(function()
+        local lastSafe: CFrame?=nil
         while player.Parent == Players and activePlayer == player do
-            task.wait(1.25)
+            task.wait(0.65)
             local character = player.Character
             local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
             if root and root:IsA("BasePart") then
+                if World.isLoadedAt(root.Position.X) and root.Position.Y> -16 then
+                    lastSafe=root.CFrame
+                elseif lastSafe then
+                    root.CFrame=lastSafe
+                    root.AssemblyLinearVelocity=Vector3.zero
+                end
                 local generated, reason = World.ensureNear(record.seed, root.Position.X)
                 if not generated and reason ~= "world_generation_in_progress" then
                     warn("[EntreReinos][Streaming] Could not load nearby region: ", reason)

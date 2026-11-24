@@ -161,6 +161,7 @@ local function createActor(npc: any): Model?
             Instance.new("Animator").Parent=humanoid
         end
     end
+    model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
     model:SetAttribute("ER_NativeR6",true)
     model:SetAttribute("ER_SkinPalette",1+((state.seed%157+npc.id*71)%#SKIN_TONES))
     for _,item in ipairs(model:GetDescendants()) do
@@ -615,7 +616,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
             -- Workers can reach the west before the player; the same
             -- deterministic streaming contract must apply to NPC movement.
             for _,npc in ipairs(state.npcs) do
-                if npc.x < -24 then
+                if npc.health>0 and not WorldService.isLoadedAt(npc.x) then
                     local streamed,reason=WorldService.ensureNear(state.seed,npc.x)
                     if not streamed and reason~="world_generation_in_progress" then
                         warn("[EntreReinos][Living] Worker chunk load: ",reason)
@@ -852,7 +853,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         buildPreview=nil
         local def=Structures.get(arg)
         if not def or def.buildable==false then return {ok=false,error="invalid_structure"} end
-        if type(candidateX)~="number" or candidateX~=candidateX or math.abs(candidateX)>120 then
+        if type(candidateX)~="number" or candidateX~=candidateX or math.abs(candidateX)>Profile.PLAY_EDGE then
             return {ok=false,error="outside_region"}
         end
         local x=math.round(candidateX)

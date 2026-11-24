@@ -5,10 +5,12 @@ local WorldProfile = {}
 WorldProfile.GENERATOR_VERSION = 1
 WorldProfile.CELL = 4
 WorldProfile.CHUNK_STUDS = 64
-WorldProfile.CHUNK_COUNT = 4
-WorldProfile.INITIAL_CHUNKS = {2, 3, 4}
+WorldProfile.CHUNK_RADIUS = 8
+WorldProfile.CHUNK_COUNT = 17
+WorldProfile.PLAY_EDGE = 540
+WorldProfile.INITIAL_CHUNKS = {0, -1, 1, -2, 2}
 WorldProfile.BOUNDS = {
-    xMin = -128, xMax = 128,
+    xMin = -544, xMax = 544,
     yMin = -32, yMax = 64,
     zMin = -48, zMax = 48,
 }
@@ -16,6 +18,17 @@ WorldProfile.LANE_Z = 0
 WorldProfile.WATER_SURFACE = 10
 WorldProfile.RIVER_BASE_X = 76
 WorldProfile.RIVER_HALF_WIDTH = 12
+
+function WorldProfile.chunkAt(x: number): number
+    return math.clamp(math.floor((x+32)/WorldProfile.CHUNK_STUDS),
+        -WorldProfile.CHUNK_RADIUS,WorldProfile.CHUNK_RADIUS)
+end
+
+function WorldProfile.chunkBounds(index: number): (number,number)
+    assert(index%1==0 and math.abs(index)<=WorldProfile.CHUNK_RADIUS,"invalid chunk index")
+    local left=index*WorldProfile.CHUNK_STUDS-32
+    return left,left+WorldProfile.CHUNK_STUDS
+end
 
 function WorldProfile.validSeed(seed: any): boolean
     return type(seed) == "number" and seed == seed and seed % 1 == 0 and seed >= 1 and seed <= 2147483646
@@ -35,7 +48,8 @@ function WorldProfile.sample(seed: number, x: number, z: number)
     local depth = clamp((-z - 12) / 30, 0, 1)
     local hills = (n1 * 15 + n2 * 5) * flat
     local distantRidge = depth * depth * (13 + 15 * math.abs(n1))
-    local surface = 16 + hills + distantRidge
+    local rim=math.clamp((math.abs(x)-522)/22,0,1)
+    local surface = 16 + hills + distantRidge + rim*rim*26
     local riverCenter = WorldProfile.RIVER_BASE_X + 6 * math.noise(z * 0.018, s, 4.1)
     local riverDist = math.abs(x - riverCenter)
     local bankBlend = clamp((riverDist - WorldProfile.RIVER_HALF_WIDTH) / 11, 0, 1)

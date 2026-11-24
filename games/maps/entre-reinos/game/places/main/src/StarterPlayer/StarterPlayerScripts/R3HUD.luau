@@ -531,13 +531,14 @@ function UI.start(player: Player)
     local pressedTree: any=nil
     local talking=false
     local function paintActions()
-        local open=not talking and not journal.Visible
+        local open=not talking and not journal.Visible and player:GetAttribute("ER_LocalPlacement")~=true
         combat.Visible=open
         attack.Visible=open
         if not open then cancelAttack() end
         interact.Visible=open and contextKind~="none"
         openJournal.Visible=not talking
     end
+    player:GetAttributeChangedSignal("ER_LocalPlacement"):Connect(paintActions)
     local openDialogue,closeDialogue=DukeDialogue.mount(gui,call,function(value)
         talking=value
         paintActions()
