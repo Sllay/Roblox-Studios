@@ -22,6 +22,12 @@
   "universeId": "10769712413",
   "workspaceRoots": [
     {
+      "class": "Camera",
+      "key": "path:[\"Workspace\",[{\"class\":\"Camera\",\"name\":\"Camera\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "Camera"
+    },
+    {
       "class": "Model",
       "key": "path:[\"Workspace\",[{\"class\":\"Model\",\"name\":\"StartArea\",\"ordinal\":1}]]",
       "managedId": "",
@@ -32,12 +38,6 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Terrain\",\"name\":\"Terrain\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "Terrain"
-    },
-    {
-      "class": "Camera",
-      "key": "path:[\"Workspace\",[{\"class\":\"Camera\",\"name\":\"Camera\",\"ordinal\":1}]]",
-      "managedId": "",
-      "name": "Camera"
     }
   ]
 }
