@@ -89,6 +89,7 @@ function Living.valid(state: any): boolean
             or (n.wanderX~=nil and not finite(n.wanderX))
             or (n.wanderZ~=nil and not finite(n.wanderZ))
             or (n.wanderUntil~=nil and not finite(n.wanderUntil))
+            or (n.wanderPause~=nil and not finite(n.wanderPause))
             or type(n.name)~="string" or not Professions.get(n.profession)
             or not Inventory.valid(n.inventory) or not finite(n.health)
             or not finite(n.hunger) or not finite(n.fatigue) or not units(n.reserved)
