@@ -152,9 +152,12 @@ function UI.start(player: Player)
 
     -- A short top strip; everything else is either contextual or collapsible.
     local top=panel(gui,"KingdomVitals",C.background)
-    top.AnchorPoint=Vector2.new(0.5,0)
-    top.Position=UDim2.new(0.5,0,0,7)
-    top.Size=UDim2.fromOffset(340,35)
+    top.AnchorPoint=Vector2.new(1,0)
+    top.Position=UDim2.new(1,-10,0,7)
+    top.Size=UDim2.new(1,-105,0,35)
+    local topLimit=Instance.new("UISizeConstraint")
+    topLimit.MaxSize=Vector2.new(432,35)
+    topLimit.Parent=top
     top.BackgroundTransparency=0.14
     local vitals=label(top,"Vitals","DIA 1  ·  Moedas 0  ·  Flechas 12",13,C.paper)
     vitals.Font=Enum.Font.GothamSemibold
@@ -164,7 +167,10 @@ function UI.start(player: Player)
     local stockBar=panel(gui,"VillageStock",C.background)
     stockBar.AnchorPoint=Vector2.new(0.5,0)
     stockBar.Position=UDim2.new(0.5,0,0,49)
-    stockBar.Size=UDim2.fromOffset(420,25)
+    stockBar.Size=UDim2.new(1,-22,0,25)
+    local stockLimit=Instance.new("UISizeConstraint")
+    stockLimit.MaxSize=Vector2.new(450,25)
+    stockLimit.Parent=stockBar
     stockBar.BackgroundTransparency=0.2
     local stock=label(stockBar,"Stock","FONTES DA VILA  ·  consultando…",11,C.secondary)
     stock.Size=UDim2.new(1,-12,1,0)
@@ -478,7 +484,7 @@ function UI.start(player: Player)
     combat.Name="CombatControls"
     combat.BackgroundTransparency=1
     combat.AnchorPoint=Vector2.new(1,0.5)
-    combat.Position=UDim2.new(1,-10,0.54,0)
+    combat.Position=UDim2.new(1,-10,0.60,0)
     combat.Size=UDim2.fromOffset(114,106)
     combat.Parent=gui
     local sword=button(combat,"SwordSlot","1 ESPADA")
@@ -509,7 +515,7 @@ function UI.start(player: Player)
 
     local interact=button(gui,"ContextAction","INTERAGIR")
     interact.AnchorPoint=Vector2.new(1,1)
-    interact.Position=UDim2.new(1,-10,0.54,-58)
+    interact.Position=UDim2.new(1,-10,0.60,-58)
     interact.Size=UDim2.fromOffset(114,46)
     interact.TextSize=10
     interact.BackgroundColor3=C.surface

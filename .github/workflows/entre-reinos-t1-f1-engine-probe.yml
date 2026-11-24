@@ -146,6 +146,7 @@ jobs:
           assert count == 1
           parts.append(f"local function loadWorldService()\n{world_source}\nend")
           living_service = (game / "game/places/main/src/ServerScriptService/Services/LivingService.luau").read_text()
+          tree_functions = living_service.split("local function treeInReach(",1)[1].split("\nactions.OnServerInvoke=",1)[0]
           placement = living_service.split("local function placementGround(",1)[1].split("\nactions.OnServerInvoke=",1)[0]
           parts.append("""
           local seed=516639272
@@ -229,6 +230,49 @@ jobs:
               return true
           end
           local placementVerified=probePlacement()
+          local function verifyTree()
+              local R3=loadCandidate("R3Engine")
+              local Ballistics=loadCandidate("Ballistics")
+              local state=loadCandidate("LivingModel").new(seed)
+              R3.ensure(state,false)
+              local tree=state.sites[1]
+              local siteVisuals={}
+              local treePress=nil
+              local treeSerial,lastTreePress=0,0
+              local function treeInReach(__TREE__
+              local character=Instance.new("Model")
+              local root=Instance.new("Part")
+              root.Name="HumanoidRootPart"
+              root.CFrame=CFrame.new(tree.x,20,0)
+              root.Parent=character
+              Instance.new("Humanoid").Parent=character
+              local trunk=Instance.new("Part")
+              trunk.Name="Trunk"
+              trunk.Position=Vector3.new(tree.x,20,-6)
+              siteVisuals[tree.id]=trunk
+              local player={Character=character}
+              local stock=tree.remaining
+              local first=treeAction(player,"tree_press",tree.id)
+              assert(first.ok)
+              assert(not treeAction(player,"tree_mark",first.id).ok and not tree.marked)
+              task.wait(0.3)
+              local press=treeAction(player,"tree_press",tree.id)
+              assert(press.ok)
+              task.wait(0.82)
+              assert(treeAction(player,"tree_mark",press.id).ok and tree.marked)
+              assert(not treeAction(player,"tree_mark",press.id).ok)
+              assert(tree.remaining==stock)
+              local cancelled=treeAction(player,"tree_press",tree.id)
+              assert(cancelled.ok and treeAction(player,"tree_cancel",cancelled.id).ok)
+              assert(not treeAction(player,"tree_mark",cancelled.id).ok and tree.marked)
+              task.wait(0.3)
+              root.Position=Vector3.new(tree.x+36,20,0)
+              assert(not treeAction(player,"tree_press",tree.id).ok)
+              character:Destroy()
+              trunk:Destroy()
+              return true
+          end
+          local treeVerified=verifyTree()
           local combatVerified=probeCombat(seed,loadCombat())
           local worldVerified=probeWorld(service,loadCandidate("WorldProfile"),seed)
           local core=loadCandidate("R3Engine")
@@ -249,14 +293,15 @@ jobs:
               universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
               version=game.PlaceVersion,domainSuites=3,starterBuildings=#state.buildings,datastore=datastoreResult,
               terrainChunks=service.getChunkCount(),seed=seed,
-              placementVerified=placementVerified,combat=combatVerified,world=worldVerified,domainTicks=3600,domainSimulationMs=simulationMs
+              placementVerified=placementVerified,combat=combatVerified,world=worldVerified,treeVerified=treeVerified,domainTicks=3600,domainSimulationMs=simulationMs
           })
-          """.replace("__PLACEMENT__",placement))
+          """.replace("__PLACEMENT__",placement).replace("__TREE__",tree_functions))
           report = run_task(staging["universeId"], staging["placeIds"]["main"],
                             os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=int(os.getenv("ER_PROBE_REVISION", "17")))
           print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
           assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5 and report["placementVerified"]
           assert report["datastore"]["actual"] and report["datastore"]["delivered"] == 11
           assert report["datastore"]["frontierReopen"] and report["world"]["complete"] == 17
+          assert report["treeVerified"]
           assert all(report["combat"].values()) and len(report["combat"]) == 8
           PY

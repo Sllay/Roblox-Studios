@@ -302,7 +302,10 @@ local function sweep(origin: Vector3,goal: Vector3): (number?, number)
     for _,enemy in ipairs(state.r3.enemies) do
         local hit=Trajectory.intersection(origin.X,origin.Y,delta.X,delta.Y,
             enemy.x,groundAt(enemy.x)+0.35,1.25,5.4)
-        if enemy.hp>0 and hit and hit<limit then target=enemy.id; limit=hit end
+        if enemy.hp>0 and hit and hit<limit and math.abs(origin.Z+delta.Z*hit)<=2 then
+            target=enemy.id
+            limit=hit
+        end
     end
     return target,limit
 end
@@ -327,10 +330,12 @@ end
 function Combat.fireResident(npc: any,enemy: any): boolean
     local difference=enemy.x-npc.x
     local side=if difference<0 then -1 else 1
-    local origin=Vector3.new(npc.x+side*0.8,groundAt(npc.x)+3.5,0)
+    local depth=npc.z or 0
+    local localGround=World.sample(state.seed,npc.x,depth).height
+    local origin=Vector3.new(npc.x+side*0.8,localGround+3.5,depth)
     local flight=math.clamp(math.abs(enemy.x-origin.X)/42,0.4,0.72)
     local vertical=(groundAt(enemy.x)+3-origin.Y)/flight+workspace.Gravity*flight/2
-    return launch(origin,Vector3.new((enemy.x-origin.X)/flight,vertical,0),10)
+    return launch(origin,Vector3.new((enemy.x-origin.X)/flight,vertical,-depth/flight),10)
 end
 
 local function equipAvatar(root: BasePart): Trail?
