@@ -38,14 +38,24 @@ end
 PhysicsService:CollisionGroupSetCollidable(GHOST_GROUP,GHOST_GROUP,false)
 PhysicsService:CollisionGroupSetCollidable(GHOST_GROUP,"Default",false)
 
--- Four stable depth lanes and small visual offsets avoid NPC piles at the
--- same work station. These are presentation offsets, never job/save positions.
+-- Real persisted simulation coordinates: a resident is free to cross depth.
+-- No modulo-ID lanes or fixed per-person offsets.
 local function actorX(npc: any): number
-    return npc.x+(((npc.id-1)%4)-1.5)*0.48
+    return npc.x
 end
 local function actorZ(npc: any): number
-    if npc.activity=="sheltered" then return -8 end
-    return -2.9+((npc.id-1)%4)*1.8
+    return npc.z or 0
+end
+
+local SKIN_TONES={
+    Color3.fromRGB(233,194,158), Color3.fromRGB(218,170,132),
+    Color3.fromRGB(201,145,104), Color3.fromRGB(185,126,91),
+    Color3.fromRGB(167,110,78), Color3.fromRGB(147,95,67),
+    Color3.fromRGB(124,80,57), Color3.fromRGB(104,67,50),
+    Color3.fromRGB(85,57,43),
+}
+local function skinFor(seed: number,id: number): Color3
+    return SKIN_TONES[1+((seed%157+id*71)%#SKIN_TONES)]
 end
 
 local function ghostPart(p: BasePart)
@@ -152,10 +162,29 @@ local function createActor(npc: any): Model?
         }
         torso.Color=palette[npc.profession] or palette.common
     end
+    local skin=skinFor(state.seed,npc.id)
+    local body=model:FindFirstChildOfClass("BodyColors")
+    if not body then
+        body=Instance.new("BodyColors")
+        body.Parent=model
+    end
+    body.HeadColor3=skin
+    body.LeftArmColor3=skin
+    body.RightArmColor3=skin
+    body.LeftLegColor3=skin
+    body.RightLegColor3=skin
+    -- Keep professional clothing distinguishable from human skin.
+    body.TorsoColor3=if torso and torso:IsA("BasePart") then torso.Color
+        else skin
     if humanoid then
         humanoid.DisplayName=npc.name.." · "..prof.label
         humanoid.AutoRotate=false
+        if not humanoid:FindFirstChildOfClass("Animator") then
+            Instance.new("Animator").Parent=humanoid
+        end
     end
+    model:SetAttribute("ER_NativeR6",true)
+    model:SetAttribute("ER_SkinPalette",1+((state.seed%157+npc.id*71)%#SKIN_TONES))
     for _,item in ipairs(model:GetDescendants()) do
         if item:IsA("BasePart") then
             ghostPart(item)
@@ -174,6 +203,7 @@ local function createActor(npc: any): Model?
     model:SetAttribute("ER_FeetOffset",feetOffset)
     model:SetAttribute("ER_NPCVisual",true)
     model:SetAttribute("ER_NPCVelocityX",0)
+    model:SetAttribute("ER_NPCVelocityZ",0)
     local x,z=actorX(npc),actorZ(npc)
     local target=Vector3.new(x,groundHeight(x,z)+feetOffset+0.14,z)
     model:SetAttribute("ER_NPCPose",target)
@@ -237,14 +267,20 @@ local function syncNPC(npc: any)
         else groundHeight(x,z)+offset+0.14
     local target=Vector3.new(x,y,z)
     local motion=if type(npc.motionX)=="number" then npc.motionX else 0
+    local motionZ=if type(npc.motionZ)=="number" then npc.motionZ else 0
     local vx=math.clamp(motion,-9,9)
+    local vz=math.clamp(motionZ,-9,9)
     -- A single replicated pose is atomic; clients do their own frame-level
     -- interpolation from this logical position. No low-FPS PivotTo on server.
     model:SetAttribute("ER_NPCPose",target)
     model:SetAttribute("ER_NPCVelocityX",vx)
+    model:SetAttribute("ER_NPCVelocityZ",vz)
     local facing=model:GetAttribute("ER_NPCFacing")
-    if vx>0.08 then facing=-math.pi/2
-    elseif vx< -0.08 then facing=math.pi/2 end
+    -- Target yaw turns to real 2D velocity instead of swapping sideways
+    -- when a citizen walks toward/away from the camera.
+    if math.sqrt(vx*vx+vz*vz)>0.12 then
+        facing=math.atan2(-vx,-vz)
+    end
     if type(facing)=="number" then model:SetAttribute("ER_NPCFacing",facing) end
     local activity=if npc.defenseClock and npc.defenseClock>1.04 then "strike" else npc.activity or ""
     model:SetAttribute("ER_NPCActivity",activity)
