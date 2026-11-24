@@ -6,7 +6,9 @@ local Structures=require("./StructureDefs")
 local Inventory=require("./Inventory")
 local Items=require("./ItemDefs")
 local Work=require("./WorkEngine")
+local Story=require("./Campaign")
 local R3={}
+R3.storyActors=Story.actors
 R3.VERSION=1
 R3.DAY=240
 R3.NIGHT_START=160
@@ -31,12 +33,13 @@ function R3.valid(d: any): boolean
         or not finite(d.nextEnemyId) or not finite(d.nextDropId)
         or not finite(d.lastNight) or type(d.prologue.stage)~="string"
         or #d.enemies>R3.MAX_ENEMIES or #d.drops>R3.MAX_DROPS
-        or #d.ledger>80 then return false end
+        or #d.ledger>80 or not Story.valid(d.prologue) then return false end
     for _,e in ipairs(d.enemies) do
         if type(e)~="table" or not finite(e.x) or not finite(e.hp)
             or (e.side~=-1 and e.side~=1) or not finite(e.attackClock)
             or not finite(e.id) or not finite(e.loot) then return false end
     end
+    if d.awaitingRecovery~=nil and type(d.awaitingRecovery)~="boolean" then return false end
     if d.playerBag~=nil and not Inventory.valid(d.playerBag) then
         return false
     end
@@ -65,7 +68,7 @@ function R3.ensure(state: any, newCampaign: boolean)
         playerBag=Inventory.new(24),
         enemies={}, drops={}, ledger={}, nextEnemyId=1,nextDropId=1,
         lastNight= -1, night=0, raidActive=false, raidWarning="",
-        prologue={stage=if newCampaign then "guard" else "sandbox",time=0},
+        prologue=if newCampaign then Story.new() else {stage="sandbox",time=0},
         stats={killed=0,repelled=0,coinsLost=0,structuresHit=0,shots=0},
     }
     return state.r3
@@ -272,11 +275,26 @@ local function killEnemy(state: any,index: number)
     local d=state.r3
     local e=d.enemies[index]
     if e.loot>0 then
-        -- Exactly the coins already stolen from an existing ground record.
-        makeDrop(d,e.x,e.loot,"recovered_loot")
+        -- Preserve funds if the physical drop ceiling is saturated.
+        if not makeDrop(d,e.x,e.loot,"recovered_loot") then
+            d.treasury+=e.loot
+            ledger(d,"recovered_to_treasury",e.loot,tostring(e.id))
+        end
     end
     table.remove(d.enemies,index)
     d.stats.killed+=1
+end
+
+function R3.damageEnemy(state: any,id: number,damage: number): boolean
+    if not finite(damage) or damage<=0 then return false end
+    for index,e in ipairs(state.r3.enemies) do
+        if e.id==id and e.hp>0 then
+            e.hp-=damage
+            if e.hp<=0 then killEnemy(state,index) end
+            return true
+        end
+    end
+    return false
 end
 
 function R3.hit(state: any,x: number,y: number,direction: number,
@@ -301,30 +319,36 @@ function R3.hit(state: any,x: number,y: number,direction: number,
     end
     if not nearest then return false,"no_target" end
     local target=d.enemies[nearest]
-    target.hp-=damage
-    local id=target.id
-    if target.hp<=0 then killEnemy(state,nearest) end
-    return true,id
+    return R3.damageEnemy(state,target.id,damage),target.id
 end
 
 function R3.arm(state: any,npcId: any,weapon: string): (boolean, any)
     local d=state.r3
     if weapon~="bow" and weapon~="spear" then return false,"invalid_weapon" end
     for _,npc in ipairs(state.npcs) do
-        if npc.id==npcId then
-            if npc.defense==weapon then return false,"already_equipped" end
-            -- Equipment consumes finite raw material at an existing site.
+        if npc.id==npcId and npc.health>0 then
+            if npc.defense==weapon then
+                if weapon=="bow" and (npc.arrows or 0)==0 and d.arrows>=6 then
+                    d.arrows-=6
+                    npc.arrows=6
+                    ledger(d,"archer_reload",0,tostring(npcId))
+                    return true,npcId
+                end
+                return false,"already_equipped"
+            end
             local required=if weapon=="bow" then "wood" else "iron"
             local cost=if weapon=="bow" then 3 else 2
-            local source=nil
-            for _,site in ipairs(state.sites) do
-                if site.item==required and Work.sourceAvailable(state,site)>=cost then
-                    source=site
+            local stock=nil
+            for _,depot in ipairs(state.buildings) do
+                if math.abs(npc.x-depot.x)<=24 and Work.stockAvailable(state,depot,required)>=cost then
+                    stock=depot.stored
                     break
                 end
             end
-            if not source then return false,"not_enough_equipment_materials" end
-            source.remaining-=cost
+            if not stock then stock=d.playerBag end
+            if not stock or not Inventory.take(stock,required,cost) then
+                return false,"not_enough_equipment_materials"
+            end
             npc.defense=weapon
             npc.defenseClock=0
             npc.arrows=if weapon=="bow" then 8 else 0
@@ -338,18 +362,27 @@ end
 local function finishPrologue(state: any)
     local d=state.r3
     if d.prologue.stage=="last_ring" and #d.enemies==0 then
-        d.prologue.stage="coronation"
+        Story.enter(d.prologue,"coronation")
+        if d.prologue.scene then state.elapsed=(math.floor(state.elapsed/R3.DAY)+1)*R3.DAY end
         d.raidActive=false
         d.raidWarning="A cidade sobreviveu. Os moradores aguardam sua decisão."
     end
 end
 
-function R3.command(state: any,command: string): (boolean, any)
+function R3.command(state: any,command: string,x: number?): (boolean, any)
     local d=state.r3
     local stage=d.prologue.stage
+    if d.prologue.scene then
+        local accepted,reason=Story.command(d.prologue,command,x)
+        if not accepted then return false,reason end
+        if command=="training" then return true,"escort" end
+    end
     if command=="evacuate" and stage=="evacuation" then
-        d.prologue.stage="last_ring"
+        Story.enter(d.prologue,"last_ring")
         R3.spawnWave(state,2)
+        if d.prologue.scene then
+            for _,e in ipairs(d.enemies) do e.x=e.side*(38+(e.id%2)*4) end
+        end
         return true,"last_ring"
     elseif command=="coronation" and stage=="coronation" then
         d.prologue.stage="sandbox"
@@ -429,11 +462,91 @@ local function wallBeforeTown(state: any,e: any): any
     return best
 end
 
-function R3.step(state: any,dt: number,playerX: number): number
+local function raiderGoal(state: any,e: any): any
+    local selected=nil
+    local closest=math.huge
+    for _,b in ipairs(state.buildings) do
+        local ahead=(b.x-e.x)*(-e.side)
+        if math.abs(b.x)<=32 and ahead>=-2 and ahead<closest and b.health>0 and not b.ruined
+            and (b.state=="complete" or b.state=="damaged") then
+            selected=b
+            closest=ahead
+        end
+    end
+    return selected
+end
+
+function R3.storyAction(state: any,x: number): string?
+    local p=state.r3.prologue
+    local phase=p.stage
+    if phase=="guard" then
+        return if not p.scene or math.abs(x-p.dukeX)<=8 then "training" else nil
+    end
+    if not p.scene or math.abs(x)<=9 then
+        if phase=="evacuation" then return "evacuate" end
+        if phase=="coronation" then return "coronation" end
+    end
+    return nil
+end
+
+function R3.damageResident(state: any,npc: any,damage: number): boolean
+    if npc.health<=0 or not finite(damage) or damage<=0 then return false end
+    npc.health=math.max(0,npc.health-damage)
+    if npc.health==0 then
+        Work.releaseWorker(state,npc)
+        npc.state="dead"
+        npc.activity=nil
+        npc.motionX=0
+        npc.underAttack=false
+        -- Bag, gear and ammunition remain on this record until a recovery
+        -- policy is approved. The corpse is excluded from the active economy.
+        return true
+    end
+    return false
+end
+
+function R3.playerDied(state: any)
+    local stats=state.r3.stats
+    stats.playerDeaths=(stats.playerDeaths or 0)+1
+    state.r3.awaitingRecovery=true
+end
+
+local function walkDry(state: any,npc: any,target: number,dt: number)
+    local movement=math.clamp(target-npc.x,-5*dt,5*dt)
+    local nextX=npc.x+movement
+    if World.sample(state.seed,nextX,0).wet then return end
+    npc.x=nextX
+    npc.motionX=movement/dt
+end
+
+local function shelterFor(state: any,npc: any,threat: any): any
+    local best=nil
+    local distance=math.huge
+    for _,b in ipairs(state.buildings) do
+        local kind=Structures.get(b.typeId).kind
+        if (kind=="habitation" or kind=="treasury") and b.health>0 and not b.ruined
+            and (b.state=="complete" or b.state=="damaged")
+            and (not threat or (b.x-npc.x)*(npc.x-threat.x)>=0 or math.abs(b.x-npc.x)<2) then
+            local range=math.abs(b.x-npc.x)
+            if range<distance then best=b; distance=range end
+        end
+    end
+    return best
+end
+
+type Fire = (any, any) -> boolean
+function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: number?): number
     local d=state.r3
     if not finite(dt) or dt<=0 or not finite(playerX) then return 0 end
     dt=math.min(dt,0.25)
-    d.prologue.time+=dt
+    local story=d.prologue
+    story.time+=dt
+    if Story.advance(story,dt,playerX,playerY==nil or playerY> -24) then
+        table.insert(d.enemies,{id=d.nextEnemyId,x=story.dukeX,hp=64,side=-1,
+            loot=0,attackClock=0,typeId="infected_duke"})
+        d.nextEnemyId+=1
+        d.raidActive=true
+    end
     local day=math.floor(state.elapsed/R3.DAY)
     local dayTick=state.elapsed%R3.DAY
     d.night=day
@@ -460,32 +573,37 @@ function R3.step(state: any,dt: number,playerX: number): number
     local playerDamage=0
     for i=#d.enemies,1,-1 do
         local e=d.enemies[i]
-        local block=wallBeforeTown(state,e)
-        local goal=if block then block.x else 0
+        local block=if e.typeId=="infected_duke" then nil else wallBeforeTown(state,e)
+        local innerLine=story.scene and story.stage=="last_ring" and e.typeId~="infected_duke"
+        local target=if block or innerLine or e.typeId=="infected_duke" then nil else raiderGoal(state,e)
+        local goal=if block then block.x elseif e.typeId=="infected_duke" then math.clamp(playerX,-118,118)
+            elseif innerLine then e.side*7 elseif target then target.x else 0
         local diff=goal-e.x
+        local delta=math.clamp(diff,-4.8*dt,4.8*dt)
+        e.motionX=0
+        if e.hp<=0 then continue end
         if math.abs(diff)>2.8 then
-            local delta=math.min(math.abs(diff),4.8*dt)
-            e.x+=if diff>0 then delta else -delta
+            e.x+=delta
+            e.motionX=delta/dt
         elseif block then
-            block.health=math.max(0,block.health-7*dt)
+            local siege=story.scene and story.stage=="crisis" and block.districtBoundary
+            block.health=math.max(0,block.health-(if siege then 115 else 7)*dt)
             if block.state=="complete" then block.state="damaged" end
             ruin(state,block)
             d.stats.structuresHit+=dt
         else
-            if math.abs(e.x-playerX)<4 then
-                e.attackClock-=dt
-                if e.attackClock<=0 then
-                    e.attackClock=1.7
-                    playerDamage+=4
-                end
+            e.attackClock=math.max(0,e.attackClock-dt)
+            local surface=World.sample(state.seed,e.x,0)
+            local altitude=(if surface.wet then World.WATER_SURFACE else surface.height)+3
+            if math.abs(e.x-playerX)<4 and e.attackClock<=0
+                and (playerY==nil or math.abs(playerY-altitude)<6) then
+                e.attackClock=1.7
+                playerDamage+=if e.typeId=="infected_duke" then 7 else 4
             end
-            for _,b in ipairs(state.buildings) do
-                if math.abs(b.x-e.x)<4 and b.health>0 then
-                    b.health=math.max(0,b.health-4*dt)
-                    if b.state=="complete" then b.state="damaged" end
-                    ruin(state,b)
-                    break
-                end
+            if target then
+                target.health=math.max(0,target.health-4*dt)
+                if target.state=="complete" then target.state="damaged" end
+                ruin(state,target)
             end
             for _,drop in ipairs(d.drops) do
                 if not drop.claimed and math.abs(drop.x-e.x)<2 then
@@ -504,32 +622,50 @@ function R3.step(state: any,dt: number,playerX: number): number
         end
     end
 
-    -- Guard / archer behavior uses existing real NPCs and finite ammo.
     for _,npc in ipairs(state.npcs) do
+        if npc.health<=0 then continue end
         local nearest=nil
         local dist=math.huge
         for _,e in ipairs(d.enemies) do
             local delta=math.abs(npc.x-e.x)
-            if delta<dist then nearest=e; dist=delta end
+            if e.hp>0 and delta<dist then nearest=e; dist=delta end
         end
-        npc.underAttack=nearest~=nil and dist<12
-        if npc.underAttack and nearest and npc.defense==nil then
-            local away=if npc.x>=nearest.x then 1 else -1
-            npc.x=math.clamp(npc.x+away*5*dt,-116,116)
-            npc.motionX=away*5
+        local evacuating=story.scene and (story.stage=="evacuation" or story.stage=="last_ring")
+        local previous=npc.underAttack
+        npc.underAttack=(nearest~=nil and dist<16) or evacuating
+        if npc.underAttack and not previous and npc.defense==nil then
+            Work.releaseWorker(state,npc)
         end
-        if nearest then
-            if npc.defense=="bow" and (npc.arrows or 0)>0 and dist<30
-                and (npc.defenseClock or 0)<=0 then
+        npc.defenseClock=math.max(0,(npc.defenseClock or 0)-dt)
+        if npc.underAttack and npc.defense==nil then
+            local shelter=shelterFor(state,npc,nearest)
+            if evacuating then
+                for _,b in ipairs(state.buildings) do
+                    if b.typeId=="castle" and b.health>0 and not b.ruined then shelter=b; break end
+                end
+            end
+            npc.activity=if shelter and math.abs(shelter.x-npc.x)<=2 then "sheltered" else "flee"
+            if npc.activity=="flee" then
+                local safe=if shelter then shelter.x elseif nearest then npc.x+(if npc.x>=nearest.x then 8 else -8) else 0
+                walkDry(state,npc,math.clamp(safe,-116,116),dt)
+            end
+        elseif nearest and npc.defense and npc.defenseClock<=0 then
+            if npc.defense=="bow" and (npc.arrows or 0)>0 and dist>=4 and dist<=24 and fire
+                and fire(npc,nearest) then
                 npc.arrows-=1
-                nearest.hp-=10
                 npc.defenseClock=1.5
-            elseif npc.defense=="spear" and dist<5 and (npc.defenseClock or 0)<=0 then
+            elseif npc.defense=="spear" and dist<4.5
+                and math.abs(World.sample(state.seed,npc.x,0).height-World.sample(state.seed,nearest.x,0).height)<3 then
                 nearest.hp-=7
                 npc.defenseClock=1.2
             end
         end
-        npc.defenseClock=math.max(0,(npc.defenseClock or 0)-dt)
+        if nearest and dist<2.8 and npc.activity~="sheltered" and nearest.typeId~="infected_duke" then
+            local wall=wallBeforeTown(state,nearest)
+            if not wall or (npc.x-wall.x)*(nearest.x-wall.x)>=0 then
+                R3.damageResident(state,npc,2*dt)
+            end
+        end
     end
     for i=#d.enemies,1,-1 do
         if d.enemies[i].hp<=0 then killEnemy(state,i) end
@@ -539,10 +675,18 @@ function R3.step(state: any,dt: number,playerX: number): number
         d.stats.repelled+=1
         d.raidWarning="A invasão terminou. As obras podem continuar."
         if d.prologue.stage=="duke_fight" then
-            d.prologue.stage="crisis"
+            Story.enter(story,"crisis")
             R3.spawnWave(state,2)
+            if story.scene then
+                for index,e in ipairs(d.enemies) do e.x=e.side*(48+math.floor((index-1)/2)*5) end
+            end
         elseif d.prologue.stage=="crisis" then
-            d.prologue.stage="evacuation"
+            if story.scene then
+                for _,b in ipairs(state.buildings) do
+                    if b.districtBoundary then b.health=0; ruin(state,b) end
+                end
+            end
+            Story.enter(story,"evacuation")
             d.raidWarning="Evacue os moradores para o último anel."
         else
             finishPrologue(state)
@@ -561,7 +705,8 @@ function R3.summary(state: any): any
         night=(state.elapsed%R3.DAY)>=R3.NIGHT_START
             and (state.elapsed%R3.DAY)<R3.NIGHT_END,
         phase=d.prologue.stage,raidActive=d.raidActive,
-        warning=d.raidWarning,enemies=#d.enemies,
+        warning=Story.hint(d.prologue) or d.raidWarning,enemies=#d.enemies,
+        deaths=d.stats.playerDeaths or 0,
         raidForecast=d.prologue.stage=="sandbox" and not d.raidActive
             and d.lastNight<math.floor(state.elapsed/R3.DAY)
             and (math.floor(state.elapsed/R3.DAY)-1)%3==0

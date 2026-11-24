@@ -17,6 +17,8 @@ assert(old.r3==nil, "migrating old save must not mutate previous snapshot")
 assert(R3.ensure(legacy,false)==sandbox, "migration must be idempotent")
 local fresh=Living.new(seed)
 local d=R3.ensure(fresh,true)
+-- A v16 save that has already entered this route retains its old stage graph.
+d.prologue={stage="guard",time=0}
 assert(d.prologue.stage=="guard" and #d.enemies==0 and d.wallet==0)
 assert(R3.command(fresh,"evacuate")==false)
 assert(R3.command(fresh,"training"))
@@ -71,9 +73,11 @@ assert(d.wallet+d.treasury==balanceBefore+treasuryBefore,
 
 -- Equipment consumes real finite resources and cannot be free-repeated.
 local woodAfterTrade=fresh.sites[1].remaining
+assert(not R3.arm(fresh,1,"bow"),"remote timber cannot equip a defender")
+assert(Inventory.add(d.playerBag,"wood",3))
 local equipped,npcId=R3.arm(fresh,1,"bow")
 assert(equipped and npcId==1)
-assert(fresh.sites[1].remaining==woodAfterTrade-3)
+assert(fresh.sites[1].remaining==woodAfterTrade and Inventory.count(d.playerBag,"wood")==0)
 assert(R3.arm(fresh,1,"bow")==false)
 assert(R3.arm(fresh,999,"spear")==false)
 local timber=fresh.sites[1]
@@ -236,3 +240,99 @@ assert(raiders.wallet==0 and raiders.treasury==24)
 local ruins=Living.restore(damagedDepot,seed)
 assert(ruins and ruins.buildings[1].ruinedStock.wood==7)
 print("ENTRE_REINOS_T1_F1_RAID: a raid isolates seven stored units exactly once and blocks withdrawal")
+
+-- 3 seeds, real collection and project custody, four saved story checkpoints,
+-- distinct physical actors, damage boundaries, and life-cycle conservation.
+local Trajectory=require("../places/main/src/ReplicatedStorage/Living/Trajectory")
+assert(Trajectory.intersection(0,2,20,0,10,0,1,5)==0.45)
+assert(not Trajectory.intersection(0,9,20,0,10,0,1,5))
+assert(not Trajectory.intersection(0,2,2,0,10,0,1,5))
+assert(Trajectory.intersection(20,2,-20,0,10,0,1,5)==0.45)
+
+for _,campaignSeed in ipairs({42,1009,516639272}) do
+    local campaign=Living.new(campaignSeed)
+    Work.initializeVillage(campaign)
+    local story=R3.ensure(campaign,true)
+    assert(#R3.storyActors(story.prologue)==3)
+    assert(not R3.command(campaign,"training",40))
+    assert(R3.command(campaign,"training",0) and story.prologue.stage=="escort")
+    for _=1,20 do R3.step(campaign,0.1,45) end
+    assert(story.prologue.dukeX==-4,"duke cannot escort himself")
+    for _=1,100 do
+        R3.step(campaign,0.1,story.prologue.dukeX)
+        if story.prologue.stage=="encounter" then break end
+    end
+    assert(story.prologue.stage=="encounter" and #R3.storyActors(story.prologue)==4)
+    campaign=assert(Living.restore(campaign,campaignSeed))
+    story=campaign.r3
+    for _=1,70 do
+        R3.step(campaign,0.1,story.prologue.dukeX)
+        if story.prologue.stage=="duke_fight" then break end
+    end
+    assert(story.enemies[1].typeId=="infected_duke")
+    assert(#R3.storyActors(story.prologue)==2)
+    assert(R3.damageEnemy(campaign,story.enemies[1].id,64))
+    R3.step(campaign,0.1,0)
+    assert(story.prologue.stage=="crisis" and #story.enemies==4)
+    local west,east=campaign.buildings[4],campaign.buildings[5]
+    for _=1,130 do R3.step(campaign,0.1,0) end
+    assert(west.ruined and east.ruined,"the two real outer fortifications must take siege damage")
+    local function repel()
+        while #story.enemies>0 do assert(R3.damageEnemy(campaign,story.enemies[1].id,70)) end
+        R3.step(campaign,0.1,0)
+    end
+    repel()
+    assert(story.prologue.stage=="evacuation")
+    assert(not R3.command(campaign,"evacuate",30))
+    assert(R3.command(campaign,"evacuate",0))
+    assert(story.prologue.stage=="last_ring")
+    repel()
+    assert(story.prologue.stage=="coronation" and #R3.storyActors(story.prologue)==1)
+    assert(campaign.elapsed%R3.DAY==0)
+    assert(R3.command(campaign,"coronation",0))
+    assert(story.prologue.stage=="sandbox" and story.wallet==8)
+    assert(not R3.command(campaign,"coronation",0))
+
+    local custody=Living.new(campaignSeed)
+    R3.ensure(custody,false)
+    custody.r3.wallet=story.wallet
+    assert(Work.place(custody,"shelter",18))
+    local worker=custody.npcs[1]
+    assert(Inventory.add(worker.inventory,"wood",2))
+    Work.step(custody,0.1)
+    assert(worker.reserved>0)
+    assert(R3.damageResident(custody,worker,100))
+    assert(not R3.damageResident(custody,worker,100))
+    assert(worker.reserved==0 and worker.state=="dead")
+    local remaining=Inventory.count(worker.inventory,"wood")
+    assert(remaining==2)
+    local snapshot=assert(Living.restore(custody,campaignSeed))
+    R3.playerDied(snapshot)
+    assert(snapshot.r3.awaitingRecovery and snapshot.r3.wallet==8)
+    for _=1,25 do Work.step(snapshot,0.1) end
+    assert(snapshot.npcs[1].reserved==0 and snapshot.npcs[1].state=="dead")
+    assert(Inventory.count(snapshot.npcs[1].inventory,"wood")==remaining)
+    assert(Work.summary(snapshot).resources.isolated.wood>=remaining)
+    assert(Living.valid(snapshot))
+end
+
+local ranged=Living.new(seed)
+local scene=R3.ensure(ranged,false)
+local defender=ranged.npcs[1]
+assert(Inventory.add(scene.playerBag,"wood",3))
+assert(R3.arm(ranged,defender.id,"bow"))
+assert(R3.spawnWave(ranged,1))
+scene.enemies[1].x=defender.x+12
+scene.enemies[2].x=defender.x+13
+local ammo=defender.arrows
+R3.step(ranged,0.1,0,function() return false end)
+assert(defender.arrows==ammo)
+local fired=0
+R3.step(ranged,0.1,0,function(npc,enemy)
+    assert(npc.id==defender.id and enemy.hp==30)
+    fired+=1
+    return true
+end)
+assert(fired==1 and defender.arrows==ammo-1)
+assert(scene.enemies[1].hp==30,"only a subsequent projectile impact deals bow damage")
+print("ENTRE_REINOS_T1_F2: three campaigns, death custody, and authoritative weapon sweep")

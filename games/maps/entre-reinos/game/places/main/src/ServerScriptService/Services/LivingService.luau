@@ -14,6 +14,7 @@ local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
 local Combat=require(script.Parent:WaitForChild("CombatService"))
 local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Professions=require(shared:WaitForChild("Living"):WaitForChild("ProfessionDefs"))
+local Inventory=require(shared:WaitForChild("Living"):WaitForChild("Inventory"))
 local WorldService=require(script.Parent:WaitForChild("WorldService"))
 local Service={}
 local owner: Player?=nil
@@ -43,7 +44,8 @@ local function actorX(npc: any): number
     return npc.x+(((npc.id-1)%4)-1.5)*2.2
 end
 local function actorZ(npc: any): number
-    return -8+((npc.id-1)%4)*4
+    if npc.activity=="sheltered" then return -8 end
+    return -2.9+((npc.id-1)%4)*1.8
 end
 
 local function ghostPart(p: BasePart)
@@ -142,6 +144,14 @@ local function createActor(npc: any): Model?
     model:SetAttribute("Profession",npc.profession)
     local prof=Professions.get(npc.profession)
     local humanoid=model:FindFirstChildOfClass("Humanoid")
+    local torso=model:FindFirstChild("Torso")
+    if torso and torso:IsA("BasePart") then
+        local palette={
+            carpenter=Color3.fromRGB(124,85,57),builder=Color3.fromRGB(133,111,63),
+            miner=Color3.fromRGB(81,104,118),common=Color3.fromRGB(99,124,84),
+        }
+        torso.Color=palette[npc.profession] or palette.common
+    end
     if humanoid then
         humanoid.DisplayName=npc.name.." · "..prof.label
         humanoid.AutoRotate=false
@@ -173,13 +183,59 @@ local function createActor(npc: any): Model?
     return model
 end
 
+local function attachment(model: Model, name: string, key: string, limb: string,
+        size: Vector3, color: Color3, offset: CFrame)
+    if model:GetAttribute(name)==key then return end
+    model:SetAttribute(name,key)
+    local previous=model:FindFirstChild(name)
+    if previous then previous:Destroy() end
+    if key=="" then return end
+    local holder=model:FindFirstChild(limb)
+    if not holder or not holder:IsA("BasePart") then return end
+    local piece=makePart(model,name,size,color)
+    piece.CFrame=holder.CFrame*offset
+    piece.Material=Enum.Material.Wood
+    piece.Anchored=false
+    piece.Massless=true
+    local weld=Instance.new("WeldConstraint")
+    weld.Part0=holder
+    weld.Part1=piece
+    weld.Parent=piece
+    if key=="bow" then
+        for side=-1,1,2 do
+            local endPiece=makePart(piece,"BowLimb",Vector3.new(0.16,0.95,0.2),color)
+            endPiece.CFrame=piece.CFrame*CFrame.new(0,1.1*side,-0.21)
+                *CFrame.Angles(side*0.56,0,0)
+            endPiece.Anchored=false
+            endPiece.Massless=true
+            local join=Instance.new("WeldConstraint")
+            join.Part0=piece
+            join.Part1=endPiece
+            join.Parent=endPiece
+        end
+    end
+end
+
+local activities={
+    collect="Coletando",load="Retirando estoque",build="Construindo",
+    flee="Em fuga",sheltered="Em abrigo",strike="Defendendo",
+}
+
 local function syncNPC(npc: any)
     local model=figures[npc.id]
     if not model then return end
+    if npc.health<=0 then
+        model:Destroy()
+        figures[npc.id]=nil
+        return
+    end
     local x,z=actorX(npc),actorZ(npc)
     local offset=model:GetAttribute("ER_FeetOffset")
     if type(offset)~="number" then return end
-    local target=Vector3.new(x,groundHeight(x,z)+offset+0.14,z)
+    local last=model:GetAttribute("ER_NPCPose")
+    local y=if typeof(last)=="Vector3" and last.X==x and last.Z==z then last.Y
+        else groundHeight(x,z)+offset+0.14
+    local target=Vector3.new(x,y,z)
     local motion=if type(npc.motionX)=="number" then npc.motionX else 0
     local vx=math.clamp(motion,-9,9)
     -- A single replicated pose is atomic; clients do their own frame-level
@@ -190,10 +246,19 @@ local function syncNPC(npc: any)
     if vx>0.08 then facing=-math.pi/2
     elseif vx< -0.08 then facing=math.pi/2 end
     if type(facing)=="number" then model:SetAttribute("ER_NPCFacing",facing) end
+    local activity=if npc.defenseClock and npc.defenseClock>1.04 then "strike" else npc.activity or ""
+    model:SetAttribute("ER_NPCActivity",activity)
     local h=model:FindFirstChildOfClass("Humanoid")
-    if h and h.DisplayName~=npc.name.." · "..tostring(npc.state) then
-        h.DisplayName=npc.name.." · "..tostring(npc.state)
-    end
+    if h then h.DisplayName=npc.name.." · "..(activities[activity] or Professions.get(npc.profession).label) end
+    local weapon=npc.defense or (if activity=="collect" then "axe" elseif activity=="build" then "hammer" else "")
+    attachment(model,"HeldItem",weapon,"Right Arm",
+        if weapon=="spear" then Vector3.new(0.17,4.4,0.17)
+            elseif weapon=="bow" then Vector3.new(0.2,1.65,0.24)
+            else Vector3.new(0.35,1.45,0.35),
+        Color3.fromRGB(115,78,50),CFrame.new(0,-0.6,-0.5))
+    attachment(model,"Cargo",if Inventory.weight(npc.inventory)>0 then "bag" else "",
+        "Torso",Vector3.new(1.65,1.3,0.72),Color3.fromRGB(156,125,77),CFrame.new(0,0,0.82))
+
 end
 local function buildPiece(model: Model,b: any,name: string,
         size: Vector3,offset: Vector3,color: Color3,tilt: number?): Part
@@ -302,22 +367,46 @@ local function syncBuild(b: any)
     if not model then return end
     local def=Structures.get(b.typeId)
     if not def then return end
-    if model:GetAttribute("ER_LastVisualState")~=b.state then
-        model:SetAttribute("ER_LastVisualState",b.state)
+    local ratio=b.health/def.health
+    local progress=math.clamp(math.floor(6*b.progress/def.buildSeconds),0,6)
+    local stock=if b.typeId=="stockpile" and b.stored then Inventory.weight(b.stored) else 0
+    local cargo=math.clamp(math.ceil(stock/30),0,3)
+    local damage=if ratio<=0.35 then 2 elseif ratio<=0.68 then 1 else 0
+    local visual=b.state..":"..tostring(progress)..":"..tostring(damage)..":"..tostring(cargo)
+    if model:GetAttribute("ER_LastVisualState")~=visual then
+        model:SetAttribute("ER_LastVisualState",visual)
+        local index,crate=0,0
         for _,p in ipairs(model:GetChildren()) do
-            if p:IsA("BasePart") and p:GetAttribute("ER_StructurePiece")==true then
-                -- Only touch visual properties on state transitions, not
-                -- every 10Hz physics tick of every completed building.
-                p.Transparency=if b.state=="complete" then 0
-                    else if b.state=="damaged" or b.state=="ruined" then 0.23
-                    else if b.state=="building" then 0.28 else 0.55
+            if not p:IsA("BasePart") or p:GetAttribute("ER_StructurePiece")~=true then continue end
+            index+=1
+            if p.Name=="SupplyCrate" then crate+=1 end
+            local section=math.clamp(math.floor((p.Position.Y-b.y)/def.height*6),0,5)
+            if b.state=="blueprint" then
+                p.Transparency=if section<=1 then 0.48 else 1
+            elseif b.state=="building" then
+                p.Transparency=if section<=progress then 0.08 else 1
+            elseif b.state=="ruined" then
+                p.Transparency=if section<=1 then 0.28 else 1
+            elseif p.Name=="SupplyCrate" then
+                p.Transparency=if crate<=cargo then 0 else 1
+            elseif damage==2 and section>=3 and index%3==0 then
+                p.Transparency=0.88
+            else
+                p.Transparency=0
             end
+            local base=p:GetAttribute("ER_UndamagedColor")
+            if typeof(base)~="Color3" then
+                base=p.Color
+                p:SetAttribute("ER_UndamagedColor",base)
+            end
+            p.Color=base:Lerp(Color3.fromRGB(54,42,38),damage*0.20)
         end
     end
     local p=model:FindFirstChild("InfoAnchor")
     local gui=if p then p:FindFirstChild("ER_Info") else nil
     local caption=if gui then gui:FindFirstChild("Info") else nil
     if caption and caption:IsA("TextLabel") then
+        local labels={complete="Pronto",blueprint="Entregas",building="Em obra",damaged="Danificado",ruined="Ruína"}
         local delivered={}
         for resource,cost in pairs(def.cost) do
             table.insert(delivered,resource.." "..tostring(b.delivered[resource] or 0)
@@ -331,7 +420,7 @@ local function syncBuild(b: any)
             end
             stored=if #pieces>0 then " | estoque: "..table.concat(pieces,", ") else " | vazio"
         end
-        caption.Text=def.label.." #"..tostring(b.id).." · "..b.state
+        caption.Text=def.label.." #"..tostring(b.id).." · "..(labels[b.state] or b.state)
             ..(if b.state=="complete" then stored
                 else " "..tostring(math.floor(100*b.progress/def.buildSeconds))
                     .."% · "..table.concat(delivered,", "))
@@ -425,6 +514,7 @@ local function syncR3Hud(player: Player)
     player:SetAttribute("ER_R3Phase",data.phase)
     player:SetAttribute("ER_R3Warning",data.warning)
     player:SetAttribute("ER_R3Forecast",data.raidForecast)
+    player:SetAttribute("ER_PlayerDeaths",data.deaths)
     Lighting.ClockTime=((state.elapsed%R3.DAY)/10+6)%24
 end
 
@@ -473,6 +563,14 @@ local function draw()
     end
 end
 
+function Service.playerDied(player: Player)
+    if owner==player and state then R3.playerDied(state) end
+end
+
+function Service.playerRecovered(player: Player)
+    if owner==player and state then state.r3.awaitingRecovery=false end
+end
+
 function Service.snapshot(player: Player): any
     if owner~=player or not state then return nil end
     return Living.clone(state)
@@ -492,6 +590,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
     end
     owner=player
     state=loaded
+    state.r3.awaitingRecovery=false -- Boot placed a reconnecting character before loading the world.
     local folder=Instance.new("Folder")
     folder.Name="ER_LivingWorld"
     folder:SetAttribute("ER_Saveable",true)
@@ -504,8 +603,10 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
                 onProgress((i-1)/#state.npcs,
                     "Preparando morador "..tostring(i).."/"..tostring(#state.npcs))
             end
-            local model=createActor(npc)
-            if model then figures[npc.id]=model end
+            if npc.health>0 then
+                local model=createActor(npc)
+                if model then figures[npc.id]=model end
+            end
         end
         if onProgress then onProgress(1,"Moradores preparados") end
         for _,b in ipairs(state.buildings) do buildVisual(b) end
@@ -539,7 +640,10 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
                 player.Character:FindFirstChild("HumanoidRootPart") else nil
             local x=if currentRoot and currentRoot:IsA("BasePart")
                 then currentRoot.Position.X else 0
-            local damage=R3.step(state,0.1,x)
+            local h=if player.Character then player.Character:FindFirstChildOfClass("Humanoid") else nil
+            local y=if currentRoot and currentRoot:IsA("BasePart") and h and h.Health>0
+                then currentRoot.Position.Y else -100
+            local damage=R3.step(state,0.1,x,Combat.fireResident,y)
             if damage>0 and player.Character then
                 local h=player.Character:FindFirstChildOfClass("Humanoid")
                 if h and h.Health>0 then h:TakeDamage(damage) end
@@ -566,6 +670,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
                     break
                 end
             end
+            Combat.present()
             draw()
             syncR3Hud(player)
             drawAccumulator=0
@@ -646,13 +751,18 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             local x=root.Position.X
             local y=root.Position.Y
             nearby.district=Work.districtAt(state,x)
+            nearby.storyAction=R3.storyAction(state,x)
+            nearby.localThreats=0
+            for _,enemy in ipairs(state.r3.enemies) do
+                if Work.districtAt(state,enemy.x)==nearby.district then nearby.localThreats+=1 end
+            end
             nearby.canTrade=R3.marketNear(state,x,y)
             nearby.canSellWood=nearby.canTrade and R3.canSell(state,"wood",x,y)
             nearby.canCraftArrows=R3.arrowMaterial(state,x,y)~=nil
             local closestNPC=15
             for _,npc in ipairs(state.npcs) do
                 local distance=math.abs(npc.x-x)
-                if distance<closestNPC then
+                if npc.health>0 and distance<closestNPC then
                     closestNPC=distance
                     nearby.npcId=npc.id
                 end

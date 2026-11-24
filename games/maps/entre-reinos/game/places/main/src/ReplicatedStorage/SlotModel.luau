@@ -7,7 +7,7 @@ Slots.SCHEMA_VERSION = 1
 -- These are data contracts, not Roblox Place revisions.
 -- Cosmetic/gameplay changes keep these versions untouched.
 Slots.SAVE_FORMAT_VERSION = 1
-Slots.RULESET_VERSION = 2
+Slots.RULESET_VERSION = 3
 Slots.MIN_RULESET_VERSION = 1
 
 function Slots.compatibility(data: any): (boolean, string)
@@ -27,7 +27,7 @@ function Slots.compatibility(data: any): (boolean, string)
         return false,"migration_required"
     end
     if format<Slots.SAVE_FORMAT_VERSION then return false,"migration_required" end
-    if rules==1 and Slots.RULESET_VERSION==2 then return true,"legacy_compatible" end
+    if rules==1 or rules==2 then return true,"legacy_compatible" end
     if rules~=Slots.RULESET_VERSION then return false,"migration_required" end
     return true,if data.saveFormatVersion==nil then "legacy_compatible" else "compatible"
 end

@@ -42,6 +42,10 @@ local errorTexts={
     not_enough_equipment_materials="Faltam materiais para equipar.",
     too_far_from_defender="Aproxime-se do morador escolhido.",
     action_unavailable="Essa ordem não pode ser executada agora.",
+    too_far_from_story="Aproxime-se da escolta ou do castelo.",
+    already_equipped="Morador já equipado. Para recarregar um arco vazio, traga seis flechas.",
+    too_many_arrows="Aguarde as flechas em voo.",
+
     character_not_ready="Aguarde o personagem carregar.",
     world_not_loaded="O mundo está carregando.",
 }
@@ -337,7 +341,7 @@ function UI.start(player: Player)
     villTitle.Font=Enum.Font.GothamBold
     villTitle.TextColor3=C.paper
     local villHelp=rowText(villagersPage,"Help",
-        "Moradores têm inventários próprios. Aproxime-se para entregar um arco ou uma lança.",2,53)
+        "Equipe um morador próximo. Arco: 3 madeira. Lança: 2 ferro. Use a bolsa ou o estoque local.",2,53)
     local workerRows: {[number]: TextButton}={}
     local selectedNpcId=0
     local updateVillage: ()->()
@@ -510,7 +514,7 @@ function UI.start(player: Player)
             showJournal(true,"workshop")
         elseif contextKind=="story" then
             local phase=player:GetAttribute("ER_R3Phase")
-            if phase=="guard" then request("attack",nil)
+            if phase=="guard" then request("prologue","training")
             elseif phase=="evacuation" then request("prologue","evacuate")
             elseif phase=="coronation" then request("prologue","coronation") end
         end
@@ -520,7 +524,11 @@ function UI.start(player: Player)
     local warning=label(gui,"RaidBanner","",12,C.gold)
     warning.AnchorPoint=Vector2.new(0.5,0)
     warning.Position=UDim2.new(0.5,0,0,78)
-    warning.Size=UDim2.fromOffset(440,33)
+    warning.Size=UDim2.new(1,-24,0,42)
+    warning.TextWrapped=true
+    local maxWarning=Instance.new("UISizeConstraint")
+    maxWarning.MaxSize=Vector2.new(510,42)
+    maxWarning.Parent=warning
     warning.TextStrokeColor3=Color3.new(0,0,0)
     warning.TextStrokeTransparency=0.3
     warning.TextXAlignment=Enum.TextXAlignment.Center
@@ -539,17 +547,15 @@ function UI.start(player: Player)
             " · MOEDAS "..tostring(wallet).." · FLECHAS "..tostring(arrows)..
             " · BOLSA MAD "..tostring(hud.playerWood or 0)
         if type(message)~="string" then message="" end
-        warning.Visible=(phase~="sandbox" or isRaid
-            or player:GetAttribute("ER_R3Forecast")==true)
-        warning.Text=if phase=="guard" then
-                "Proteja o duque: use GOLPE para iniciar o prólogo."
-            else if isRaid then
-                "INVASÃO! "..tostring(enemies).." ameaças · "..message
-            else if phase=="evacuation" then
-                "Reúna os moradores no último anel. Abra VILA."
-            else if phase=="coronation" then
-                "A vila sobreviveu. Abra VILA para aceitar a coroa."
+        local recovering=player:GetAttribute("ER_Recovering")==true
+        warning.Visible=recovering or phase~="sandbox" or isRaid
+            or player:GetAttribute("ER_R3Forecast")==true
+        warning.Text=if recovering then "Você caiu. A guarda o levará de volta ao castelo."
+            elseif isRaid and phase=="sandbox" then
+                "INVASÃO · "..tostring(enemies).." ameaças · "..message
+            elseif phase=="guard" and message=="" then "Use a interação para iniciar o prólogo."
             else message
+
     end
 
     local orderButton=button(workshop,"StoryOrder","CONTINUAR O PRÓLOGO")
@@ -567,9 +573,9 @@ function UI.start(player: Player)
         contextKind="none"
         contextTarget=0
         local phase=player:GetAttribute("ER_R3Phase")
-        if phase=="guard" or phase=="evacuation" or phase=="coronation" then
+        if nearby.storyAction and (phase=="guard" or phase=="evacuation" or phase=="coronation") then
             contextKind="story"
-            interact.Text=if phase=="guard" then "INICIAR PRÓLOGO"
+            interact.Text=if phase=="guard" then "FALAR COM DUQUE"
                 else if phase=="evacuation" then "EVACUAR"
                 else "ACEITAR COROA"
         elseif (nearby.coinId or 0)>0 then
@@ -611,6 +617,9 @@ function UI.start(player: Player)
                 "   FERRO "..tostring(sources.iron or 0)..
                 "   COMIDA "..tostring(sources.food or 0)
         end
+        if (nearby.localThreats or 0)>0 then
+            stock.Text=(nearby.district or "Vila").." · "..tostring(nearby.localThreats).." ameaças próximas"
+        end
         for _,item in ipairs(resourceOrder) do
             local t=resourceCards[item]
             t.Text=(resourceNames[item] or item)..
@@ -645,14 +654,18 @@ function UI.start(player: Player)
                 local stateName={
                     gather="coletando",deliver="transportando",build="construindo",
                     idle="disponível",rest="descansando",
-                    store_gather="buscando estoque",store_deliver="levando ao galpão"}
+                    store_gather="buscando estoque",store_deliver="levando ao galpão",
+                    collect="coletando",load="retirando estoque",flee="em fuga",
+                    sheltered="abrigado",dead="morto",strike="defendendo"}
                 local role=if w.defense=="bow" then " · arqueiro"
                     else if w.defense=="spear" then " · lanceiro" else ""
                 local profession=Professions.get(w.profession)
                 local roleLabel=if profession then profession.label else w.profession
                 b.Text=w.name.."  ·  "..roleLabel..role..
+                    (if w.defense=="bow" then " · "..tostring(w.arrows).." flechas" else "")..
                     "\n"..(stateName[w.state] or tostring(w.state))..
-                    "  ·  carga "..tostring(math.floor(w.carryWeight)).." u."
+                    "  ·  carga "..tostring(math.floor(w.carryWeight)).." u."..
+                    (if w.district then " · "..w.district else "")
                 b.TextColor3=if w.id==selectedNpcId then C.gold else C.paper
                 b.Visible=true
             end
@@ -698,7 +711,7 @@ function UI.start(player: Player)
         dropCoin.Active=(player:GetAttribute("ER_R3Wallet") or 0)>0
         dropCoin.BackgroundColor3=if dropCoin.Active then C.raised else C.surface
         local phase=player:GetAttribute("ER_R3Phase")
-        orderButton.Visible=phase=="evacuation" or phase=="coronation"
+        orderButton.Visible=nearby.storyAction=="evacuate" or nearby.storyAction=="coronation"
         orderButton.Text=if phase=="evacuation" then "EVACUAR MORADORES"
             else "ACEITAR A COROA"
         updateContext()
@@ -728,7 +741,7 @@ function UI.start(player: Player)
 
     for _,name in ipairs({"ER_R3Day","ER_R3Night","ER_R3Enemies",
         "ER_R3Wallet","ER_R3Arrows","ER_R3Warning","ER_R3Phase",
-        "ER_R3Raid","ER_R3Forecast"}) do
+        "ER_R3Raid","ER_R3Forecast","ER_Recovering"}) do
         player:GetAttributeChangedSignal(name):Connect(function()
             redraw()
             if name=="ER_R3Phase" then updateVillage() end
