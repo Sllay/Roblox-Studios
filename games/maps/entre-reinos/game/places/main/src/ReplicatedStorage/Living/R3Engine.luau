@@ -511,14 +511,6 @@ function R3.playerDied(state: any)
     state.r3.awaitingRecovery=true
 end
 
-local function walkDry(state: any,npc: any,target: number,dt: number)
-    local movement=math.clamp(target-npc.x,-5*dt,5*dt)
-    local nextX=npc.x+movement
-    if World.sample(state.seed,nextX,0).wet then return end
-    npc.x=nextX
-    npc.motionX=movement/dt
-end
-
 local function shelterFor(state: any,npc: any,threat: any): any
     local best=nil
     local distance=math.huge
@@ -627,7 +619,7 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
         local nearest=nil
         local dist=math.huge
         for _,e in ipairs(d.enemies) do
-            local delta=math.abs(npc.x-e.x)
+            local delta=math.sqrt((npc.x-e.x)^2+(npc.z or 0)^2)
             if e.hp>0 and delta<dist then nearest=e; dist=delta end
         end
         local evacuating=story.scene and (story.stage=="evacuation" or story.stage=="last_ring")
@@ -644,10 +636,12 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
                     if b.typeId=="castle" and b.health>0 and not b.ruined then shelter=b; break end
                 end
             end
-            npc.activity=if shelter and math.abs(shelter.x-npc.x)<=2 then "sheltered" else "flee"
+            npc.activity=if shelter and (shelter.x-npc.x)^2+((npc.z or 0)+4.4)^2<=4
+                then "sheltered" else "flee"
             if npc.activity=="flee" then
                 local safe=if shelter then shelter.x elseif nearest then npc.x+(if npc.x>=nearest.x then 8 else -8) else 0
-                walkDry(state,npc,math.clamp(safe,-116,116),dt)
+                Work.walkResident(state,npc,math.clamp(safe,-116,116),dt,
+                    if shelter then -4.4 else math.clamp((npc.z or 0)+4,-3,15),7.2)
             end
         elseif nearest and npc.defense and npc.defenseClock<=0 then
             if npc.defense=="bow" and (npc.arrows or 0)>0 and dist>=4 and dist<=24 and fire

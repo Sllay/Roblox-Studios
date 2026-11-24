@@ -240,7 +240,8 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertNotIn('model:PivotTo(desired)', living)
         self.assertIn('RunService:BindToRenderStep("ER_NPCPresentation"', visual)
         self.assertIn('model:PivotTo(item.render)', visual)
-        self.assertIn("RunService.PreSimulation:Connect", visual)
+        self.assertIn("animator:LoadAnimation(animation)", visual)
+        self.assertNotIn(".Transform=", visual)
         self.assertIn('NPCPresentation.start()', client)
 
     def test_v9_minimal_3d_world_text_and_water_state_separation(self):
@@ -261,8 +262,8 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertFalse((SRC/"StarterPlayer/StarterPlayerScripts/R6SwimVisual.luau").exists())
         self.assertFalse((SRC/"ReplicatedStorage/WaterRules.luau").exists())
         self.assertIn('npc.motionX=0', work)
-        self.assertIn('npc.motionX=dx/distance*travel/dt', work)
-        self.assertIn('npc.motionZ=dz/distance*travel/dt', work)
+        self.assertIn('npc.motionX=(bestX-npc.x)/dt', work)
+        self.assertIn('npc.motionZ=(bestZ-z)/dt', work)
         self.assertIn('npc.z=z+dz/distance*travel', work)
         self.assertIn('wander(npc,state,dt)', work)
         self.assertNotIn('return -2.9+((npc.id-1)%4)*1.8', living)

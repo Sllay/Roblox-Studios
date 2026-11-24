@@ -334,3 +334,18 @@ assert(upgraded and type(upgraded.npcs[1].z)=="number")
 assert(upgraded.npcs[1].x==legacy.npcs[1].x,
     "migration cannot change existing NPC logical X coordinates")
 print("ENTRE_REINOS_T1_F4_NPC_DEPTH: deterministic 2D roaming, save, and legacy migration passed")
+
+local routing=S.new(seed)
+local walker=routing.npcs[1]
+walker.x,walker.z=-18,-12
+local obstacle,house=W.place(routing,"house",0)
+assert(obstacle)
+house.state="complete"
+local reached=false
+for _=1,160 do
+    reached=W.walkResident(routing,walker,18,0.1,-12)
+    assert(math.abs(walker.x)>7 or math.abs(walker.z+10)>=4.64,
+        "resident crossed the solid footprint")
+    if reached then break end
+end
+assert(reached,"steering should route around an isolated house")

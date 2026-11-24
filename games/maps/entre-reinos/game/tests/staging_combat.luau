@@ -25,8 +25,10 @@ local function probeCombat(seed,combat)
     combat.present()
     local duke=folder:FindFirstChild("Story_duke")
     assert(duke and duke:GetAttribute("ER_NPCPose").X< -4)
-    assert(duke.HumanoidRootPart:FindFirstChild("ER_Left Leg"),
-        "story actor has no articulated rig")
+    local human=duke:FindFirstChildOfClass("Humanoid")
+    assert(human and human.RigType==Enum.HumanoidRigType.R6 and human:FindFirstChildOfClass("Animator"))
+    assert(duke:FindFirstChild("Torso"):FindFirstChild("Left Hip") and duke:FindFirstChild("GuardBlade"),
+        "story actor is missing the native joints or equipment")
 
     -- Independent scenario using the server's real combat entry point.
     local sandbox=loadCandidate("LivingModel").new(seed)

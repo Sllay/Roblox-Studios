@@ -2,7 +2,7 @@ name: Entre Reinos T1 isolated engine probe
 
 on:
   push:
-    branches: [entre-reinos/t1-f2-f3]
+    branches: [entre-reinos/t1-f4-mobile-world-overhaul]
     paths:
       - .github/workflows/entre-reinos-t1-f1-engine-probe.yml
       - games/maps/entre-reinos/game/places/main/src/ReplicatedStorage/**
@@ -31,7 +31,7 @@ jobs:
       - name: Run candidate domain checks and native Terrain probe in unsaved staging session
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ER_PROBE_REVISION: ${{ inputs.revision || 16 }}
+          ER_PROBE_REVISION: ${{ inputs.revision || 17 }}
           ER_READBACK: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           PYTHONPATH=tools python - <<'PY'
@@ -240,7 +240,7 @@ jobs:
           })
           """.replace("__PLACEMENT__",placement))
           report = run_task(staging["universeId"], staging["placeIds"]["main"],
-                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=int(os.getenv("ER_PROBE_REVISION", "16")))
+                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=int(os.getenv("ER_PROBE_REVISION", "17")))
           print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
           assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5 and report["placementVerified"]
           assert report["datastore"]["actual"] and report["datastore"]["delivered"] == 11

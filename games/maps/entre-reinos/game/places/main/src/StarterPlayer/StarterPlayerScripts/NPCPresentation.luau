@@ -31,6 +31,12 @@ local function updateNative(item: any,activity: string,speed: number,now: number
     local idle=item.idleTrack
     local walk=item.walkTrack
     if not idle or not walk then return end
+    if activity=="fallen" then
+        if idle.IsPlaying then idle:Stop(0.15) end
+        if walk.IsPlaying then walk:Stop(0.15) end
+        item.animState=""
+        return
+    end
     local moving=speed>0.18
     if item.animState~=(if moving then "walking" else "idle") then
         item.animState=if moving then "walking" else "idle"
@@ -43,7 +49,7 @@ local function updateNative(item: any,activity: string,speed: number,now: number
         end
     end
     if moving then walk:AdjustSpeed(math.clamp(speed/7,0.45,1.6)) end
-    if (activity=="collect" or activity=="build" or activity=="strike")
+    if (activity=="collect" or activity=="build" or activity=="load" or activity=="strike" or activity=="stagger")
         and now-(item.lastAction or 0)>0.75 and item.actionTrack then
         item.lastAction=now
         item.actionTrack:Play(0.09)
@@ -54,16 +60,6 @@ local function register(model: Model)
     if actors[model] or model:GetAttribute("ER_NPCVisual")~=true then return end
     local pose=model:GetAttribute("ER_NPCPose")
     if typeof(pose)~="Vector3" then return end
-    local joints: {[string]: Motor6D}={}
-    local aliases: {[string]: string}={
-        ["Left Hip"]="leftLeg",["Right Hip"]="rightLeg",
-        ["Left Shoulder"]="leftArm",["Right Shoulder"]="rightArm",
-        ["ER_Left Leg"]="leftLeg",["ER_Right Leg"]="rightLeg",
-        ["ER_Left Arm"]="leftArm",["ER_Right Arm"]="rightArm",
-    }
-    for _,joint in ipairs(model:GetDescendants()) do
-        if joint:IsA("Motor6D") and aliases[joint.Name] then joints[aliases[joint.Name]]=joint end
-    end
     local now=os.clock()
     local isNative=model:GetAttribute("ER_NativeR6")==true
     local idleTrack: AnimationTrack?=nil
@@ -79,35 +75,9 @@ local function register(model: Model)
         end
     end
     actors[model]={from=pose,to=pose,position=pose,t0=now,t1=now,
-        yaw=0,stride=0,motion=0,joints=joints,anchorY=pose.Y,
+        yaw=0,
         native=isNative,idleTrack=idleTrack,walkTrack=walkTrack,
         actionTrack=actionTrack,animState="",lastAction=0}
-end
-
-local function poseLimbs(item: any, activity: string, now: number)
-    local stride=math.sin(item.stride)*item.motion
-    local left,right=stride*0.34,-stride*0.34
-    if activity=="collect" or activity=="build" then
-        right=-0.9+math.sin(now*9)*0.72
-        left=-0.34
-    elseif activity=="load" then
-        right=-0.78+math.sin(now*8)*0.16
-        left=right
-    elseif activity=="strike" then
-        right=-1.06+math.sin(now*16)*0.33
-        left=-0.55
-    elseif activity=="stagger" then
-        right=-0.8+math.sin(now*10)*0.25
-        left=right
-    elseif activity=="crown" then
-        left=-0.42
-        right=-0.42
-    end
-    local joints=item.joints
-    if joints.leftArm then joints.leftArm.Transform=CFrame.Angles(left,0,0) end
-    if joints.rightArm then joints.rightArm.Transform=CFrame.Angles(right,0,0) end
-    if joints.leftLeg then joints.leftLeg.Transform=CFrame.Angles(-stride*0.46,0,0) end
-    if joints.rightLeg then joints.rightLeg.Transform=CFrame.Angles(stride*0.46,0,0) end
 end
 
 function Presentation.start()
@@ -122,15 +92,13 @@ function Presentation.start()
         if child:IsA("Model") then task.defer(register,child) end
     end)
     folder.ChildRemoved:Connect(function(child)
-        if child:IsA("Model") then actors[child]=nil end
-    end)
-    RunService.PreSimulation:Connect(function()
-        local now=os.clock()
-        for model,item in pairs(actors) do
-            local activity=model:GetAttribute("ER_NPCActivity")
-            if not item.native then
-                poseLimbs(item,if type(activity)=="string" then activity else "",now)
+        if not child:IsA("Model") then return end
+        local actor=actors[child]
+        if actor then
+            for _,key in ipairs({"idleTrack","walkTrack","actionTrack"}) do
+                if actor[key] then actor[key]:Destroy() end
             end
+            actors[child]=nil
         end
     end)
     RunService:BindToRenderStep("ER_NPCPresentation",Enum.RenderPriority.Last.Value,function(dt: number)
@@ -158,8 +126,6 @@ function Presentation.start()
             local travel=(Vector2.new(old.X,old.Z)
                 -Vector2.new(position.X,position.Z)).Magnitude
             local actualSpeed=travel/step
-            item.stride=(item.stride+travel*2.2)%(2*math.pi)
-            item.motion+=(math.min(1,actualSpeed/5)-item.motion)*blend
             if item.native then
                 local activity=model:GetAttribute("ER_NPCActivity")
                 updateNative(item,if type(activity)=="string" then activity else "",

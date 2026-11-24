@@ -22,6 +22,7 @@ cast.FilterType=Enum.RaycastFilterType.Include
 cast.FilterDescendantsInstances={workspace.Terrain}
 cast.IgnoreWater=true
 local MAX_PROJECTILES=10
+local rigTemplate: Model?=nil
 local heightCache: {[number]: number}={}
 
 local function part(model: Model,name: string,size: Vector3,offset: Vector3,color: Color3): Part
@@ -52,75 +53,77 @@ local function groundAt(x: number): number
     return support.Position.Y
 end
 
+local function costume(m: Model,name: string,holder: BasePart,size: Vector3,offset: CFrame,color: Color3): Part
+    local piece=part(m,name,size,Vector3.zero,color)
+    piece.CFrame=holder.CFrame*offset
+    piece.Anchored=false
+    piece.Massless=true
+    local weld=Instance.new("WeldConstraint")
+    weld.Part0=holder
+    weld.Part1=piece
+    weld.Parent=piece
+    return piece
+end
+
 local function enemyModel(e: any): Model
-    local m=Instance.new("Model")
+    local template=assert(rigTemplate,"missing_r6_actor_template")
+    local m=template:Clone()
     m.Name=(if e.story then "Story_" else "Raider_")..tostring(e.id)
-    local root=part(m,"HumanoidRootPart",Vector3.new(1,1,1),
-        Vector3.zero,Color3.new(0,0,0))
-    root.Transparency=1
-    m.PrimaryPart=root
-    local isDuke=e.typeId=="infected_duke"
-    local isRoyal=e.typeId=="duke" or e.typeId=="guard"
-    local flesh=if isDuke then Color3.fromRGB(77,49,96)
-        elseif e.typeId=="duke" then Color3.fromRGB(107,48,55)
-        elseif e.typeId=="guard" then Color3.fromRGB(60,89,104)
-        else Color3.fromRGB(58,48,55)
-    part(m,"Torso",Vector3.new(2.3,2.8,1.3),Vector3.new(0,1.5,0),flesh)
-    part(m,"Head",Vector3.new(1.55,1.4,1.4),Vector3.new(0,3.6,0),
-        if isDuke then Color3.fromRGB(115,81,131)
-        elseif isRoyal then Color3.fromRGB(199,157,115) else Color3.fromRGB(53,61,59))
-    if isDuke or e.typeId=="duke" then
-        part(m,"DucalCrown",Vector3.new(1.8,0.4,1.6),
-            Vector3.new(0,4.55,0),Color3.fromRGB(196,157,66))
+    local root=m:FindFirstChild("HumanoidRootPart") :: BasePart
+    local head=m:FindFirstChild("Head") :: BasePart
+    local hand=m:FindFirstChild("Right Arm") :: BasePart
+    local torso=m:FindFirstChild("Torso") :: BasePart
+    local royal=e.typeId=="duke" or e.typeId=="infected_duke"
+    local infected=not e.story or e.typeId=="creature"
+    local id=if royal then 7 elseif type(e.id)=="number" then e.id else #tostring(e.id)
+    local skins={Color3.fromRGB(232,191,152),Color3.fromRGB(190,132,91),
+        Color3.fromRGB(149,101,72),Color3.fromRGB(104,68,49)}
+    local skin=skins[1+(state.seed+id)%#skins]
+    if infected then skin=skin:Lerp(Color3.fromRGB(127,139,116),0.26) end
+    local uniform=if royal then Color3.fromRGB(112,36,50)
+        elseif e.typeId=="guard" then Color3.fromRGB(58,85,114)
+        else Color3.fromRGB(111,91,65)
+    local colors=Instance.new("BodyColors")
+    for _,old in ipairs(m:GetChildren()) do if old:IsA("BodyColors") then old:Destroy() end end
+    colors.HeadColor3=skin
+    colors.LeftArmColor3=skin
+    colors.RightArmColor3=skin
+    colors.LeftLegColor3=Color3.fromRGB(78,62,53)
+    colors.RightLegColor3=colors.LeftLegColor3
+    colors.TorsoColor3=uniform
+    colors.Parent=m
+    torso.Color=uniform
+    local h=m:FindFirstChildOfClass("Humanoid") :: Humanoid
+    h.DisplayName=if e.story then e.label elseif royal then "Duque corrompido" else "Corrompido"
+    h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Subject
+    h.NameDisplayDistance=if e.story then 28 else 0
+    h.HealthDisplayDistance=0
+    if royal then
+        costume(m,"DucalCrown",head,Vector3.new(1.65,0.28,1.15),CFrame.new(0,0.64,0),Color3.fromRGB(213,168,70))
+        costume(m,"DucalSash",torso,Vector3.new(0.37,2.05,0.18),
+            CFrame.new(0,0,-0.56)*CFrame.Angles(0,0,0.38),Color3.fromRGB(232,186,92))
     end
-    part(m,"Left Arm",Vector3.new(0.7,2.5,0.9),Vector3.new(-1.5,1.45,0),flesh)
-    part(m,"Right Arm",Vector3.new(0.7,2.5,0.9),Vector3.new(1.5,1.45,0),flesh)
-    part(m,"Left Leg",Vector3.new(0.9,1.8,1),Vector3.new(-0.55,-0.7,0),flesh)
-    part(m,"Right Leg",Vector3.new(0.9,1.8,1),Vector3.new(0.55,-0.7,0),flesh)
-    if not isRoyal then
-        local hue=Color3.fromRGB(215,94,57)
-        part(m,"EyeL",Vector3.new(0.3,0.2,0.07),Vector3.new(-0.37,3.75,-0.73),hue)
-        part(m,"EyeR",Vector3.new(0.3,0.2,0.07),Vector3.new(0.37,3.75,-0.73),hue)
-    end
-    for _,child in ipairs(m:GetChildren()) do
-        if child:IsA("BasePart") and child~=root then
-            local joint=Instance.new("Motor6D")
-            joint.Name="ER_"..child.Name
-            joint.Part0=root
-            joint.Part1=child
-            local shoulder=if child.Name:find("Arm") then child.Size.Y*0.37
-                elseif child.Name:find("Leg") then child.Size.Y*0.45 else 0
-            joint.C0=child.CFrame*CFrame.new(0,shoulder,0)
-            joint.C1=CFrame.new(0,shoulder,0)
-            joint.Parent=root
-            child.Anchored=false
-            child.Massless=true
+    if infected then
+        for _,side in ipairs({-1,1}) do
+            local eye=costume(m,"CorruptedEye",head,Vector3.new(0.17,0.13,0.08),
+                CFrame.new(side*0.26,0.12,-0.52),Color3.fromRGB(226,120,60))
+            eye.Material=Enum.Material.Neon
         end
+        costume(m,"CorruptionMark",head,Vector3.new(0.34,0.15,0.1),
+            CFrame.new(0.35,-0.24,-0.51)*CFrame.Angles(0,0,-0.5),Color3.fromRGB(101,106,76))
     end
-    if e.story then
-        local gui=Instance.new("BillboardGui")
-        gui.Size=UDim2.fromOffset(160,24)
-        gui.StudsOffset=Vector3.new(0,5.8,0)
-        gui.MaxDistance=65
-        gui.Parent=root
-        local title=Instance.new("TextLabel")
-        title.BackgroundTransparency=1
-        title.Text=e.label
-        title.TextColor3=Color3.fromRGB(255,227,168)
-        title.TextStrokeTransparency=0.3
-        title.Font=Enum.Font.GothamSemibold
-        title.TextSize=13
-        title.Size=UDim2.fromScale(1,1)
-        title.Parent=gui
+    if e.typeId=="guard" or royal then
+        costume(m,"GuardBlade",hand,Vector3.new(0.25,2.5,0.14),CFrame.new(0,-1.65,-0.28),Color3.fromRGB(194,197,181)).Material=Enum.Material.Metal
+        costume(m,"GuardHilt",hand,Vector3.new(0.75,0.17,0.21),CFrame.new(0,-0.51,-0.28),Color3.fromRGB(127,84,39))
     end
+    m:SetAttribute("ER_NativeR6",true)
     m:SetAttribute("ER_NPCVisual",true)
     if not e.story then
         m:SetAttribute("ER_Enemy",true)
         m:SetAttribute("ER_EnemyId",e.id)
     end
-    local x=e.x
-    local y=groundAt(x)+1.6
-    local pose=Vector3.new(x,y,0)
+    local pose=Vector3.new(e.x,groundAt(e.x)+3.06,0)
+    m.PrimaryPart=root
     m:SetAttribute("ER_NPCPose",pose)
     m:SetAttribute("ER_NPCVelocityX",0)
     m:SetAttribute("ER_NPCFacing",if e.side<0 then -math.pi/2 else math.pi/2)
@@ -139,7 +142,10 @@ local function syncViews()
             model=enemyModel({id=actor.id,x=actor.x,typeId=actor.kind,story=true,label=actor.label,side=1})
             storyFigures[actor.id]=model
         end
-        model:SetAttribute("ER_NPCPose",Vector3.new(actor.x,groundAt(actor.x)+1.6,-1))
+        local last=model:GetAttribute("ER_NPCPose")
+        local velocity=if typeof(last)=="Vector3" then math.clamp((actor.x-last.X)/0.12,-6,6) else 0
+        model:SetAttribute("ER_NPCVelocityX",velocity)
+        model:SetAttribute("ER_NPCPose",Vector3.new(actor.x,groundAt(actor.x)+3.06,-1))
         model:SetAttribute("ER_NPCActivity",actor.activity)
         model:SetAttribute("ER_NPCFacing",if actor.kind=="creature" then -math.pi/2 else math.pi/2)
     end
@@ -151,7 +157,7 @@ local function syncViews()
         live[e.id]=true
         local model=enemies[e.id]
         if not model then model=enemyModel(e); enemies[e.id]=model end
-        local y=groundAt(e.x)+1.6
+        local y=groundAt(e.x)+3.06
         local velocity=e.motionX or 0
         model:SetAttribute("ER_NPCVelocityX",velocity)
         if math.abs(velocity)>0.1 then
@@ -211,6 +217,26 @@ end
 
 function Combat.start(player: Player,living: any,worldFolder: Folder)
     cleanup()
+    if not rigTemplate then
+        local description=Instance.new("HumanoidDescription")
+        local ok,rig=pcall(function()
+            return Players:CreateHumanoidModelFromDescriptionAsync(description,Enum.HumanoidRigType.R6)
+        end)
+        description:Destroy()
+        assert(ok and rig and rig:IsA("Model"),"r6_actor_creation_failed")
+        for _,item in ipairs(rig:GetDescendants()) do
+            if item:IsA("BasePart") then
+                item.CanCollide=false
+                item.CanTouch=false
+                item.CanQuery=false
+                item.Anchored=item.Name=="HumanoidRootPart"
+            elseif item:IsA("BaseScript") then item:Destroy() end
+        end
+        local h=rig:FindFirstChildOfClass("Humanoid") :: Humanoid
+        h.AutoRotate=false
+        if not h:FindFirstChildOfClass("Animator") then Instance.new("Animator").Parent=h end
+        rigTemplate=rig
+    end
     owner=player
     state=living
     folder=worldFolder
