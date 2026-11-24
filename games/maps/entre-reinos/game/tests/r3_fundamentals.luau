@@ -353,3 +353,13 @@ for _=1,50 do R3.step(approach,0.1,80) end
 assert(raid.enemies[1].x<=warehouse.x+1,"raider passed the exposed warehouse")
 assert(warehouse.health<warehouseHealth,"western breach did not redirect the raid to exposed stock")
 assert(east.state=="complete" and east.health==Structures.get("wall").health)
+
+local Ballistics=require("../places/main/src/ReplicatedStorage/Living/Ballistics")
+local shortX,shortY=Ballistics.velocity(0)
+local longX,longY=Ballistics.velocity(Ballistics.FULL_CHARGE)
+assert(shortX<longX and shortY<longY)
+local cappedX,cappedY=Ballistics.velocity(100)
+assert(cappedX==longX and cappedY==longY)
+local dx,early=Ballistics.offset(longX,longY,196.2,0.15)
+local _,late=Ballistics.offset(longX,longY,196.2,0.75)
+assert(dx>0 and early>0 and late<0,"preview has to fall under the same gravity as the server")

@@ -112,7 +112,7 @@ end
 
 -- The player's bag is independent of the village's standing timber:
 -- physical, finite extraction -> a real carried item -> a real recipe.
-function R3.takeWood(state: any,x: number,y: number): (boolean, any)
+function R3.takeWood(state: any,x: number,y: number,siteId: string?): (boolean, any)
     if not finite(x) or not finite(y) then return false,"invalid_position" end
     local d=R3.ensure(state,false)
     if Inventory.weight(d.playerBag)+2*Items.get("wood").mass
@@ -122,7 +122,8 @@ function R3.takeWood(state: any,x: number,y: number): (boolean, any)
     local best=nil
     local bestDistance=math.huge
     for _,source in ipairs(state.sites) do
-        if source.item=="wood" and Work.sourceAvailable(state,source)>=2 then
+        if source.item=="wood" and (not siteId or source.id==siteId)
+            and Work.sourceAvailable(state,source)>=2 then
             local distance=math.abs(x-source.x)
             local ground=World.sample(state.seed,source.x,0).height
             if distance<=11 and math.abs(y-(ground+3))<=11
@@ -140,6 +141,7 @@ function R3.takeWood(state: any,x: number,y: number): (boolean, any)
         ledger(d,"wood_from_tree",0,tostring(best.id))
         return true,Inventory.count(d.playerBag,"wood")
     end
+    if siteId then return false,"wood_source_too_far" end
     for _,b in ipairs(state.buildings) do
         if Work.stockAvailable(state,b,"wood")>=2
             and math.abs(x-b.x)<=13 and math.abs(y-(b.y+3))<=12 then

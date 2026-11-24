@@ -49,7 +49,7 @@ jobs:
           src = game / "game/places/main/src/ReplicatedStorage"
           names = ("WorldProfile", "SlotModel", "SlotLeasePolicy", "WorldRoute", "InputProjection",
                    "ItemDefs", "ProfessionDefs", "StructureDefs", "Inventory",
-                   "WorkEngine", "Campaign", "Trajectory", "R3Engine", "LivingModel")
+                   "WorkEngine", "Campaign", "Trajectory", "Ballistics", "R3Engine", "LivingModel")
           paths = {p.stem: p for p in src.rglob("*.luau")}
           if os.environ["ER_READBACK"] == "true":
               checks = {}
@@ -92,7 +92,7 @@ jobs:
                               os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source)
               assert report["loadedVersion"] == int(os.environ["ER_PROBE_REVISION"]), report
               assert report["sourceMatches"] == len(checks)
-              assert len(report["combat"])==6 and all(report["combat"].values())
+              assert len(report["combat"])==8 and all(report["combat"].values())
               print("ENTRE_REINOS_T1_F1_PUBLISHED", json.dumps(report,sort_keys=True))
               raise SystemExit(0)
           parts = ["""
@@ -126,7 +126,7 @@ jobs:
 
           combat_service = (game / "game/places/main/src/ServerScriptService/Services/CombatService.luau").read_text()
           for name, module in (("World", "WorldProfile"), ("R3", "R3Engine"),
-                               ("Trajectory", "Trajectory"), ("Structures", "StructureDefs")):
+                               ("Trajectory", "Trajectory"), ("Ballistics", "Ballistics"), ("Structures", "StructureDefs")):
               combat_service, count = re.subn(
                   rf"^local {name}=require\(.*\)$", f'local {name}=loadCandidate("{module}")',
                   combat_service, flags=re.M)
@@ -244,5 +244,5 @@ jobs:
           print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
           assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5 and report["placementVerified"]
           assert report["datastore"]["actual"] and report["datastore"]["delivered"] == 11
-          assert all(report["combat"].values()) and len(report["combat"]) == 6
+          assert all(report["combat"].values()) and len(report["combat"]) == 8
           PY

@@ -22,7 +22,11 @@ local state: any=nil
 local visualization: Folder?=nil
 local figures: {[number]: Model}={}
 local buildings: {[number]: Model}={}
-local siteDisplays: {[string]: BillboardGui}={}
+local siteVisuals: {[string]: BasePart}={}
+local treePress: any=nil
+local treeSerial=0
+local lastTreePress=0
+local Ballistics=require(shared:WaitForChild("Living"):WaitForChild("Ballistics"))
 local connection: RBXScriptConnection?=nil
 local simulationAccumulator=0
 local drawAccumulator=0
@@ -111,32 +115,6 @@ local function makePart(parent: Instance,name: string,size: Vector3,color: Color
     p.Parent=parent
     return p
 end
-local function textTag(part: BasePart,label: string): (BillboardGui, TextLabel)
-    local bill=Instance.new("BillboardGui")
-    bill.Name="ER_Info"
-    bill.AlwaysOnTop=false
-    bill.MaxDistance=40
-    bill.Size=UDim2.fromOffset(146,36)
-    bill.StudsOffset=Vector3.new(0,1.8,0)
-    bill.Adornee=part
-    bill.Parent=part
-    local caption=Instance.new("TextLabel")
-    caption.Name="Info"
-    caption.BackgroundTransparency=1
-    caption.TextStrokeColor3=Color3.new(0,0,0)
-    caption.TextStrokeTransparency=0.08
-    caption.BorderSizePixel=0
-    caption.Size=UDim2.fromScale(1,1)
-    caption.Text=label
-    caption.TextColor3=Color3.fromRGB(244,242,224)
-    caption.Font=Enum.Font.GothamSemibold
-    caption.TextSize=11
-    caption.TextScaled=false
-    caption.TextWrapped=true
-    caption.Parent=bill
-    return bill,caption
-end
-
 local function createActor(npc: any): Model?
     local description=Instance.new("HumanoidDescription")
     local ok,model=pcall(function()
@@ -393,7 +371,7 @@ local function buildVisual(b: any)
         Vector3.new(1,1,1),Color3.fromRGB(30,49,35))
     tagPart.Position=Vector3.new(b.x,b.y+def.height+2,-10)
     tagPart.Transparency=1
-    textTag(tagPart,def.label.." · obra")
+    tagPart:SetAttribute("ER_Inspectable",true)
     model.Parent=visualization
     buildings[b.id]=model
 end
@@ -438,29 +416,7 @@ local function syncBuild(b: any)
             p.Color=base:Lerp(Color3.fromRGB(54,42,38),damage*0.20)
         end
     end
-    local p=model:FindFirstChild("InfoAnchor")
-    local gui=if p then p:FindFirstChild("ER_Info") else nil
-    local caption=if gui then gui:FindFirstChild("Info") else nil
-    if caption and caption:IsA("TextLabel") then
-        local labels={complete="Pronto",blueprint="Entregas",building="Em obra",damaged="Danificado",ruined="Ruína"}
-        local delivered={}
-        for resource,cost in pairs(def.cost) do
-            table.insert(delivered,resource.." "..tostring(b.delivered[resource] or 0)
-                .."/"..tostring(cost))
-        end
-        local stored=""
-        if b.typeId=="stockpile" and b.stored then
-            local pieces={}
-            for item,count in pairs(b.stored.items) do
-                table.insert(pieces,item.." "..tostring(count))
-            end
-            stored=if #pieces>0 then " | estoque: "..table.concat(pieces,", ") else " | vazio"
-        end
-        caption.Text=def.label.." #"..tostring(b.id).." · "..(labels[b.state] or b.state)
-            ..(if b.state=="complete" then stored
-                else " "..tostring(math.floor(100*b.progress/def.buildSeconds))
-                    .."% · "..table.concat(delivered,", "))
-    end
+
 end
 
 local function createSiteVisual(site: any)
@@ -494,30 +450,6 @@ local function createSiteVisual(site: any)
         high.OutlineTransparency=0.1
         high.Enabled=site.marked==true and site.remaining>0
         high.Parent=tree
-        local prompt=Instance.new("ProximityPrompt")
-        prompt.Name="MarkHarvest"
-        prompt.ActionText=if site.marked==true then "Desmarcar corte" else "Marcar corte"
-        prompt.ObjectText="Árvore · madeira"
-        prompt.MaxActivationDistance=13
-        prompt.RequiresLineOfSight=false
-        prompt.HoldDuration=0.35
-        prompt.Parent=trunk
-        local lastMarkAt=0
-        prompt.Triggered:Connect(function(player: Player)
-            if owner~=player or not state or site.remaining<=0
-                or player:GetAttribute("ER_WorldLoaded")~=true then return end
-            local char=player.Character
-            local root=if char then char:FindFirstChild("HumanoidRootPart") else nil
-            local humanoid=if char then char:FindFirstChildOfClass("Humanoid") else nil
-            local now=os.clock()
-            if not root or not root:IsA("BasePart") or not humanoid or humanoid.Health<=0
-                or now-lastMarkAt<0.4
-                or (root.Position-trunk.Position).Magnitude>14 then return end
-            lastMarkAt=now
-            site.marked=not (site.marked==true)
-            high.Enabled=site.marked and site.remaining>0
-            prompt.ActionText=if site.marked then "Desmarcar corte" else "Marcar corte"
-        end)
     else
         -- Each resource has its own recognizable shape and palette.
         local color=if site.item=="stone" then Color3.fromRGB(126,131,130)
@@ -532,11 +464,7 @@ local function createSiteVisual(site: any)
     end
     anchor:SetAttribute("ResourceType",site.item)
     anchor:SetAttribute("SourceId",site.id)
-    local gui,caption=textTag(anchor,site.item.." | "..tostring(site.remaining))
-    gui.MaxDistance=23
-    gui.Size=UDim2.fromOffset(124,26)
-    caption.Name="Remaining"
-    siteDisplays[site.id]=gui
+    siteVisuals[site.id]=anchor
 end
 
 local function syncR3Hud(player: Player)
@@ -563,23 +491,10 @@ local function draw()
         syncBuild(b)
     end
     for _,site in ipairs(state.sites) do
-        if not siteDisplays[site.id] then createSiteVisual(site) end
-        local g=siteDisplays[site.id]
-        if g then g.Enabled=site.remaining>0 end
-        local info=if g then g:FindFirstChild("Remaining") else nil
-        if info and info:IsA("TextLabel") then
-            info.Text=if site.item=="wood" then
-                "MADEIRA "..tostring(site.remaining)
-                    ..(if site.marked then " · CORTE MARCADO" else "")
-                else site.item.." | "..tostring(site.remaining)
-        end
+        if not siteVisuals[site.id] then createSiteVisual(site) end
         if site.item=="wood" and visualization then
             local tree=visualization:FindFirstChild("HarvestableTree_"..tostring(site.id))
             if tree and tree:IsA("Model") then
-                local prompt=tree:FindFirstChild("MarkHarvest",true)
-                if prompt and prompt:IsA("ProximityPrompt") then
-                    prompt.Enabled=site.remaining>0
-                end
                 local high=tree:FindFirstChild("MarkedForCarpenter")
                 if high and high:IsA("Highlight") then
                     high.Enabled=site.marked==true and site.remaining>0
@@ -656,7 +571,9 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         state=nil
         figures={}
         buildings={}
-        siteDisplays={}
+        siteVisuals={}
+    treePress=nil
+    lastTreePress=0
         visualization=nil
         Combat.stop()
         folder:Destroy()
@@ -729,7 +646,9 @@ function Service.stop(player: Player)
     state=nil
     figures={}
     buildings={}
-    siteDisplays={}
+    siteVisuals={}
+    treePress=nil
+    lastTreePress=0
     if visualization then visualization:Destroy() end
     visualization=nil
 end
@@ -771,6 +690,52 @@ local function placementGround(typeId: string, x: number, root: BasePart): (bool
     return true,centerHeight
 end
 
+local function treeInReach(root: BasePart,id: any): any
+    if type(id)~="string" or #id>64 then return nil end
+    local anchor=siteVisuals[id]
+    if not anchor or anchor.Name~="Trunk" or (root.Position-anchor.Position).Magnitude>12 then return nil end
+    for _,site in ipairs(state.sites) do
+        if site.id==id and site.item=="wood" and site.remaining>0 and not site.salvage then
+            return site
+        end
+    end
+    return nil
+end
+
+local function treeAction(player: Player,action: string,arg: any): any
+    local character=player.Character
+    local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
+    local h=if character then character:FindFirstChildOfClass("Humanoid") else nil
+    if not root or not root:IsA("BasePart") or not h or h.Health<=0 then
+        return {ok=false,error="character_not_ready"}
+    end
+    local now=workspace:GetServerTimeNow()
+    if action=="tree_press" then
+        if now-lastTreePress<0.28 then return {ok=false,error="rate_limited"} end
+        lastTreePress=now
+        if not treeInReach(root,arg) then return {ok=false,error="wood_source_too_far"} end
+        treeSerial+=1
+        treePress={id=treeSerial,siteId=arg,root=root,at=now}
+        return {ok=true,id=treeSerial,started=now}
+    end
+    local press=treePress
+    if not press or arg~=press.id then return {ok=false,error="action_unavailable"} end
+    treePress=nil
+    if action=="tree_cancel" then return {ok=true} end
+    local site=treeInReach(root,press.siteId)
+    local duration=now-press.at
+    if press.root~=root or duration>Ballistics.MAX_HOLD or not site then
+        return {ok=false,error="wood_source_too_far"}
+    end
+    if action=="tree_mark" then
+        if duration<Ballistics.MARK_HOLD then return {ok=false,error="hold_too_short"} end
+        site.marked=not site.marked
+        return {ok=true,marked=site.marked}
+    end
+    local ok,value=R3.takeWood(state,root.Position.X,root.Position.Y,site.id)
+    return {ok=ok,error=if not ok then value else nil}
+end
+
 actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: any): any
     if owner~=player or not state or player:GetAttribute("ER_WorldLoaded")~=true then
         return {ok=false,error="world_not_loaded"}
@@ -804,8 +769,18 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
                 end
             end
             local nearestWood=math.huge
+            local treeDistance=12
             for _,site in ipairs(state.sites) do
                 local available=Work.sourceAvailable(state,site)
+                local anchor=siteVisuals[site.id]
+                if site.item=="wood" and site.remaining>0 and anchor and anchor.Name=="Trunk" then
+                    local dist=(root.Position-anchor.Position).Magnitude
+                    if dist<treeDistance then
+                        treeDistance=dist
+                        nearby.treeId=site.id
+                        nearby.treeMarked=site.marked==true
+                    end
+                end
                 if site.item=="wood" and available>=2 then
                     local distance=math.abs(site.x-x)
                     if distance<nearestWood then
@@ -822,7 +797,13 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
                     end
                 end
             end
+            local buildingDistance=14
             for _,b in ipairs(state.buildings) do
+                local distance=(root.Position-Vector3.new(b.x,b.y+3,Structures.DEPTH_Z)).Magnitude
+                if distance<buildingDistance then
+                    buildingDistance=distance
+                    nearby.buildingId=b.id
+                end
                 if Work.usableStorage(b) and math.abs(b.x-x)<=13 then
                     if math.abs(root.Position.Y-(b.y+3))<=12 then
                         nearby.wood=math.max(nearby.wood,
@@ -841,7 +822,12 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         end
         return {ok=true,data=overview,hud=R3.summary(state),nearby=nearby}
     end
-    if action=="attack" or action=="bow" or action=="drop_coin"
+    if action=="tree_press" or action=="tree_mark" or action=="tree_cancel" or action=="tree_take" then
+        return treeAction(player,action,arg)
+    end
+    if action=="attack" or action=="bow_begin" or action=="bow_release" or action=="bow_cancel"
+        or action=="select_weapon" or action=="duke_talk" or action=="duke_accept" or action=="duke_close"
+        or action=="drop_coin"
         or action=="pickup_coin" or action=="arm_defender"
         or action=="trade" or action=="craft_arrows" or action=="take_wood"
         or action=="prologue" or action=="r3_status" then

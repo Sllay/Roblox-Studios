@@ -7,6 +7,7 @@ local World=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldPr
 local R3=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("R3Engine"))
 local living=ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living")
 local Trajectory=require(living:WaitForChild("Trajectory"))
+local Ballistics=require(living:WaitForChild("Ballistics"))
 local Structures=require(living:WaitForChild("StructureDefs"))
 local Combat={}
 local owner: Player?=nil
@@ -22,6 +23,12 @@ cast.FilterType=Enum.RaycastFilterType.Include
 cast.FilterDescendantsInstances={workspace.Terrain}
 cast.IgnoreWater=true
 local MAX_PROJECTILES=10
+local equipped="sword"
+local charge: any=nil
+local dialogue: Model?=nil
+local sequence=0
+local swingTrack: AnimationTrack?=nil
+local swingRig: Model?=nil
 local rigTemplate: Model?=nil
 local heightCache: {[number]: number}={}
 
@@ -212,6 +219,11 @@ local function cleanup()
     enemies={}
     arrows={}
     cooldowns={}
+    equipped="sword"
+    charge=nil
+    dialogue=nil
+    if swingTrack then swingTrack:Destroy() end
+    swingTrack,swingRig=nil,nil
     table.clear(heightCache)
 end
 
@@ -320,27 +332,150 @@ function Combat.fireResident(npc: any,enemy: any): boolean
     return launch(origin,Vector3.new((enemy.x-origin.X)/flight,vertical,0),10)
 end
 
+local function equipAvatar(root: BasePart): Trail?
+    local character=root.Parent
+    if not character or not character:IsA("Model") then return nil end
+    local old=character:FindFirstChild("ER_PlayerWeapon")
+    if old and old:GetAttribute("Mode")==equipped then return old:FindFirstChildOfClass("Trail") end
+    if old then old:Destroy() end
+    local hand=character:FindFirstChild("Right Arm")
+    if not hand or not hand:IsA("BasePart") then return nil end
+    local grip=CFrame.new(0,-0.72,-0.24)*CFrame.Angles(-math.pi/2,0,0)
+    local blade=costume(character,"ER_PlayerWeapon",hand,
+        if equipped=="sword" then Vector3.new(0.31,2.4,0.16) else Vector3.new(0.18,1.5,0.2),
+        grip*CFrame.new(0,1.2,0),if equipped=="sword" then Color3.fromRGB(206,213,201)
+            else Color3.fromRGB(137,89,43))
+    blade:SetAttribute("Mode",equipped)
+    if equipped=="bow" then
+        for side=-1,1,2 do
+            local limb=costume(character,"Limb",blade,Vector3.new(0.14,0.86,0.16),
+                CFrame.new(0,0.96*side,0.2)*CFrame.Angles(side*0.62,0,0),blade.Color)
+            limb.Parent=blade
+        end
+        return nil
+    end
+    blade.Material=Enum.Material.Metal
+    costume(character,"Hilt",blade,Vector3.new(0.74,0.14,0.25),
+        CFrame.new(0,-1.15,0),Color3.fromRGB(160,111,55)).Parent=blade
+    local base=Instance.new("Attachment")
+    base.Position=Vector3.new(0,-0.86,0)
+    base.Parent=blade
+    local tip=Instance.new("Attachment")
+    tip.Position=Vector3.new(0,1.15,0)
+    tip.Parent=blade
+    local trail=Instance.new("Trail")
+    trail.Attachment0=base
+    trail.Attachment1=tip
+    trail.Lifetime=0.14
+    trail.LightEmission=0.4
+    trail.Enabled=false
+    trail.Color=ColorSequence.new(Color3.fromRGB(255,232,175),Color3.fromRGB(176,211,226))
+    trail.Transparency=NumberSequence.new(0.2,1)
+    trail.Parent=blade
+    return trail
+end
+
+local function playSwing(human: Humanoid)
+    local character=human.Parent
+    if character~=swingRig then
+        if swingTrack then swingTrack:Destroy() end
+        swingRig=if character and character:IsA("Model") then character else nil
+        swingTrack=nil
+        local animator=human:FindFirstChildOfClass("Animator")
+        if animator then
+            local animation=Instance.new("Animation")
+            animation.AnimationId="rbxassetid://129967390"
+            local ok,track=pcall(function() return animator:LoadAnimation(animation) end)
+            animation:Destroy()
+            if ok then
+                track.Priority=Enum.AnimationPriority.Action
+                swingTrack=track
+            end
+        end
+    end
+    if swingTrack then swingTrack:Play(0.045) end
+end
+
+local function beginDialogue(player: Player,root: BasePart): any
+    if not allowed("duke",0.4) or R3.storyAction(state,root.Position.X)~="training" then
+        return {ok=false,error="too_far_from_story"}
+    end
+    if state.r3.prologue.scene and math.abs(root.Position.Y-(groundAt(root.Position.X)+3))>7 then
+        return {ok=false,error="too_far_from_story"}
+    end
+    local character=player.Character
+    if not character then return {ok=false,error="character_not_ready"} end
+    dialogue=character
+    charge=nil
+    return {ok=true}
+end
+
 function Combat.action(player: Player,action: string,arg: any): any
     if player~=owner or not state then return {ok=false,error="world_not_loaded"} end
     local root,h=playerRoot(player)
     if not root or not h then return {ok=false,error="character_not_ready"} end
+    if dialogue and dialogue~=player.Character then dialogue=nil end
+    if action=="duke_talk" then return beginDialogue(player,root) end
+    if action=="duke_close" then dialogue=nil; return {ok=true} end
+    if action=="duke_accept" then
+        if dialogue~=player.Character or R3.storyAction(state,root.Position.X)~="training" then
+            return {ok=false,error="too_far_from_story"}
+        end
+        dialogue=nil
+        local ok,result=R3.command(state,"training",root.Position.X)
+        return {ok=ok,error=if not ok then result else nil}
+    end
+    if dialogue then return {ok=false,error="dialogue_open"} end
     if action=="r3_status" then return {ok=true,data=R3.summary(state)} end
+    if action=="select_weapon" then
+        if arg~="sword" and arg~="bow" then return {ok=false,error="invalid_weapon"} end
+        if not allowed("weapon",0.18) then return {ok=false,error="rate_limited"} end
+        charge=nil
+        equipped=arg
+        equipAvatar(root)
+        return {ok=true}
+    end
     if action=="attack" then
-        if not allowed("attack",0.45) then return {ok=false,error="rate_limited"} end
+        if equipped~="sword" then return {ok=false,error="invalid_weapon"} end
+        if not allowed("attack",0.52) then return {ok=false,error="rate_limited"} end
+        local trail=equipAvatar(root)
+        playSwing(h)
+        if trail then trail.Enabled=true end
+        player:SetAttribute("ER_PlayerAttack",workspace:GetServerTimeNow())
+        task.wait(0.12)
+        if trail and trail.Parent then trail.Enabled=false end
+        if playerRoot(player)~=root or player~=owner or not state or dialogue or equipped~="sword" then
+            return {ok=false,error="action_unavailable"}
+        end
         local side=direction(root)
         local start=Vector3.new(root.Position.X-side*0.15,root.Position.Y,0)
         local target=sweep(start,start+Vector3.new(side*6,0,0))
-        player:SetAttribute("ER_PlayerAttack",workspace:GetServerTimeNow())
         local hit=target~=nil and R3.damageEnemy(state,target,16)
         return {ok=true,hit=hit,target=if hit then target else nil}
-    elseif action=="bow" then
+    elseif action=="bow_cancel" then
+        if charge and charge.id==arg then charge=nil end
+        return {ok=true}
+    elseif action=="bow_begin" then
+        if equipped~="bow" then return {ok=false,error="invalid_weapon"} end
         if state.r3.arrows<=0 then return {ok=false,error="no_arrows"} end
-        if not allowed("bow",0.85) then return {ok=false,error="rate_limited"} end
+        if not allowed("bow_begin",0.22) then return {ok=false,error="rate_limited"} end
+        sequence+=1
+        charge={id=sequence,root=root,at=workspace:GetServerTimeNow()}
+        return {ok=true,id=sequence,started=charge.at}
+    elseif action=="bow_release" then
+        local shot=charge
+        if not shot or shot.id~=arg then return {ok=false,error="action_unavailable"} end
+        charge=nil
+        local seconds=workspace:GetServerTimeNow()-shot.at
+        if equipped~="bow" or shot.root~=root or seconds<0 or seconds>Ballistics.MAX_HOLD then
+            return {ok=false,error="action_unavailable"}
+        end
+        if state.r3.arrows<=0 then return {ok=false,error="no_arrows"} end
+        if not allowed("bow",0.7) then return {ok=false,error="rate_limited"} end
         local side=direction(root)
         local pos=root.Position+Vector3.new(side*1.1,0.9,-root.Position.Z)
-        if not launch(pos,Vector3.new(side*64,30,0),14) then
-            return {ok=false,error="too_many_arrows"}
-        end
+        local vx,vy=Ballistics.velocity(seconds)
+        if not launch(pos,Vector3.new(side*vx,vy,0),14) then return {ok=false,error="too_many_arrows"} end
         player:SetAttribute("ER_PlayerBow",workspace:GetServerTimeNow())
         state.r3.arrows-=1
         state.r3.stats.shots+=1
@@ -399,7 +534,7 @@ function Combat.action(player: Player,action: string,arg: any): any
         return {ok=ok,result=result,error=if not ok then result else nil}
     elseif action=="prologue" then
         if not allowed("command",0.5) then return {ok=false,error="rate_limited"} end
-        if type(arg)~="string" or #arg>16 then return {ok=false,error="action_unavailable"} end
+        if type(arg)~="string" or #arg>16 or arg=="training" then return {ok=false,error="action_unavailable"} end
         local ok,result=R3.command(state,arg,root.Position.X)
         syncViews()
         return {ok=ok,result=result,error=if not ok then result else nil}
@@ -433,6 +568,10 @@ end
 
 function Combat.present()
     syncViews()
+    if owner then
+        local root=playerRoot(owner)
+        if root then equipAvatar(root) end
+    end
 end
 
 return Combat

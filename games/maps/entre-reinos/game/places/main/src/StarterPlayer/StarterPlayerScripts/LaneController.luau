@@ -8,6 +8,11 @@ local Projection = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("
 local Controller = {}
 
 local active = false
+local paused=false
+
+function Controller.setPaused(value: boolean)
+    paused=value
+end
 local controls: any = nil
 local humanoid: Humanoid? = nil
 local turn: AlignOrientation? = nil
@@ -58,6 +63,11 @@ local function update(_dt: number)
     local h = humanoid
     local o = turn
     if not h or not o or h.Health <= 0 then return end
+    if paused then
+        h:Move(Vector3.zero,false)
+        h.Jump=false
+        return
+    end
     local x, y = readNativeInput(h)
     local swimming = h:GetState() == Enum.HumanoidStateType.Swimming
 

@@ -251,10 +251,9 @@ class EntreReinosWiring(unittest.TestCase):
         work = read("ReplicatedStorage/Living/WorkEngine.luau")
         camera = read("StarterPlayer/StarterPlayerScripts/SideCamera.luau")
         world = read("ServerScriptService/Services/WorldService.luau")
-        self.assertIn('caption.BackgroundTransparency=1', living)
-        self.assertIn('caption.TextStrokeTransparency=0.08', living)
-        self.assertIn('bill.MaxDistance=40', living)
-        self.assertIn('gui.MaxDistance=23', living)
+        self.assertNotIn('Instance.new("ProximityPrompt")', living)
+        self.assertNotIn('Instance.new("BillboardGui")', living)
+        self.assertIn('treeInReach(root,press.siteId)', living)
         self.assertIn('h:GetState() == Enum.HumanoidStateType.Swimming', lane)
         self.assertIn('h:Move(Vector3.new(x, if swimming then y else 0, 0), false)', lane)
         self.assertNotIn('h:ChangeState(', lane)
@@ -359,7 +358,7 @@ class EntreReinosWiring(unittest.TestCase):
         for fragment in [
             'playerBag=Inventory.new(24)',
             'if state.r3.playerBag==nil then',
-            'function R3.takeWood(state: any,x: number,y: number)',
+            'function R3.takeWood(state: any,x: number,y: number,siteId: string?)',
             'Inventory.add(d.playerBag,"wood",2)',
             'Inventory.transfer(b.stored,d.playerBag,"wood",2)',
             'if Inventory.count(state.r3.playerBag,"wood")>=cost then',
