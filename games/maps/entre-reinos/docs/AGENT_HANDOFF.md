@@ -301,3 +301,7 @@ O candidato grava ruleset 2 após confirmar o backup do último estado legado. O
 ## Staging T1-F1 disponível para playtest
 
 O PR #10 foi integrado em `7983bc57a987837f4bb073bb017c20bfd41edbc1`. A revisão **16** de staging tem CI, probe de DataStore/Terrain e readback independente. Use o roteiro no [recibo da T1-F1](runner-receipts/T1-F1.md). A confirmação do criador em touch e a decisão final sobre estorno/ruínas continuam abertas. T1-F2/F3 permanecem planejados e T2 segue bloqueada.
+
+## T1-F2/F3 — staging v17
+
+O PR #11 foi integrado em `ad458775a6043e013c3795aef16ee51fda135a5b`. Staging v17 foi confirmado pela API, por readback de 29 scripts com execução em motor e por Scene Sync. O [recibo F3](runner-receipts/T1-F3.md) cobre ER-001–020 e contém o roteiro. O [recibo F2](runner-receipts/T1-F2.md) cobre as mudanças de gameplay e compatibilidade. O candidato está **awaiting_creator_review**. A T1 segue em andamento e T2-R1 está bloqueada.

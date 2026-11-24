@@ -20,18 +20,18 @@
       "status": "in_progress",
       "stagingPublication": {
         "status": "preview_published",
-        "previewRunner": "T1-F1",
+        "previewRunner": "T1-F3",
         "isSeasonFinal": false,
-        "commit": "7983bc57a987837f4bb073bb017c20bfd41edbc1",
+        "commit": "ad458775a6043e013c3795aef16ee51fda135a5b",
         "placeId": "90623742498445",
         "universeId": "10769712413",
-        "revisionId": 16,
-        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289196024",
-        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289311446",
+        "revisionId": 17,
+        "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420967159",
+        "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45421104635",
         "readbackStatus": "success",
-        "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289315255"
+        "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45421111025"
       },
-      "userReview": "awaiting_creator_v16_staging_playtest",
+      "userReview": "awaiting_creator_review",
       "refinementCycles": [
         {
           "id": "T1-F1",
@@ -61,23 +61,36 @@
               "datastore": "real_isolated_backup_lease_retry_and_reopen_pass",
               "mobile": "pending"
             }
-          }
+          },
+          "userReview": "awaiting_creator_review",
+          "technicalGate": "pass",
+          "f3RegressionRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420123951"
         },
         {
           "id": "T1-F2",
           "status": "in_progress",
           "scope": "NPC presentation, defense, playable prologue and approved recovery",
           "receipt": "docs/runner-receipts/T1-F2.md",
-          "commit": "272cbca",
-          "validation": "engine_and_domain_pass; creator_review_pending"
+          "commit": "ad458775a6043e013c3795aef16ee51fda135a5b",
+          "validation": "ci_engine_and_staging_readback_pass; creator_review_pending",
+          "userReview": "awaiting_creator_review",
+          "technicalGate": "pass",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420774191",
+          "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420123951",
+          "publishedPreview": "staging_v17"
         },
         {
           "id": "T1-F3",
           "status": "in_progress",
           "scope": "Integrated regressions, Roblox staging, performance and mobile review",
           "receipt": "docs/runner-receipts/T1-F3.md",
-          "commit": "7a8e09d3b70808188cc779e7ea157a3bc9886b41",
-          "validation": "ci_and_engine_pass; staging_pending"
+          "commit": "ad458775a6043e013c3795aef16ee51fda135a5b",
+          "validation": "ci_engine_and_staging_readback_pass; creator_review_pending",
+          "userReview": "awaiting_creator_review",
+          "technicalGate": "pass",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420774191",
+          "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420123951",
+          "publishedPreview": "staging_v17"
         }
       ],
       "runners": [
@@ -190,7 +203,7 @@
           }
         }
       ],
-      "previewUserReview": "creator_approved_v13_UI_but_reported_v14_arrow_crafting_unusable; v15_fix_not_yet_player_approved",
+      "previewUserReview": "v17_candidate_uploaded_and_verified_awaiting_creator_touch",
       "stagingPublicationHistory": [
         {
           "status": "preview_published",
@@ -203,6 +216,19 @@
           "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109178317",
           "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45109284309",
           "readbackStatus": "success"
+        },
+        {
+          "status": "preview_published",
+          "previewRunner": "T1-F1",
+          "isSeasonFinal": false,
+          "commit": "7983bc57a987837f4bb073bb017c20bfd41edbc1",
+          "placeId": "90623742498445",
+          "universeId": "10769712413",
+          "revisionId": 16,
+          "runUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289196024",
+          "readbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289311446",
+          "readbackStatus": "success",
+          "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289315255"
         }
       ]
     },
@@ -336,7 +362,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_F1_staging_v16_published_and_verified_awaiting_creator",
+  "programStage": "T1_F3_staging_v17_awaiting_creator_review",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -362,13 +388,13 @@
     "notes": "T1-R1 remains planned until code is actually started; no gameplay runner completed."
   },
   "latestEvidence": {
-    "codeCommit": "7983bc57a987837f4bb073bb017c20bfd41edbc1",
-    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289046275",
+    "codeCommit": "ad458775a6043e013c3795aef16ee51fda135a5b",
+    "ciUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420774191",
     "ciConclusion": "success",
-    "publishedVersion": 16,
-    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289196024",
-    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289311446",
-    "verifiedModules": 27,
+    "publishedVersion": 17,
+    "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420967159",
+    "independentReadbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45421104635",
+    "verifiedModules": 29,
     "seedTested": 516639272,
     "engineInitialChunks": 3,
     "engineWaterCells": 596,
@@ -377,16 +403,16 @@
     "nativeWaterRuleValid": true,
     "liveNPCPresentation": "v12_frame_integrated_unverified_mobile",
     "liveR6SwimStrokes": "creator_confirmed_native_water_fixed",
-    "mobile": "pending_creator_v16_staging_playtest",
-    "staging": "published_v16_T1_F1_playtest",
+    "mobile": "awaiting_creator_review",
+    "staging": "published_v17_T1_F3_candidate",
     "productionUnchanged": true,
     "completenessAuditPath": "docs/FEATURE_COMPLETENESS_AUDIT.md",
     "completenessCiUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052959871",
     "featureLaunchReadiness": "T1_20_partial_pending_creator_review_or_design",
     "v14IndependentReadback": "success",
-    "postPublishSceneSyncRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289315255",
-    "postPublishStateDigest": "459f8671281c43e7f353dfe0dd15a6dabf138184fcc6f955e70f22771dff222c",
-    "finalEngineProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/45288815373",
+    "postPublishSceneSyncRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45421111025",
+    "postPublishStateDigest": "81097873baa8d594507ab196d66c54957fb021f946f1499ff2e225f585f6fdeb",
+    "finalEngineProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420123951",
     "engineChunksAfterWestStreaming": 4
   },
   "remoteIdentity": {
@@ -439,6 +465,6 @@
       "ER-020"
     ],
     "requirement": "All release requirements must have owner and real engine, mobile, save/load and human approval evidence; incomplete T1/T2 systems may not be pushed to T3.",
-    "next": "Creator staging review and open refund/ruin decisions. T1 remains in progress and T2 remains blocked."
+    "next": "Creator staging playtest and open death, ruin and refund decisions. Keep T2 blocked."
   }
 }
