@@ -34,7 +34,7 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 | ER-016 | T1-R3/F | PARCIAL | Economia inicial: moedas/tesouro, drop físico, coleta, crafting local, comércio e custo legível; consumir estoque real, não imprimir dinheiro; validar morte/desconexão/duplo toque. |
 | ER-017 | T1-R3/F | PARCIAL | Interface de jogo: HUD enxuto, estoques identificados, preço/posse/requisitos/progresso, respostas de erro e ações contextuais em celular pequeno; v13 criou primeira versão, criador precisa aprovar composição real. |
 | ER-018 | T1-R3/F | PARCIAL | Vertical slice completo: novo slot → prólogo → construir/estocar/fabricar → raid → sofrer dano → recuperar materiais → reparar → salvar/reentrar; replay em três seeds, sem intervenção dev. |
-| ER-019 | T1-R3/F | AUSENTE | Death/recovery inicial: morte do jogador e NPC, soltar/reter itens conforme regra aprovada, respawn sem duplo saque, derrota/continuação e recuperação de sessão. Contratos ainda precisam decisão do criador. |
+| ER-019 | T1-R3/F | PARCIAL | Death/recovery inicial: morte do jogador e NPC, soltar/reter itens conforme regra aprovada, respawn sem duplo saque, derrota/continuação e recuperação de sessão. Contratos ainda precisam decisão do criador. |
 | ER-020 | T1-R3/F | PARCIAL | Qualidade base: visual coerente, sem textos/blocos dev, FPS/latência/consumo de memória mensurados no aparelho real, relatório de frame pacing e portas RPC resistentes a spam. |
 
 ## T2 — Todos os sistemas BASE precisam terminar aqui
@@ -128,3 +128,7 @@ O fechamento é **cumulativo**: regressões em T3 reabrem ER-001…044. Mesmo co
 ### Gate técnico de playtest T1-F1
 
 A T1-F1 passou pelo DataStore real com namespaces sintéticos e cobriu a recuperação de uma gravação com resposta perdida, o backup pré-migração, a reabertura com reserva ativa e o fluxo fonte → NPC → galpão → obra. A partida touch, o teleporte com cliente e a regra final de ruínas/estorno continuam pendentes. Centro, Oeste e Leste agora são associados às muralhas iniciais e usados para identificar a localização das obras. Os estados ER continuam sujeitos às provas de lançamento. [Recibo do refinamento](runner-receipts/T1-F1.md)
+
+### Candidato T1-F2/F3 de staging
+
+A [revisão ER-001–020](runner-receipts/T1-F3.md#revisão-er-001020) documenta o que passou em CI, nos probes do motor e no DataStore sintético, e os limites do gate. A infraestrutura de morte passa de AUSENTE a PARCIAL. Nenhum requisito foi promovido a VALIDADO.

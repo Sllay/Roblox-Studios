@@ -65,13 +65,19 @@
         },
         {
           "id": "T1-F2",
-          "status": "planned",
-          "scope": "NPC presentation, defense, playable prologue and approved recovery"
+          "status": "in_progress",
+          "scope": "NPC presentation, defense, playable prologue and approved recovery",
+          "receipt": "docs/runner-receipts/T1-F2.md",
+          "commit": "272cbca",
+          "validation": "engine_and_domain_pass; creator_review_pending"
         },
         {
           "id": "T1-F3",
-          "status": "planned",
-          "scope": "Integrated regressions, Roblox staging, performance and mobile review"
+          "status": "in_progress",
+          "scope": "Integrated regressions, Roblox staging, performance and mobile review",
+          "receipt": "docs/runner-receipts/T1-F3.md",
+          "commit": "7a8e09d3b70808188cc779e7ea157a3bc9886b41",
+          "validation": "ci_and_engine_pass; staging_pending"
         }
       ],
       "runners": [
@@ -376,7 +382,7 @@
     "productionUnchanged": true,
     "completenessAuditPath": "docs/FEATURE_COMPLETENESS_AUDIT.md",
     "completenessCiUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45052959871",
-    "featureLaunchReadiness": "T1_still_blocked_19_partial_1_absent",
+    "featureLaunchReadiness": "T1_20_partial_pending_creator_review_or_design",
     "v14IndependentReadback": "success",
     "postPublishSceneSyncRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45289315255",
     "postPublishStateDigest": "459f8671281c43e7f353dfe0dd15a6dabf138184fcc6f955e70f22771dff222c",
@@ -403,8 +409,8 @@
     "path": "docs/FEATURE_COMPLETENESS_AUDIT.md",
     "requirementsTotal": 58,
     "t1": {
-      "partial": 19,
-      "absent": 1,
+      "partial": 20,
+      "absent": 0,
       "validated": 0
     },
     "t2": {
