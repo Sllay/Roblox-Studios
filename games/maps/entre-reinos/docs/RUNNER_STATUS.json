@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-22",
-  "note": "2026-11-23: creator reports arrow crafting impossible despite village timber HUD. Root cause v14: global village wood was misread as owned player wood, but crafting only searched near sites/galpaos and disabled the button silently. v15 introduces finite, persisted playerBag in optional R3 v1 migration, authorized pickup near real trees/galpaos, 2 wood -> 6 arrows craft anywhere from owned bag, real source transfers, nearest-tree direction and actionable mobile UI. Published STAGING v15 with CI and independent Roblox engine success (27/27 source, 15/15 executed probes). Mobile creator playtest pending; T1 core remains partially complete, T2 must not start. No saves wiped, no production changes.",
+  "note": "2026-11-24 creator playtest v17: native R6 animations, genuine free X/Z NPC wandering inside courtyard, natural skin, corrupted humans, contextual hold-to-mark trees without popups, sword/bow hotbar and hold-to-aim gravity arrow with trajectory preview, duke dialogue/camera mission and 17 total chunks (5 initial) required. Full approved specification docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md. T1 remains under refinement, T2 blocked, v17 staging unchanged. Draft PR #12 implements initial true-depth NPC state, classic R6 animation and skin; CI passed, no engine/mobile validation yet.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -91,6 +91,36 @@
           "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420774191",
           "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420123951",
           "publishedPreview": "staging_v17"
+        },
+        {
+          "id": "T1-F4",
+          "status": "in_progress",
+          "scope": "True X/Z NPC roaming and native R6 rig animations, human skin and corrupted human enemy visuals",
+          "design": "docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md",
+          "branch": "entre-reinos/t1-f4-mobile-world-overhaul",
+          "pr": "https://github.com/Sllay/Roblox-Studios/pull/12",
+          "mobile": "pending",
+          "publishedPreview": null
+        },
+        {
+          "id": "T1-F5",
+          "status": "planned",
+          "scope": "Hold-to-interact, contextual selection, sword/bow hotbar, charged ballistic shooting and improved ducal dialogue",
+          "design": "docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md",
+          "branch": "entre-reinos/t1-f4-mobile-world-overhaul",
+          "pr": "https://github.com/Sllay/Roblox-Studios/pull/12",
+          "mobile": "pending",
+          "publishedPreview": null
+        },
+        {
+          "id": "T1-F6",
+          "status": "planned",
+          "scope": "17-chunk world, five initial chunks, progressive generation, final regressions and creator playtest",
+          "design": "docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md",
+          "branch": "entre-reinos/t1-f4-mobile-world-overhaul",
+          "pr": "https://github.com/Sllay/Roblox-Studios/pull/12",
+          "mobile": "pending",
+          "publishedPreview": null
         }
       ],
       "runners": [
@@ -362,7 +392,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_F3_staging_v17_awaiting_creator_review",
+  "programStage": "T1_post_v17_mobile_feedback_T1_F4_draft_CI_pass_staging_v17_unchanged",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -413,7 +443,12 @@
     "postPublishSceneSyncRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45421111025",
     "postPublishStateDigest": "81097873baa8d594507ab196d66c54957fb021f946f1499ff2e225f585f6fdeb",
     "finalEngineProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/45420123951",
-    "engineChunksAfterWestStreaming": 4
+    "engineChunksAfterWestStreaming": 4,
+    "activeDraftPr": "https://github.com/Sllay/Roblox-Studios/pull/12",
+    "activeT1Refinement": "T1-F4",
+    "draftCi": "https://github.com/Sllay/Roblox-Studios/actions/runs/45493792506",
+    "latestPublishedRevisionStill": 17,
+    "creatorV17FeedbackScope": "docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md"
   },
   "remoteIdentity": {
     "status": "verified",
