@@ -301,3 +301,36 @@ for _=1,850 do W.step(savedOrder,0.1) end
 assert(savedOrder.sites[2].remaining==0 and savedOrder.sites[1].remaining==10)
 assert(I.count(savedOrder.buildings[1].stored,"wood")==28)
 print("ENTRE_REINOS_T1_F1_TREES: marked tree restores, gets priority and supplies the depot beyond routine stock")
+
+-- T1-F4: NPCs have actual persistent 2D positions, not four visual Z lanes.
+local roaming=S.new(seed)
+local initialPositions={}
+for _,resident in ipairs(roaming.npcs) do
+    assert(type(resident.z)=="number" and math.abs(resident.z)<=12)
+    initialPositions[resident.id]={x=resident.x,z=resident.z}
+end
+-- No tasks available: the characters should visibly travel across the
+-- courtyard in X and Z instead of standing in a neat idle row.
+for _,site in ipairs(roaming.sites) do site.remaining=0 end
+for _=1,600 do W.step(roaming,0.1) end
+local changedX,changedZ=0,0
+for _,resident in ipairs(roaming.npcs) do
+    local prior=initialPositions[resident.id]
+    if math.abs(resident.x-prior.x)>3 then changedX+=1 end
+    if math.abs(resident.z-prior.z)>2 then changedZ+=1 end
+    assert(resident.z>=-14 and resident.z<=14)
+end
+assert(changedX>=2 and changedZ>=2,
+    "NPCs need actual independent movement across X/Z while idle")
+local roamingSaved=S.restore(S.clone(roaming),seed)
+assert(roamingSaved and roamingSaved.npcs[1].z==roaming.npcs[1].z)
+assert(S.valid(roamingSaved))
+local legacy=S.clone(roaming)
+for _,n in ipairs(legacy.npcs) do
+    n.z=nil;n.wanderX=nil;n.wanderZ=nil;n.wanderPause=nil
+end
+local upgraded=S.restore(legacy,seed)
+assert(upgraded and type(upgraded.npcs[1].z)=="number")
+assert(upgraded.npcs[1].x==legacy.npcs[1].x,
+    "migration cannot change existing NPC logical X coordinates")
+print("ENTRE_REINOS_T1_F4_NPC_DEPTH: deterministic 2D roaming, save, and legacy migration passed")
