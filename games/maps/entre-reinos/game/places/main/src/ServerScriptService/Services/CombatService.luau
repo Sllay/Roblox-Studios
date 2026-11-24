@@ -22,6 +22,7 @@ cast.FilterType=Enum.RaycastFilterType.Include
 cast.FilterDescendantsInstances={workspace.Terrain}
 cast.IgnoreWater=true
 local MAX_PROJECTILES=10
+local heightCache: {[number]: number}={}
 
 local function part(model: Model,name: string,size: Vector3,offset: Vector3,color: Color3): Part
     local obj=Instance.new("Part")
@@ -40,8 +41,15 @@ local function part(model: Model,name: string,size: Vector3,offset: Vector3,colo
 end
 
 local function groundAt(x: number): number
+    local cell=math.round(x*2)
+    local cached=heightCache[cell]
+    if cached then return cached end
     local terrain=World.sample(state.seed,x,0)
-    return if terrain.wet then World.WATER_SURFACE-1 else terrain.height
+    if terrain.wet then return World.WATER_SURFACE-1 end
+    local support=workspace:Raycast(Vector3.new(cell/2,70,0),Vector3.new(0,-120,0),cast)
+    if not support then return terrain.height end
+    heightCache[cell]=support.Position.Y
+    return support.Position.Y
 end
 
 local function enemyModel(e: any): Model
@@ -198,6 +206,7 @@ local function cleanup()
     enemies={}
     arrows={}
     cooldowns={}
+    table.clear(heightCache)
 end
 
 function Combat.start(player: Player,living: any,worldFolder: Folder)

@@ -450,8 +450,8 @@ local function wallBeforeTown(state: any,e: any): any
     for _,b in ipairs(state.buildings) do
         local def=Structures.get(b.typeId)
         if def and (b.typeId=="wall" or b.typeId=="fence")
-            and b.health>0 and b.progress>=def.buildSeconds then
-            -- Only an intact barrier on this enemy's approach blocks the path.
+            and b.health>0 and b.progress>=def.buildSeconds and b.x*e.side>=0 then
+            -- A gate behind the town cannot divert an invader through it.
             local approach=(b.x-e.x)*(-e.side)
             if approach>= -2 and approach<nearest then
                 nearest=approach

@@ -41,7 +41,7 @@ PhysicsService:CollisionGroupSetCollidable(GHOST_GROUP,"Default",false)
 -- Four stable depth lanes and small visual offsets avoid NPC piles at the
 -- same work station. These are presentation offsets, never job/save positions.
 local function actorX(npc: any): number
-    return npc.x+(((npc.id-1)%4)-1.5)*2.2
+    return npc.x+(((npc.id-1)%4)-1.5)*0.48
 end
 local function actorZ(npc: any): number
     if npc.activity=="sheltered" then return -8 end

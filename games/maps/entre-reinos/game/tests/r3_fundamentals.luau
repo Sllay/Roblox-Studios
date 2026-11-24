@@ -336,3 +336,20 @@ end)
 assert(fired==1 and defender.arrows==ammo-1)
 assert(scene.enemies[1].hp==30,"only a subsequent projectile impact deals bow damage")
 print("ENTRE_REINOS_T1_F2: three campaigns, death custody, and authoritative weapon sweep")
+
+local approach=Living.new(seed)
+local raid=R3.ensure(approach,false)
+assert(Work.initializeVillage(approach))
+local west=approach.buildings[4]
+west.state="ruined"
+west.ruined=true
+west.health=0
+west.progress=0
+local east,warehouse=approach.buildings[5],approach.buildings[2]
+local warehouseHealth=warehouse.health
+table.insert(raid.enemies,{id=1,x=-30,hp=30,side=-1,loot=0,attackClock=0,typeId="raider"})
+raid.raidActive=true
+for _=1,50 do R3.step(approach,0.1,80) end
+assert(raid.enemies[1].x<=warehouse.x+1,"raider passed the exposed warehouse")
+assert(warehouse.health<warehouseHealth,"western breach did not redirect the raid to exposed stock")
+assert(east.state=="complete" and east.health==Structures.get("wall").health)

@@ -206,11 +206,25 @@ jobs:
           end
           local placementVerified=probePlacement()
           local combatVerified=probeCombat(seed,loadCombat())
+          local core=loadCandidate("R3Engine")
+          local profileStart=os.clock()
+          for _,sampleSeed in ipairs({42,1009,seed}) do
+              local village=loadCandidate("LivingModel").new(sampleSeed)
+              work.initializeVillage(village)
+              core.ensure(village,false)
+              core.spawnWave(village,2)
+              for _=1,1200 do
+                  work.step(village,0.1)
+                  core.step(village,0.1,0)
+              end
+              assert(loadCandidate("LivingModel").valid(village))
+          end
+          local simulationMs=(os.clock()-profileStart)*1000
           return game:GetService("HttpService"):JSONEncode({
               universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
               version=game.PlaceVersion,domainSuites=3,starterBuildings=#state.buildings,datastore=datastoreResult,
               terrainChunks=service.getChunkCount(),seed=seed,
-              placementVerified=placementVerified,combat=combatVerified
+              placementVerified=placementVerified,combat=combatVerified,domainTicks=3600,domainSimulationMs=simulationMs
           })
           """.replace("__PLACEMENT__",placement))
           report = run_task(staging["universeId"], staging["placeIds"]["main"],
