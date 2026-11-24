@@ -74,13 +74,25 @@ jobs:
                   assert(buffer.tostring(enc:Base64Encode(digest))==expected,"source hash differs: "..path)
                   matches+=1
               end
+              local modules=game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Living")
+              local services=game:GetService("ServerScriptService"):WaitForChild("Services")
+              local function loadCandidate(name)
+                  return require(modules:WaitForChild(name))
+              end
+              local seed=516639272
+              assert(require(services:WaitForChild("WorldService")).activate(seed))
+              __NATIVE__
+              local combat=probeCombat(seed,require(services:WaitForChild("CombatService")))
               return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
-                  placeVersion=game.PlaceVersion,sourceMatches=matches})
-              """.replace("__CHECKS__",json.dumps(json.dumps(checks)))
+                  placeVersion=game.PlaceVersion,sourceMatches=matches,combat=combat})
+              """.replace("__CHECKS__",json.dumps(json.dumps(checks))).replace(
+                  "__NATIVE__", (game / "game/tests/staging_combat.luau").read_text())
+
               report=run_task(staging["universeId"], staging["placeIds"]["main"],
                               os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source)
               assert report["loadedVersion"] == int(os.environ["ER_PROBE_REVISION"]), report
               assert report["sourceMatches"] == len(checks)
+              assert len(report["combat"])==6 and all(report["combat"].values())
               print("ENTRE_REINOS_T1_F1_PUBLISHED", json.dumps(report,sort_keys=True))
               raise SystemExit(0)
           parts = ["""
