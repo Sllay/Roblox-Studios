@@ -43,7 +43,7 @@ function probeGame:GetService(name)
 end
 
 local legacy=Slots.newWorld(seed,os.time(),loadCandidate("WorldProfile").spawn(seed))
-legacy.rulesetVersion=1
+legacy.rulesetVersion=2
 legacy.living=Living.new(seed)
 assert(main:UpdateAsync(worldKey,function(old)
     assert(old==nil)
@@ -76,7 +76,7 @@ first.setLivingProvider(function() return state end)
 failBackup=true
 local saved,reason=first.save(player,false)
 assert(not saved and reason=="backup_unavailable")
-assert(main:GetAsync(worldKey).rulesetVersion==1)
+assert(main:GetAsync(worldKey).rulesetVersion==2)
 failBackup=false
 loseReply=true
 saved,reason=first.save(player,false)
@@ -84,13 +84,13 @@ assert(not saved and reason=="datastore_unavailable")
 assert(first.save(player,false),"retry failed to recognize committed revision")
 assert(first.get(player).revision==1)
 local copy=backups:GetAsync(Slots.legacyBackupKey(legacy))
-assert(copy and copy.rulesetVersion==1 and copy.revision==0 and copy.lock==nil)
+assert(copy and copy.rulesetVersion==2 and copy.revision==0 and copy.lock==nil)
 assert(#copy.living.buildings==0 and copy.living.sites[1].remaining==72)
 assert(first.save(player,true),"could not release first session")
 
 local reopened,record=second.open(player,1)
 assert(reopened,record)
-assert(record.rulesetVersion==2 and record.revision==2)
+assert(record.rulesetVersion==Slots.RULESET_VERSION and record.revision==2)
 local restored=assert(Living.restore(record.living,seed))
 assert(restored.buildings[2].claimed.wood==blueprint.claimed.wood)
 for _,site in ipairs(restored.sites) do site.remaining=0 end

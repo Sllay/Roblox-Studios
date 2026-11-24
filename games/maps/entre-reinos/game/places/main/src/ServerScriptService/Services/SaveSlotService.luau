@@ -184,7 +184,7 @@ local function backupLegacy(player: Player, session: any): (boolean, string?)
             if existing==nil then return backup end
             -- Retries after a lost response reuse the first confirmed backup.
             -- A different generation or unknown record cannot be overwritten.
-            if not Slots.validWorld(existing) or (existing.rulesetVersion or 1)~=1
+            if not Slots.validWorld(existing) or (existing.rulesetVersion or 1)~=(backup.rulesetVersion or 1)
                 or existing.seed~=backup.seed or existing.createdAt~=backup.createdAt
                 or existing.revision~=backup.revision or existing.lastWriteId~=backup.lastWriteId then return nil end
             return existing

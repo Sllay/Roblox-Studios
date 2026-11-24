@@ -149,3 +149,7 @@ Ordem exata, referencias por runner e gates: docs/SEASON_RUNNERS.md. As fontes e
 O caderno da vila abre uma prévia verde ou vermelha para a estrutura selecionada. O jogador escolhe o ponto na faixa jogável e confirma a posição após a validação do terreno. Uma obra pode ser cancelada antes de receber material, liberando os trabalhadores e suas reservas. Estorno após entrega segue em aberto.
 
 Novas populações partem de um assentamento com castelo, tesouraria, dois galpões vazios e muralhas laterais. Moradores podem abastecer obras com suas bolsas, com recursos reservados nos galpões ou com novas coletas. Madeiras marcadas têm prioridade quando houver demanda ou espaço para receber o corte. Destroços de galpão isolam os itens que estavam armazenados até ser definida a recuperação.
+
+### Candidato T1-F2/F3
+
+O duque e os guardas surgem perto do castelo. A escolta avança enquanto o jogador acompanha a comitiva. A criatura tem presença física antes da transformação. A defesa passa pelas muralhas externas e pelo perímetro do castelo, com evacuação dos civis e coroação ao amanhecer. As fases são salváveis. A retomada provisória em staging retorna o jogador ao castelo sem debitar sua bolsa ou moedas. A regra final de derrota permanece aberta.

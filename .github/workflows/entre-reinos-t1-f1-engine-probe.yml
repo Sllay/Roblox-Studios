@@ -1,8 +1,8 @@
-name: Entre Reinos T1-F1 isolated engine probe
+name: Entre Reinos T1 isolated engine probe
 
 on:
   push:
-    branches: [entre-reinos/t1-f1-integridade]
+    branches: [entre-reinos/t1-f2-f3]
     paths:
       - .github/workflows/entre-reinos-t1-f1-engine-probe.yml
       - games/maps/entre-reinos/game/places/main/src/ReplicatedStorage/**
@@ -31,7 +31,7 @@ jobs:
       - name: Run candidate domain checks and native Terrain probe in unsaved staging session
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ER_PROBE_REVISION: ${{ inputs.revision || 15 }}
+          ER_PROBE_REVISION: ${{ inputs.revision || 16 }}
           ER_READBACK: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           PYTHONPATH=tools python - <<'PY'
@@ -49,7 +49,7 @@ jobs:
           src = game / "game/places/main/src/ReplicatedStorage"
           names = ("WorldProfile", "SlotModel", "SlotLeasePolicy", "WorldRoute", "InputProjection",
                    "ItemDefs", "ProfessionDefs", "StructureDefs", "Inventory",
-                   "WorkEngine", "R3Engine", "LivingModel")
+                   "WorkEngine", "Campaign", "Trajectory", "R3Engine", "LivingModel")
           paths = {p.stem: p for p in src.rglob("*.luau")}
           if os.environ["ER_READBACK"] == "true":
               checks = {}
@@ -74,13 +74,25 @@ jobs:
                   assert(buffer.tostring(enc:Base64Encode(digest))==expected,"source hash differs: "..path)
                   matches+=1
               end
+              local modules=game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Living")
+              local services=game:GetService("ServerScriptService"):WaitForChild("Services")
+              local function loadCandidate(name)
+                  return require(modules:WaitForChild(name))
+              end
+              local seed=516639272
+              assert(require(services:WaitForChild("WorldService")).activate(seed))
+              __NATIVE__
+              local combat=probeCombat(seed,require(services:WaitForChild("CombatService")))
               return Http:JSONEncode({universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
-                  placeVersion=game.PlaceVersion,sourceMatches=matches})
-              """.replace("__CHECKS__",json.dumps(json.dumps(checks)))
+                  placeVersion=game.PlaceVersion,sourceMatches=matches,combat=combat})
+              """.replace("__CHECKS__",json.dumps(json.dumps(checks))).replace(
+                  "__NATIVE__", (game / "game/tests/staging_combat.luau").read_text())
+
               report=run_task(staging["universeId"], staging["placeIds"]["main"],
                               os.environ["ROBLOX_OPEN_CLOUD_API_KEY"],source)
               assert report["loadedVersion"] == int(os.environ["ER_PROBE_REVISION"]), report
               assert report["sourceMatches"] == len(checks)
+              assert len(report["combat"])==6 and all(report["combat"].values())
               print("ENTRE_REINOS_T1_F1_PUBLISHED", json.dumps(report,sort_keys=True))
               raise SystemExit(0)
           parts = ["""
@@ -112,6 +124,15 @@ jobs:
           parts.append(f"local function loadSaveService(game)\n{save_service}\nend")
           parts.append((game / "game/tests/staging_datastore.luau").read_text())
 
+          combat_service = (game / "game/places/main/src/ServerScriptService/Services/CombatService.luau").read_text()
+          for name, module in (("World", "WorldProfile"), ("R3", "R3Engine"),
+                               ("Trajectory", "Trajectory"), ("Structures", "StructureDefs")):
+              combat_service, count = re.subn(
+                  rf"^local {name}=require\(.*\)$", f'local {name}=loadCandidate("{module}")',
+                  combat_service, flags=re.M)
+              assert count == 1, name
+          parts.append(f"local function loadCombat()\n{combat_service}\nend")
+          parts.append((game / "game/tests/staging_combat.luau").read_text())
           living_service = (game / "game/places/main/src/ServerScriptService/Services/LivingService.luau").read_text()
           placement = living_service.split("local function placementGround(",1)[1].split("\nactions.OnServerInvoke=",1)[0]
           parts.append("""
@@ -196,15 +217,32 @@ jobs:
               return true
           end
           local placementVerified=probePlacement()
+          local combatVerified=probeCombat(seed,loadCombat())
+          local core=loadCandidate("R3Engine")
+          local profileStart=os.clock()
+          for _,sampleSeed in ipairs({42,1009,seed}) do
+              local village=loadCandidate("LivingModel").new(sampleSeed)
+              work.initializeVillage(village)
+              core.ensure(village,false)
+              core.spawnWave(village,2)
+              for _=1,1200 do
+                  work.step(village,0.1)
+                  core.step(village,0.1,0)
+              end
+              assert(loadCandidate("LivingModel").valid(village))
+          end
+          local simulationMs=(os.clock()-profileStart)*1000
           return game:GetService("HttpService"):JSONEncode({
               universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),
               version=game.PlaceVersion,domainSuites=3,starterBuildings=#state.buildings,datastore=datastoreResult,
-              terrainChunks=service.getChunkCount(),seed=seed,placementVerified=placementVerified
+              terrainChunks=service.getChunkCount(),seed=seed,
+              placementVerified=placementVerified,combat=combatVerified,domainTicks=3600,domainSimulationMs=simulationMs
           })
           """.replace("__PLACEMENT__",placement))
           report = run_task(staging["universeId"], staging["placeIds"]["main"],
-                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=int(os.getenv("ER_PROBE_REVISION", "15")))
+                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], "\n".join(parts), read_version=int(os.getenv("ER_PROBE_REVISION", "16")))
           print("ENTRE_REINOS_T1_F1_ENGINE", json.dumps(report, sort_keys=True))
           assert report["domainSuites"] == 3 and report["starterBuildings"] >= 5 and report["placementVerified"]
           assert report["datastore"]["actual"] and report["datastore"]["delivered"] == 11
+          assert all(report["combat"].values()) and len(report["combat"]) == 6
           PY

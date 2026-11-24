@@ -35,8 +35,8 @@ assert(S.summary(nil, 1).exists == false)
 assert(S.summary({deleted = true}, 1).exists == false)
 assert(S.summary({foo = 1}, 1).corrupt)
 local legacy = S.newWorld(11, 100, {x=0,y=15,z=0})
-assert(S.SAVE_FORMAT_VERSION==1 and S.RULESET_VERSION==2)
-assert(legacy.saveFormatVersion==1 and legacy.rulesetVersion==2)
+assert(S.SAVE_FORMAT_VERSION==1 and S.RULESET_VERSION==3)
+assert(legacy.saveFormatVersion==1 and legacy.rulesetVersion==3)
 local v1=S.newWorld(11,100,{x=0,y=15,z=0})
 v1.saveFormatVersion=nil
 v1.rulesetVersion=nil
@@ -148,3 +148,9 @@ current.createdAt = 101
 assert(S.legacyBackupKey(current)~=legacyBackup)
 assert(P.foreignLease({token="b",expiresAt=math.huge}, "a", 100))
 print("ENTRE_REINOS_T1_F1_RULESET: old saves readable, per-generation backup identity and future guard")
+
+current.updatedAt=current.createdAt
+current.rulesetVersion=2
+assert(S.validWorld(current) and S.summary(current,1).compatibility=="legacy_compatible")
+current.rulesetVersion=4
+assert(not S.validWorld(current))

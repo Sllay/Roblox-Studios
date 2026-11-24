@@ -78,11 +78,26 @@ local function attachLane(player: Player, char: Model): (boolean, string?)
         lock.Attachment1 = attachment
         lock.Parent = root
     end
-    local pos = data.position
+    local recovered=player:GetAttribute("ER_Recovering")==true
+        or (player:GetAttribute("ER_WorldLoaded")~=true and data.living and data.living.r3
+            and data.living.r3.awaitingRecovery==true)
+    local pos=if recovered then Profile.spawn(data.seed) else data.position
     root.CFrame = CFrame.new(pos.x, pos.y + 1, Profile.LANE_Z)
     h.AutoRotate = false
     player:SetAttribute("ER_GeneratorVersion", Profile.GENERATOR_VERSION)
     player:SetAttribute("ER_Seed", data.seed)
+    if recovered then
+        player:SetAttribute("ER_Recovering",false)
+        LivingService.playerRecovered(player)
+    end
+    if not h:GetAttribute("ER_DeathBound") then
+        h:SetAttribute("ER_DeathBound",true)
+        h.Died:Once(function()
+            if player.Character~=char or player:GetAttribute("ER_WorldLoaded")~=true then return end
+            player:SetAttribute("ER_Recovering",true)
+            LivingService.playerDied(player)
+        end)
+    end
     return true, nil
 end
 

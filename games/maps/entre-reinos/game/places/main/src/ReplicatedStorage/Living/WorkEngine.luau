@@ -45,8 +45,13 @@ local function clearJob(npc: any, state: any)
     npc.storageId=nil
     npc.carryItem=nil
     npc.reserved=0
+    npc.actionProgress=nil
     npc.state="idle"
 end
+function Engine.releaseWorker(state: any,npc: any)
+    clearJob(npc,state)
+end
+
 function Engine.releaseBuildingJobs(state: any, buildingId: number)
     for _,npc in ipairs(state.npcs) do
         if npc.jobId==buildingId or npc.storageId==buildingId then clearJob(npc,state) end
@@ -215,6 +220,7 @@ local function assign(npc: any, state: any): boolean
     for _,b in ipairs(state.buildings) do
         if b.state=="blueprint" or b.state=="ruined" then
             local def=Structures.get(b.typeId)
+            local district=Engine.districtAt(state,b.x)
             for _,item in ipairs({"wood","stone","iron","food"}) do
                 local missing=needed(b,item)
                 if missing<=0 or not def.cost[item] then continue end
@@ -226,8 +232,10 @@ local function assign(npc: any, state: any): boolean
                 for _,depot in ipairs(state.buildings) do
                     local free=Engine.stockAvailable(state,depot,item)
                     if free>0 then
+                        local localDepot=district~=nil and Engine.districtAt(state,depot.x)==district
                         consider(b,item,math.min(limit,free),
-                            325-(math.abs(npc.x-depot.x)+math.abs(depot.x-b.x))*0.35,nil,depot)
+                            325-(math.abs(npc.x-depot.x)+math.abs(depot.x-b.x))*0.35
+                                +(if localDepot then 8 else 0),nil,depot)
                     end
                 end
                 local site=availableSource(state,item,npc.x)
@@ -266,6 +274,14 @@ local function walk(npc: any, destX: number, dt: number): boolean
     npc.motionX=(if diff>0 then 1 else -1)*travel/dt
     npc.fatigue=math.min(100,npc.fatigue+dt*0.03)
     return math.abs(destX-npc.x)<=NEAR
+end
+
+local function working(npc: any,dt: number,activity: string): boolean
+    npc.activity=activity
+    npc.actionProgress=(npc.actionProgress or 0)+dt
+    if npc.actionProgress<0.6 then return false end
+    npc.actionProgress=nil
+    return true
 end
 
 -- Pure footprint and route checks shared by preview and confirmation.
@@ -406,6 +422,8 @@ function Engine.step(state: any, dt: number)
     state.elapsed+=dt
     for _,npc in ipairs(state.npcs) do
         npc.motionX=0
+        npc.activity=nil
+        if npc.health<=0 then continue end
         npc.hunger=math.min(100,npc.hunger+dt*0.045)
         -- During a real nearby raid, civilians pause their tasks without
         -- canceling reserved materials or losing work progress. R3Engine
@@ -431,7 +449,7 @@ function Engine.step(state: any, dt: number)
                 if not storage or not source or not item
                     or source.item~=item then
                     clearJob(npc,state)
-                elseif walk(npc,source.x,dt) then
+                elseif walk(npc,source.x,dt) and working(npc,dt,"collect") then
                     local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc),
                         storageSpace(state,storage,item,npc))
                     if n>0 and Inventory.add(npc.inventory,item,n) then
@@ -467,7 +485,8 @@ function Engine.step(state: any, dt: number)
                     local storage=storeBuilding(state,npc.storageId)
                     if not storage and (not site or site.item~=item) then
                         clearJob(npc,state)
-                    elseif walk(npc,if storage then storage.x else site.x,dt) then
+                    elseif walk(npc,if storage then storage.x else site.x,dt)
+                        and working(npc,dt,if storage then "load" else "collect") then
                         local available=if storage then Engine.stockAvailable(state,storage,item,npc)
                             else Engine.sourceAvailable(state,site,npc)
                         local n=math.min(npc.reserved,available)
@@ -503,6 +522,7 @@ function Engine.step(state: any, dt: number)
                     if not ready(b) then
                         clearJob(npc,state)
                     elseif walk(npc,b.x,dt) then
+                        npc.activity="build"
                         local def=Structures.get(b.typeId)
                         local rate=Professions.buildRate(npc.profession)
                         local step=dt*rate
@@ -558,7 +578,8 @@ function Engine.summary(state: any): any
     end
     for _,npc in ipairs(state.npcs) do
         for item,count in pairs(npc.inventory.items) do
-            carried[item]=(carried[item] or 0)+count
+            local account=if npc.health<=0 then isolated else carried
+            account[item]=(account[item] or 0)+count
         end
     end
     for _,b in ipairs(state.buildings) do
@@ -578,10 +599,19 @@ function Engine.summary(state: any): any
         end
     end
     local buildings={}
+    local districts={}
     for _,b in ipairs(state.buildings) do
         local def=Structures.get(b.typeId)
+        local district=Engine.districtAt(state,b.x)
+        if district then
+            local tally=districts[district] or {warehouses=0,works=0,damage=0}
+            if Engine.usableStorage(b) then tally.warehouses+=1 end
+            if b.state=="blueprint" or b.state=="building" then tally.works+=1 end
+            if b.state=="ruined" or b.state=="damaged" then tally.damage+=1 end
+            districts[district]=tally
+        end
         table.insert(buildings,{id=b.id,name=def.label,typeId=b.typeId,
-            state=b.state,x=b.x,canCancel=Engine.canCancel(b),district=Engine.districtAt(state,b.x),
+            state=b.state,x=b.x,canCancel=Engine.canCancel(b),district=district,
             progress=math.floor(b.progress/def.buildSeconds*100),
             health=b.health,delivered=table.clone(b.delivered),
             stored=if b.stored then table.clone(b.stored.items) else {}})
@@ -589,11 +619,12 @@ function Engine.summary(state: any): any
     local workers={}
     for _,n in ipairs(state.npcs) do
         table.insert(workers,{id=n.id,name=n.name,profession=n.profession,
-            state=n.state,defense=n.defense or "none",
+            state=n.activity or n.state,defense=n.defense or "none",
+            district=Engine.districtAt(state,n.x),health=n.health,arrows=n.arrows or 0,
             carryWeight=Inventory.weight(n.inventory),
             carrying=table.clone(n.inventory.items)})
     end
-    return {buildings=buildings,workers=workers,stats=table.clone(state.stats),
+    return {buildings=buildings,workers=workers,districts=districts,stats=table.clone(state.stats),
         resources={sources=sources,carried=carried,reserved=reserved,
             committed=committed,stored=deposited,isolated=isolated,markedTrees=markedTrees}}
 end

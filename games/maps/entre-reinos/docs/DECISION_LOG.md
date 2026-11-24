@@ -176,3 +176,8 @@ Correção v9 em desenvolvimento:
 - [ABERTO] A divisão do estoque de uma ruína entre perda, roubo e material recuperável continua pendente. A custódia isolada preserva a contabilidade e impede consumo até definição da divisão.
 
 - [PROVISÓRIO PARA STAGING] Cancelar obra incompleta converte cada material entregue em uma pilha recuperável no ponto da obra. A provisão evita perda e crédito simultâneo a outros estoques. O procedimento definitivo de estorno e a partição das ruínas continuam [ABERTO].
+
+## T1-F2 — política provisória de recuperação
+
+- [PROVISÓRIO PARA STAGING] O jogador retorna ao castelo com os recursos preservados. A ficha do morador morto conserva a carga e o equipamento fora da economia ativa. Retomar um slot entre morte e respawn aplica a mesma recuperação.
+- [ABERTO] Retenção total preserva progresso e reduz impacto da derrota. Uma perda parcial recuperável introduziria risco e exigiria um depósito físico persistente que só pode ser reivindicado uma vez. Uma penalidade irreversível exigiria regra explícita de balanceamento. O destino definitivo da ficha dos moradores e a partição de ruínas continuam sujeitos à aprovação do criador.

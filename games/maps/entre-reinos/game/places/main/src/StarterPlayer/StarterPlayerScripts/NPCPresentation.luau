@@ -1,143 +1,114 @@
 --!strict
--- T1-R2: visual-only 60 Hz NPC presentation. The server remains authoritative
--- for positions, work, resources and saves. These R6 rigs have no collisions.
--- A 10 Hz replicated position is insufficient for visible motion on mobile:
--- interpolate and slightly extrapolate between authoritative pose snapshots.
+-- Buffered client presentation of the authoritative lane. The visual clock
+-- trails by approximately one packet, retaining speed through packet gaps.
 local RunService=game:GetService("RunService")
 local Presentation={}
-local active=false
 local actors: {[Model]: any}={}
-local R6_WALK="rbxassetid://180426354" -- official classic R6 walk loop
-
-local function remove(model: Model)
-    local entry=actors[model]
-    if not entry then return end
-    if entry.walk then
-        entry.walk:Stop(0.1)
-        entry.walk:Destroy()
-    end
-    actors[model]=nil
-end
-
-local function findModel(inst: Instance): Model?
-    if inst:IsA("Model") and inst:GetAttribute("ER_NPCVisual")==true then
-        return inst
-    end
-    return nil
-end
+local active=false
+local BUFFER=0.15
+local MAX_LEAD=0.1
 
 local function register(model: Model)
-    if actors[model] then return end
+    if actors[model] or model:GetAttribute("ER_NPCVisual")~=true then return end
     local pose=model:GetAttribute("ER_NPCPose")
     if typeof(pose)~="Vector3" then return end
-    local hum=model:FindFirstChildOfClass("Humanoid")
-    local track: AnimationTrack?=nil
-    if hum then
-        local animator=hum:FindFirstChildOfClass("Animator")
-        if not animator then
-            animator=Instance.new("Animator")
-            animator.Parent=hum
-        end
-        local clip=Instance.new("Animation")
-        clip.Name="ER_StockR6Walk"
-        clip.AnimationId=R6_WALK
-        local ok,loaded=pcall(function() return animator:LoadAnimation(clip) end)
-        if ok and loaded then
-            track=loaded
-            track.Priority=Enum.AnimationPriority.Movement
-            track.Looped=true
-        else
-            warn("[EntreReinos][NPCPresentation] Stock R6 walk unavailable: ",loaded)
-        end
-        clip:Destroy()
-    end
-    actors[model]={
-        render=CFrame.new(pose),
-        snapshot=pose,
-        arrivedAt=os.clock(),
-        smoothedVelocity=0,
-        movementHold=0,
-        walk=track,
+    local joints: {[string]: Motor6D}={}
+    local aliases: {[string]: string}={
+        ["Left Hip"]="leftLeg",["Right Hip"]="rightLeg",
+        ["Left Shoulder"]="leftArm",["Right Shoulder"]="rightArm",
+        ["ER_Left Leg"]="leftLeg",["ER_Right Leg"]="rightLeg",
+        ["ER_Left Arm"]="leftArm",["ER_Right Arm"]="rightArm",
     }
-    model.Destroying:Connect(function() remove(model) end)
+    for _,joint in ipairs(model:GetDescendants()) do
+        if joint:IsA("Motor6D") and aliases[joint.Name] then joints[aliases[joint.Name]]=joint end
+    end
+    local now=os.clock()
+    actors[model]={from=pose,to=pose,position=pose,t0=now,t1=now,
+        yaw=0,stride=0,motion=0,joints=joints,anchorY=pose.Y}
+end
+
+local function poseLimbs(item: any, activity: string, now: number)
+    local stride=math.sin(item.stride)*item.motion
+    local left,right=stride*0.34,-stride*0.34
+    if activity=="collect" or activity=="build" then
+        right=-0.9+math.sin(now*9)*0.72
+        left=-0.34
+    elseif activity=="load" then
+        right=-0.78+math.sin(now*8)*0.16
+        left=right
+    elseif activity=="strike" then
+        right=-1.06+math.sin(now*16)*0.33
+        left=-0.55
+    elseif activity=="stagger" then
+        right=-0.8+math.sin(now*10)*0.25
+        left=right
+    elseif activity=="crown" then
+        left=-0.42
+        right=-0.42
+    end
+    local joints=item.joints
+    if joints.leftArm then joints.leftArm.Transform=CFrame.Angles(left,0,0) end
+    if joints.rightArm then joints.rightArm.Transform=CFrame.Angles(right,0,0) end
+    if joints.leftLeg then joints.leftLeg.Transform=CFrame.Angles(-stride*0.46,0,0) end
+    if joints.rightLeg then joints.rightLeg.Transform=CFrame.Angles(stride*0.46,0,0) end
 end
 
 function Presentation.start()
     if active then return end
     active=true
     local folder=workspace:WaitForChild("ER_LivingWorld",15)
-    if not folder then
-        warn("[EntreReinos] NPC world folder not replicated")
-        return
-    end
+    if not folder then active=false; return end
     for _,child in ipairs(folder:GetChildren()) do
-        if child:IsA("Model") and child:GetAttribute("ER_NPCVisual")==true then
-            register(child)
-        end
+        if child:IsA("Model") then register(child) end
     end
     folder.ChildAdded:Connect(function(child)
         if child:IsA("Model") then task.defer(register,child) end
     end)
     folder.ChildRemoved:Connect(function(child)
-        if child:IsA("Model") then remove(child) end
+        if child:IsA("Model") then actors[child]=nil end
     end)
-    RunService:BindToRenderStep("ER_NPCPresentation",Enum.RenderPriority.Last.Value, function(dt: number)
-        local t=os.clock()
+    RunService.PreSimulation:Connect(function()
+        local now=os.clock()
         for model,item in pairs(actors) do
-            if model.Parent~=folder then
-                remove(model)
-                continue
-            end
+            local activity=model:GetAttribute("ER_NPCActivity")
+            poseLimbs(item,if type(activity)=="string" then activity else "",now)
+        end
+    end)
+    RunService:BindToRenderStep("ER_NPCPresentation",Enum.RenderPriority.Last.Value,function(dt: number)
+        local now=os.clock()
+        local targetTime=now-BUFFER
+        local step=math.clamp(dt,1/240,1/20)
+        local blend=1-math.exp(-18*step)
+        for model,item in pairs(actors) do
             local pose=model:GetAttribute("ER_NPCPose")
             if typeof(pose)~="Vector3" then continue end
-            if pose~=item.snapshot then
-                item.snapshot=pose
-                item.arrivedAt=t
+            if pose~=item.to then
+                item.from,item.t0=item.to,item.t1
+                item.to,item.t1=pose,now
             end
-            local targetVelocity=model:GetAttribute("ER_NPCVelocityX")
-            if type(targetVelocity)~="number" then targetVelocity=0 end
-            -- Advance the avatar continuously each rendered frame, independently
-            -- of irregular 8-10Hz server packets; packets correct drift smoothly
-            -- instead of repeatedly resetting prediction at their arrival.
-            local frameDt=math.clamp(dt,0,1/20)
-            if math.abs(targetVelocity)>0.2 then
-                item.movementHold=0.16
-            else
-                item.movementHold=math.max(0,item.movementHold-frameDt)
-            end
-            local velocityTarget=if item.movementHold>0 and targetVelocity==0
-                then item.smoothedVelocity else targetVelocity
-            item.smoothedVelocity+=(velocityTarget-item.smoothedVelocity)
-                *(1-math.exp(-16*frameDt))
-            local velocity=item.smoothedVelocity
+            local velocity=model:GetAttribute("ER_NPCVelocityX")
+            local speed=if type(velocity)=="number" then velocity else 0
+            local fraction=math.clamp((targetTime-item.t0)/math.max(0.001,item.t1-item.t0),0,1)
+            local buffered=item.from:Lerp(item.to,fraction)
+            local lead=math.clamp(targetTime-item.t1,0,MAX_LEAD)
+            local target=buffered+Vector3.new(speed*lead,0,0)
+            local old: Vector3=item.position
+            local position=if (target-old).Magnitude>12 then target else old:Lerp(target,blend)
+            local travel=math.abs(old.X-position.X)
+            item.stride=(item.stride+travel*2.2)%(2*math.pi)
+            item.motion+=(math.min(1,travel/step/5)-item.motion)*blend
+            item.position=position
             local facing=model:GetAttribute("ER_NPCFacing")
-            if type(facing)~="number" then facing=0 end
-
-            local sincePacket=t-item.arrivedAt
-            -- Do not run further than a single packet interval without fresh
-            -- authority. This limits drift when the worker stops or streams.
-            local lead=math.clamp(sincePacket,0,0.16)
-            local authoritativeX=pose.X+targetVelocity*lead
-            local old=item.render.Position
-            local integratedX=old.X+velocity*frameDt
-            local correction=1-math.exp(-11*frameDt)
-            local nextX=integratedX+(authoritativeX-integratedX)*correction
-            local target=Vector3.new(nextX,
-                old.Y+(pose.Y-old.Y)*(1-math.exp(-13*frameDt)),pose.Z)
-            if (old-pose).Magnitude>12 then
-                target=pose
+            if type(facing)=="number" then
+                local difference=(facing-item.yaw+math.pi)%(2*math.pi)-math.pi
+                item.yaw+=difference*blend
             end
-            item.render=CFrame.new(target)*CFrame.Angles(0,facing,0)
-            model:PivotTo(item.render)
-            local track=item.walk
-            if track then
-                local moving=math.abs(velocity)>0.24 or item.movementHold>0
-                if moving and not track.IsPlaying then track:Play(0.12,1,1) end
-                if moving then
-                    track:AdjustSpeed(math.clamp(math.abs(velocity)/6,0.45,1.45))
-                elseif track.IsPlaying then
-                    track:Stop(0.16)
-                end
+            local activity=model:GetAttribute("ER_NPCActivity")
+            local tilt=if activity=="fallen" then math.pi*0.46 else 0
+            local render=CFrame.new(position)*CFrame.Angles(0,item.yaw,tilt)
+            if render~=item.render then
+                item.render=render
+                model:PivotTo(item.render)
             end
         end
     end)
