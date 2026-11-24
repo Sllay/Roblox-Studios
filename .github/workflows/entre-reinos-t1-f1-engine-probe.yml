@@ -166,7 +166,11 @@ jobs:
           end
           assert(not work.canPlace(state,"wall",76))
           local function probePlacement()
-              local Work,WorldService=work,service
+              local WorldService=service
+              local Work={canPlace=function(state,typeId,x)
+                  if typeId=="slope_probe" then return true end
+                  return work.canPlace(state,typeId,x)
+              end,place=work.place}
               local Structures,Profile=loadCandidate("StructureDefs"),loadCandidate("WorldProfile")
               local groundCast=params
               groundCast.IgnoreWater=true
@@ -214,15 +218,15 @@ jobs:
                       end
                   end
                   local rise=high-low
-                  if rise>0.3 then
-                      probeDef.maxSlope=rise-0.2
-                      if Work.canPlace(state,"slope_probe",x) then
-                          root.Position=Vector3.new(x,24,0)
-                          local uneven,slopeReason=placementGround("slope_probe",x,root)
-                          assert(not uneven and slopeReason=="invalid_footprint_or_slope",tostring(slopeReason))
-                          testedSlope=true
-                          break
-                      end
+                  if rise>0.05 then
+                      -- Bypass only the analytic filter in this fixture so
+                      -- the server's actual Terrain support rays own the result.
+                      probeDef.maxSlope=rise*0.65
+                      root.Position=Vector3.new(x,24,0)
+                      local uneven,slopeReason=placementGround("slope_probe",x,root)
+                      assert(not uneven and slopeReason=="invalid_footprint_or_slope",tostring(slopeReason))
+                      testedSlope=true
+                      break
                   end
               end
               assert(testedSlope,"no native slope fixture in seeded terrain")
