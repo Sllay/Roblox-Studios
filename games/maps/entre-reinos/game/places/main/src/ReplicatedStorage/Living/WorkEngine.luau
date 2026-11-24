@@ -267,6 +267,12 @@ local function freeGround(state: any,npc: any,x: number,z: number): boolean
     local current=World.sample(state.seed,npc.x,npc.z or 0)
     local nextGround=World.sample(state.seed,x,z)
     if nextGround.wet or math.abs(nextGround.height-current.height)>1.4 then return false end
+    for _,site in ipairs(state.sites) do
+        if site.item=="wood" and site.remaining>0 and not site.salvage then
+            local after=(x-site.x)^2+(z+6)^2
+            if after<1.26^2 and after<(npc.x-site.x)^2+((npc.z or 0)+6)^2 then return false end
+        end
+    end
     for _,b in ipairs(state.buildings) do
         if b.health<=0 or b.ruined then continue end
         local width=Structures.get(b.typeId).footprint/2+0.45
