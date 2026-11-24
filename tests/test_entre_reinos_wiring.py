@@ -240,7 +240,7 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertNotIn('model:PivotTo(desired)', living)
         self.assertIn('RunService:BindToRenderStep("ER_NPCPresentation"', visual)
         self.assertIn('model:PivotTo(item.render)', visual)
-        self.assertIn("RunService.PreSimulation:Connect", presentation)
+        self.assertIn("RunService.PreSimulation:Connect", visual)
         self.assertIn('NPCPresentation.start()', client)
 
     def test_v9_minimal_3d_world_text_and_water_state_separation(self):
