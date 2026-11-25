@@ -141,8 +141,8 @@ jobs:
           parts.append((game / "game/tests/staging_combat.luau").read_text())
           parts.append((game / "game/tests/staging_world.luau").read_text())
           world_source = (game / "game/places/main/src/ServerScriptService/Services/WorldService.luau").read_text()
-          world_source, count = re.subn(r"^local Profile = require\(.*\)$",
-              'local Profile = loadCandidate("WorldProfile")', world_source, flags=re.M)
+          world_source, count = re.subn(r"^local (Profile|LegacyProfile) = require\(.*\)$",
+              r'local \1 = loadCandidate("WorldProfile")', world_source, flags=re.M)
           assert count == 1
           parts.append(f"local function loadWorldService()\n{world_source}\nend")
           living_service = (game / "game/places/main/src/ServerScriptService/Services/LivingService.luau").read_text()
