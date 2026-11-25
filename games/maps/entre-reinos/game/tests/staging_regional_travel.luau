@@ -51,6 +51,8 @@ local function probeTravel(Travel,seed)
         task.wait(0.055)
     end
     assert(session.record.mount.position.x>20 and session.record.mount.energy<100)
+    assert(math.abs(root.Position.X-session.record.mount.position.x)<2,
+        "saddle moved without the rider")
     assert(Travel.action(player,"dismount").ok)
     task.wait(0.5)
 

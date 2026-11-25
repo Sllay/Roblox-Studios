@@ -117,12 +117,13 @@ end
 
 local function refreshRig(kind: string): any
     local record=regional.record[kind]
-    if not record then return nil end
+    local parent=folder
+    if not record or not parent then return nil end
     local existing=rigs[kind]
     local position=record.position
     if not World.isLoadedAt(position.x) then return nil end
     if not existing then
-        existing=Rig.create(kind,folder)
+        existing=Rig.create(kind,parent)
         rigs[kind]=existing
     end
     existing.model:PivotTo(CFrame.new(position.x,position.y,0)*CFrame.Angles(0,-heading*math.pi/2,0))
@@ -285,7 +286,11 @@ function Service.action(player: Player,arg: any): any
         local town=Profile.settlement(regional.seed,2)
         local x=if from=="0" and town then town.x else 0
         local ground=Profile.sample(regional.seed,x,0)
-        if ground.wet or human.SeatPart then return {ok=false,error="travel_unavailable"} end
+        -- SeatPart can briefly outlive its physical weld after disembarking.
+        local seat=human.SeatPart
+        if ground.wet or human.Sit or (seat and seat:FindFirstChild("SeatWeld")) then
+            return {ok=false,error="travel_unavailable"}
+        end
         transit=true
         root.Anchored=true
         local ready=World.ensureNear(regional.seed,x)

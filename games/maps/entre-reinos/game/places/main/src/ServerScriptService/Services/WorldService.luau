@@ -21,7 +21,11 @@ type RuntimeProfile = {
     naturalSites: ((number, number) -> {{id: string, x: number, y: number, z: number,
         item: string, initialAmount: number}})?,
 }
-local Profile: RuntimeProfile = LegacyProfile
+local Profile: RuntimeProfile = LegacyProfile :: any
+local terrainMaterials: {[string]: Enum.Material} = {
+    Grass=Enum.Material.Grass, Ground=Enum.Material.Ground, Mud=Enum.Material.Mud,
+    Sand=Enum.Material.Sand, Rock=Enum.Material.Rock, Slate=Enum.Material.Slate,
+}
 local Terrain = workspace.Terrain
 local World = {}
 local active = false
@@ -262,8 +266,13 @@ local function createChunk(seed: number, id: number): (boolean, string?)
         solids[ix], liquids[ix], materials[ix] = {}, {}, {}
         local x = xmin + (ix - 0.5) * resolution
         local columns={}
+        local columnMaterials={}
         for iz=1,sz do
-            columns[iz]=Profile.sample(seed,x,b.zMin+(iz-0.5)*resolution)
+            local column=Profile.sample(seed,x,b.zMin+(iz-0.5)*resolution)
+            local material=terrainMaterials[column.material]
+            if not material then return fail("terrain_material_unsupported") end
+            columns[iz]=column
+            columnMaterials[iz]=material
         end
         for iy = 1, sy do
             solids[ix][iy], liquids[ix][iy], materials[ix][iy] = {}, {}, {}
@@ -276,7 +285,7 @@ local function createChunk(seed: number, id: number): (boolean, string?)
                 local liquid = math.min(1 - solid, candidate)
                 solids[ix][iy][iz] = solid
                 liquids[ix][iy][iz] = liquid
-                materials[ix][iy][iz] = if solid > 0 then Enum.Material[sample.material] else Enum.Material.Air
+                materials[ix][iy][iz] = if solid > 0 then columnMaterials[iz] else Enum.Material.Air
                 if solid > 0.5 then solidCells += 1 end
                 if liquid > 0.5 then liquidCells += 1 end
             end
@@ -316,7 +325,10 @@ local function createChunk(seed: number, id: number): (boolean, string?)
         end
     end
     phase = "decorate_chunk_" .. tostring(id)
-    local decorated, reason = pcall(decoratedChunk, seed, id, xmin, xmax)
+    local decorated, reason = pcall(function()
+        decoratedChunk(seed,id,xmin,xmax)
+        return true
+    end)
     if not decorated then
         warn("[EntreReinos][Terrain] Decoration error: ", reason)
         return fail("world_decoration_requires_new_server")
