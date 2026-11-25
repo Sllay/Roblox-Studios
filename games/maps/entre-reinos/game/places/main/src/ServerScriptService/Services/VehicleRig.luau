@@ -52,6 +52,7 @@ function Rig.create(kind: string, parent: Folder)
     seat.CanQuery=false
     seat.Massless=true
     seat.Parent=vehicle
+    local saddleJoint: Motor6D
     if kind=="mount" then
         local coat=Color3.fromRGB(144,93,63)
         shape("Barril",Vector3.new(2.45,2.5,4.45),coat,CFrame.new(0,2.68,0))
@@ -78,7 +79,7 @@ function Rig.create(kind: string, parent: Folder)
             end
         end
         shape("Manta",Vector3.new(2.36,0.58,2.4),Color3.fromRGB(84,117,95),CFrame.new(0,3.71,0.2))
-        joint(root,seat,CFrame.new(0,3.95,0.32))
+        saddleJoint=joint(root,seat,CFrame.new(0,3.95,0.32))
     else
         shape("Casco",Vector3.new(4.1,1.35,8.1),leather,CFrame.new(0,0.18,0))
         for _,side in ipairs({-1,1}) do
@@ -94,13 +95,25 @@ function Rig.create(kind: string, parent: Folder)
             local bench=piece(vehicle,"Banco",Vector3.new(3.27,0.28,1.06),timber)
             joint(root,bench,CFrame.new(0,0.84,z))
         end
-        joint(root,seat,CFrame.new(0,0.99,0))
+        saddleJoint=joint(root,seat,CFrame.new(0,0.99,0))
     end
     for index,motor in ipairs(gait) do motor:SetAttribute("ER_GaitIndex",index) end
     vehicle:SetAttribute("ER_GaitKind",kind)
     vehicle:SetAttribute("ER_GaitSpeed",0)
     vehicle.Parent=parent
-    return {model=vehicle,seat=seat,gait=gait}
+    return {model=vehicle,seat=seat,seatJoint=saddleJoint,gait=gait}
+end
+
+function Rig.replaceEmptySeat(rig: any): boolean
+    local previous: Seat=rig.seat
+    if previous:FindFirstChild("SeatWeld") then return false end
+    local replacement=previous:Clone()
+    replacement.CFrame=previous.CFrame
+    replacement.Parent=rig.model
+    rig.seatJoint.Part1=replacement
+    rig.seat=replacement
+    previous:Destroy()
+    return true
 end
 
 function Rig.animate(rig: any,speed: number)

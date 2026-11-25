@@ -25,6 +25,7 @@ local lastAction=0
 local lastInput=0
 local changePosition: ((Player, any) -> (boolean, string?))?=nil
 local transit=false
+local boarding=false
 local updateTime=0
 local WALK_SPEED, RUN_SPEED, ROW_SPEED=17,26,9
 local HORSE_PRICE=12
@@ -153,8 +154,25 @@ local function clearRider(player: Player)
 end
 
 local function board(player: Player,kind: string,human: Humanoid): boolean
+    if riding or boarding then return false end
     local rig=refreshRig(kind)
-    if not rig or riding or rig.seat:FindFirstChild("SeatWeld") then return false end
+    if not rig or rig.seat:FindFirstChild("SeatWeld") then return false end
+    boarding=true
+    -- The native Seat may retain Occupant or reject a quick remount after
+    -- the weld has ended. Replace only the empty seat, keeping its rig.
+    if rig.seat.Occupant then Rig.replaceEmptySeat(rig) end
+    rig.seat:Sit(human)
+    if not rig.seat:FindFirstChild("SeatWeld") then task.wait() end
+    if owner==player and not rig.seat:FindFirstChild("SeatWeld") and Rig.replaceEmptySeat(rig) then
+        rig.seat:Sit(human)
+        if not rig.seat:FindFirstChild("SeatWeld") then task.wait() end
+    end
+    boarding=false
+    local weld=rig.seat:FindFirstChild("SeatWeld")
+    local root=if player.Character then player.Character:FindFirstChild("HumanoidRootPart") else nil
+    if owner~=player or human.Health<=0 or not root or not weld or not weld:IsA("Weld") or weld.Part1~=root then
+        return false
+    end
     riding=kind
     regional.record.rider=kind
     player:SetAttribute("ER_Riding",kind)
@@ -167,7 +185,6 @@ local function board(player: Player,kind: string,human: Humanoid): boolean
         end
         previousHealth=health
     end)
-    rig.seat:Sit(human)
     return true
 end
 
@@ -199,6 +216,7 @@ function Service.stop()
     table.clear(stops)
     table.clear(dockModels)
     transit=false
+    boarding=false
     input,speed,updateTime,lastAction,lastInput,received=0,0,0,0,0,0
 end
 
@@ -250,7 +268,7 @@ function Service.cargoAvailable(player: Player,root: BasePart): number?
 end
 
 function Service.action(player: Player,arg: any): any
-    if type(arg)~="string" or #arg>16 or player~=owner or transit then return {ok=false,error="travel_unavailable"} end
+    if type(arg)~="string" or #arg>16 or player~=owner or transit or boarding then return {ok=false,error="travel_unavailable"} end
     local root,human=character(player)
     if not root or not human or Service.status(player,root)~=arg then return {ok=false,error="travel_unavailable"} end
     local now=os.clock()
