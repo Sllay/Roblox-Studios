@@ -220,6 +220,14 @@ function Service.stop()
     input,speed,updateTime,lastAction,lastInput,received=0,0,0,0,0,0
 end
 
+function Service.playerDied(player: Player)
+    if owner~=player or not riding then return end
+    local char=player.Character
+    local human=if char then char:FindFirstChildOfClass("Humanoid") else nil
+    if human then detachRider(human) end
+    clearRider(player)
+end
+
 function Service.busy(): boolean return transit end
 
 function Service.status(player: Player,root: BasePart): string?

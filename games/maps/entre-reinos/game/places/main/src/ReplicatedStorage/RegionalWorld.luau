@@ -76,6 +76,11 @@ function World.new(seed: number,home: any,persisted: any,position: any,readyAt: 
         position={x=position.x,y=position.y,z=0},discovered={["0"]=true},
     }
     if not World.valid(record,seed,home) then return nil end
+    if home.r3 and home.r3.awaitingRecovery then
+        -- A saved death takes precedence over the saved seat and location.
+        record.rider=nil
+        record.position={x=position.x,y=position.y,z=0}
+    end
     local graph=Routes.compile(seed)
     record.harvestedChunks=record.harvestedChunks or {}
     local session={seed=seed,home=home,record=record,graph=graph,active=nil,phases={},

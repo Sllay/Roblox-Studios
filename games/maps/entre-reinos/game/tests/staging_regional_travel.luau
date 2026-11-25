@@ -123,8 +123,18 @@ local function probeTravel(Travel,BridgeScene,seed)
     assert(arrived.ok and root.Position.X>1100 and writes==2,
         string.format("fast travel rejected: error=%s x=%s writes=%d",tostring(arrived.error),
             tostring(root.Position.X),writes))
+    task.wait(0.52)
+    place(boat.position.x,boat.position.y+4)
+    assert(Travel.action(player,"board").ok)
+    local boatSeat=assert(human.SeatPart)
+    local cargoBefore=Inventory.count(boat.cargo,"wood")
+    assert(boatSeat:FindFirstChild("SeatWeld") and session.record.rider=="boat")
+    human.Health=0
+    Travel.playerDied(player)
+    assert(not boatSeat:FindFirstChild("SeatWeld") and not player.attributes.ER_Riding)
+    assert(session.record.rider==nil and Inventory.count(boat.cargo,"wood")==cargoBefore)
     Travel.stop()
     model:Destroy()
     folder:Destroy()
-    return {movedHorse=true,deepWaterBlocked=true,mountedBridge=true,regionalRide=true,sailed=true,cargo=true,failedTravelRecovered=true,authorizedSteering=true}
+    return {movedHorse=true,deepWaterBlocked=true,mountedBridge=true,regionalRide=true,sailed=true,cargo=true,failedTravelRecovered=true,authorizedSteering=true,deathDetachesRider=true}
 end

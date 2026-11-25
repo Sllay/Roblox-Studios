@@ -580,7 +580,9 @@ local function syncBridges()
 end
 
 function Service.playerDied(player: Player)
-    if owner==player and regional then R3.playerDied(regional.home) end
+    if owner~=player or not regional then return end
+    R3.playerDied(regional.home)
+    Travel.playerDied(player)
 end
 
 function Service.playerRecovered(player: Player)
@@ -868,6 +870,11 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             local y=root.Position.Y
             nearby.travel=Travel.status(player,root)
             nearby.boatCargo=Travel.cargoAvailable(player,root)
+            if regional.home.r3.prologue.stage=="sandbox" and not regional.record.discovered["2"] then
+                local offset=regional.center.x-x
+                nearby.cedroDirection=if offset>=0 then "leste" else "oeste"
+                nearby.cedroDistance=math.floor(math.abs(offset)+0.5)
+            end
             nearby.district=Work.districtAt(state,x)
             nearby.storyAction=R3.storyAction(regional.home,x)
             nearby.localThreats=0

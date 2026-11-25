@@ -84,6 +84,9 @@ function Slots.validTravel(x: any,y: any,z: any): boolean
 end
 
 function Slots.spawnPosition(data: any): any
+    if data.living and data.living.r3 and data.living.r3.awaitingRecovery then
+        return World.spawn(data.seed)
+    end
     if data.regionWorld and Regions.validPosition(data.regionWorld.position) then return data.regionWorld.position end
     local p=data.frontierPosition
     if type(p)=="table" and p.revision==data.revision and Slots.validTravel(p.x,p.y,p.z) then

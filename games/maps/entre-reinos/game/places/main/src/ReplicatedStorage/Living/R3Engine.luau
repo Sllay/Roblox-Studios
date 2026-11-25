@@ -441,11 +441,12 @@ local function ruin(state: any,b: any)
     R3.isolateRuinedStock(b)
     b.progress=0
     b.ruinCount=(b.ruinCount or 0)+1
+    local recoveryX,recoveryZ=Work.recoveryLocation(state,b)
     for item,amount in pairs(b.delivered) do
         local recover=math.min(amount,math.floor((def.cost[item] or 0)*0.2))
         if recover>0 and #state.sites<256 then
             table.insert(state.sites,{id="salvage_"..tostring(b.id).."_"..item.."_"..tostring(b.ruinCount),
-                item=item,x=b.x,remaining=recover,salvage=true})
+                item=item,x=recoveryX,z=recoveryZ,remaining=recover,salvage=true})
         end
     end
     b.delivered={}

@@ -42,6 +42,17 @@ for _,seed in ipairs({1,42,1009,870001,123456789,516639272,2147483646}) do
     local reentered=Regions.activate(loaded,settlement.x)
     assert(reentered~=capital and reentered.npcs[1].id==capital.npcs[1].id and reentered.npcs[2].health==0)
     assert(loaded.record.mount.energy==66 and loaded.record.rider=="mount")
+    R3.ensure(home,false)
+    home.r3.wallet=23
+    assert(Inventory.add(home.r3.playerBag,"wood",3))
+    R3.playerDied(home)
+    local returnPosition=Slots.spawnPosition(slot)
+    assert(returnPosition.x==Profile.spawn(seed).x)
+    local recovery=assert(Regions.new(seed,home,slot.regionWorld,returnPosition))
+    assert(recovery.record.rider==nil and recovery.record.position.x==returnPosition.x)
+    assert(recovery.record.mount.position.x==settlement.x and recovery.record.mount.energy==66)
+    assert(home.r3.wallet==23 and Inventory.count(home.r3.playerBag,"wood")==3)
+    assert(slot.regionWorld.rider=="mount","recovery must leave the persisted input untouched")
     slot.regionWorld.mount.id="other_rider"
     assert(not Slots.validWorld(slot))
 end
@@ -115,10 +126,27 @@ end
 assert(npc.x>bridge.east.x,"loaded worker must reach the opposite bank through the deck")
 R3.ensure(home,false)
 assert(R3.damageStructure(home,work,270) and (work :: any).state=="ruined")
+local salvage=home.sites[1]
+assert(salvage and salvage.salvage and salvage.x<bridge.west.x and salvage.z==0)
+assert(not Profile.sample(seed,salvage.x,salvage.z).wet)
+assert(not R3.damageStructure(home,work,270) and #home.sites==2)
 assert(not Work.deckAt(home,work.x,0,"carrier"))
 for _=1,200 do assert(not Work.walkResident(home,npc,west,0.1,0)) end
 assert(npc.x>bridge.east.x and Inventory.count(npc.inventory,"wood")>0)
 
+
+-- Cancelled bridge materials stay on a dry work bank, with a single source of custody.
+local cancelled=Living.new(seed)
+cancelled.sites={}
+assert(Regions.new(seed,cancelled,nil,Profile.spawn(seed)))
+local prepared,blueprint=Work.place(cancelled,"bridge_light",bridge.west.x+1)
+assert(prepared)
+blueprint.delivered.wood=4
+assert(Work.cancel(cancelled,blueprint.id))
+local pile=cancelled.sites[1]
+assert(pile and pile.remaining==4 and pile.x<bridge.west.x and pile.z==0)
+assert(not Profile.sample(seed,pile.x,pile.z).wet)
+assert(not Work.cancel(cancelled,blueprint.id) and #cancelled.sites==1)
 
 -- Freight across the regional boundary uses the same job and inventory.
 local freight=Living.new(seed)

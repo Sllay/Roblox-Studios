@@ -53,16 +53,28 @@ function Engine.canReach(state: any, from: number, to: number, class: string): b
     return true
 end
 
-local function builderTarget(state: any, npc: any, b: any): (number,number)
-    if b.crossingId then
-        for _,crossing in ipairs(contexts[state].graph.crossings) do
-            if crossing.id==b.crossingId then
-                local west=npc.x<=b.x
-                return if west then crossing.west.x-2 else crossing.east.x+2, 0
-            end
+local function bridgeWorkBank(state: any,b: any,fromX: number): number?
+    local context=contexts[state]
+    if not context or not b.crossingId then return nil end
+    for _,crossing in ipairs(context.graph.crossings) do
+        if crossing.id==b.crossingId then
+            return if fromX<=b.x then crossing.west.x-2 else crossing.east.x+2
         end
     end
+    return nil
+end
+
+local function builderTarget(state: any, npc: any, b: any): (number,number)
+    local bank=bridgeWorkBank(state,b,npc.x)
+    if bank then return bank,0 end
     return b.x,-4.4
+end
+
+function Engine.recoveryLocation(state: any,b: any): (number,number?)
+    local context=contexts[state]
+    local bank=if context then bridgeWorkBank(state,b,context.origin) else nil
+    if bank then return bank,0 end
+    return b.x,nil
 end
 
 function Engine.deckAt(state: any, x: number, z: number, class: string): (number?, any)
@@ -676,10 +688,11 @@ function Engine.cancel(state: any, id: number): (boolean, string?)
             -- Staging policy: delivered material remains in a physical
             -- recovery pile at the site. No credit to a second inventory.
             local returns={}
+            local recoveryX,recoveryZ=Engine.recoveryLocation(state,b)
             for item,amount in pairs(b.delivered) do
                 if amount>0 then
                     table.insert(returns,{id="cancelled_"..tostring(id).."_"..item,
-                        item=item,x=b.x,remaining=amount,salvage=true})
+                        item=item,x=recoveryX,z=recoveryZ,remaining=amount,salvage=true})
                 end
             end
             if #state.sites+#returns>256 then return false,"no_recovery_space" end

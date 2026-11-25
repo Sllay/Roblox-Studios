@@ -341,12 +341,14 @@ function UI.start(player: Player)
     resTitle.Font=Enum.Font.GothamBold
     resTitle.TextSize=15
     resTitle.TextColor3=C.paper
+    local cedroRoute=rowText(resourcesPage,"CedroRoute","",2,36)
+    cedroRoute.Visible=false
     local resHint=rowText(resourcesPage,"Hint",
-        "Fontes são depósitos naturais; bolsas são materiais que NPCs estão carregando. Recursos aplicados às obras não estão mais livres.",2,58)
+        "Fontes são depósitos naturais; bolsas são materiais que NPCs estão carregando. Recursos aplicados às obras não estão mais livres.",3,58)
     resHint.TextColor3=C.secondary
     local resourceCards: {[string]: TextLabel}={}
     for i,id in ipairs(resourceOrder) do
-        local t=rowText(resourcesPage,"Resource_"..id,"",i+2,72)
+        local t=rowText(resourcesPage,"Resource_"..id,"",i+3,72)
         t.TextColor3=C.paper
         resourceCards[id]=t
     end
@@ -783,6 +785,11 @@ function UI.start(player: Player)
     refreshContext=updateContext
 
     function updateVillage()
+        cedroRoute.Visible=type(nearby.cedroDistance)=="number"
+        if cedroRoute.Visible then
+            cedroRoute.Text=string.format("Vila do Cedro · siga para %s (%d studs)",
+                nearby.cedroDirection,nearby.cedroDistance)
+        end
         local resources=if snapshot then snapshot.resources else nil
         local sources=if resources then resources.sources else nil
         local carried=if resources then resources.carried else nil
