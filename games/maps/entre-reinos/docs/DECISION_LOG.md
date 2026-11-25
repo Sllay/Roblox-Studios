@@ -223,3 +223,8 @@ Correção v9 em desenvolvimento:
 - [AUTORIZADO PELO CRIADOR] O Universe `10769712413` e o Place `90623742498445` são o ambiente de desenvolvimento. Publicar a prévia do SHA `f7d4ac685f2372d066cdf49a19b2b978f2454745` nesse destino, substituindo a v18. Usar credenciais e ferramentas existentes.
 - [AUTORIZADO PELO CRIADOR] Migrar saves compatíveis de ruleset 3 para 4 com o backup, a validação e a recuperação existentes. Preservar os seis slots. A autorização não inclui excluir saves.
 - [ESTADO] A decisão substitui o plano de Universe separado. Certificação visual ocorre após publicar a prévia. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1)
+
+## 25/11/2026 — Playtest parcial da v19 e continuidade
+
+- [CONFIRMADO PELO CRIADOR] Construção das duas categorias de ponte, travessia do jogador exclusivamente na reforçada e exploração de múltiplos biomas. Ajustes visuais dos biomas ficam para refinamento posterior.
+- [AUTORIZADO PELO CRIADOR] Iniciar T2-R2 usando a base da v19. Produção recebe parâmetros provisórios em desenvolvimento. Certificação cumulativa e autorização para nova prévia permanecem próprias.

@@ -355,3 +355,7 @@ O criador autorizou usar o staging existente e migrar saves compatíveis de rule
 ## 25/11/2026 — Prévia regional v19 disponível
 
 O candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` foi publicado no staging existente. A API confirmou v19 e o readback verificou 41 scripts. O Scene Sync pós-publicação confirmou o digest da cena. O backup da v18 permanece no histórico de versões e no artefato verificado. Os saves migram durante a partida pelo fluxo com backup por slot. O PR #13 continua em rascunho e T2-R2 aguarda os gates. [Jogar](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R1.md) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45686521277)
+
+## 25/11/2026 — Feedback v19 e início da T2-R2
+
+O criador confirmou as duas categorias de construção de ponte, a travessia do jogador corretamente restrita à reforçada e a exploração de múltiplos biomas. O refinamento visual dos biomas ficou para depois. Autorizou iniciar o desenvolvimento da T2-R2 em branch derivada de PR #13. O aceite cobre apenas os fluxos observados. [T2-R1](runner-receipts/T2-R1.md) · [T2-R2](runner-receipts/T2-R2.md)

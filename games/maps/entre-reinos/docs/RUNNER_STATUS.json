@@ -346,7 +346,7 @@
           "baselineReadbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45531334560",
           "baselineSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45525381881",
           "developmentPreview": {
-            "status": "published_awaiting_creator_playtest",
+            "status": "published_creator_partial_review",
             "baselineRevision": 18,
             "plan": "docs/T2_R1_PLAYTEST.md",
             "authorizedCandidate": "f7d4ac685f2372d066cdf49a19b2b978f2454745",
@@ -370,15 +370,25 @@
             "artifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45686307039/artifacts/15056891705",
             "playUrl": "https://www.roblox.com/games/90623742498445",
             "rollbackBuildSha256": "8e964ee83fde33437dd07cab27df9159efb0bfc1c9f0cdb57db1c3e083a229a3",
-            "rollbackScriptsVerified": 34
+            "rollbackScriptsVerified": 34,
+            "creatorFeedback": {
+              "revision": 19,
+              "scope": [
+                "Both bridge tiers built successfully",
+                "Player traversal restricted to reinforced deck",
+                "Multiple biomes explored"
+              ],
+              "visualBiomeRefinement": "deferred",
+              "technicalContinuationAuthorized": true
+            }
           }
         },
         {
           "id": "T2-R2",
-          "status": "planned",
+          "status": "in_progress",
           "commit": null,
           "ciRunUrl": null,
-          "receipt": null,
+          "receipt": "docs/runner-receipts/T2-R2.md",
           "validation": {
             "structure": "not_run",
             "luau": "not_run",
@@ -388,9 +398,11 @@
             "mobile": "not_run"
           },
           "blockers": [
-            "T1 certification and T2-R1 validation and integration are pending."
+            "T1 and T2-R1 certification still governs final integration. Development is authorized.",
+            "An intermediate T2-R2 staging publication requires its own authorization."
           ],
-          "integrationMap": "docs/T2_R2_INTEGRATION_MAP.md"
+          "integrationMap": "docs/T2_R2_INTEGRATION_MAP.md",
+          "branch": "entre-reinos/t2-r2-society"
         },
         {
           "id": "T2-R3",
@@ -476,7 +488,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R1_staging_preview_published_awaiting_creator_playtest",
+  "programStage": "T2_R2_development_authorized_T1_and_T2_R1_certification_open",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",

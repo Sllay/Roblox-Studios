@@ -2,6 +2,7 @@
 -- T1-R2 pure, deterministic NPC work FSM. No NPC gains materials from a job:
 -- sources are depleted, bags have real mass, delivery takes from those bags.
 local Items=require("./ItemDefs")
+local Production=require("./Production")
 local Structures=require("./StructureDefs")
 local Professions=require("./ProfessionDefs")
 local Inventory=require("./Inventory")
@@ -160,6 +161,7 @@ local function findBuilding(state: any, id: any): any
     end
     return nil
 end
+Engine.findBuilding=findBuilding
 local function findSite(state: any, id: any): any
     for _,s in ipairs(state.sites) do
         if s.id==id then return s end
@@ -185,6 +187,7 @@ local function clearJob(npc: any, state: any)
     if b and npc.reserved and npc.reserved>0 and npc.carryItem then
         b.claimed[npc.carryItem]=math.max(0,(b.claimed[npc.carryItem] or 0)-npc.reserved)
     end
+    Production.release(state,npc)
     npc.jobId=nil
     npc.siteId=nil
     npc.storageId=nil
@@ -196,6 +199,15 @@ local function clearJob(npc: any, state: any)
 end
 function Engine.releaseWorker(state: any,npc: any)
     clearJob(npc,state)
+end
+
+function Engine.changeProfession(state: any,npc: any,role: string): boolean
+    local def=Professions.get(role)
+    if not state.production or not def or npc.health<=0 or npc.profession==role then return false end
+    clearJob(npc,state)
+    npc.profession=role
+    npc.inventory.maxMass=math.max(def.carryCapacity,Inventory.weight(npc.inventory))
+    return true
 end
 
 function Engine.releaseBuildingJobs(state: any, buildingId: number)
@@ -233,7 +245,11 @@ local function availableSource(state: any, item: string, x: number, target: numb
     return best
 end
 
-local STOCK_TARGET={wood=24,stone=15,iron=10,food=20}
+local STOCK_TARGET: {[string]:number}={wood=24,stone=15,iron=10,food=20}
+local WORK_ITEMS={"wood","stone","iron","food","plank","metal","grain","meat","leather","axe","pick","hammer","hoe","bow","spear"}
+local function gatherTool(item: string): string
+    return if item=="wood" then "axe" elseif item=="food" then "hoe" else "pick"
+end
 function Engine.usableStorage(b: any): boolean
     return b~=nil and b.typeId=="stockpile" and b.state=="complete"
         and b.health>0 and b.ruined~=true and b.stored~=nil
@@ -280,14 +296,14 @@ local function assignStorage(npc: any,state: any): boolean
     local distance=math.huge
     for _,b in ipairs(state.buildings) do
         if Engine.usableStorage(b) then
-            for _,id in ipairs({"wood","stone","iron","food"}) do
+            for _,id in ipairs(WORK_ITEMS) do
                 if storageSpace(state,b,id)<=0 then continue end
                 local carried=Inventory.count(npc.inventory,id)
                 local s=if carried==0 and freeUnits(npc.inventory,id)>0
                     then availableSource(state,id,npc.x,b.x) else nil
                 local ordered=s and s.marked==true and id=="wood"
                 if (carried>0 and Engine.canReach(state,npc.x,b.x,"carrier"))
-                    or (s and (ordered or Inventory.count(b.stored,id)<STOCK_TARGET[id])) then
+                    or (s and (ordered or Inventory.count(b.stored,id)<(STOCK_TARGET[id] or 0))) then
                     local score=math.abs(npc.x-b.x)
                         +(if s then math.abs(s.x-b.x) else 0)
                         -(if carried>0 then 500 else 0)
@@ -308,7 +324,7 @@ local function assignStorage(npc: any,state: any): boolean
         local free=freeUnits(npc.inventory,item)
         local maxCount=storageSpace(state,best,item)
         local target=if source and source.marked==true and item=="wood" then maxCount
-            else STOCK_TARGET[item]-Inventory.count(best.stored,item)
+            else (STOCK_TARGET[item] or 0)-Inventory.count(best.stored,item)
         local amount=if source then math.min(available,free,maxCount,target,
             Professions.gatherYield(npc.profession,item))
             else math.min(available,maxCount)
@@ -372,7 +388,7 @@ local function assign(npc: any, state: any): boolean
             local def=Structures.get(b.typeId)
             local target=builderTarget(state,npc,b)
             local district=Engine.districtAt(state,b.x)
-            for _,item in ipairs({"wood","stone","iron","food"}) do
+            for _,item in ipairs(WORK_ITEMS) do
                 local missing=needed(b,item)
                 if missing<=0 or not def.cost[item] then continue end
                 if Engine.canReach(state,npc.x,target,"carrier") then
@@ -697,6 +713,7 @@ function Engine.cancel(state: any, id: number): (boolean, string?)
             end
             if #state.sites+#returns>256 then return false,"no_recovery_space" end
             Engine.releaseBuildingJobs(state,id)
+            Production.removeStation(state,b.id)
             table.remove(state.buildings,i)
             for _,site in ipairs(returns) do table.insert(state.sites,site) end
             return true,nil
@@ -763,7 +780,10 @@ function Engine.step(state: any, dt: number)
         npc.motionX=0
         npc.motionZ=0
         npc.activity=nil
-        if npc.health<=0 then continue end
+        if npc.health<=0 then Production.release(state,npc); continue end
+        if state.production then
+            npc.inventory.maxMass=math.max(Professions.get(npc.profession).carryCapacity,Inventory.weight(npc.inventory))
+        end
         npc.hunger=math.min(100,npc.hunger+dt*0.045)
         -- During a real nearby raid, civilians pause their tasks without
         -- canceling reserved materials or losing work progress. R3Engine
@@ -780,6 +800,7 @@ function Engine.step(state: any, dt: number)
             npc.fatigue=math.max(0,npc.fatigue-dt*4)
             if npc.fatigue<20 then npc.state="idle" end
         else
+            if Production.step(state,npc,dt,Engine) then continue end
             if npc.state=="idle" then
                 assign(npc,state)
                 if npc.state=="idle" then wander(npc,state,dt) end
@@ -792,10 +813,11 @@ function Engine.step(state: any, dt: number)
                 if not storage or not source or not item
                     or source.item~=item then
                     clearJob(npc,state)
-                elseif Engine.walkResident(state,npc,source.x,dt,source.z or (if source.item=="wood" then -6 else -4)) and working(npc,dt,"collect") then
+                elseif Engine.walkResident(state,npc,source.x,dt,source.z or (if source.item=="wood" then -6 else -4)) and working(npc,dt*Production.toolRate(npc,gatherTool(item)),"collect") then
                     local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc),
                         storageSpace(state,storage,item,npc))
                     if n>0 and Inventory.add(npc.inventory,item,n) then
+                        Production.wear(npc,gatherTool(item))
                         source.remaining-=n
                         state.stats.gathered+=n
                         npc.reserved=n
@@ -831,7 +853,8 @@ function Engine.step(state: any, dt: number)
                         clearJob(npc,state)
                     elseif Engine.walkResident(state,npc,if storage then storage.x else site.x,dt,
                         if storage then -5 else site.z or (if site.item=="wood" then -6 else -4))
-                        and working(npc,dt,if storage then "load" else "collect") then
+                        and working(npc,dt*(if storage then 1 else Production.toolRate(npc,gatherTool(item))),
+                            if storage then "load" else "collect") then
                         local available=if storage then Engine.stockAvailable(state,storage,item,npc)
                             else Engine.sourceAvailable(state,site,npc)
                         local n=math.min(npc.reserved,available)
@@ -840,6 +863,7 @@ function Engine.step(state: any, dt: number)
                             else Inventory.add(npc.inventory,item,n))
                         if pickedUp then
                             if not storage then
+                                Production.wear(npc,gatherTool(item))
                                 site.remaining-=n
                                 state.stats.gathered+=n
                             end
@@ -869,12 +893,13 @@ function Engine.step(state: any, dt: number)
                     elseif Engine.walkResident(state,npc,targetX,dt,targetZ) then
                         npc.activity="build"
                         local def=Structures.get(b.typeId)
-                        local rate=Professions.buildRate(npc.profession)
+                        local rate=Professions.buildRate(npc.profession)*Production.toolRate(npc,"hammer")
                         local step=dt*rate
                         if b.state=="damaged" then
                             b.health=math.min(def.health,b.health+step*2)
                             if b.health>=def.health then
                                 b.state="complete"
+                                Production.wear(npc,"hammer")
                                 state.stats.repaired+=1
                                 table.insert(state.events,{kind="repaired",buildingId=b.id,time=state.elapsed})
                                 clearJob(npc,state)
@@ -891,6 +916,7 @@ function Engine.step(state: any, dt: number)
                                     b.ruined=false
                                     b.health=def.health
                                 end
+                                Production.wear(npc,"hammer")
                                 state.stats.built+=1
                                 table.insert(state.events,{kind="completed",buildingId=b.id,time=state.elapsed})
                                 clearJob(npc,state)
@@ -967,10 +993,16 @@ function Engine.summary(state: any): any
         table.insert(workers,{id=n.id,name=n.name,profession=n.profession,
             state=n.activity or n.state,defense=n.defense or "none",
             district=Engine.districtAt(state,n.x),health=n.health,arrows=n.arrows or 0,
-            carryWeight=Inventory.weight(n.inventory),
+            carryWeight=Inventory.weight(n.inventory),tool=n.tool and table.clone(n.tool),
             carrying=table.clone(n.inventory.items)})
     end
-    return {buildings=buildings,workers=workers,districts=districts,stats=table.clone(state.stats),
+    local production=nil
+    if state.production then
+        local orders={}
+        for _,order in ipairs(state.production.orders) do table.insert(orders,table.clone(order)) end
+        production={orders=orders,completed=state.production.completed}
+    end
+    return {buildings=buildings,workers=workers,districts=districts,stats=table.clone(state.stats),production=production,
         resources={sources=sources,carried=carried,reserved=reserved,
             committed=committed,stored=deposited,isolated=isolated,markedTrees=markedTrees}}
 end

@@ -6,7 +6,7 @@ local Profile=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Regio
 local Structures=require(ReplicatedStorage:WaitForChild("Game")
     :WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Menu={}
-local order={"shelter","house","stockpile","fence","wall","gate","bridge_light","bridge_reinforced"}
+local order={"shelter","house","stockpile","fence","wall","gate","bridge_light","bridge_reinforced","workshop","forge","farm"}
 local names={wood="Madeira",stone="Pedra",iron="Ferro",food="Alimento"}
 local amber=Color3.fromRGB(214,175,99)
 local cream=Color3.fromRGB(245,232,203)

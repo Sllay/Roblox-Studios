@@ -49,7 +49,7 @@ local function updateNative(item: any,activity: string,speed: number,now: number
         end
     end
     if moving then walk:AdjustSpeed(math.clamp(speed/7,0.45,1.6)) end
-    if (activity=="collect" or activity=="build" or activity=="load" or activity=="strike" or activity=="stagger")
+    if (activity=="collect" or activity=="build" or activity=="fabricate" or activity=="farm" or activity=="hunt" or activity=="load" or activity=="strike" or activity=="stagger")
         and now-(item.lastAction or 0)>0.75 and item.actionTrack then
         item.lastAction=now
         item.actionTrack:Play(0.09)

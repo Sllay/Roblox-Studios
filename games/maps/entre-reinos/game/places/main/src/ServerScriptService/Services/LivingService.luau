@@ -14,6 +14,7 @@ local Travel=require(script.Parent:WaitForChild("TravelService"))
 local Saves=require(script.Parent:WaitForChild("SaveSlotService"))
 local Living=require(shared:WaitForChild("Living"):WaitForChild("LivingModel"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
+local Production=require(shared:WaitForChild("Living"):WaitForChild("Production"))
 local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
 local Combat=require(script.Parent:WaitForChild("CombatService"))
 local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
@@ -232,7 +233,7 @@ local function attachment(model: Model, name: string, key: string, limb: string,
 end
 
 local activities={
-    collect="Coletando",load="Retirando estoque",build="Construindo",
+    collect="Coletando",load="Retirando estoque",build="Construindo",fabricate="Fabricando",
     flee="Em fuga",sheltered="Em abrigo",strike="Defendendo",
 }
 
@@ -270,9 +271,13 @@ local function syncNPC(npc: any)
     if type(facing)=="number" then model:SetAttribute("ER_NPCFacing",facing) end
     local activity=if npc.defenseClock and npc.defenseClock>1.04 then "strike" else npc.activity or ""
     model:SetAttribute("ER_NPCActivity",activity)
+    model:SetAttribute("Profession",npc.profession)
     local h=model:FindFirstChildOfClass("Humanoid")
     if h then h.DisplayName=npc.name.." · "..(activities[activity] or Professions.get(npc.profession).label) end
-    local weapon=npc.defense or (if activity=="collect" then "axe" elseif activity=="build" then "hammer" else "")
+    local working=activity=="collect" or activity=="build" or activity=="fabricate" or activity=="farm"
+    local weapon=if activity=="strike" then npc.defense or ""
+        elseif working and npc.tool then npc.tool.item
+        elseif not state.production then npc.defense or "" else ""
     attachment(model,"HeldItem",weapon,"Right Arm",
         if weapon=="spear" then Vector3.new(0.17,4.4,0.17)
             elseif weapon=="bow" then Vector3.new(0.2,1.65,0.24)
@@ -342,6 +347,22 @@ local function buildVisual(b: any)
         for i=-1,1 do
             buildPiece(model,b,"SupplyCrate",Vector3.new(2.5,2.4,2.4),
                 Vector3.new(i*3,1.7,-0.2),Color3.fromRGB(155,112,70))
+        end
+    elseif b.typeId=="workshop" or b.typeId=="forge" then
+        buildPiece(model,b,"Bench",Vector3.new(7,1,4),Vector3.new(0,2.7,0),wood)
+        buildPiece(model,b,"Roof",Vector3.new(11,0.9,7),Vector3.new(0,7,0),roof)
+        for _,side in ipairs({-1,1}) do
+            buildPiece(model,b,"Post",Vector3.new(0.8,6.5,0.8),Vector3.new(side*4,3.5,1.9),wood)
+        end
+        if b.typeId=="forge" then
+            buildPiece(model,b,"Chimney",Vector3.new(3,10,3),Vector3.new(3,5,-1),stone)
+            buildPiece(model,b,"FurnaceOpening",Vector3.new(1.6,1.25,0.2),
+                Vector3.new(3,2,0.55),Color3.fromRGB(214,101,48))
+        end
+    elseif b.typeId=="farm" then
+        for row=-1,1 do
+            buildPiece(model,b,"Soil",Vector3.new(12,0.3,1.4),
+                Vector3.new(0,0.75,row*2),Color3.fromRGB(117,81,48))
         end
     elseif b.typeId=="castle" then
         buildPiece(model,b,"Keep",Vector3.new(12,14,7),Vector3.new(0,7,0),stone)
@@ -670,6 +691,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         simulationAccumulator=if hasNearbyResident then simulationAccumulator+math.min(dt,0.25) else 0
         local ticks=0
         while simulationAccumulator>=0.1 and ticks<3 do
+            if regional.home.r3.prologue.stage=="sandbox" then Production.ensure(state) end
             Work.step(state,0.1)
             local currentRoot=if player.Character then
                 player.Character:FindFirstChild("HumanoidRootPart") else nil
@@ -984,7 +1006,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         or action=="prologue" or action=="r3_status" then
         return Combat.action(player,action,arg)
     end
-    if action~="build" and action~="build_preview" and action~="build_cancel" then
+    if action~="build" and action~="build_preview" and action~="build_cancel" and action~="produce" and action~="profession" then
         return {ok=false,error="invalid_action"}
     end
     local character=player.Character
@@ -997,6 +1019,31 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return {ok=false,error="outside_playable_lane"}
     end
     local now=os.clock()
+    if action=="profession" then
+        if not state.production or type(arg)~="string" or #arg>30 or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        local id,role=string.match(arg,"^(%d+):([a-z]+)$")
+        if role and Professions.get(role) then
+            for _,npc in ipairs(state.npcs) do
+                if npc.id==tonumber(id) and math.abs(root.Position.X-npc.x)<=12
+                    and math.abs(root.Position.Y-groundHeight(npc.x,npc.z or 0))<8
+                    and Work.changeProfession(state,npc,role) then
+                    lastActionAt=now
+                    return {ok=true}
+                end
+            end
+        end
+        return {ok=false,error="action_unavailable"}
+    end
+    if action=="produce" then
+        if regional.home.r3.prologue.stage~="sandbox" or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        lastActionAt=now
+        local ok,value=Production.enqueue(state,arg,root.Position.X)
+        return {ok=ok,error=if not ok then value else nil}
+    end
     if action=="build_preview" then
         if now-lastPreviewAt<0.15 then return {ok=false,error="rate_limited"} end
         lastPreviewAt=now

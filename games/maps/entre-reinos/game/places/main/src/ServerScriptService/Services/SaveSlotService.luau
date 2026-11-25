@@ -256,7 +256,9 @@ function SaveSlotService.save(player: Player, release: boolean?, destination: an
                     record.regionWorld=LivingModel.clone(regional)
                     if previous then record.regionWorld.position=table.clone(previous.position) end
                 end
-                record.rulesetVersion = if record.regionWorld then Slots.RULESET_VERSION else Slots.LEGACY_RULESET_VERSION
+                local society=state.production or (regional and regional.foreign and regional.foreign.production)
+                record.rulesetVersion = if society then Slots.RULESET_VERSION
+                    elseif record.regionWorld then Slots.REGIONAL_RULESET_VERSION else Slots.LEGACY_RULESET_VERSION
                 upgrading = (s.data.rulesetVersion or 1)<record.rulesetVersion
                 record.saveFormatVersion = Slots.SAVE_FORMAT_VERSION
             end

@@ -48,8 +48,8 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 | ER-025 | T2-R1 | PARCIAL | Montarias físicas, compra/domesticação, equipamento, stamina/vida, save, travessias e integração real aos controles/raids/rotas. |
 | ER-026 | T2-R1 | PARCIAL | Portos/barco quando geografia requer e alternativa de fast travel solo funcional, não duplicar ou perder veículos/carga ao trocar região. |
 | ER-027 | T2-R1 | PARCIAL | Segundo reino NPC e seus distritos/estruturas/pessoas/economia/território persistidos em mesmo mundo; dois reinos vivos sem duplicação. |
-| ER-028 | T2-R2 | PLANEJADO | Todos ofícios-base: ferreiro, artesão, fazendeiro, caçador, transportador, guarda, arqueiro, lanceiro além dos atuais, com trabalho realmente executável. |
-| ER-029 | T2-R2 | PLANEJADO | Ferramentas e receitas registradas, forja/tecelagem/agricultura/refinamento/crafting/equipar, insumos → produto → transporte → consumo, UI interativa. |
+| ER-028 | T2-R2 | PARCIAL | Todos ofícios-base: ferreiro, artesão, fazendeiro, caçador, transportador, guarda, arqueiro, lanceiro além dos atuais, com trabalho realmente executável. |
+| ER-029 | T2-R2 | PARCIAL | Ferramentas e receitas registradas, forja/tecelagem/agricultura/refinamento/crafting/equipar, insumos → produto → transporte → consumo, UI interativa. |
 | ER-030 | T2-R2 | PLANEJADO | Skill XP/níveis e aprendizagem de profissão com efeito mensurável no trabalho, necessidades/fome/sono/sobrevivência, ferramentas/equipamentos usados e quebrados/repostos. |
 | ER-031 | T2-R2 | PLANEJADO | Fazenda, irrigação/terreno próximo a água, caça/pesca quando aprovada, alimento finito, refeições e cadeia econômica sem geração espontânea. |
 | ER-032 | T2-R2 | PLANEJADO | Mercado/preços dinâmicos, compras, venda, contratos, salário, tributo, impostos, tesouro e economia entre reinos contabilizados e persistidos sem inflação artificial. |
@@ -164,3 +164,5 @@ O candidato liga ER-021–027 ao runtime da branch. A execução isolada no Robl
 A revisão de [ER-001–020](T1_CERTIFICATION_V18.md) registra a prova aproveitável e o que falta a cada contrato. O aceite do criador da v18 para continuar o desenvolvimento está registrado. Morte, estorno e ruínas têm um contrato em avaliação, com custódia provisória preservada.
 
 O roteiro de [ER-021–027](T2_R1_PLAYTEST.md) identifica a entrada pela interface e a prova de cliente de cada contrato. O probe mais recente confirmou o encerramento do vínculo ao morrer no barco, a travessia montada, o DataStore isolado e a preservação do Terrain v18. O PR #13 permanece em rascunho e a prévia depende de autorização formal antes de R3. [Probe](https://github.com/Sllay/Roblox-Studios/actions/runs/45671224264) · [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45671239634)
+
+O criador confirmou na v19 construção das duas pontes, restrição de travessia do jogador à reforçada e exploração de vários biomas. Melhorias visuais dos biomas ficam para refinamento posterior. O aceite autoriza continuar o desenvolvimento da T2-R2 e não fecha outros critérios da T2-R1. [Recibo](runner-receipts/T2-R1.md)

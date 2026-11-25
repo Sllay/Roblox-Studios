@@ -6,8 +6,8 @@ local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local UserInputService=game:GetService("UserInputService")
 local BuildMenu=require(script.Parent:WaitForChild("BuildMenu"))
-local Professions=require(ReplicatedStorage:WaitForChild("Game")
-    :WaitForChild("Living"):WaitForChild("ProfessionDefs"))
+local Professions=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("ProfessionDefs"))
+local Production=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("Production"))
 local Gesture=require(script.Parent:WaitForChild("PressGesture"))
 local WeaponControls=require(script.Parent:WaitForChild("WeaponControls"))
 local DukeDialogue=require(script.Parent:WaitForChild("DukeDialogue"))
@@ -59,6 +59,9 @@ local errorTexts={
     dialogue_open="Feche o diálogo para voltar ao jogo.",
 
     character_not_ready="Aguarde o personagem carregar.",
+    unknown_recipe="Receita inválida.",
+    production_queue_full="A fila de fabricação está cheia.",
+    production_station_required="Aproxime-se de uma oficina ou forja concluída.",
     world_not_loaded="O mundo está carregando.",
 }
 
@@ -312,6 +315,8 @@ function UI.start(player: Player)
             notify("Flecha disparada.")
         elseif action=="trade" then
             notify("Madeira vendida; moedas recebidas do tesouro.")
+        elseif action=="produce" then
+            notify("Receita adicionada à fila da vila.")
         elseif action=="craft_arrows" then
             notify("Seis flechas fabricadas: duas madeiras consumidas.")
         elseif action=="take_wood" then
@@ -369,6 +374,24 @@ function UI.start(player: Player)
     selectedWorker.LayoutOrder=500
     selectedWorker.Size=UDim2.new(1,-10,0,43)
 
+    local roleIndex=1
+    local nextRole=button(villagersPage,"ChooseRole","")
+    local applyRole=button(villagersPage,"AssignRole","CONFIRMAR PROFISSÃO")
+    for i,control in ipairs({nextRole,applyRole}) do
+        control.LayoutOrder=501+i
+        control.Size=UDim2.new(1,-10,0,40)
+    end
+    local function updateRole()
+        nextRole.Text=Professions.get(Professions.order[roleIndex]).label.."  ·  alterar →"
+    end
+    nextRole.Activated:Connect(function()
+        roleIndex=roleIndex%#Professions.order+1
+        updateRole()
+    end)
+    applyRole.Activated:Connect(function()
+        request("profession",tostring(selectedNpcId)..":"..Professions.order[roleIndex])
+    end)
+    updateRole()
     local equipBar=Instance.new("Frame")
     equipBar.Name="Equipment"
     equipBar.BackgroundTransparency=1
@@ -398,6 +421,14 @@ function UI.start(player: Player)
     craftTitle.TextSize=15
     craftTitle.Font=Enum.Font.GothamBold
     craftTitle.TextColor3=C.paper
+    local productionInfo=rowText(workshop,"ProductionQueue","",20,50)
+    for index,recipeId in ipairs(Production.order) do
+        local recipe=Production.recipes[recipeId]
+        local control=button(workshop,"Recipe_"..recipeId,recipe.label.." · "..recipe.cost)
+        control.LayoutOrder=20+index
+        control.Size=UDim2.new(1,-12,0,44)
+        control.Activated:Connect(function() request("produce",recipeId) end)
+    end
     local craftInfo=rowText(workshop,"AmmoInfo","",2,97)
     local collectButton=button(workshop,"TakeWood","RECOLHER 2 MADEIRAS")
     collectButton.LayoutOrder=3
@@ -853,6 +884,7 @@ function UI.start(player: Player)
                 b.Text=w.name.."  ·  "..roleLabel..role..
                     (if w.defense=="bow" then " · "..tostring(w.arrows).." flechas" else "")..
                     "\n"..(stateName[w.state] or tostring(w.state))..
+                    (if w.tool then " · "..tostring(w.tool.item).." "..tostring(w.tool.remaining) else "")..
                     "  ·  carga "..tostring(math.floor(w.carryWeight)).." u."..
                     (if w.district then " · "..w.district else "")
                 b.TextColor3=if w.id==selectedNpcId then C.gold else C.paper
@@ -867,6 +899,8 @@ function UI.start(player: Player)
             else if nearSelected then "Morador próximo: você pode equipá-lo."
             else "Selecione um morador próximo para equipar."
         equipBar.Visible=nearSelected
+        nextRole.Visible=nearSelected and snapshot~=nil and snapshot.production~=nil
+        applyRole.Visible=nextRole.Visible
         local dist=nearby.nearestWoodDistance or -1
         local direction=if dist>=0 then
             "Árvore: "..tostring(dist).." studs à "..
@@ -888,6 +922,9 @@ function UI.start(player: Player)
         local canCraft=(bagWood>=2 or nearby.canCraftArrows==true) and
             (player:GetAttribute("ER_R3Arrows") or 0)<=24
         craftButton.BackgroundColor3=if canCraft then C.raised else C.surface
+        local production=if snapshot then snapshot.production else nil
+        productionInfo.Text=if production then string.format("FABRICAÇÃO · %d na fila · %d concluídas",
+            #production.orders,production.completed) else "FABRICAÇÃO · disponível após o prólogo"
         local tradeStatus=if not nearby.canTrade then "Aproxime-se do centro da vila."
             elseif (hud.treasury or 0)<1 then "O tesouro não tem moedas."
             elseif not nearby.canSellWood then "Traga madeira na bolsa ou abasteça um galpão próximo."

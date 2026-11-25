@@ -35,7 +35,7 @@ assert(S.summary(nil, 1).exists == false)
 assert(S.summary({deleted = true}, 1).exists == false)
 assert(S.summary({foo = 1}, 1).corrupt)
 local legacy = S.newWorld(11, 100, {x=0,y=15,z=0})
-assert(S.SAVE_FORMAT_VERSION==1 and S.RULESET_VERSION==4 and S.LEGACY_RULESET_VERSION==3)
+assert(S.SAVE_FORMAT_VERSION==1 and S.RULESET_VERSION==5 and S.REGIONAL_RULESET_VERSION==4 and S.LEGACY_RULESET_VERSION==3)
 assert(legacy.saveFormatVersion==1 and legacy.rulesetVersion==3)
 local v1=S.newWorld(11,100,{x=0,y=15,z=0})
 v1.saveFormatVersion=nil
