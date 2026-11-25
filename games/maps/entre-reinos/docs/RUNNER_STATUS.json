@@ -33,7 +33,7 @@
         "prePublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45498174949",
         "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45498437120"
       },
-      "userReview": "foundation_accepted_certification_pending",
+      "userReview": "awaiting_creator_review",
       "refinementCycles": [
         {
           "id": "T1-F1",

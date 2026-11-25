@@ -54,12 +54,14 @@ jobs:
           crossings = (replicated / "RegionalCrossings.luau").read_text()
           crossings = crossings.replace('require("./RegionalProfile")', "profile")
           world = (services / "WorldService.luau").read_text()
+          saves = (services / "SaveSlotService.luau").read_text()
           published = """
           assert(game.PlaceVersion == 18, "unexpected published baseline")
           local published = require(game:GetService("ReplicatedStorage")
               :WaitForChild("Game"):WaitForChild("WorldProfile"))
           """
           test = (game / "game/tests/staging_regional_profile.luau").read_text()
+          datastore = (game / "game/tests/staging_datastore.luau").read_text()
           source = f"""
           {published}
           local function loadLegacy()
@@ -74,10 +76,22 @@ jobs:
           local function loadRoutes(profile)
           {crossings}
           end
+          local function probeDataStore()
+              local function loadCandidate(name)
+                  local storage = game:GetService("ReplicatedStorage"):WaitForChild("Game")
+                  return require(storage:FindFirstChild(name) or storage.Living:WaitForChild(name))
+              end
+              local function loadSaveService(game)
+              {saves}
+              end
+              {datastore}
+              return datastoreResult
+          end
           {test}
           local regionalProfile = loadProfile()
           local routes = loadRoutes(regionalProfile)
           local result = probeRegions(loadWorld(), regionalProfile, published, routes, 516639272)
+          result.datastore = probeDataStore()
           result.universeId = tostring(game.GameId)
           result.placeId = tostring(game.PlaceId)
           return game:GetService("HttpService"):JSONEncode(result)
@@ -87,6 +101,8 @@ jobs:
           assert report["loadedVersion"] == 18, report
           assert report["complete"]["chunks"] == 49 and report["legacyVoxels"] == 156672
           assert report["crossings"]["checked"] == 5 and report["crossings"]["nativeBanks"] == 4
+          assert report["datastore"]["actual"] and report["datastore"]["frontierReopen"]
+          assert report["datastore"]["backupRestore"] and report["datastore"]["futureSaveGuard"]
           assert report["streaming"]
           print("ENTRE_REINOS_T2_R1_NATIVE", json.dumps(report, sort_keys=True))
           PY

@@ -112,6 +112,32 @@ assert(Slots.spawnPosition(travel).x==411)
 assert(first.save(player,true))
 traveller:Destroy()
 for index=2,6 do assert(main:GetAsync(Slots.key(1,index))==nil) end
+-- Restore a confirmed backup to a separate synthetic world identity.
+local recovery={UserId=2,GetAttribute=function() return false end}
+local recoveryKey=Slots.key(recovery.UserId,1)
+assert(main:UpdateAsync(recoveryKey,function(old)
+    assert(old==nil)
+    return copy
+end))
+local recovered,recoveredRecord=second.open(recovery,1)
+assert(recovered and recoveredRecord.rulesetVersion==2 and recoveredRecord.revision==0)
+assert(recoveredRecord.living.sites[1].remaining==72 and #recoveredRecord.living.buildings==0)
+assert(second.save(recovery,true))
+
+-- A future ruleset remains intact after both entry and delete are rejected.
+local unseen={UserId=3}
+local futureKey=Slots.key(unseen.UserId,1)
+local future=table.clone(travel)
+future.lock=nil
+future.rulesetVersion=Slots.RULESET_VERSION+1
+assert(main:UpdateAsync(futureKey,function(old)
+    assert(old==nil)
+    return future
+end))
+assert(not first.open(unseen,1) and not first.delete(unseen,1))
+local stillFuture=main:GetAsync(futureKey)
+assert(stillFuture.rulesetVersion==future.rulesetVersion and stillFuture.lastWriteId==future.lastWriteId)
 -- Retain the legacy backup and synthetic slot for audit in this namespace.
 local datastoreResult={actual=true,locking=true,reconnected=true,backup=true,
-    failureRecovery=true,delivered=restored.stats.delivered,otherSlotsUntouched=true,frontierReopen=true}
+    failureRecovery=true,delivered=restored.stats.delivered,otherSlotsUntouched=true,frontierReopen=true,
+    backupRestore=true,futureSaveGuard=true,measuredSlotBytes=#Http:JSONEncode(travel)}
