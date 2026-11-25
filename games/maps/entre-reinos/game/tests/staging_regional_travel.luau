@@ -48,12 +48,18 @@ local function probeTravel(Travel,BridgeScene,seed)
     assert(horseSeat and horseSeat.Occupant==human,"engine did not create horse seat weld")
     assert(not Travel.steer({},1) and not Travel.steer(player,math.huge))
     local function drive(ticks,target,vehicle)
-        for _=1,ticks do
-            assert(Travel.steer(player,1))
+        local accepted=0
+        for index=1,ticks do
+            if Travel.steer(player,1) then accepted+=1 end
             Travel.tick(0.1)
-            task.wait(0.055)
+            task.wait(0.065)
+            assert(player.attributes.ER_Riding==vehicle,
+                string.format("rider lost: vehicle=%s target=%.2f tick=%d position=%.2f rider=%s seat=%s sit=%s",
+                    vehicle,target,index,session.record[vehicle].position.x,tostring(root.Position),
+                    tostring(human.SeatPart),tostring(human.Sit)))
             if session.record[vehicle].position.x>=target then break end
         end
+        assert(accepted>0,"server rejected every steering input for "..vehicle)
     end
     drive(12,35,"mount")
     assert(session.record.mount.position.x>20 and session.record.mount.energy<100)
@@ -100,11 +106,8 @@ local function probeTravel(Travel,BridgeScene,seed)
     assert(Travel.action(player,"board").ok)
     task.wait(0.15)
     assert(human.SeatPart and human.SeatPart~=horseSeat and human.SeatPart.Occupant==human)
-    for _=1,60 do
-        assert(Travel.steer(player,1))
-        Travel.tick(0.14)
-        task.wait(0.055)
-    end
+    local waterline=assert(session.graph.crossings[3]).east.x
+    drive(90,waterline,"boat")
     assert(boat.position.x>original.x+15)
     assert(Travel.action(player,"disembark").ok)
     assert(Inventory.count(boat.cargo,"wood")==1)
