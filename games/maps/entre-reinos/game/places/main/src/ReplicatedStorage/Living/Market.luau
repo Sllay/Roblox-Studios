@@ -42,6 +42,9 @@ function Market.valid(state: any): boolean
     if data==nil then return true end
     if type(data)~="table" or not integer(data.balance,0,1e9) or not integer(data.payDay,0,1e9)
         or not integer(data.standing,-100,100) or not integer(data.nextContract,1,1e9)
+        or (data.accord~=nil and data.accord~="trade" and data.accord~="alliance")
+        or (data.nextTribute~=nil and (type(data.nextTribute)~="number"
+            or not (data.nextTribute>=0 and data.nextTribute<=state.elapsed+91)))
         or type(data.ledger)~="table" or #data.ledger>LIMIT
         or type(data.requests)~="table" or #data.requests>LIMIT then return false end
     for _,id in ipairs(data.requests) do
@@ -174,7 +177,8 @@ function Market.openContract(session: any,seller: any,item: any,units: any,reque
     local to=depot(destination,item,units,b.x,false,work)
     if not from or not to then return false,"market_stock" end
     if not work.canReach(origin,from.x,to.x,"carrier") then return false,"market_route" end
-    local payment=units*Market.quote(origin,item,work).buy
+    local quote=Market.quote(origin,item,work)
+    local payment=units*math.max(1,quote.buy-(if data.accord then 1 else 0))
     if Market.treasury(destination)<payment then return false,"market_funds" end
     local id=data.nextContract
     data.nextContract+=1
@@ -243,7 +247,7 @@ function Market.stepFreight(session: any,dt: number,work: any)
     worker.tradeLoad=Inventory.weight(c.cargo)>0 and c.stage~="recover"
     worker.activity="freight"
     if c.stage=="recover" then
-        if work.walkResident(origin,worker,c.cacheX,dt,c.cacheZ) then
+        if work.walkResident(origin,worker,c.cacheX,dt,c.cacheZ,nil,true) then
             c.stage,c.cacheX,c.cacheZ="delivery",nil,nil
         end
         return
@@ -252,7 +256,7 @@ function Market.stepFreight(session: any,dt: number,work: any)
     local town=Market.center(if c.stage=="pickup" then origin else receiving)
     if not town then return end
     local b=depot(if c.stage=="pickup" then origin else receiving,c.item,c.units,town.x,c.stage=="pickup",work)
-    if not b or not work.walkResident(origin,worker,b.x,dt,-4.4) then return end
+    if not b or not work.walkResident(origin,worker,b.x,dt,-4.4,nil,true) then return end
     if c.stage=="pickup" then
         if work.stockAvailable(origin,b,c.item)>=c.units and Inventory.transfer(b.stored,c.cargo,c.item,c.units) then
             c.stage="delivery"
@@ -264,6 +268,7 @@ function Market.stepFreight(session: any,dt: number,work: any)
         pay(dest,c.payment)
         log(dest,"escrow_return",c.payment,tostring(c.id))
         data.standing=math.max(-100,data.standing-6)
+        if data.standing<0 then data.accord=nil end
     else
         pay(origin,c.payment)
         log(origin,"freight_sale",c.payment,tostring(c.id))
@@ -273,6 +278,41 @@ function Market.stepFreight(session: any,dt: number,work: any)
     worker.tradeLoad=nil
     work.releaseWorker(origin,worker)
     data.contract=nil
+end
+
+function Market.diplomacy(session: any,action: any): (boolean,string?)
+    local home,foreign=session.home,session.record.foreign
+    local data=home.production and home.production.market
+    if not data or not session.record.discovered["2"] or not foreign or not foreign.production
+        or not foreign.production.market then return false,"market_unmet" end
+    if action=="trade" and data.standing>=0 and not data.accord then
+        data.accord="trade"
+    elseif action=="alliance" and data.accord=="trade" and data.standing>=15 then
+        data.accord="alliance"
+    elseif action=="withdraw" and data.accord then
+        data.accord=nil
+        data.standing=math.max(-100,data.standing-12)
+    elseif action=="tribute" then
+        local now=home.elapsed
+        if now<(data.nextTribute or 0) or Market.treasury(home)<3 then return false,"market_funds" end
+        pay(home,-3)
+        pay(foreign,3)
+        log(home,"tribute",-3,"Cedro")
+        log(foreign,"tribute",3,"Vale")
+        data.nextTribute=now+90
+        data.standing=math.min(100,data.standing+8)
+    else
+        return false,"diplomacy_conditions"
+    end
+    return true,nil
+end
+
+function Market.relations(session: any): any
+    local data=session.home.production and session.home.production.market
+    if not data or not session.record.discovered["2"] then return nil end
+    local standing=data.standing
+    local attitude=if standing<=-20 then "hostil" elseif standing>=15 then "amigável" else "neutra"
+    return {standing=standing,attitude=attitude,accord=data.accord}
 end
 
 function Market.summary(state: any,work: any): any

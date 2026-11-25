@@ -100,6 +100,11 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
     cancelOrder.LayoutOrder=3
     cancelOrder.Size=UDim2.new(1,-12,0,40)
     cancelOrder.Visible=false
+    local priorityOrder=actionButton(list,"PrioritizeWork","")
+    priorityOrder.LayoutOrder=4
+    priorityOrder.Size=UDim2.new(1,-12,0,40)
+    priorityOrder.Visible=false
+    local priorityId: number?=nil
     local cancelId: number?=nil
     local confirmCancel: number?=nil
 
@@ -235,6 +240,12 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
     end)
     overlay.Destroying:Connect(closePreview)
 
+    priorityOrder.Activated:Connect(function()
+        if busy or not priorityId then return end
+        local result=call("work_priority",priorityId)
+        notify(if result.ok then "Ordem de construção atualizada." else "A obra não pode ser priorizada.")
+        refresh()
+    end)
     cancelOrder.Activated:Connect(function()
         if busy or not cancelId then return end
         if confirmCancel~=cancelId then
@@ -254,7 +265,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         local def=Structures.get(id)
         local card=Instance.new("TextButton")
         card.Name="Construct_"..id
-        card.LayoutOrder=i+3
+        card.LayoutOrder=i+4
         card.Size=UDim2.new(1,-12,0,78)
         card.BackgroundColor3=Color3.fromRGB(50,64,54)
         card.BorderSizePixel=0
@@ -309,9 +320,16 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         local closest: number?=nil
         local distance=Structures.PLACEMENT_RANGE
         local x=playerX()
+        priorityId=nil
+        local priorityDistance=Structures.PLACEMENT_RANGE
+        local wasPriority=false
         if x and buildings then
             for _,b in ipairs(buildings) do
                 local delta=math.abs(b.x-x)
+                if data.production and (b.state=="blueprint" or b.state=="building"
+                    or b.state=="damaged" or b.state=="ruined") and delta<=priorityDistance then
+                    priorityDistance,priorityId,wasPriority=delta,b.id,b.priority==true
+                end
                 if b.canCancel and delta<=distance then
                     distance=delta
                     closest=b.id
@@ -321,6 +339,8 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         if closest~=cancelId then confirmCancel=nil end
         cancelId=closest
         cancelOrder.Visible=cancelId~=nil
+        priorityOrder.Visible=priorityId~=nil
+        priorityOrder.Text=(if wasPriority then "REMOVER PRIORIDADE #" else "PRIORIZAR OBRA #")..tostring(priorityId)
         if cancelId then
             cancelOrder.Text=(if confirmCancel then "Confirmar cancelamento #" else "Cancelar obra #")
                 ..tostring(cancelId)

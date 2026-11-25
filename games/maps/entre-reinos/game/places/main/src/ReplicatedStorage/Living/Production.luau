@@ -28,6 +28,9 @@ end
 function Production.valid(data: any, state: any): boolean
     if type(data)~="table" or data.version~=Production.VERSION
         or not integer(data.nextOrder,1,1e9) or not integer(data.completed,0,1e9)
+        or (data.priorityBuilding~=nil and not integer(data.priorityBuilding,1,state.nextBuildingId-1))
+        or (data.focusFood~=nil and type(data.focusFood)~="boolean")
+        or (data.stewardPlanned~=nil and type(data.stewardPlanned)~="boolean")
         or type(data.orders)~="table" or #data.orders>Production.MAX_ORDERS then return false end
     local stations={}
     local workers={}
@@ -48,6 +51,8 @@ function Production.valid(data: any, state: any): boolean
         if order.worker then assigned[order.worker]=true end
     end
     for _,npc in ipairs(state.npcs) do
+        if npc.order~=nil and npc.order~="balanced" and npc.order~="food" and
+            npc.order~="building" and npc.order~="stock" then return false end
         local tool=npc.tool
         if tool~=nil then
             local def=type(tool)=="table" and Items.get(tool.item)

@@ -50,7 +50,7 @@ local function remember(s: any,kind: string,by: any,now: number,benefit: number)
     if by=="player" then
         s.trust=math.clamp(s.trust+benefit,-100,100)
     else
-        local relation=nil
+        local relation: any=nil
         for i,link in ipairs(s.links) do
             if link.id==by then relation=table.remove(s.links,i);break end
         end

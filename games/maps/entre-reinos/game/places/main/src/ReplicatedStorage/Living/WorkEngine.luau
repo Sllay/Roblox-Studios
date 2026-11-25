@@ -13,6 +13,7 @@ local World=require("../WorldProfile")
 local Regions=require("../RegionalProfile")
 local Routes=require("../RegionalCrossings")
 local Engine={}
+Engine.orders=table.freeze({"balanced","building","stock","food"})
 Engine.learn=Needs.learn
 Engine.activityRate=Needs.rate
 local contexts=setmetatable({} :: {[any]: any}, {__mode="k"})
@@ -208,11 +209,32 @@ end
 
 function Engine.changeProfession(state: any,npc: any,role: string): boolean
     local def=Professions.get(role)
-    if not state.production or not def or npc.health<=0 or npc.profession==role then return false end
+    if not state.production or not def or npc.health<=0 or npc.profession==role
+        or npc.state=="freight" or npc.underAttack then return false end
     clearJob(npc,state)
     npc.profession=role
     npc.inventory.maxMass=math.max(def.carryCapacity,Inventory.weight(npc.inventory))
     return true
+end
+
+function Engine.setOrder(state: any,npc: any,order: any): boolean
+    if not state.production or not table.find(Engine.orders,order) or npc.health<=0
+        or npc.state=="freight" or npc.underAttack or npc.order==order then return false end
+    clearJob(npc,state)
+    npc.order=order
+    return true
+end
+
+function Engine.setBuildingPriority(state: any,id: any): boolean
+    local b=findBuilding(state,id)
+    if not state.production or not b or (b.state~="blueprint" and b.state~="building"
+        and b.state~="damaged" and b.state~="ruined") then return false end
+    state.production.priorityBuilding=if state.production.priorityBuilding==id then nil else id
+    return true
+end
+
+local function projectPriority(state: any,b: any): number
+    return if state.production and state.production.priorityBuilding==b.id then 160 else 0
 end
 
 function Engine.releaseBuildingJobs(state: any, buildingId: number)
@@ -315,6 +337,7 @@ local function assignStorage(npc: any,state: any): boolean
                         +(if s then math.abs(s.x-b.x) else 0)
                         -(if carried>0 then 500 else 0)
                         -(if ordered then 250 else 0)
+                        -(if id=="food" and state.production and state.production.focusFood then 65 else 0)
                     if score<distance then
                         distance=score
                         best=b
@@ -352,7 +375,7 @@ local function assignStorage(npc: any,state: any): boolean
     return false
 end
 
-local function assign(npc: any, state: any): boolean
+local function assign(npc: any, state: any, onlyBuild: boolean?): boolean
     local profession=Professions.get(npc.profession)
     if not profession then return false end
     -- Prefer an already-funded building. Profession multiplier applies to build
@@ -362,7 +385,7 @@ local function assign(npc: any, state: any): boolean
     for _,b in ipairs(state.buildings) do
         local target=builderTarget(state,npc,b)
         if b.state~="complete" and ready(b) and Engine.canReach(state,npc.x,target,"worker") then
-            local distance=math.abs(npc.x-target)
+            local distance=math.abs(npc.x-target)-projectPriority(state,b)
             if distance<nearest then
                 nearest=distance
                 funded=b
@@ -395,12 +418,13 @@ local function assign(npc: any, state: any): boolean
             local def=Structures.get(b.typeId)
             local target=builderTarget(state,npc,b)
             local district=Engine.districtAt(state,b.x)
+            local priority=projectPriority(state,b)
             for _,item in ipairs(WORK_ITEMS) do
                 local missing=needed(b,item)
                 if missing<=0 or not def.cost[item] then continue end
                 if Engine.canReach(state,npc.x,target,"carrier") then
                     consider(b,item,math.min(missing,Inventory.count(npc.inventory,item)),
-                        500-math.abs(npc.x-target),nil,nil)
+                        500+priority-math.abs(npc.x-target),nil,nil)
                 end
                 local limit=math.min(missing,freeUnits(npc.inventory,item),
                     Professions.gatherYield(npc.profession,item))
@@ -411,13 +435,13 @@ local function assign(npc: any, state: any): boolean
                         and Engine.canReach(state,depot.x,target,"carrier") then
                         local localDepot=district~=nil and Engine.districtAt(state,depot.x)==district
                         consider(b,item,math.min(limit,free),
-                            325-(math.abs(npc.x-depot.x)+math.abs(depot.x-b.x))*0.35
+                            325+priority-(math.abs(npc.x-depot.x)+math.abs(depot.x-b.x))*0.35
                                 +(if localDepot then 8 else 0),nil,depot)
                     end
                 end
                 local site=availableSource(state,item,npc.x,target)
                 if site then
-                    local score=200-(math.abs(npc.x-site.x)+math.abs(site.x-b.x))*0.35
+                    local score=200+priority-(math.abs(npc.x-site.x)+math.abs(site.x-b.x))*0.35
                         -npc.fatigue*0.15+math.min(25,missing*2)
                         +(Professions.gatherYield(npc.profession,item)-1)*12
                     consider(b,item,math.min(limit,Engine.sourceAvailable(state,site)),score,site,nil)
@@ -435,13 +459,13 @@ local function assign(npc: any, state: any): boolean
         npc.state=if source or storage then "gather" else "deliver"
         return true
     end
-    return assignStorage(npc,state)
+    return not onlyBuild and assignStorage(npc,state)
 end
 
-local function freeGround(state: any,npc: any,x: number,z: number): boolean
+local function freeGround(state: any,npc: any,x: number,z: number,allowUnloaded: boolean?): boolean
     if math.abs(z)>20 then return false end
     local context=contexts[state]
-    if context and context.readyAt and not context.readyAt(x) then return false end
+    if context and not context.detached and not allowUnloaded and context.readyAt and not context.readyAt(x) then return false end
     local class=if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
     local current=sample(state,npc.x,npc.z or 0)
     local nextGround=sample(state,x,z)
@@ -472,7 +496,7 @@ local function freeGround(state: any,npc: any,x: number,z: number): boolean
 end
 
 local steering={0,0.61,-0.61,1.15,-1.15,1.84,-1.84}
-function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ: number?,speed: number?): boolean
+function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ: number?,speed: number?,allowUnloaded: boolean?): boolean
     local z=npc.z or 0
     local targetZ=destZ or z
     local finalX,finalZ=destX,targetZ
@@ -524,7 +548,7 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
     for _,offset in ipairs(steering) do
         local x=npc.x+math.cos(angle+offset)*travel
         local nextZ=z+math.sin(angle+offset)*travel
-        if not freeGround(state,npc,x,nextZ) then continue end
+        if not freeGround(state,npc,x,nextZ,allowUnloaded) then continue end
         local score=math.cos(offset)
         for _,other in ipairs(state.npcs) do
             if other==npc or other.health<=0 then continue end
@@ -840,8 +864,9 @@ function Engine.step(state: any, dt: number)
             npc.fatigue=math.max(0,npc.fatigue-dt*4)
             if npc.fatigue<20 then npc.state="idle" end
         else
-            if Production.step(state,npc,dt,Engine) then continue end
-            if Needs.work(state,npc,dt,Engine) then continue end
+            if npc.state=="idle" and npc.order=="building" then assign(npc,state,true) end
+            if npc.state=="idle" and npc.order=="stock" then assignStorage(npc,state) end
+            if Needs.work(state,npc,dt,Engine) or Production.step(state,npc,dt,Engine) then continue end
             if npc.state=="idle" then
                 assign(npc,state)
                 if npc.state=="idle" then wander(npc,state,dt) end
@@ -977,6 +1002,13 @@ function Engine.step(state: any, dt: number)
     while #state.events>80 do table.remove(state.events,1) end
 end
 
+function Engine.stepDetached(state: any,dt: number)
+    local context=contexts[state]
+    if context then context.detached=true end
+    Engine.step(state,dt)
+    if context then context.detached=nil end
+end
+
 function Engine.summary(state: any): any
     -- Real inventory custody. Sources are NOT the player's backpack, and
     -- resources already delivered to structures are NOT free stock.
@@ -1030,14 +1062,14 @@ function Engine.summary(state: any): any
         table.insert(buildings,{id=b.id,name=def.label,typeId=b.typeId,
             state=b.state,x=b.x,canCancel=Engine.canCancel(b),district=district,
             progress=math.floor(b.progress/def.buildSeconds*100),
-            health=b.health,plot=b.plot and table.clone(b.plot),delivered=table.clone(b.delivered),
+            priority=state.production and state.production.priorityBuilding==b.id,health=b.health,plot=b.plot and table.clone(b.plot),delivered=table.clone(b.delivered),
             stored=if b.stored then table.clone(b.stored.items) else {}})
     end
     local workers={}
     for _,n in ipairs(state.npcs) do
         table.insert(workers,{id=n.id,name=n.name,profession=n.profession,
             state=n.activity or n.state,defense=n.defense or "none",
-            district=Engine.districtAt(state,n.x),health=n.health,arrows=n.arrows or 0,hunger=n.hunger,fatigue=n.fatigue,homeId=n.homeId,
+            district=Engine.districtAt(state,n.x),health=n.health,arrows=n.arrows or 0,hunger=n.hunger,fatigue=n.fatigue,homeId=n.homeId,order=n.order or "balanced",
             social=n.social and {trust=n.social.trust,mood=Social.mood(n),courage=n.social.courage,
                 memory=n.social.memories[#n.social.memories] and table.clone(n.social.memories[#n.social.memories]),
                 relationships=#n.social.links},
@@ -1050,7 +1082,7 @@ function Engine.summary(state: any): any
     if state.production then
         local orders={}
         for _,order in ipairs(state.production.orders) do table.insert(orders,table.clone(order)) end
-        production={orders=orders,completed=state.production.completed}
+        production={orders=orders,completed=state.production.completed,focusFood=state.production.focusFood==true}
     end
     return {buildings=buildings,workers=workers,districts=districts,stats=table.clone(state.stats),production=production,market=Market.summary(state,Engine),
         resources={sources=sources,carried=carried,reserved=reserved,

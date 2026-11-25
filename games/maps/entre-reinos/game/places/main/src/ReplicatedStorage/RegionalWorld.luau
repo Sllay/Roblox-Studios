@@ -5,6 +5,8 @@ local Living=require("./Living/LivingModel")
 local Work=require("./Living/WorkEngine")
 local Structures=require("./Living/StructureDefs")
 local Inventory=require("./Living/Inventory")
+local Production=require("./Living/Production")
+local Market=require("./Living/Market")
 
 local World={}
 World.VERSION=1
@@ -184,6 +186,53 @@ function World.activate(session: any,x: number): (any, boolean)
     session.activeRegion=index
     session.phases[index]="active"
     return state,changed
+end
+
+local function planCedro(town: any,origin: number)
+    -- Existing saves keep their buildings. The steward orders ordinary
+    -- material-backed blueprints on dry land using the normal placement rules.
+    local farm,workshop=false,false
+    for _,b in ipairs(town.buildings) do
+        if b.typeId=="farm" then farm=true
+        elseif b.typeId=="workshop" then workshop=true end
+    end
+    if town.production.stewardPlanned then return end
+    if not farm then
+        for _,offset in ipairs({45,-45,56,-63,75}) do
+            if Work.place(town,"farm",origin+offset) then farm=true;break end
+        end
+    end
+    if not workshop then
+        for _,offset in ipairs({21,-45,55,-63,75,-78}) do
+            if Work.place(town,"workshop",origin+offset) then workshop=true;break end
+        end
+    end
+    town.production.stewardPlanned=true
+end
+
+-- A session-local accumulator never reads wall-clock time. The snapshot
+-- captures committed work only, so closing the save cannot produce hours of catch-up.
+function World.stepEconomy(session: any,foreground: any,dt: number)
+    local home=session.home
+    if not home.r3 or home.r3.prologue.stage~="sandbox" then return end
+    local towns={home,session.record.foreign}
+    session.economyDebt=session.economyDebt or {}
+    for index,town in ipairs(towns) do
+        Production.ensure(town)
+        if index==2 then planCedro(town,session.center.x) end
+        if town==foreground then
+            session.economyDebt[index]=0
+        else
+            local debt=math.min(1,(session.economyDebt[index] or 0)+dt)
+            if debt>=0.5 then
+                Work.stepDetached(town,0.25)
+                Work.stepDetached(town,0.25)
+                debt-=0.5
+            end
+            session.economyDebt[index]=debt
+        end
+    end
+    Market.stepFreight(session,dt,Work)
 end
 
 function World.snapshot(session: any): any

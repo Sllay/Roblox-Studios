@@ -263,8 +263,8 @@ end
 function Needs.work(state: any,npc: any,dt: number,work: any): boolean
     if not state.production or npc.state~="idle" then return false end
     local role=npc.profession
-    if (role=="farmer" or role=="common") and Inventory.count(npc.inventory,"grain")<=1 then return farm(state,npc,dt,work) end
-    if (role=="hunter" or role=="common") and Inventory.count(npc.inventory,"meat")==0 then return hunt(state,npc,dt,work) end
+    if (role=="farmer" or role=="common" or npc.order=="food") and Inventory.count(npc.inventory,"grain")<=1 then return farm(state,npc,dt,work) end
+    if (role=="hunter" or role=="common" or npc.order=="food") and Inventory.count(npc.inventory,"meat")==0 then return hunt(state,npc,dt,work) end
     return false
 end
 

@@ -72,6 +72,8 @@ local errorTexts={
     social_no_need="O morador está bem agora.",
     social_need_item="O presente usa uma tábua. A ajuda usa um alimento da sua bolsa.",
     social_no_shelter="Nenhum abrigo está acessível.",
+    market_unmet="Visite a Vila do Cedro primeiro.",
+    diplomacy_conditions="A relação atual ainda não permite esse acordo.",
     unknown_recipe="Receita inválida.",
     production_queue_full="A fila de fabricação está cheia.",
     production_station_required="Aproxime-se de uma oficina ou forja concluída.",
@@ -407,6 +409,21 @@ function UI.start(player: Player)
         request("profession",tostring(selectedNpcId)..":"..Professions.order[roleIndex])
     end)
     updateRole()
+    local directions={{"balanced","Equilíbrio"},{"building","Construção"},{"stock","Estoque"},{"food","Alimentos"}}
+    local orderIndex=1
+    local orderWorker=button(villagersPage,"WorkOrder","")
+    orderWorker.LayoutOrder=508
+    orderWorker.Size=UDim2.new(1,-10,0,42)
+    orderWorker.Text="ORDEM · equilíbrio →"
+    orderWorker.Activated:Connect(function()
+        orderIndex=orderIndex%#directions+1
+        orderWorker.Text="ORDEM · "..directions[orderIndex][2].." →"
+        request("work_order",{id=selectedNpcId,order=directions[orderIndex][1]})
+    end)
+    local focusFood=button(resourcesPage,"FoodPriority","")
+    focusFood.LayoutOrder=20
+    focusFood.Size=UDim2.new(1,-10,0,42)
+    focusFood.Activated:Connect(function() request("food_priority",nil) end)
     local socialControls={}
     for i,entry in ipairs({{"talk","CONVERSAR"},{"gift","PRESENTEAR · 1 TÁBUA"},
         {"help","AJUDAR · 1 ALIMENTO"},{"rescue","AJUDAR A CHEGAR AO ABRIGO"}}) do
@@ -488,6 +505,17 @@ function UI.start(player: Player)
     exportGood.Activated:Connect(function() request("freight",{seller="home",units=2,item=Market.goods[marketIndex],id=HttpService:GenerateGUID(false)}) end)
     importGood.Activated:Connect(function() request("freight",{seller="foreign",units=2,item=Market.goods[marketIndex],id=HttpService:GenerateGUID(false)}) end)
     cancelContract.Activated:Connect(function() request("freight_cancel",nil) end)
+    local diplomacyInfo=rowText(workshop,"Relations","",40,58)
+    local diplomacyButtons={}
+    for index,entry in ipairs({{"trade","ACORDO COMERCIAL"},{"alliance","ALIANÇA"},
+        {"tribute","TRIBUTO AO CEDRO · 3 MOEDAS"},{"withdraw","ENCERRAR ACORDO"}}) do
+        local control=button(workshop,"Diplomacy_"..entry[1],entry[2])
+        control.LayoutOrder=40+index
+        control.Size=UDim2.new(1,-12,0,42)
+        control.Visible=false
+        control.Activated:Connect(function() request("diplomacy",entry[1]) end)
+        table.insert(diplomacyButtons,control)
+    end
     local tradeButton=button(workshop,"SellWood","VENDER 1 MADEIRA")
     tradeButton.LayoutOrder=6
     tradeButton.Size=UDim2.new(1,-12,0,42)
@@ -951,9 +979,13 @@ function UI.start(player: Player)
             else if nearSelected then "Morador próximo: você pode equipá-lo."
             else "Selecione um morador próximo para equipar."
         equipBar.Visible=nearSelected
-        nextRole.Visible=nearSelected and snapshot~=nil and snapshot.production~=nil
+        nextRole.Visible=nearSelected and nearby.canManage==true and snapshot~=nil and snapshot.production~=nil
+        orderWorker.Visible=nextRole.Visible
+        focusFood.Visible=nearby.canManage==true and snapshot~=nil and snapshot.production~=nil
+        focusFood.Text=if focusFood.Visible and snapshot.production.focusFood then "ALIMENTAÇÃO · prioridade alta"
+            else "PRIORIZAR ALIMENTAÇÃO"
         applyRole.Visible=nextRole.Visible
-        for _,control in ipairs(socialControls) do control.Visible=nextRole.Visible end
+        for _,control in ipairs(socialControls) do control.Visible=nearSelected and snapshot~=nil and snapshot.production~=nil end
         local dist=nearby.nearestWoodDistance or -1
         local direction=if dist>=0 then
             "Árvore: "..tostring(dist).." studs à "..
@@ -995,6 +1027,17 @@ function UI.start(player: Player)
         importGood.Visible=exportGood.Visible
         cancelContract.Visible=market~=nil and nearby.freight~=nil and not nearby.freight.returning
         tradeButton.Visible=market==nil
+        local relations=nearby.relations
+        diplomacyInfo.Visible=relations~=nil
+        if relations then
+            diplomacyInfo.Text="VALE DO DUQUE E CEDRO · "..relations.attitude
+                .." ("..tostring(relations.standing)..")"
+                ..(if relations.accord=="alliance" then "\nAliança" elseif relations.accord=="trade" then "\nAcordo comercial" else "")
+        end
+        diplomacyButtons[1].Visible=relations~=nil and relations.accord==nil
+        diplomacyButtons[2].Visible=relations~=nil and relations.accord=="trade"
+        diplomacyButtons[3].Visible=relations~=nil
+        diplomacyButtons[4].Visible=relations~=nil and relations.accord~=nil
         if market and quote then
             local last=market.latest
             local freight=nearby.freight

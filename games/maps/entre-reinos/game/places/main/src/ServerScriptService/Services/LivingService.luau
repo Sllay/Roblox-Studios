@@ -754,12 +754,14 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         for _,npc in ipairs(state.npcs) do
             if npc.health>0 and math.abs(observerX-npc.x)<160 then hasNearbyResident=true; break end
         end
-        simulationAccumulator=if hasNearbyResident then simulationAccumulator+math.min(dt,0.25) else 0
+        simulationAccumulator+=math.min(dt,0.25)
         local ticks=0
         while simulationAccumulator>=0.1 and ticks<3 do
-            if regional.home.r3.prologue.stage=="sandbox" then Production.ensure(state) end
-            Work.step(state,0.1)
-            Market.stepFreight(regional,0.1,Work)
+            if hasNearbyResident then
+                if regional.home.r3.prologue.stage=="sandbox" then Production.ensure(state) end
+                Work.step(state,0.1)
+            end
+            Regions.stepEconomy(regional,if hasNearbyResident then state else nil,0.1)
             local currentRoot=if player.Character then
                 player.Character:FindFirstChild("HumanoidRootPart") else nil
             local x=if currentRoot and currentRoot:IsA("BasePart")
@@ -767,7 +769,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
             local h=if player.Character then player.Character:FindFirstChildOfClass("Humanoid") else nil
             local y=if currentRoot and currentRoot:IsA("BasePart") and h and h.Health>0
                 then currentRoot.Position.Y else -100
-            local damage=if state==regional.home then R3.step(state,0.1,x,Combat.fireResident,y) else 0
+            local damage=if hasNearbyResident and state==regional.home then R3.step(state,0.1,x,Combat.fireResident,y) else 0
             if damage>0 and player.Character then
                 local h=player.Character:FindFirstChildOfClass("Humanoid")
                 if h and h.Health>0 then h:TakeDamage(damage) end
@@ -1041,6 +1043,8 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             nearby.marketHere=center~=nil and math.abs(root.Position.X-center.x)<=18
                 and math.abs(root.Position.Y-center.y-3)<=10
             nearby.canContract=regional.record.discovered["2"]==true
+            nearby.relations=Market.relations(regional)
+            nearby.canManage=state==regional.home or (nearby.relations and nearby.relations.accord=="alliance")
             local contract=Market.freight(regional)
             if contract then
                 nearby.freight={item=contract.item,units=contract.units,stage=contract.stage,returning=contract.returning}
@@ -1085,7 +1089,8 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return Combat.action(player,action,arg)
     end
     if action~="build" and action~="build_preview" and action~="build_cancel" and action~="produce" and action~="profession"
-        and action~="market" and action~="freight" and action~="freight_cancel" and action~="social" then
+        and action~="market" and action~="freight" and action~="freight_cancel" and action~="social" and action~="diplomacy"
+        and action~="work_order" and action~="work_priority" and action~="food_priority" then
         return {ok=false,error="invalid_action"}
     end
     local character=player.Character
@@ -1098,7 +1103,28 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return {ok=false,error="outside_playable_lane"}
     end
     local now=os.clock()
-    if action=="market" or action=="freight" or action=="freight_cancel" then
+    local relations=Market.relations(regional)
+    local canManage=state==regional.home or (relations and relations.accord=="alliance")
+    if action=="work_order" or action=="work_priority" or action=="food_priority" then
+        if not canManage or not state.production or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        lastActionAt=now
+        if action=="work_priority" and type(arg)=="number" then
+            return {ok=Work.setBuildingPriority(state,arg),error="action_unavailable"}
+        elseif action=="food_priority" then
+            state.production.focusFood=not state.production.focusFood
+            return {ok=true}
+        elseif action=="work_order" and type(arg)=="table" and type(arg.id)=="number" and type(arg.order)=="string" then
+            for _,npc in ipairs(state.npcs) do
+                if npc.id==arg.id and math.abs(root.Position.X-npc.x)<=12 then
+                    return {ok=Work.setOrder(state,npc,arg.order),error="action_unavailable"}
+                end
+            end
+        end
+        return {ok=false,error="action_unavailable"}
+    end
+    if action=="market" or action=="freight" or action=="freight_cancel" or action=="diplomacy" then
         if not state.production or not state.production.market or now-lastActionAt<0.55 then
             return {ok=false,error="action_unavailable"}
         end
@@ -1109,9 +1135,14 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         lastActionAt=now
         local ok,reason=false,"invalid_market_order"
         if action=="market" and type(arg)=="table" then
+            if state~=regional.home and relations and relations.standing<=-20 then
+                return {ok=false,error="market_hostile"}
+            end
             ok,reason=Market.playerTrade(state,regional.home.r3,arg.id,arg.verb,arg.item,Work)
         elseif action=="freight" and type(arg)=="table" then
             ok,reason=Market.openContract(regional,arg.seller,arg.item,arg.units,arg.id,Work)
+        elseif action=="diplomacy" then
+            ok,reason=Market.diplomacy(regional,arg)
         elseif action=="freight_cancel" and regional.home.production and regional.home.production.market then
             ok=Market.cancel(regional)
         end
@@ -1132,7 +1163,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return {ok=false,error="action_unavailable"}
     end
     if action=="profession" then
-        if not state.production or type(arg)~="string" or #arg>30 or now-lastActionAt<0.55 then
+        if not canManage or not state.production or type(arg)~="string" or #arg>30 or now-lastActionAt<0.55 then
             return {ok=false,error="action_unavailable"}
         end
         local id,role=string.match(arg,"^(%d+):([a-z]+)$")
@@ -1149,7 +1180,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return {ok=false,error="action_unavailable"}
     end
     if action=="produce" then
-        if regional.home.r3.prologue.stage~="sandbox" or now-lastActionAt<0.55 then
+        if not canManage or regional.home.r3.prologue.stage~="sandbox" or now-lastActionAt<0.55 then
             return {ok=false,error="action_unavailable"}
         end
         lastActionAt=now
