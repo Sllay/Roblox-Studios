@@ -4,7 +4,7 @@ local Profile=require("../RegionalProfile")
 local Production=require("./Production")
 local Needs={}
 local XP_LIMIT=900
-local ACTIVITIES={gather=true,build=true,craft=true,farm=true,hunt=true}
+local ACTIVITIES={gather=true,woodcut=true,mining=true,build=true,craft=true,farm=true,hunt=true}
 local FAUNA_LIMIT=6
 
 function Needs.level(npc: any, activity: string): number

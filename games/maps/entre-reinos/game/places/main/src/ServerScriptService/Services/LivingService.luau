@@ -822,6 +822,7 @@ function Service.stop(player: Player)
     lastActionAt=0
     owner=nil
     state=nil
+    table.clear(animals)
     regional=nil
     bridgeFolder=nil
     figures={}

@@ -357,7 +357,8 @@ function R3.arm(state: any,npcId: any,weapon: string,playerData: any?): (boolean
                 end
             end
             if not stock then stock=d.playerBag end
-            if state.production and npc.defense and not Inventory.canAdd(d.playerBag,npc.defense,1) then
+            if state.production and npc.defense and (not Inventory.canAdd(d.playerBag,npc.defense,1)
+                or d.arrows+(npc.arrows or 0)>30) then
                 return false,"player_bag_full"
             end
             if not stock or not Inventory.take(stock,required,cost) then
@@ -365,7 +366,7 @@ function R3.arm(state: any,npcId: any,weapon: string,playerData: any?): (boolean
             end
             if state.production and npc.defense then
                 assert(Inventory.add(d.playerBag,npc.defense,1))
-                d.arrows=math.min(30,d.arrows+(npc.arrows or 0))
+                d.arrows+=npc.arrows or 0
             end
             npc.defense=weapon
             npc.defenseClock=0
@@ -694,11 +695,11 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
             if npc.defense=="bow" and (npc.arrows or 0)>0 and dist>=4 and dist<=24 and fire
                 and fire(npc,nearest) then
                 npc.arrows-=1
-                npc.defenseClock=1.5
+                npc.defenseClock=if npc.profession=="archer" then 1.18 else 1.5
             elseif npc.defense=="spear" and dist<4.5
                 and math.abs(World.sample(state.seed,npc.x,0).height-World.sample(state.seed,nearest.x,0).height)<3 then
-                nearest.hp-=7
-                npc.defenseClock=1.2
+                nearest.hp-=if npc.profession=="spearman" then 10 else 7
+                npc.defenseClock=if npc.profession=="guard" then 0.95 else 1.2
             end
         end
         if nearest and dist<2.8 and npc.activity~="sheltered" and nearest.typeId~="infected_duke" then

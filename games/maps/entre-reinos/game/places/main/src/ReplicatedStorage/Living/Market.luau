@@ -94,13 +94,17 @@ local function depot(state: any,item: string,amount: number,x: number,source: bo
     return best
 end
 
+local function price(base: number,stock: number): any
+    local buy=math.clamp(base+2-math.floor(stock/8),math.max(2,base-1),base+2)
+    return {stock=stock,buy=buy,sell=math.max(1,buy-1)}
+end
+
 function Market.quote(state: any,item: string,work: any): any
     local base=BASE[item]
     if not base then return nil end
     local stock=0
     for _,b in ipairs(state.buildings) do stock+=work.stockAvailable(state,b,item) end
-    local buy=math.clamp(base+2-math.floor(stock/8),math.max(2,base-1),base+2)
-    return {stock=stock,buy=buy,sell=math.max(1,buy-1)}
+    return price(base,stock)
 end
 
 local function remember(data: any,id: string)
@@ -318,7 +322,19 @@ end
 function Market.summary(state: any,work: any): any
     if not state.production or not state.production.market then return nil end
     local quotes={}
-    for _,item in ipairs(Market.goods) do quotes[item]=Market.quote(state,item,work) end
+    local stock: {[string]: number}={}
+    local stores={}
+    for _,b in ipairs(state.buildings) do
+        if not work.usableStorage(b) then continue end
+        stores[b.id]=true
+        for item,amount in pairs(b.stored.items) do stock[item]=(stock[item] or 0)+amount end
+    end
+    for _,npc in ipairs(state.npcs) do
+        if npc.state=="gather" and npc.carryItem and npc.storageId and stores[npc.storageId] then
+            stock[npc.carryItem]=(stock[npc.carryItem] or 0)-npc.reserved
+        end
+    end
+    for _,item in ipairs(Market.goods) do quotes[item]=price(BASE[item],math.max(0,stock[item] or 0)) end
     local data=acc(state)
     local last=data.ledger[#data.ledger]
     return {treasury=Market.treasury(state),goods=quotes,latest=last and table.clone(last)}

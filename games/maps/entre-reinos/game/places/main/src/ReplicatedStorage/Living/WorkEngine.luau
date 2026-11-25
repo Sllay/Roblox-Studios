@@ -274,6 +274,9 @@ end
 
 local STOCK_TARGET: {[string]:number}={wood=24,stone=15,iron=10,food=20}
 local WORK_ITEMS={"wood","stone","iron","food","plank","metal","grain","meat","leather","axe","pick","hammer","hoe","bow","spear"}
+local function gatherSkill(item: string): string
+    return if item=="wood" then "woodcut" elseif item=="stone" or item=="iron" then "mining" else "gather"
+end
 local function gatherTool(item: string): string
     return if item=="wood" then "axe" elseif item=="food" then "hoe" else "pick"
 end
@@ -563,13 +566,23 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
         end
         if score>=1 then break end
     end
-    if bestScore==-math.huge then return false end
+    if bestScore==-math.huge then
+        if state.production and npc.state~="freight" then
+            npc.stallTime=(npc.stallTime or 0)+dt
+            if npc.stallTime>=8 then
+                npc.stallTime=nil
+                clearJob(npc,state)
+            end
+        end
+        return false
+    end
+    npc.stallTime=nil
     npc.motionX=(bestX-npc.x)/dt
     npc.motionZ=(bestZ-z)/dt
     local turn=dx*(bestZ-z)-dz*(bestX-npc.x)
     npc.steerSide=if math.abs(turn)<0.01 then nil elseif turn>0 then 1 else -1
     if context then
-        local class=if Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
+        local class=if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
         local deck=Engine.deckAt(state,bestX,bestZ,class)
         if deck and not npc.bridgeEntry then
             npc.bridgeEntry={x=npc.x,z=z}
@@ -879,14 +892,14 @@ function Engine.step(state: any, dt: number)
                 if not storage or not source or not item
                     or source.item~=item then
                     clearJob(npc,state)
-                elseif Engine.walkResident(state,npc,source.x,dt,source.z or (if source.item=="wood" then -6 else -4)) and working(npc,dt*Production.toolRate(npc,gatherTool(item))*Needs.rate(npc,"gather"),"collect") then
+                elseif Engine.walkResident(state,npc,source.x,dt,source.z or (if source.item=="wood" then -6 else -4)) and working(npc,dt*Production.toolRate(npc,gatherTool(item))*Needs.rate(npc,gatherSkill(item)),"collect") then
                     local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc),
                         storageSpace(state,storage,item,npc))
                     if n>0 and Inventory.add(npc.inventory,item,n) then
                         Production.wear(npc,gatherTool(item))
                         source.remaining-=n
                         state.stats.gathered+=n
-                        Needs.learn(state,npc,"gather",2)
+                        Needs.learn(state,npc,gatherSkill(item),2)
                         npc.reserved=n
                         npc.siteId=nil
                         npc.state="store_deliver"
@@ -920,7 +933,7 @@ function Engine.step(state: any, dt: number)
                         clearJob(npc,state)
                     elseif Engine.walkResident(state,npc,if storage then storage.x else site.x,dt,
                         if storage then -5 else site.z or (if site.item=="wood" then -6 else -4))
-                        and working(npc,dt*(if storage then 1 else Production.toolRate(npc,gatherTool(item))*Needs.rate(npc,"gather")),
+                        and working(npc,dt*(if storage then 1 else Production.toolRate(npc,gatherTool(item))*Needs.rate(npc,gatherSkill(item))),
                             if storage then "load" else "collect") then
                         local available=if storage then Engine.stockAvailable(state,storage,item,npc)
                             else Engine.sourceAvailable(state,site,npc)
@@ -933,7 +946,7 @@ function Engine.step(state: any, dt: number)
                                 Production.wear(npc,gatherTool(item))
                                 site.remaining-=n
                                 state.stats.gathered+=n
-                                Needs.learn(state,npc,"gather",2)
+                                Needs.learn(state,npc,gatherSkill(item),2)
                             end
                             b.claimed[item]-=npc.reserved-n
                             npc.reserved=n
@@ -1074,7 +1087,7 @@ function Engine.summary(state: any): any
                 memory=n.social.memories[#n.social.memories] and table.clone(n.social.memories[#n.social.memories]),
                 relationships=#n.social.links},
             level=math.max(Needs.level(n,"craft"),Needs.level(n,"build"),Needs.level(n,"gather"),
-                Needs.level(n,"hunt"),Needs.level(n,"farm")),
+                Needs.level(n,"hunt"),Needs.level(n,"farm"),Needs.level(n,"woodcut"),Needs.level(n,"mining")),
             carryWeight=Inventory.weight(n.inventory),tool=n.tool and table.clone(n.tool),
             carrying=table.clone(n.inventory.items)})
     end
