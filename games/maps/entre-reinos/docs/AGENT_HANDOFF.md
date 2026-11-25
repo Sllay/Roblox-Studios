@@ -323,3 +323,7 @@ O PR #12 foi integrado na main em `af4cb9bde16e8445045fa3c988a694211da6ebf7`. O 
 - F6 prepara cinco chunks no início e visita até 17. Os seis slots mantêm as chaves e o ruleset 3. O DataStore real isolado verificou backup, lease e reabertura na fronteira. [Probe de integração](https://github.com/Sllay/Roblox-Studios/actions/runs/45497927554)
 
 O playtest touch e visual do criador continua pendente. Os pontos principais são sobreposição de controles em telas pequenas, ritmo dos passos e leitura das ações dos NPCs, continuidade do prólogo e fluidez ao atravessar chunks. ER-001–020 permanecem PARCIAIS. As decisões sobre perdas por morte, ruínas e estorno seguem abertas. [Receibo técnico](runner-receipts/T1-F6.md)
+
+## 25/11/2026 — Preparação de T2-R1 em branch isolada
+
+O criador aceitou a v18 como fundação e autorizou o trabalho técnico. A T1 segue em certificação. ER-001–020 permanecem PARCIAIS e o aceite não equivale a aprovação individual. O perfil regional de desenvolvimento prolonga o campo da v18, reusa o gerador nativo e é verificável em sessão Open Cloud descartável. Mantém-se a v18 no staging e o fluxo de save no perfil anterior. A integração do runner depende do protocolo de transição e dos gates ER-021–027. [Recibo T2-R1](runner-receipts/T2-R1.md)

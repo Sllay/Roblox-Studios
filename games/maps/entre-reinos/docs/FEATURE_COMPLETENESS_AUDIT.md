@@ -41,7 +41,7 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 
 | ID | Owner | Estado | Fluxo completo exigido para fechamento |
 |---|---|---|---|
-| ER-021 | T2-R1 | PLANEJADO | Multi-bioma/multi-reino procedural por seed, rios/cachoeiras, relevo caminhável e localidades coerentes, persistência regional e geração estável em longa distância. |
+| ER-021 | T2-R1 | PARCIAL | Multi-bioma/multi-reino procedural por seed, rios/cachoeiras, relevo caminhável e localidades coerentes, persistência regional e geração estável em longa distância. |
 | ER-022 | T2-R1 | PLANEJADO | Pontes provisórias/reforçadas com custos, workers, acesso por classes de NPC/montarias, travessia e rotas recalculadas ao destruir ponte. |
 | ER-023 | T2-R1 | PLANEJADO | Grafo de rotas, navegação NPC/carga/expedição com margens, pontes, abrigos e bloqueio por raid; não caminhar através de água/estrutura sem permissão. |
 | ER-024 | T2-R1 | PLANEJADO | Streaming e simulação agregada de cidades longínquas, NPCs/estoques sem duplicação ao ativar/desativar regiões, custo previsível em mobile. |
@@ -148,3 +148,7 @@ A [revisão ER-001–020](runner-receipts/T1-F3.md#revisão-er-001020) documenta
 | ER-020 | Readback de scripts e tempo de geração em sessão isolada. | FPS, frame pacing, memória e conforto dos comandos em celular. |
 
 Os estados canônicos ER-001–020 permanecem PARCIAIS enquanto as provas de jogo e as decisões abertas estiverem pendentes. [Recibo T1-F6](runner-receipts/T1-F6.md) · [Readback](https://github.com/Sllay/Roblox-Studios/actions/runs/45498431957)
+
+### Preparação regional de T2-R1
+
+ER-021 possui um campo regional determinístico no laboratório, com testes de continuidade e comparação com a v18. As fontes regionais são candidatas e a prova de simulação, população e jogo móvel permanece pendente. ER-022–027 continuam planejados. A avaliação favorável da fundação v18 convive com a certificação pendente de ER-001–020. [Recibo de preparação](runner-receipts/T2-R1.md)

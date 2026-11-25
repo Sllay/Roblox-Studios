@@ -191,3 +191,9 @@ Correção v9 em desenvolvimento:
 - [FIXADO] Nova missão fala com duque, interação de proximidade abre diálogo original com câmera aproximando os dois em painel de RPG (estética geral de Stardew Valley sem copiar arte), duque explica seu passeio fora do castelo; só após diálogo a escolta começa.
 - [FIXADO] Mundo com 17 chunks totais (um central e oito para cada lado) de 64 studs; iniciar com 5 (central, dois para cada lado), expandir progressivamente conforme deslocamento; preserve áreas/seeds/saves existentes e avalie streaming mobile.
 - [ESCOPO] Nova rodada de refinamento da T1 após v17: T1-F4/F5/F6; T2 bloqueada. Proposta técnica detalhada: `docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md`.
+
+## 25/11/2026 — Avaliação da v18 e preparação técnica de T2-R1
+
+- [ESTADO] O criador avaliou positivamente a v18 como fundação e autorizou iniciar o trabalho técnico de T2-R1. O aceite de fundação é registrado separadamente do fechamento da T1.
+- [ESTADO] A certificação ER-001–020 continua pendente. A preparação segue em branch isolada, com ensaios sem gravação do Place. O staging continua v18 e o gate cumulativo permanece ativo.
+- [ABERTO] Escala final das regiões, progresso de regiões distantes, balanceamento e custos de montarias e embarcações. Os valores do laboratório são provisórios.

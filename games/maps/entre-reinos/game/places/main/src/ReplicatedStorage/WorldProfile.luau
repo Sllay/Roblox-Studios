@@ -59,7 +59,10 @@ function WorldProfile.sample(seed: number, x: number, z: number)
     local height = if wet then -6 else -6 + (surface + 6) * (bankBlend * bankBlend * (3 - 2 * bankBlend))
     local shore = riverDist < WorldProfile.RIVER_HALF_WIDTH + 15
     local material = if wet then "Mud" elseif shore then "Sand" elseif height > 32 then "Rock" else "Grass"
-    return {height = height, wet = wet, shore = shore, riverDist = riverDist, material = material}
+    return {
+        height = height, wet = wet, shore = shore, riverDist = riverDist, material = material,
+        waterSurface = if riverDist < 23 then WorldProfile.WATER_SURFACE else nil,
+    }
 end
 
 function WorldProfile.spawn(seed: number)

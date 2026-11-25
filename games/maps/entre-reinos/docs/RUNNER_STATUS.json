@@ -33,7 +33,7 @@
         "prePublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45498174949",
         "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45498437120"
       },
-      "userReview": "awaiting_creator_review",
+      "userReview": "foundation_accepted_certification_pending",
       "refinementCycles": [
         {
           "id": "T1-F1",
@@ -299,7 +299,13 @@
           "readbackStatus": "success",
           "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45421111025"
         }
-      ]
+      ],
+      "foundationAdvancement": {
+        "status": "creator_authorized_technical_preparation",
+        "revisionId": 18,
+        "recordedOn": "2026-11-25",
+        "certification": "pending_ER_001_to_ER_020"
+      }
     },
     {
       "id": "T2",
@@ -317,10 +323,10 @@
       "runners": [
         {
           "id": "T2-R1",
-          "status": "planned",
+          "status": "blocked",
           "commit": null,
           "ciRunUrl": null,
-          "receipt": null,
+          "receipt": "docs/runner-receipts/T2-R1.md",
           "validation": {
             "structure": "not_run",
             "luau": "not_run",
@@ -329,7 +335,11 @@
             "runtime": "not_run",
             "mobile": "not_run"
           },
-          "blockers": []
+          "blockers": [
+            "T1-R2 and T1-R3 are in progress; 20 T1 requirements still require cumulative release evidence.",
+            "Isolated T2-R1 development is authorized; no main integration or staging rollout before gates."
+          ],
+          "branch": "entre-reinos/t2-r1-world-regions"
         },
         {
           "id": "T2-R2",
@@ -431,7 +441,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T1_F6_staging_v18_awaiting_creator_review",
+  "programStage": "T2_R1_isolated_preparation_T1_certification_pending",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -513,8 +523,9 @@
       "validated": 0
     },
     "t2": {
-      "planned": 24,
-      "validated": 0
+      "planned": 23,
+      "validated": 0,
+      "partial": 1
     },
     "t3": {
       "planned": 14,
@@ -538,7 +549,7 @@
       "ER-020"
     ],
     "requirement": "All release requirements must have owner and real engine, mobile, save/load and human approval evidence; incomplete T1/T2 systems may not be pushed to T3.",
-    "next": "Creator staging v18 playtest and open death, ruin and refund decisions. Keep T2 blocked."
+    "next": "Certify T1 cumulatively and continue isolated T2-R1 preparation."
   },
   "evidenceHistory": [
     {
