@@ -132,6 +132,13 @@ local function refreshRig(kind: string): any
     return existing
 end
 
+local function detachRider(human: Humanoid)
+    local rig=if riding then rigs[riding] else nil
+    local weld=if rig then rig.seat:FindFirstChild("SeatWeld") else nil
+    if weld and weld:IsA("Weld") then weld:Destroy() end
+    human.Sit=false
+end
+
 local function clearRider(player: Player)
     if riding and rigs[riding] then Rig.animate(rigs[riding],0) end
     riding=nil
@@ -267,7 +274,7 @@ function Service.action(player: Player,arg: any): any
         local x=if arg=="disembark" and stop then stop.bank.x else record.position.x
         local y=if arg=="disembark" and stop then stop.bank.y else record.position.y
         if not World.isLoadedAt(x) then return {ok=false,error="terrain_not_ready"} end
-        human.Sit=false
+        detachRider(human)
         clearRider(player)
         root.CFrame=CFrame.new(x,y+4.1,0)
         root.AssemblyLinearVelocity=Vector3.zero
@@ -344,7 +351,7 @@ function Service.tick(dt: number)
             and not Work.deckAt(regional.home,record.position.x,0,"mount")
         if unsupported and record.lastLand and World.isLoadedAt(record.lastLand.x) then
             record.position=table.clone(record.lastLand)
-            human.Sit=false
+            detachRider(human)
             clearRider(player)
             root.CFrame=CFrame.new(record.position.x,record.position.y+4,0)
             root.AssemblyLinearVelocity=Vector3.zero

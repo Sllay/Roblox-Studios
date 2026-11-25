@@ -74,9 +74,15 @@ local function probeTravel(Travel,seed)
     task.wait(0.52)
     place(0,Profile.sample(seed,0,0).height+4)
     local denied=Travel.action(player,"travel")
-    assert(not denied.ok and denied.error=="save_busy" and root.Position.X<2)
+    assert(not denied.ok and denied.error=="save_busy" and math.abs(root.Position.X)<2,
+        string.format("failed fast travel changed state: ok=%s error=%s x=%s seat=%s writes=%d",
+            tostring(denied.ok),tostring(denied.error),tostring(root.Position.X),
+            tostring(human.SeatPart),writes))
     task.wait(0.52)
-    assert(Travel.action(player,"travel").ok and root.Position.X>1100 and writes==2)
+    local arrived=Travel.action(player,"travel")
+    assert(arrived.ok and root.Position.X>1100 and writes==2,
+        string.format("fast travel rejected: error=%s x=%s writes=%d",tostring(arrived.error),
+            tostring(root.Position.X),writes))
     Travel.stop()
     model:Destroy()
     folder:Destroy()
