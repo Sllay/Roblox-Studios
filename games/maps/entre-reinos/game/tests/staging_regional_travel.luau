@@ -1,10 +1,12 @@
 -- Real engine objects, synthetic player identity and explicit input pump.
-local function probeTravel(Travel,seed)
+local function probeTravel(Travel,BridgeScene,seed)
     local Profile=loadCandidate("RegionalProfile")
     local Regions=loadCandidate("RegionalWorld")
     local Living=loadCandidate("LivingModel")
     local Inventory=loadCandidate("Inventory")
     local R3=loadCandidate("R3Engine")
+    local Work=loadCandidate("WorkEngine")
+    local Structures=loadCandidate("StructureDefs")
     local home=Living.new(seed)
     R3.ensure(home,false)
     home.r3.wallet=12
@@ -45,16 +47,47 @@ local function probeTravel(Travel,seed)
     local horseSeat=human.SeatPart
     assert(horseSeat and horseSeat.Occupant==human,"engine did not create horse seat weld")
     assert(not Travel.steer({},1) and not Travel.steer(player,math.huge))
-    for _=1,12 do
-        assert(Travel.steer(player,1))
-        Travel.tick(0.1)
-        task.wait(0.055)
+    local function drive(ticks,target,vehicle)
+        for _=1,ticks do
+            assert(Travel.steer(player,1))
+            Travel.tick(0.1)
+            task.wait(0.055)
+            if session.record[vehicle].position.x>=target then break end
+        end
     end
+    drive(12,35,"mount")
     assert(session.record.mount.position.x>20 and session.record.mount.energy<100)
     assert(math.abs(root.Position.X-session.record.mount.position.x)<2,
         "saddle moved without the rider")
+    local crossing=session.graph.crossings[3]
+    drive(30,crossing.east.x+7,"mount")
+    assert(session.record.mount.position.x<(crossing.west.x+crossing.east.x)/2,
+        "horse entered deep water without a reinforced deck")
+    local built,bridge=Work.place(home,"bridge_reinforced",crossing.west.x+1)
+    assert(built)
+    local def=Structures.get("bridge_reinforced")
+    -- Construction and payment are exercised by probeRegionalModels.
+    bridge.progress,bridge.state,bridge.delivered=def.buildSeconds,"complete",table.clone(def.cost)
+    BridgeScene.sync(folder,bridge,crossing,def.buildSeconds)
+    drive(90,crossing.east.x+6,"mount")
+    assert(session.record.mount.position.x>crossing.east.x and root.Position.X>crossing.east.x,
+        "reinforced bridge failed to carry the horse and rider")
     assert(Travel.action(player,"dismount").ok)
-    task.wait(0.5)
+    assert(R3.damageStructure(home,bridge,300))
+    BridgeScene.sync(folder,bridge,crossing,def.buildSeconds)
+    task.wait(0.52)
+
+    local edge=529
+    local elevation=Profile.sample(seed,edge,0).height
+    session.record.mount.position={x=edge,y=elevation,z=0}
+    place(edge,elevation+4)
+    assert(Travel.action(player,"mount").ok)
+    task.wait(0.15)
+    drive(90,560,"mount")
+    assert(Profile.regionAt(root.Position.X)==1,
+        "mounted rider failed to traverse the legacy region boundary")
+    assert(Travel.action(player,"dismount").ok)
+    task.wait(0.52)
 
     local boat=session.record.boat
     local original=table.clone(boat.position)
@@ -88,5 +121,5 @@ local function probeTravel(Travel,seed)
     Travel.stop()
     model:Destroy()
     folder:Destroy()
-    return {movedHorse=true,sailed=true,cargo=true,failedTravelRecovered=true,authorizedSteering=true}
+    return {movedHorse=true,deepWaterBlocked=true,mountedBridge=true,regionalRide=true,sailed=true,cargo=true,failedTravelRecovered=true,authorizedSteering=true}
 end

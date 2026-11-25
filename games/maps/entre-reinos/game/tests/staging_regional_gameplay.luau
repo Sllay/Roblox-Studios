@@ -28,6 +28,8 @@ local function probeNewSave(first,second,main,backups,seed,player,worldKey,http,
     player.Character=traveller
     regional.record.mount={id="horse:1",position={x=town.x,y=town.y,z=0},health=85,energy=57}
     regional.record.rider="mount"
+    regional.record.boat={id="boat:2",position={x=76,y=10,z=0},health=91,cargo=Inventory.new(36)}
+    assert(Inventory.add(regional.record.boat.cargo,"wood",3))
     first.setLivingProvider(function() return home,Regions.snapshot(regional) end)
 
     setBackupFault(true)
@@ -45,6 +47,7 @@ local function probeNewSave(first,second,main,backups,seed,player,worldKey,http,
     local reopened,record=second.open(player,1)
     assert(reopened and record.rulesetVersion==4 and Slots.spawnPosition(record).x==town.x)
     assert(record.regionWorld.mount.energy==57 and record.regionWorld.rider=="mount")
+    assert(Inventory.count(record.regionWorld.boat.cargo,"wood")==3)
     local restored=assert(Regions.new(seed,record.living,record.regionWorld,Slots.spawnPosition(record)))
     assert(Regions.activate(restored,town.x).npcs[1].id==city.npcs[1].id)
     assert(Inventory.weight(restored.record.foreign.buildings[2].stored)==storage)
@@ -60,7 +63,7 @@ local function probeNewSave(first,second,main,backups,seed,player,worldKey,http,
     assert(second.save(player,true))
     traveller:Destroy()
     return {migrated=true,backup=true,retry=true,foreignReopen=true,foreignStockMass=storage,
-        mountState=true,travelCheckpoint=true,workTicks=900,workMs=workMs,recordBytes=#http:JSONEncode(record)}
+        mountState=true,boatCargoState=true,travelCheckpoint=true,workTicks=900,workMs=workMs,recordBytes=#http:JSONEncode(record)}
 end
 
 local function probeRegionalModels(BridgeScene,Rig,routes,seed)
