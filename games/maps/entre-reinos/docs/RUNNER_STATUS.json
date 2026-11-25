@@ -324,8 +324,8 @@
         {
           "id": "T2-R1",
           "status": "blocked",
-          "commit": "c1ed145bf2accd8d1be7e91510f478ff0857ba04",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45526915008",
+          "commit": "d608006e58772303befe015625d028875617fd49",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45527380081",
           "receipt": "docs/runner-receipts/T2-R1.md",
           "validation": {
             "structure": "pass",
@@ -336,12 +336,12 @@
             "mobile": "not_run"
           },
           "blockers": [
-            "T1-R2 and T1-R3 are in progress; 20 T1 requirements still require cumulative release evidence.",
+            "T1-R2 and T1-R3 are in progress. Twenty T1 requirements still require cumulative release evidence.",
             "Isolated T2-R1 development is authorized; no main integration or staging rollout before gates."
           ],
           "branch": "entre-reinos/t2-r1-world-regions",
           "pr": "https://github.com/Sllay/Roblox-Studios/pull/13",
-          "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45526909470",
+          "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45527372966",
           "baselineReadbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45526678248",
           "baselineSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45525381881"
         },
