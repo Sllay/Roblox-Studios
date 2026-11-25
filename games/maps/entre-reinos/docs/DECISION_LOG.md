@@ -204,3 +204,11 @@ Correção v9 em desenvolvimento:
 - [PROVISÓRIO] A passagem reforçada permite montaria com capacidade controlada. Se o tabuleiro cair sob um agente, a recuperação usa a última margem comprovada e mantém sua carga. Custos, capacidade e recuperação definitiva aguardam playtest.
 - [PROVISÓRIO] O cavalo custa 12 moedas e o barco opcional liga as duas docas do rio do Vale. O transporte de carga inicial aceita madeira. Viagem rápida exige visita às duas capitais e confirmação do save do destino.
 - [ABERTO] Balanceamento e aparência em partida, parâmetros de montaria e barco, escala final e política de tempo distante. As decisões da T1 sobre perdas permanecem no gate próprio.
+
+## 25/11/2026 — Certificação individual e regras de recuperação em avaliação
+
+- [ESTADO] O aceite da v18 como fundação permite o trabalho técnico em branch. Os requisitos ER-001–020 continuam sujeitos às respectivas evidências e à certificação individual.
+- [PROPOSTA] Retorno ao castelo com equipamento preservado e, se aprovado, perda parcial de moedas para uma bolsa recuperável uma vez. Permanecem abertos o valor, a duração, as permissões de coleta e as consequências de derrota. O candidato conserva carteira e bolsa e encerra apenas o vínculo do jogador morto com o veículo.
+- [PROPOSTA] Liberar reservas no cancelamento e permitir que trabalhadores recuperem materiais entregues. A regra provisória usa pilhas físicas. Em ponte, a pilha fica na margem de trabalho da população proprietária. O cancelamento de um reforço em andamento depende da regra de crédito dos materiais reaproveitados.
+- [ABERTO] Na ruína de galpão, definir o destino do roubo e a partição configurável entre perdido, roubado e recuperável. Até essa decisão, o estoque permanece isolado e uma reparação não recria recursos.
+- [PROPOSTA] Economia agregada em regiões distantes durante uma sessão ativa, com custódia e progresso confirmados por região. O tempo de save fechado continua uma decisão independente. [Mapa T2-R2](T2_R2_INTEGRATION_MAP.md)

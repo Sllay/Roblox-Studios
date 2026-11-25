@@ -335,3 +335,11 @@ A branch isolada carrega o perfil regional no Boot, convida o jogador a construi
 ## 25/11/2026 — regressão de montagem e travessia corrigida no PR #13
 
 O candidato `04d9be796ae944324b7ffd61bba6d2f93ffeeee3` passou no probe Roblox com R6 sintético, incluindo espera na margem, ponte reforçada, remontagem, fronteira, barco com carga e retry da viagem. A migração v18, o restore do segundo reino, a montaria e a carga também passaram no DataStore isolado. O status do runner permanece bloqueado para integração pela certificação da T1 e pela prova em cliente/mobile. A main e o staging v18 foram preservados. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45658252612) · [Motor](https://github.com/Sllay/Roblox-Studios/actions/runs/45658231902) · [Recibo](runner-receipts/T2-R1.md)
+
+## 25/11/2026 — Certificação e prévia regional
+
+O PR #13 recebeu `7bf8a7bafc9e7cf6d0da893fb813ecab3ff4bc55`. Ao morrer montado ou a bordo, o jogador perde o vínculo com o assento e volta ao castelo, inclusive ao reabrir um save com recuperação pendente. Veículo e carga ficam onde estavam. O cancelamento e a ruína de pontes colocam os materiais recuperáveis na margem usada pelos trabalhadores. VILA → ESTOQUE aponta para a Vila do Cedro até a primeira visita. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45671239634) · [Motor](https://github.com/Sllay/Roblox-Studios/actions/runs/45671224264) · [Recibo](runner-receipts/T2-R1.md)
+
+O criador aceitou a v18 para continuar o desenvolvimento. A [revisão individual da T1](T1_CERTIFICATION_V18.md) identifica as provas técnicas reaproveitadas, os ensaios em cliente e as decisões de recuperação pendentes. Os requisitos formais continuam parciais. O PR segue em rascunho e staging em v18. Uma prévia antecipada exige autorização formal registrada, com destino identificado e workflow aprovado para o SHA. O [roteiro da prévia](T2_R1_PLAYTEST.md) contém os passos depois da liberação e o plano de preservação da v18.
+
+O [mapa T2-R2](T2_R2_INTEGRATION_MAP.md) cobre ER-028–035. A proposta de avanço agregado durante sessão ativa usa o mesmo estado de produção regional. O avanço offline continua aberto. A implementação aguarda fechamento dos gates da T1 e T2-R1.
