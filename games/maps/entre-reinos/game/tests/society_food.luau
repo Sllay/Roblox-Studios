@@ -21,6 +21,11 @@ state.buildings={farm,storage,shop}
 state.nextBuildingId=4
 worker.x,worker.z=0,-4.4
 Production.ensure(state)
+Needs.seedLandscape(state,0)
+-- This fixture isolates cooked food from the concurrent renewable orchard.
+for index,site in ipairs(state.sites) do
+    if site.id=="forage_orchard" then table.remove(state.sites,index);break end
+end
 assert(Work.changeProfession(state,worker,"farmer"))
 assert(Inventory.add(worker.inventory,"grain",1))
 assert(Inventory.add(storage.stored,"wood",3))

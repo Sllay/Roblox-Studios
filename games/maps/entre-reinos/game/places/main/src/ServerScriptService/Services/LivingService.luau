@@ -364,11 +364,11 @@ local function buildVisual(b: any)
         end
     elseif b.typeId=="farm" then
         for row=-1,1 do
-            buildPiece(model,b,"Soil",Vector3.new(12,0.3,1.4),
+            buildPiece(model,b,"Soil",Vector3.new(def.footprint-1,0.3,1.4),
                 Vector3.new(0,0.75,row*2),Color3.fromRGB(117,81,48))
             for column=-2,2 do
                 local plant=buildPiece(model,b,"Crop",Vector3.new(0.55,1.1,0.58),
-                    Vector3.new(column*2,1.4,row*2),Color3.fromRGB(132,151,67))
+                    Vector3.new(column*1.3,1.4,row*2),Color3.fromRGB(132,151,67))
                 plant.CanCollide=false
             end
         end
@@ -504,6 +504,22 @@ local function createSiteVisual(site: any)
         high.OutlineTransparency=0.1
         high.Enabled=site.marked==true and site.remaining>0
         high.Parent=tree
+    elseif site.id=="forage_orchard" then
+        local bush=Instance.new("Model")
+        bush.Name="ForageOrchard"
+        local canopy=makePart(bush,"Canopy",Vector3.new(4.4,2.5,3.2),Color3.fromRGB(72,128,78))
+        canopy.Shape=Enum.PartType.Ball
+        canopy.Position=Vector3.new(site.x,pos.height+1.35,z)
+        canopy.CanCollide=false
+        for i=1,5 do
+            local berry=makePart(bush,"Berry",Vector3.new(0.42,0.42,0.42),Color3.fromRGB(210,83,67))
+            berry.Shape=Enum.PartType.Ball
+            berry.Position=Vector3.new(site.x+(i-3)*0.63,pos.height+1.5+(i%2)*0.6,z+1.12)
+            berry.CanCollide=false
+            berry.CanQuery=false
+        end
+        bush.Parent=visualization
+        anchor=canopy
     else
         -- Each resource has its own recognizable shape and palette.
         local color=if site.item=="stone" then Color3.fromRGB(126,131,130)
@@ -605,6 +621,20 @@ local function draw(observerX: number)
     end
     for _,site in ipairs(state.sites) do
         if not siteVisuals[site.id] and WorldService.isLoadedAt(site.x) then createSiteVisual(site) end
+        local anchor=siteVisuals[site.id]
+        if site.id=="forage_orchard" and anchor and anchor.Parent then
+            local count=math.ceil(site.remaining*5/9)
+            if anchor:GetAttribute("ER_FruitCount")~=count then
+                anchor:SetAttribute("ER_FruitCount",count)
+                local index=0
+                for _,fruit in ipairs(anchor.Parent:GetChildren()) do
+                    if fruit:IsA("BasePart") and fruit.Name=="Berry" then
+                        index+=1
+                        fruit.Transparency=if index<=count then 0 else 1
+                    end
+                end
+            end
+        end
         if site.item=="wood" and visualization then
             local tree=visualization:FindFirstChild("HarvestableTree_"..tostring(site.id))
             if tree and tree:IsA("Model") then

@@ -277,6 +277,12 @@ local WORK_ITEMS={"wood","stone","iron","food","plank","metal","grain","meat","l
 local function gatherSkill(item: string): string
     return if item=="wood" then "woodcut" elseif item=="stone" or item=="iron" then "mining" else "gather"
 end
+local function sourceDepth(state: any,site: any): number
+    if site.item=="wood" then
+        return (site.z or -6)+(if state.production and not site.salvage then 2.2 else 0)
+    end
+    return site.z or -4
+end
 local function gatherTool(item: string): string
     return if item=="wood" then "axe" elseif item=="food" then "hoe" else "pick"
 end
@@ -892,7 +898,7 @@ function Engine.step(state: any, dt: number)
                 if not storage or not source or not item
                     or source.item~=item then
                     clearJob(npc,state)
-                elseif Engine.walkResident(state,npc,source.x,dt,source.z or (if source.item=="wood" then -6 else -4)) and working(npc,dt*Production.toolRate(npc,gatherTool(item))*Needs.rate(npc,gatherSkill(item)),"collect") then
+                elseif Engine.walkResident(state,npc,source.x,dt,sourceDepth(state,source)) and working(npc,dt*Production.toolRate(npc,gatherTool(item))*Needs.rate(npc,gatherSkill(item)),"collect") then
                     local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc),
                         storageSpace(state,storage,item,npc))
                     if n>0 and Inventory.add(npc.inventory,item,n) then
@@ -932,7 +938,7 @@ function Engine.step(state: any, dt: number)
                     if not storage and (not site or site.item~=item) then
                         clearJob(npc,state)
                     elseif Engine.walkResident(state,npc,if storage then storage.x else site.x,dt,
-                        if storage then -5 else site.z or (if site.item=="wood" then -6 else -4))
+                        if storage then -5 else sourceDepth(state,site))
                         and working(npc,dt*(if storage then 1 else Production.toolRate(npc,gatherTool(item))*Needs.rate(npc,gatherSkill(item))),
                             if storage then "load" else "collect") then
                         local available=if storage then Engine.stockAvailable(state,storage,item,npc)

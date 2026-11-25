@@ -8,7 +8,7 @@ Structures.all = {
         buildSeconds=28, health=140, storageMass=0, kind="production", height=7},
     forge = {label="Forja", footprint=11, maxSlope=4, cost={stone=12,plank=4},
         buildSeconds=32, health=180, storageMass=0, kind="production", height=10},
-    farm = {label="Horta", footprint=13, maxSlope=3, cost={wood=6},
+    farm = {label="Horta", footprint=8, maxSlope=5, cost={wood=6},
         buildSeconds=16, health=100, storageMass=0, kind="farm", height=2},
     bridge_light = {label="Ponte provisória", footprint=8, maxSlope=4, cost={wood=12},
         buildSeconds=26, health=95, storageMass=0, kind="crossing", tier="light", height=4},

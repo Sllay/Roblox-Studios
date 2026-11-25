@@ -28,6 +28,7 @@ end
 function Needs.valid(state: any): boolean
     local data=state.production
     if not data then return true end
+    if data.orchardClock~=nil and not finite(data.orchardClock,0,100) then return false end
     if data.fauna~=nil then
         local seen={}
         if type(data.fauna)~="table" or #data.fauna>FAUNA_LIMIT
@@ -87,6 +88,14 @@ function Needs.seedLandscape(state: any,origin: number)
             break
         end
     end
+    for _,offset in ipairs({23,-25,12,-14,30,-31}) do
+        local x=origin+offset
+        if #state.sites<256 and terrainSafe(state,x,3.5) then
+            table.insert(state.sites,{id="forage_orchard",item="food",x=x,z=3.5,remaining=9})
+            data.orchardClock=0
+            break
+        end
+    end
 end
 
 local function complete(b: any): boolean
@@ -114,6 +123,18 @@ function Needs.stepLand(state: any,dt: number)
         elseif b.plot.stage=="grow" then
             b.plot.progress=math.min(30,b.plot.progress+dt*(if b.plot.irrigated then 1 else 0.48))
             if b.plot.progress>=30 then b.plot.stage="harvest" end
+        end
+    end
+    if data.orchardClock~=nil then
+        data.orchardClock=math.min(100,data.orchardClock+dt)
+        if data.orchardClock>=100 then
+            for _,site in ipairs(state.sites) do
+                if site.id=="forage_orchard" then
+                    site.remaining=math.min(9,site.remaining+1)
+                    break
+                end
+            end
+            data.orchardClock=0
         end
     end
     if not data.fauna then return end
@@ -175,6 +196,18 @@ function Needs.care(state: any,npc: any,dt: number,work: any): boolean
             if work.walkResident(state,npc,depot.x,dt,-4.4) and work.stockAvailable(state,depot,"food")>0
                 and Inventory.take(depot.stored,"food",1) then
                 npc.hunger-=45
+                npc.state="idle"
+            end
+            return true
+        end
+        for _,site in ipairs(state.sites) do
+            if site.item~="food" or work.sourceAvailable(state,site)<1
+                or not work.canReach(state,npc.x,site.x,"worker") then continue end
+            if npc.state~="meal" then work.releaseWorker(state,npc);npc.state="meal" end
+            if work.walkResident(state,npc,site.x,dt,site.z or -4)
+                and work.sourceAvailable(state,site)>0 then
+                site.remaining-=1
+                npc.hunger=math.max(0,npc.hunger-45)
                 npc.state="idle"
             end
             return true

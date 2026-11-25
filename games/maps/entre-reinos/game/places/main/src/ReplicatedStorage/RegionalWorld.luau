@@ -198,13 +198,13 @@ local function planCedro(town: any,origin: number)
     end
     if town.production.stewardPlanned then return end
     if not farm then
-        for _,offset in ipairs({45,-45,56,-63,75}) do
-            if Work.place(town,"farm",origin+offset) then farm=true;break end
+        for offset=20,112,2 do
+            if Work.place(town,"farm",origin+offset) or Work.place(town,"farm",origin-offset) then break end
         end
     end
     if not workshop then
-        for _,offset in ipairs({21,-45,55,-63,75,-78}) do
-            if Work.place(town,"workshop",origin+offset) then workshop=true;break end
+        for offset=20,112,2 do
+            if Work.place(town,"workshop",origin+offset) or Work.place(town,"workshop",origin-offset) then break end
         end
     end
     town.production.stewardPlanned=true

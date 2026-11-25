@@ -34,7 +34,7 @@ def bundle_source():
                                f'local {variable} = loadCandidate("{name}")', saves, count=1)
         assert count == 1, variable
 
-    tests = ("production", "food", "market", "relationships", "regions")
+    tests = ("production", "food", "market", "relationships", "regions", "soak")
     suites = [
         f'local start_{name}=os.clock()\ndo\n{candidate((TESTS / f"society_{name}.luau").read_text())}\nend\n'
         f'report.milliseconds["{name}"]=(os.clock()-start_{name})*1000'
