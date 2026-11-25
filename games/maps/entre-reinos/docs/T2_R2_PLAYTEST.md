@@ -1,6 +1,6 @@
 # Prévia econômica T2-R2 · ER-028 a ER-035
 
-O [PR #14](https://github.com/Sllay/Roblox-Studios/pull/14) tem como base a branch regional do PR #13. O candidato contém a camada econômica e social testada em execução descartável na v19. As revisões publicadas e o aceite humano estão no [recibo](runner-receipts/T2-R2.md).
+A prévia econômica **v20** está disponível no staging existente do Entre Reinos. A API confirmou a revisão, o readback verificou 45 scripts e o Scene Sync posterior confirmou o mesmo digest. O [PR #14](https://github.com/Sllay/Roblox-Studios/pull/14) permanece em rascunho. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45723519651)
 
 ## Roteiro de partida
 

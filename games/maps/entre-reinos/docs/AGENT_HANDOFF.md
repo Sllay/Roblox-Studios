@@ -363,3 +363,7 @@ O criador confirmou as duas categorias de construção de ponte, a travessia do 
 ## 25/11/2026 — Candidato T2-R2 e preparo de playtest
 
 O [PR #14](https://github.com/Sllay/Roblox-Studios/pull/14) contém os checkpoints A–F, com a branch T2-R1 como base. O código `c905eca3437ecd124c6afac6cce0df21df31f8e1` passou em CI e no motor v19, em sessão descartável. A migração 4 → 5 usa backup por slot e o avanço distante vale apenas durante a sessão. O ensaio de dois reinos cobriu 2.400 s de simulação. O staging v19 segue publicado e a nova prévia depende de autorização específica. [Recibo](runner-receipts/T2-R2.md) · [Roteiro e publicação](T2_R2_PLAYTEST.md)
+
+## 25/11/2026 — Prévia econômica v20 disponível
+
+O candidato `c905eca3437ecd124c6afac6cce0df21df31f8e1` foi publicado no staging existente após autorização específica para substituir a v19 e migrar saves compatíveis de ruleset 4 para 5. O readback verificou 45 scripts e o Scene Sync posterior confirmou o digest. O rollback exato da v19 está arquivado. A próxima ação é o playtest do criador. [Jogar](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R2.md) · [Roteiro](T2_R2_PLAYTEST.md)

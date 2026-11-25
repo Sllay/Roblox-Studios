@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-25",
-  "note": "The T2-R2 staging preview of c905eca is authorized on the existing Place with protected save migration from ruleset 4 to 5. Player certification remains open.",
+  "note": "The authorized T2-R2 development preview is live on the existing Entre Reinos staging v20. API confirmation, independent script hashes and post-publish Scene Sync passed. Creator playtest and formal certification remain open.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -395,7 +395,7 @@
             "unit": "pass",
             "rojo": "pass",
             "runtime": "pass_disposable_roblox_v19_ruleset_4_to_5_datastore_and_society",
-            "mobile": "awaiting_published_preview_and_creator_playtest"
+            "mobile": "awaiting_creator_playtest"
           },
           "blockers": [
             "T1 and T2-R1 certification still governs final integration. Development is authorized."
@@ -405,7 +405,7 @@
           "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45694260806",
           "pr": "https://github.com/Sllay/Roblox-Studios/pull/14",
           "developmentPreview": {
-            "status": "authorized_staging_v19_replacement",
+            "status": "published_awaiting_creator_playtest",
             "baselineRevision": 19,
             "universeId": "10769712413",
             "placeId": "90623742498445",
@@ -415,7 +415,23 @@
             "authorizedSaveMigration": "ruleset_4_to_5_with_existing_backups",
             "authorizationDate": "2026-11-25",
             "prePublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723157400",
-            "baselineDigest": "4791eeead3928fe5187339b982f594a71987866b6ee263d06fe41b1453b0d482"
+            "baselineDigest": "4791eeead3928fe5187339b982f594a71987866b6ee263d06fe41b1453b0d482",
+            "revision": 20,
+            "publicationDate": "2026-11-25",
+            "workflowCommit": "1915abdc665785140ee1139e600459db4d395874",
+            "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249",
+            "robloxConfirmed": true,
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249/job/139587008104",
+            "readbackStatus": "success",
+            "scriptsVerified": 45,
+            "buildSha256": "63d2ffe7261cb815dfe514a0ad9498e4259bf8364410c87db50708954a0e470f",
+            "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723519651",
+            "postPublishSceneDigest": "ac7bccae902771c3e1c250886119741a0e2033772e74b650476ebda57e0c726c",
+            "rollbackBuildSha256": "1c18dfcebe528e3aa693db951148607cc417a5632c5ebc4e0418d3397466b885",
+            "rollbackScriptsVerified": 41,
+            "rollbackArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249/artifacts/15073386602",
+            "evidenceArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249/artifacts/15073622153",
+            "playUrl": "https://www.roblox.com/games/90623742498445"
           }
         },
         {
@@ -502,7 +518,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R2_authorized_staging_preview_pending_publication",
+  "programStage": "T2_R2_staging_preview_published_awaiting_creator_playtest",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
