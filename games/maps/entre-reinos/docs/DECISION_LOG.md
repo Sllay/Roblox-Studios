@@ -234,3 +234,8 @@ Correção v9 em desenvolvimento:
 - [PROVISÓRIO] Preços variam por estoque dentro de limites. Salário de uma moeda por dia quando a tesouraria tem saldo e imposto de uma moeda a partir de quatro na bolsa do morador. Tributo custa três moedas; acordo reduz a unidade do valor do frete.
 - [PROVISÓRIO] Plantio usa um grão e colhe quatro. Crescimento leva 30 s de simulação irrigada e é mais lento em solo seco. Reposição dos frutos é limitada e depende de tempo de sessão. Dois animais preservam o piso de reprodução.
 - [ESTADO] A produção distante roda durante sessão ativa. O avanço offline continua em aberto. Nenhum destes valores equivale a balanceamento final aprovado.
+
+## 25/11/2026 — Prévia T2-R2 autorizada
+
+- [AUTORIZADO PELO CRIADOR] Publicar o candidato `c905eca3437ecd124c6afac6cce0df21df31f8e1` do PR #14 no staging existente, Universe `10769712413`, Place `90623742498445`, substituindo a v19.
+- [AUTORIZADO PELO CRIADOR] Migrar saves compatíveis de ruleset 4 para 5 com backup por slot, preservando os seis slots. A autorização exclui deleção de saves e publicação em produção. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r2)

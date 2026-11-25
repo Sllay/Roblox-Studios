@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-25",
-  "note": "The creator confirmed bridge construction and player restrictions plus biome exploration in staging v19, and authorized T2-R2 development. The T2-R2 candidate passed CI and an isolated Roblox/DataStore probe. A new preview awaits specific authorization.",
+  "note": "The T2-R2 staging preview of c905eca is authorized on the existing Place with protected save migration from ruleset 4 to 5. Player certification remains open.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -398,21 +398,24 @@
             "mobile": "awaiting_published_preview_and_creator_playtest"
           },
           "blockers": [
-            "T1 and T2-R1 certification still governs final integration. Development is authorized.",
-            "An intermediate T2-R2 staging publication requires its own authorization."
+            "T1 and T2-R1 certification still governs final integration. Development is authorized."
           ],
           "integrationMap": "docs/T2_R2_INTEGRATION_MAP.md",
           "branch": "entre-reinos/t2-r2-society",
           "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45694260806",
           "pr": "https://github.com/Sllay/Roblox-Studios/pull/14",
           "developmentPreview": {
-            "status": "awaiting_specific_authorization",
+            "status": "authorized_staging_v19_replacement",
             "baselineRevision": 19,
             "universeId": "10769712413",
             "placeId": "90623742498445",
             "plan": "docs/T2_R2_PLAYTEST.md",
             "stagingSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45694418587",
-            "candidate": "c905eca3437ecd124c6afac6cce0df21df31f8e1"
+            "candidate": "c905eca3437ecd124c6afac6cce0df21df31f8e1",
+            "authorizedSaveMigration": "ruleset_4_to_5_with_existing_backups",
+            "authorizationDate": "2026-11-25",
+            "prePublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723157400",
+            "baselineDigest": "4791eeead3928fe5187339b982f594a71987866b6ee263d06fe41b1453b0d482"
           }
         },
         {
@@ -499,7 +502,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R2_technical_candidate_awaiting_staging_authorization_and_creator_review",
+  "programStage": "T2_R2_authorized_staging_preview_pending_publication",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",

@@ -1,4 +1,4 @@
-"""Publish the approved T2-R1 preview to its existing staging Place."""
+"""Publish the approved T2-R2 preview to its existing staging Place."""
 
 from __future__ import annotations
 
@@ -22,13 +22,16 @@ import scene_sync
 
 
 GAME = "entre-reinos"
-CANDIDATE = "f7d4ac685f2372d066cdf49a19b2b978f2454745"
-V18_UNIVERSE = "10769712413"
-V18_PLACE = "90623742498445"
+CANDIDATE = "c905eca3437ecd124c6afac6cce0df21df31f8e1"
+STAGING_UNIVERSE = "10769712413"
+STAGING_PLACE = "90623742498445"
 # Verified with the official Place Provision inventory run 45681890920.
 OWNER = ("User", "8136365379")
 SCRIPT_CLASSES = {"Script", "LocalScript", "ModuleScript"}
-ROLLBACK_SHA = "98f81262ff93066c759b915253d557193e3efc9f"
+BASELINE_VERSION = 19
+BASELINE_DIGEST = "4791eeead3928fe5187339b982f594a71987866b6ee263d06fe41b1453b0d482"
+ROLLBACK_SHA = "f7d4ac685f2372d066cdf49a19b2b978f2454745"
+ROLLBACK_BUILD_SHA = "1c18dfcebe528e3aa693db951148607cc417a5632c5ebc4e0418d3397466b885"
 
 require = scene_sync.require
 
@@ -36,7 +39,7 @@ require = scene_sync.require
 def checked_target(plan, games, targets):
     require(plan.get("candidate") == CANDIDATE, "Unapproved preview candidate")
     target = deploy.resolve(games, targets, GAME, "main", "staging")
-    for field, expected in (("universeId", V18_UNIVERSE), ("placeId", V18_PLACE)):
+    for field, expected in (("universeId", STAGING_UNIVERSE), ("placeId", STAGING_PLACE)):
         require(plan.get(field) == target[field] == expected, f"Unauthorized preview {field}")
     require(target["fullPlaceBuildAuthoritative"], "Full Place replacement is disabled")
     production = targets[GAME]["environments"]["production"]
@@ -44,10 +47,9 @@ def checked_target(plan, games, targets):
             "Unexpected production mapping")
     require(plan.get("action") == "publish" and plan.get("confirmFullReplacement") is True,
             "Explicit staging replacement confirmation required")
-    require(plan.get("expectedVersion") == 18, "This preview only replaces staging v18")
-    baseline = scene_sync.read(scene_sync.state_path(target))
-    require(baseline["loadedVersion"] == 18 and baseline["stateDigest"] == plan.get("expectedDigest"),
-            "Review the current staging v18 Scene Sync baseline")
+    require(plan.get("expectedVersion") == BASELINE_VERSION
+            and plan.get("expectedDigest") == BASELINE_DIGEST,
+            "This preview only replaces the reviewed staging v19 baseline")
     return target
 
 
@@ -55,7 +57,7 @@ def check_identity(target, key):
     identity = place_provision.task(target, key, "identity")
     require(identity.get("verified") is True, "Staging identity unverified")
     require((identity["creatorType"], identity["creatorId"]) == OWNER, "Staging owner mismatch")
-    require(identity["loadedVersion"] == 18, "Staging is no longer at v18")
+    require(identity["loadedVersion"] == BASELINE_VERSION, "Staging is no longer at v19")
 
 
 def script_hashes(artifact):
@@ -90,38 +92,45 @@ def verify_scripts(expected, observed):
     require(hashes == expected, "Roblox script hashes differ from the checked build")
 
 
-def publish(target, key, out, plan):
+def publish(target, key, out):
     artifact = target["file"]
     hashes = script_hashes(artifact)
-    rollback_file = out / "entre-reinos-v18-rollback.rbxlx"
+    rollback_file = out / "entre-reinos-v19-rollback.rbxlx"
+    rollback_build = hashlib.sha256(rollback_file.read_bytes()).hexdigest()
+    require(rollback_build == ROLLBACK_BUILD_SHA, "Rollback differs from the published v19 build")
     rollback_scripts = script_hashes(rollback_file)
     subprocess.run([sys.executable, str(deploy.ROOT / "tools/script_quality.py")], check=True)
 
     check_identity(target, key)
-    historical = scene_sync.capture(target, key, read_version=18)
-    require(historical["loadedVersion"] == 18 and historical["stateDigest"] == plan["expectedDigest"],
-            "Historical v18 rollback scene not verified")
+    historical = scene_sync.capture(target, key, read_version=BASELINE_VERSION)
+    require(historical["loadedVersion"] == BASELINE_VERSION and historical["stateDigest"] == BASELINE_DIGEST,
+            "Historical v19 rollback scene not verified")
     verify_scripts(rollback_scripts, historical)
     scene_sync.write(out / "baseline.json", historical)
     rollback = {
-        "candidate": ROLLBACK_SHA, "revision": 18, "sceneDigest": historical["stateDigest"],
-        "artifactSha256": hashlib.sha256(rollback_file.read_bytes()).hexdigest(),
+        "candidate": ROLLBACK_SHA, "revision": BASELINE_VERSION, "sceneDigest": historical["stateDigest"],
+        "artifactSha256": rollback_build,
         "scriptsVerified": len(rollback_scripts),
     }
     scene_sync.write(out / "rollback.json", rollback)
     print("PREVIEW_ROLLBACK", json.dumps(rollback), flush=True)
 
-    # Official publisher compares the current scene against the recorded v18
-    # baseline again immediately before sending the Assets API write.
+    # The approved gameplay commit predates the v19 Scene Sync. Refresh the
+    # disposable checkout's baseline so the official publisher can still
+    # compare the current scene immediately before the Assets API write.
+    path = scene_sync.state_path(target)
+    original = path.read_bytes()
     result = io.StringIO()
     try:
+        scene_sync.write(path, historical)
         with redirect_stdout(result):
             deploy.publish(target, key)
     finally:
+        path.write_bytes(original)
         print(result.getvalue(), end="", flush=True)
     match = re.search(rf"^SUCCESS: Place {target['placeId']}, revision ([1-9][0-9]*)$",
                       result.getvalue(), re.MULTILINE)
-    require(match and int(match[1]) > 18, "Roblox published revision unconfirmed")
+    require(match and int(match[1]) > BASELINE_VERSION, "Roblox published revision unconfirmed")
     scene_sync.write(out / "publication.json", {
         "candidate": CANDIDATE, "universeId": target["universeId"], "placeId": target["placeId"],
         "revision": int(match[1]), "isPublished": True, "baselineDigest": historical["stateDigest"],
@@ -161,7 +170,7 @@ def main():
     key = os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY")
     require(key, "Existing staging Open Cloud credential is unavailable")
     if args.phase == "publish":
-        publish(target, key, args.output, plan)
+        publish(target, key, args.output)
     else:
         readback(target, key, args.output)
 
