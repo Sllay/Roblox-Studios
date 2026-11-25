@@ -77,6 +77,20 @@ function Engine.deckAt(state: any, x: number, z: number, class: string): (number
     return nil,nil
 end
 
+function Engine.deckHasSpace(state: any,crossing: any,class: string,entrant: any?): boolean
+    local b=bridgeAt(state,crossing.id)
+    if not b then return false end
+    local weight=if class=="mount" then 3 elseif class=="carrier" then 2 else 1
+    local limit=if Structures.get(b.typeId).tier=="light" then 2 else 6
+    for _,other in ipairs(state.npcs) do
+        if other~=entrant and other.health>0 and other.x>crossing.west.x
+            and other.x<crossing.east.x and math.abs(other.z or 0)<=DECK_HALF_WIDTH then
+            weight+=if Inventory.weight(other.inventory)>0 then 2 else 1
+        end
+    end
+    return weight<=limit
+end
+
 function Engine.bridgePlan(state: any,x: number): (Routes.Crossing?,string?)
     local graph=Engine.crossings(state)
     if not graph then return nil,"invalid_structure" end
@@ -358,17 +372,7 @@ local function freeGround(state: any,npc: any,x: number,z: number): boolean
         and nextGround.waterSurface-nextGround.height<=2
     if nextGround.wet and not shallow and not deck then return false end
     if math.abs((deck or nextGround.height)-(fromDeck or current.height))>(if deck or fromDeck then 2.4 else 1.4) then return false end
-    if crossing and not fromDeck then
-        local load=if class=="carrier" then 2 else 1
-        local limit=if Structures.get(bridgeAt(state,crossing.id).typeId).tier=="light" then 2 else 6
-        for _,other in ipairs(state.npcs) do
-            if other~=npc and other.health>0 and other.x>crossing.west.x
-                and other.x<crossing.east.x and math.abs(other.z or 0)<=DECK_HALF_WIDTH then
-                load+=if Inventory.weight(other.inventory)>0 then 2 else 1
-            end
-        end
-        if load>limit then return false end
-    end
+    if crossing and not fromDeck and not Engine.deckHasSpace(state,crossing,class,npc) then return false end
     for _,site in ipairs(state.sites) do
         if site.item=="wood" and site.remaining>0 and not site.salvage then
             local after=(x-site.x)^2+(z-(site.z or -6))^2

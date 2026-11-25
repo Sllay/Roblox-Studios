@@ -107,10 +107,12 @@ function Living.valid(state: any): boolean
             or buildingIds[b.id] or not finite(b.x) or not finite(b.y)
             or not Structures.get(b.typeId) or not counts(b.delivered) or not counts(b.claimed)
             or not finite(b.progress) or not finite(b.health)
-            or (b.open~=nil and (b.typeId~="gate" or type(b.open)~="boolean"))
             or (b.ruinedStock~=nil and (b.typeId~="stockpile" or not counts(b.ruinedStock)))
             or (b.ruinCount~=nil and not units(b.ruinCount))
             or (b.stored~=nil and not Inventory.valid(b.stored)) then return false end
+        if b.open~=nil and (Structures.get(b.typeId).kind~="gate" or type(b.open)~="boolean") then
+            return false
+        end
         buildingIds[b.id]=true
     end
     return true

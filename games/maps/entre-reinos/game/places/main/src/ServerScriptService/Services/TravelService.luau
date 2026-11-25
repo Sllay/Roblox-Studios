@@ -199,15 +199,20 @@ function Service.busy(): boolean return transit end
 function Service.status(player: Player,root: BasePart): string?
     if player~=owner or not regional or not regional.home.r3
         or regional.home.r3.prologue.stage~="sandbox" then return nil end
-    if riding then return if riding=="mount" then "dismount" elseif nearStop(root,5) then "disembark" else nil end
+    if riding then
+        return if riding=="mount" then "dismount"
+            elseif nearStop(root,5) or regional.record.boat.health<=0 then "disembark" else nil
+    end
     local mount=regional.record.mount
     if mount and mount.health>0 and closeTo(root,mount.position,7) then return "mount" end
     local boat=regional.record.boat
     if boat and boat.health>0 and closeTo(root,boat.position,6) then return "board" end
-    local capital=nearbyCapital(root.Position.X)
+    local capital,arrival=nearbyCapital(root.Position.X)
     local setup=Profile.sample(regional.seed,18,0)
-    if not mount and closeTo(root,{x=18,y=setup.height,z=0},6) then return "buy_mount" end
-    if capital and regional.record.discovered[if capital=="0" then "2" else "0"] then return "travel" end
+    if (not mount or mount.health<=0) and closeTo(root,{x=18,y=setup.height,z=0},6) then return "buy_mount" end
+    if capital and closeTo(root,arrival,12) and regional.record.discovered[if capital=="0" then "2" else "0"] then
+        return "travel"
+    end
     return nil
 end
 
@@ -256,6 +261,9 @@ function Service.action(player: Player,arg: any): any
     if arg=="dismount" or arg=="disembark" then
         local stop=nearStop(root,5)
         local record=regional.record[riding :: string]
+        if arg=="disembark" and not stop and record.health<=0 and #stops==2 then
+            stop=if root.Position.X<=(stops[1].moor.x+stops[2].moor.x)/2 then stops[1] else stops[2]
+        end
         local x=if arg=="disembark" and stop then stop.bank.x else record.position.x
         local y=if arg=="disembark" and stop then stop.bank.y else record.position.y
         if not World.isLoadedAt(x) then return {ok=false,error="terrain_not_ready"} end
@@ -283,9 +291,9 @@ function Service.action(player: Player,arg: any): any
         local err="terrain_not_ready"
         if hit and hit.Material~=Enum.Material.Water and human.Health>0 and player.Character==root.Parent then
             local destination={x=x,y=hit.Position.Y+3.6,z=0}
-            local safe,reason=changePosition(player,destination)
-            ok,err=safe,reason or "travel_unavailable"
-            if safe and player.Character==root.Parent and human.Health>0 then
+            local confirmed,safe,reason=pcall(changePosition,player,destination)
+            ok,err=confirmed and safe,if confirmed then reason or "travel_unavailable" else "datastore_unavailable"
+            if ok and player.Character==root.Parent and human.Health>0 then
                 root.CFrame=CFrame.new(destination.x,destination.y,0)
                 root.AssemblyLinearVelocity=Vector3.zero
             end
@@ -354,7 +362,12 @@ function Service.tick(dt: number)
     local nextY=ground.height
     local valid=World.isLoadedAt(nextX)
     if mounted then
-        local deck=Work.deckAt(regional.home,nextX,0,"mount")
+        local district=regional.active or regional.home
+        local deck,crossing=Work.deckAt(district,nextX,0,"mount")
+        local preceding=Work.deckAt(district,old.x,0,"mount")
+        if crossing and not preceding and not Work.deckHasSpace(district,crossing,"mount") then
+            valid=false
+        end
         local depth=if ground.waterSurface then ground.waterSurface-ground.height else 0
         nextY=deck or ground.height
         valid=valid and (depth<=2 or deck~=nil) and math.abs(nextY-old.y)<=2.8
