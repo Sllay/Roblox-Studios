@@ -307,7 +307,7 @@ local function buildVisual(b: any)
     local pale=Color3.fromRGB(189,176,149)
     local foundation=makePart(model,"Foundation",
         Vector3.new(def.footprint,0.7,7),stone)
-    foundation.Position=Vector3.new(b.x,b.y+0.22,-10)
+    foundation.Position=Vector3.new(b.x,b.y+0.22,if b.typeId=="gate" then 0 else -10)
     if b.typeId=="shelter" then
         -- A-frame canvas shelter: the first home is not a wooden cube.
         buildPiece(model,b,"TentFront",Vector3.new(6,4,5),
@@ -365,6 +365,12 @@ local function buildVisual(b: any)
             buildPiece(model,b,"FenceRail",Vector3.new(def.footprint-0.5,0.6,1),
                 Vector3.new(0,height,-0.6),Color3.fromRGB(146,102,61))
         end
+    elseif b.typeId=="gate" then
+        for _,edge in ipairs({-1,1}) do
+            buildPiece(model,b,"Pilar",Vector3.new(1.1,8.8,1.1),Vector3.new(0,4.4,10+edge*3.8),stone)
+        end
+        buildPiece(model,b,"Trave",Vector3.new(1.9,0.7,9.2),Vector3.new(0,8.4,10),stone)
+        buildPiece(model,b,"Folha",Vector3.new(0.84,7.2,6.9),Vector3.new(0,3.7,10),wood)
     elseif b.typeId=="wall" then
         buildPiece(model,b,"StoneCurtain",Vector3.new(def.footprint-0.6,9,4),
             Vector3.new(0,5,0),Color3.fromRGB(130,132,130))
@@ -395,6 +401,7 @@ local function syncBuild(b: any)
     local cargo=math.clamp(math.ceil(stock/30),0,3)
     local damage=if ratio<=0.35 then 2 elseif ratio<=0.68 then 1 else 0
     local visual=b.state..":"..tostring(progress)..":"..tostring(damage)..":"..tostring(cargo)
+        ..":"..tostring(b.open==true)
     if model:GetAttribute("ER_LastVisualState")~=visual then
         model:SetAttribute("ER_LastVisualState",visual)
         local index,crate=0,0
@@ -415,6 +422,11 @@ local function syncBuild(b: any)
                 p.Transparency=0.88
             else
                 p.Transparency=0
+            end
+            if p.Name=="Folha" and b.typeId=="gate" then
+                local active=b.state=="complete" or b.state=="damaged"
+                p.CanCollide=active and not b.open
+                p.Position=Vector3.new(b.x,b.y+(if active and b.open then 11.1 else 3.7),0)
             end
             local base=p:GetAttribute("ER_UndamagedColor")
             if typeof(base)~="Color3" then
@@ -491,10 +503,14 @@ local function syncR3Hud(player: Player)
     Lighting.ClockTime=((regional.home.elapsed%R3.DAY)/10+6)%24
 end
 
-local function draw()
+local function draw(observerX: number)
     if not state then return end
     for _,npc in ipairs(state.npcs) do
-        if npc.health>0 and not figures[npc.id] and WorldService.isLoadedAt(npc.x) then
+        local distance=math.abs(npc.x-observerX)
+        if distance>220 and figures[npc.id] then
+            figures[npc.id]:Destroy()
+            figures[npc.id]=nil
+        elseif distance<175 and npc.health>0 and not figures[npc.id] and WorldService.isLoadedAt(npc.x) then
             figures[npc.id]=createActor(npc)
         end
         syncNPC(npc)
@@ -528,7 +544,11 @@ end
 
 local function selectPopulation(x: number)
     local selected,changed=Regions.activate(regional,x)
+    if owner:GetAttribute("ER_RegionIndex")~=regional.activeRegion then
+        owner:SetAttribute("ER_RegionIndex",regional.activeRegion)
+    end
     if not changed then return end
+    Combat.setTownVisible(selected==regional.home)
     for _,model in pairs(figures) do model:Destroy() end
     for _,model in pairs(buildings) do model:Destroy() end
     for _,site in pairs(siteVisuals) do
@@ -604,13 +624,14 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         selectPopulation(origin.x)
         if onProgress then onProgress(1,"Moradores preparados") end
         Combat.start(player,regional.home,folder)
+        Combat.setTownVisible(state==regional.home)
         Travel.start(player,regional,folder,function(traveller,destination)
             local ok,reason=Saves.save(traveller,false,destination)
             if not ok and reason=="datastore_unavailable" then return Saves.save(traveller,false,destination) end
             return ok,reason
         end)
         syncBridges()
-        draw()
+        draw(origin.x)
         syncR3Hud(player)
     end)
     if not prepared then
@@ -687,7 +708,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
             end
             Combat.present()
             syncBridges()
-            draw()
+            draw(observerX)
             syncR3Hud(player)
             drawAccumulator=0
         end
@@ -748,13 +769,14 @@ local function placementGround(typeId: string, x: number, root: BasePart): (bool
     end
     local streamed=WorldService.ensureNear(state.seed,x-definition.footprint/2)
     if not streamed then return false,"terrain_not_ready" end
+    local placementDepth=if typeId=="gate" then 0 else Structures.DEPTH_Z
     local minHeight=math.huge
     local maxHeight=-math.huge
     local centerHeight=0
     for _,offset in ipairs({Vector2.zero,Vector2.new(-1,-1),Vector2.new(-1,1),
         Vector2.new(1,-1),Vector2.new(1,1)}) do
         local origin=Vector3.new(x+offset.X*definition.footprint/2,70,
-            Structures.DEPTH_Z+offset.Y*3.5)
+            placementDepth+offset.Y*3.5)
         local hit=workspace:Raycast(origin,Vector3.new(0,-120,0),groundCast)
         if not hit or Profile.sample(state.seed,origin.X,origin.Z).wet then
             return false,"invalid_footprint_or_slope"
@@ -770,7 +792,7 @@ local function placementGround(typeId: string, x: number, root: BasePart): (bool
     overlap.FilterType=Enum.RaycastFilterType.Exclude
     overlap.FilterDescendantsInstances={workspace.Terrain,root.Parent :: Instance}
     local occupied=workspace:GetPartBoundsInBox(
-        CFrame.new(x,centerHeight+definition.height/2+0.3,Structures.DEPTH_Z),
+        CFrame.new(x,centerHeight+definition.height/2+0.3,placementDepth),
         Vector3.new(definition.footprint,definition.height,7),overlap)
     if #occupied>0 then return false,"solid_obstruction" end
     return true,centerHeight
@@ -894,7 +916,10 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             end
             local buildingDistance=14
             for _,b in ipairs(state.buildings) do
-                local distance=(root.Position-Vector3.new(b.x,b.y+3,Structures.DEPTH_Z)).Magnitude
+                local distance=(root.Position-Vector3.new(b.x,b.y+3,if b.typeId=="gate" then 0 else Structures.DEPTH_Z)).Magnitude
+                if b.typeId=="gate" and (b.state=="complete" or b.state=="damaged") and distance<=8 then
+                    nearby.gate={id=b.id,open=b.open==true}
+                end
                 if distance<buildingDistance then
                     buildingDistance=distance
                     nearby.buildingId=b.id
@@ -919,9 +944,30 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
     end
     if action=="travel" then return Travel.action(player,arg) end
     if action=="travel_cargo" then return Travel.cargo(player,arg) end
+    if action=="gate" then
+        local root=if player.Character then player.Character:FindFirstChild("HumanoidRootPart") else nil
+        local h=if player.Character then player.Character:FindFirstChildOfClass("Humanoid") else nil
+        if Travel.busy() or not root or not root:IsA("BasePart") or not h or h.Health<=0
+            or os.clock()-lastActionAt<0.55 then return {ok=false,error="action_unavailable"} end
+        for _,b in ipairs(state.buildings) do
+            if b.id~=arg or b.typeId~="gate" or (b.state~="complete" and b.state~="damaged")
+                or (root.Position-Vector3.new(b.x,b.y+3,0)).Magnitude>8 then continue end
+            if b.open and math.abs(root.Position.X-b.x)<1.4 then
+                return {ok=false,error="solid_obstruction"}
+            end
+            lastActionAt=os.clock()
+            b.open=not b.open
+            syncBuild(b)
+            return {ok=true}
+        end
+        return {ok=false,error="action_unavailable"}
+    end
     if Travel.busy() then return {ok=false,error="travel_unavailable"} end
     if action=="tree_press" or action=="tree_mark" or action=="tree_cancel" or action=="tree_take" then
         return treeAction(player,action,arg)
+    end
+    if action=="arm_defender" and state~=regional.home then
+        return Combat.action(player,action,arg,state)
     end
     if action=="attack" or action=="bow_begin" or action=="bow_release" or action=="bow_cancel"
         or action=="select_weapon" or action=="duke_talk" or action=="duke_accept" or action=="duke_close"

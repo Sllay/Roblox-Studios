@@ -561,6 +561,8 @@ function UI.start(player: Player)
     local function interactNow()
         if contextKind=="travel" then
             request("travel",contextTarget)
+        elseif contextKind=="gate" then
+            request("gate",contextTarget)
         elseif contextKind=="coin" then
             request("pickup_coin",contextTarget)
         elseif contextKind=="npc" then
@@ -744,6 +746,10 @@ function UI.start(player: Player)
             contextKind="travel"
             contextTarget=nearby.travel
             interact.Text=travelLabels[nearby.travel]
+        elseif nearby.gate then
+            contextKind="gate"
+            contextTarget=nearby.gate.id
+            interact.Text=if nearby.gate.open then "FECHAR PORTÃO" else "ABRIR PORTÃO"
         elseif (nearby.coinId or 0)>0 then
             contextKind="coin"
             contextTarget=nearby.coinId

@@ -139,9 +139,9 @@ function World.activate(session: any,x: number): (any, boolean)
             end
             population.sites={}
             local middle=Profile.chunkAt(center.x)
-            for chunk=middle-2,middle+2 do
-                if Profile.regionOfChunk(chunk)~=key then continue end
-                for _,site in ipairs(Profile.naturalSites(session.seed,chunk)) do
+            for townChunk=middle-2,middle+2 do
+                if Profile.regionOfChunk(townChunk)~=key then continue end
+                for _,site in ipairs(Profile.naturalSites(session.seed,townChunk)) do
                     if math.abs(site.x-center.x)>110 or Profile.sample(session.seed,site.x,-6).wet then continue end
                     table.insert(population.sites,{
                         id=site.id,item=site.item,x=site.x,z=if site.item=="wood" then -6 else -4,

@@ -1,0 +1,84 @@
+-- Real engine objects, synthetic player identity and explicit input pump.
+local function probeTravel(Travel,seed)
+    local Profile=loadCandidate("RegionalProfile")
+    local Regions=loadCandidate("RegionalWorld")
+    local Living=loadCandidate("LivingModel")
+    local Inventory=loadCandidate("Inventory")
+    local R3=loadCandidate("R3Engine")
+    local home=Living.new(seed)
+    R3.ensure(home,false)
+    home.r3.wallet=12
+    assert(Inventory.add(home.r3.playerBag,"wood",3))
+    local session=assert(Regions.new(seed,home,nil,Profile.spawn(seed)))
+    session.record.discovered["2"]=true
+    local folder=Instance.new("Folder")
+    folder.Parent=workspace
+    local players=game:GetService("Players")
+    local description=Instance.new("HumanoidDescription")
+    local model=players:CreateHumanoidModelFromDescriptionAsync(description,Enum.HumanoidRigType.R6)
+    description:Destroy()
+    local root=model:FindFirstChild("HumanoidRootPart")
+    local human=model:FindFirstChildOfClass("Humanoid")
+    model.Parent=workspace
+    local player={Character=model,attributes={}}
+    function player:SetAttribute(key,value) self.attributes[key]=value end
+    local function place(x,y)
+        model:PivotTo(CFrame.new(x,y,0))
+        root.AssemblyLinearVelocity=Vector3.zero
+    end
+    place(18,Profile.sample(seed,18,0).height+3.5)
+    local writes=0
+    Travel.start(player,session,folder,function(_,position)
+        writes+=1
+        if writes==1 then return false,"save_busy" end
+        session.record.position=position
+        return true
+    end)
+    assert(session.record.boat and session.record.boat.cargo.maxMass==36)
+    assert(not Travel.steer(player,1))
+    assert(not Travel.action({}, "buy_mount").ok)
+    assert(Travel.action(player,"buy_mount").ok)
+    assert(home.r3.wallet==0 and session.record.mount.id=="horse:1")
+    task.wait(0.52)
+    assert(Travel.action(player,"mount").ok)
+    task.wait(0.15)
+    local horseSeat=human.SeatPart
+    assert(horseSeat and horseSeat.Occupant==human,"engine did not create horse seat weld")
+    assert(not Travel.steer({},1) and not Travel.steer(player,math.huge))
+    for _=1,12 do
+        assert(Travel.steer(player,1))
+        Travel.tick(0.1)
+        task.wait(0.055)
+    end
+    assert(session.record.mount.position.x>20 and session.record.mount.energy<100)
+    assert(Travel.action(player,"dismount").ok)
+    task.wait(0.5)
+
+    local boat=session.record.boat
+    local original=table.clone(boat.position)
+    place(original.x,original.y+4)
+    assert(Travel.cargo(player,"load").ok)
+    assert(Inventory.count(boat.cargo,"wood")==1 and Inventory.count(home.r3.playerBag,"wood")==2)
+    task.wait(0.52)
+    assert(Travel.action(player,"board").ok)
+    task.wait(0.15)
+    assert(human.SeatPart and human.SeatPart~=horseSeat and human.SeatPart.Occupant==human)
+    for _=1,60 do
+        assert(Travel.steer(player,1))
+        Travel.tick(0.14)
+        task.wait(0.055)
+    end
+    assert(boat.position.x>original.x+15)
+    assert(Travel.action(player,"disembark").ok)
+    assert(Inventory.count(boat.cargo,"wood")==1)
+    task.wait(0.52)
+    place(0,Profile.sample(seed,0,0).height+4)
+    local denied=Travel.action(player,"travel")
+    assert(not denied.ok and denied.error=="save_busy" and root.Position.X<2)
+    task.wait(0.52)
+    assert(Travel.action(player,"travel").ok and root.Position.X>1100 and writes==2)
+    Travel.stop()
+    model:Destroy()
+    folder:Destroy()
+    return {movedHorse=true,sailed=true,cargo=true,failedTravelRecovered=true,authorizedSteering=true}
+end

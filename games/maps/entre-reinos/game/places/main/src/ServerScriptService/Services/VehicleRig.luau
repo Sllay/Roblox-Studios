@@ -96,24 +96,15 @@ function Rig.create(kind: string, parent: Folder)
         end
         joint(root,seat,CFrame.new(0,0.99,0))
     end
+    for index,motor in ipairs(gait) do motor:SetAttribute("ER_GaitIndex",index) end
+    vehicle:SetAttribute("ER_GaitKind",kind)
+    vehicle:SetAttribute("ER_GaitSpeed",0)
     vehicle.Parent=parent
     return {model=vehicle,seat=seat,gait=gait}
 end
 
-function Rig.animate(rig: any,kind: string,phase: number,speed: number)
-    local gain=math.clamp(math.abs(speed)/10,0,1)
-    for i,motor in ipairs(rig.gait) do
-        if kind=="boat" then
-            motor.MaxVelocity=0.27
-            motor.DesiredAngle=math.sin(phase+i*0.9)*gain*0.38
-        else
-            local leg=math.ceil(i/2)
-            local cycle=phase+(if leg==1 or leg==4 then 0 else math.pi)
-            motor.MaxVelocity=0.27
-            motor.DesiredAngle=if i%2==1 then math.sin(cycle)*gain*0.54
-                else math.max(0,math.cos(cycle))*gain*0.68
-        end
-    end
+function Rig.animate(rig: any,speed: number)
+    rig.model:SetAttribute("ER_GaitSpeed",speed)
 end
 
 return Rig

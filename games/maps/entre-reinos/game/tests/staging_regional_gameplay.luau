@@ -14,7 +14,9 @@ local function probeNewSave(first,second,main,backups,seed,player,worldKey,http,
     local regional=assert(Regions.new(seed,home,nil,Slots.spawnPosition(before)))
     local town=assert(Profile.settlement(seed,2))
     local city=Regions.activate(regional,town.x)
+    local started=os.clock()
     for _=1,900 do Work.step(city,0.1) end
+    local workMs=(os.clock()-started)*1000
     assert((city.stats.stored or 0)>0)
     local storage=Inventory.weight(city.buildings[2].stored)
     local traveller=Instance.new("Model")
@@ -58,7 +60,7 @@ local function probeNewSave(first,second,main,backups,seed,player,worldKey,http,
     assert(second.save(player,true))
     traveller:Destroy()
     return {migrated=true,backup=true,retry=true,foreignReopen=true,foreignStockMass=storage,
-        mountState=true,travelCheckpoint=true,recordBytes=#http:JSONEncode(record)}
+        mountState=true,travelCheckpoint=true,workTicks=900,workMs=workMs,recordBytes=#http:JSONEncode(record)}
 end
 
 local function probeRegionalModels(BridgeScene,Rig,routes,seed)
@@ -113,8 +115,8 @@ local function probeRegionalModels(BridgeScene,Rig,routes,seed)
 
     local horse=Rig.create("mount",folder)
     local boat=Rig.create("boat",folder)
-    Rig.animate(horse,"mount",1.1,14)
-    Rig.animate(boat,"boat",0.6,6)
+    Rig.animate(horse,14)
+    Rig.animate(boat,6)
     assert(#horse.gait==8 and #boat.gait==2)
     assert(horse.seat:IsA("Seat") and boat.seat:IsA("Seat"))
     folder:Destroy()

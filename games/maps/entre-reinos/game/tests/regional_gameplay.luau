@@ -95,6 +95,28 @@ assert(not Work.deckAt(home,work.x,0,"carrier"))
 for _=1,200 do assert(not Work.walkResident(home,npc,west,0.1,0)) end
 assert(npc.x>bridge.east.x and Inventory.count(npc.inventory,"wood")>0)
 
+
+-- Freight across the regional boundary uses the same job and inventory.
+local freight=Living.new(seed)
+assert(Regions.new(seed,freight,nil,Profile.spawn(seed)))
+freight.npcs={freight.npcs[1]}
+freight.sites={}
+local courier=freight.npcs[1]
+courier.x=529
+courier.z=0
+assert(Inventory.add(courier.inventory,"wood",4))
+local outpost={id=1,typeId="stockpile",x=564,y=36,state="complete",progress=30,
+    health=150,delivered={},claimed={},stored=Inventory.new(250)}
+freight.buildings={outpost}
+freight.nextBuildingId=2
+assert(Profile.regionAt(courier.x)==0 and Profile.regionAt(outpost.x)==1)
+for _=1,1400 do
+    Work.step(freight,0.1)
+    if Inventory.weight(outpost.stored)>0 then break end
+end
+assert(Profile.regionAt(courier.x)==1 and Inventory.count(outpost.stored,"wood")==4)
+assert(Inventory.count(courier.inventory,"wood")==0)
+
 R3.ensure(home,false)
 home.r3.wallet=13
 assert(R3.payTravel(home,12,"horse:1"))

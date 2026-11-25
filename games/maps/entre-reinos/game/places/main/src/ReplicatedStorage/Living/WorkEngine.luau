@@ -376,9 +376,9 @@ local function freeGround(state: any,npc: any,x: number,z: number): boolean
         end
     end
     for _,b in ipairs(state.buildings) do
-        if b.health<=0 or b.ruined or b.crossingId then continue end
+        if b.health<=0 or b.ruined or b.crossingId or (b.typeId=="gate" and b.open) then continue end
         local width=Structures.get(b.typeId).footprint/2+0.45
-        local depth=Structures.DEPTH_Z
+        local depth=if b.typeId=="gate" then 0 else Structures.DEPTH_Z
         if math.abs(x-b.x)<width and math.abs(z-depth)<4.65 then
             -- A legacy resident may have been saved inside a structure.
             local wasInside=math.abs(npc.x-b.x)<width and math.abs((npc.z or 0)-depth)<4.65
@@ -534,6 +534,10 @@ function Engine.canPlace(state: any, typeId: string, x: number): (boolean, strin
     if type(x)~="number" or x~=x or math.abs(x)+def.footprint/2>(if contexts[state] then Regions.PLAY_EDGE else World.PLAY_EDGE) then
         return false,"outside_region"
     end
+    local territory=contexts[state]
+    if territory and (Regions.regionAt(x)==2)~=(territory.origin~=0) then
+        return false,"outside_kingdom"
+    end
     if def.kind=="crossing" then
         local crossing,reason=Engine.bridgePlan(state,x)
         if not crossing then return false,reason end
@@ -602,7 +606,7 @@ function Engine.place(state: any, typeId: string, x: number, groundY: number?): 
             return true,existing
         end
     end
-    local center=sample(state,x,Structures.DEPTH_Z)
+    local center=sample(state,x,if typeId=="gate" then 0 else Structures.DEPTH_Z)
     local b={id=state.nextBuildingId,typeId=typeId,x=x,y=groundY or center.height,
         state="blueprint",progress=0,health=def.health,
         delivered={},claimed={},stored=Inventory.new(if def.storageMass>0 then def.storageMass else 1)}

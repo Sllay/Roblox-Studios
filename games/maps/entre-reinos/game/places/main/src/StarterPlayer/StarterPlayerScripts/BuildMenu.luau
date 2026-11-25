@@ -6,7 +6,7 @@ local Profile=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Regio
 local Structures=require(ReplicatedStorage:WaitForChild("Game")
     :WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Menu={}
-local order={"shelter","house","stockpile","fence","wall","bridge_light","bridge_reinforced"}
+local order={"shelter","house","stockpile","fence","wall","gate","bridge_light","bridge_reinforced"}
 local names={wood="Madeira",stone="Pedra",iron="Ferro",food="Alimento"}
 local amber=Color3.fromRGB(214,175,99)
 local cream=Color3.fromRGB(245,232,203)
@@ -25,6 +25,7 @@ local errors={
     building_not_found="A obra já foi removida.",
     invalid_footprint_or_slope="Terreno úmido ou inclinado demais.",
     overlapping_footprint="Outra construção ocupa o local.",
+    outside_kingdom="Escolha uma obra dentro do território atual.",
     missing_crossing="Escolha uma margem de rio profundo.",
     invalid_bridge_banks="As margens precisam de apoios secos e firmes.",
     building_limit="Limite de construções atingido.",
@@ -193,7 +194,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
             preview.CFrame=CFrame.new(x,y,0)*CFrame.Angles(0,0,math.atan2(rise,crossing.span))
         else
             preview.Size=Vector3.new(def.footprint,def.height,7)
-            preview.CFrame=CFrame.new(x,y+def.height/2,Structures.DEPTH_Z)
+            preview.CFrame=CFrame.new(x,y+def.height/2,if id=="gate" then 0 else Structures.DEPTH_Z)
         end
         preview.Color=if result.ok then Color3.fromRGB(138,217,123) else Color3.fromRGB(248,121,105)
         if result.ok then

@@ -332,8 +332,8 @@ function R3.hit(state: any,x: number,y: number,direction: number,
     return R3.damageEnemy(state,target.id,damage),target.id
 end
 
-function R3.arm(state: any,npcId: any,weapon: string): (boolean, any)
-    local d=state.r3
+function R3.arm(state: any,npcId: any,weapon: string,playerData: any?): (boolean, any)
+    local d=playerData or state.r3
     if weapon~="bow" and weapon~="spear" then return false,"invalid_weapon" end
     for _,npc in ipairs(state.npcs) do
         if npc.id==npcId and npc.health>0 then
@@ -482,7 +482,7 @@ local function wallBeforeTown(state: any,e: any): any
     local nearest=math.huge
     for _,b in ipairs(state.buildings) do
         local def=Structures.get(b.typeId)
-        if def and (b.typeId=="wall" or b.typeId=="fence")
+        if def and (b.typeId=="wall" or b.typeId=="fence" or (b.typeId=="gate" and not b.open))
             and b.health>0 and b.progress>=def.buildSeconds and b.x*e.side>=0 then
             -- A gate behind the town cannot divert an invader through it.
             local approach=(b.x-e.x)*(-e.side)
@@ -602,7 +602,7 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
         local innerLine=story.scene and story.stage=="last_ring" and e.typeId~="infected_duke"
         local target=if block or innerLine or e.typeId=="infected_duke" then nil else raiderGoal(state,e)
         local bridge,bank=bridgeAtEnemy(state,e)
-        local goal=if bridge and bank and not story.scene then bank elseif block then block.x elseif e.typeId=="infected_duke" then math.clamp(playerX,-118,118)
+        local goal=if bridge and bank and story.stage=="sandbox" then bank elseif block then block.x elseif e.typeId=="infected_duke" then math.clamp(playerX,-118,118)
             elseif innerLine then e.side*7 elseif target then target.x else 0
         local diff=goal-e.x
         local delta=math.clamp(diff,-4.8*dt,4.8*dt)
@@ -611,7 +611,7 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
         if math.abs(diff)>2.8 then
             e.x+=delta
             e.motionX=delta/dt
-        elseif bridge and bank and not story.scene then
+        elseif bridge and bank and story.stage=="sandbox" then
             R3.damageStructure(state,bridge,9*dt)
         elseif block then
             local siege=story.scene and story.stage=="crisis" and block.districtBoundary

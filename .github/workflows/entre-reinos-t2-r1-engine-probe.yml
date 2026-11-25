@@ -71,6 +71,15 @@ jobs:
               assert count == 1, name
           bridge = (services / "BridgeScene.luau").read_text()
           rig = (services / "VehicleRig.luau").read_text()
+          travel_source = (services / "TravelService.luau").read_text()
+          for name,module in {"Profile":"RegionalProfile", "Work":"WorkEngine", "R3":"R3Engine",
+                              "Inventory":"Inventory"}.items():
+              travel_source, replaced = re.subn(rf'^local {name}=require\(.*?\)$',
+                  f'local {name}=loadCandidate("{module}")', travel_source, count=1, flags=re.M)
+              assert replaced == 1, name
+          travel_source = re.sub(r'^local World=require\(.*?\)$', 'local World=world', travel_source, flags=re.M)
+          travel_source = re.sub(r'^local Rig=require\(.*?\)$', 'local Rig=vehicleRig', travel_source, flags=re.M)
+          travel_test = (game / "game/tests/staging_regional_travel.luau").read_text()
           published = """
           assert(game.PlaceVersion == 18, "unexpected published baseline")
           local published = require(game:GetService("ReplicatedStorage")
@@ -97,7 +106,11 @@ jobs:
           local function loadVehicleRig()
           {rig}
           end
+          local function loadTravel(world,vehicleRig)
+          {travel_source}
+          end
           {gameplay}
+          {travel_test}
           local function probeDataStore()
               local function loadSaveService(game)
               {saves}
@@ -110,9 +123,11 @@ jobs:
           {test}
           local regionalProfile = loadCandidate("RegionalProfile")
           local routes = loadCandidate("RegionalCrossings")
-          local result = probeRegions(loadWorld(), regionalProfile, published, routes, 516639272)
+          local world=loadWorld()
+          local result = probeRegions(world, regionalProfile, published, routes, 516639272)
           result.datastore = probeDataStore()
           result.gameplay = probeRegionalModels(loadBridgeScene(), loadVehicleRig(), routes, 516639272)
+          result.travel = probeTravel(loadTravel(world,loadVehicleRig()),516639272)
           result.universeId = tostring(game.GameId)
           result.placeId = tostring(game.PlaceId)
           return game:GetService("HttpService"):JSONEncode(result)
@@ -127,5 +142,6 @@ jobs:
           assert report["datastore"]["regional"]["foreignReopen"] and report["gameplay"]["workerCrossed"]
           assert report["datastore"]["regional"]["travelCheckpoint"]
           assert report["gameplay"]["destroyed"] and report["streaming"]
+          assert all(report["travel"].values())
           print("ENTRE_REINOS_T2_R1_NATIVE", json.dumps(report, sort_keys=True))
           PY

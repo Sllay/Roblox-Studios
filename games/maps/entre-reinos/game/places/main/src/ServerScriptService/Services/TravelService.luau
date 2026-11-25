@@ -20,7 +20,6 @@ local received=0
 local speed=0
 local exhausted=false
 local mountHealth: RBXScriptConnection?=nil
-local phase=0
 local heading=1
 local lastAction=0
 local lastInput=0
@@ -43,12 +42,14 @@ local function character(player: Player): (BasePart?, Humanoid?)
     return nil,nil
 end
 
-steering.OnServerEvent:Connect(function(player: Player, value: any)
-    if player~=owner or not riding or type(value)~="number" or not (value>=-1 and value<=1) then return end
+function Service.steer(player: Player, value: any): boolean
+    if player~=owner or not riding or type(value)~="number" or not (value>=-1 and value<=1) then return false end
     local now=os.clock()
-    if now-lastInput<0.045 then return end
+    if now-lastInput<0.045 then return false end
     lastInput,received,input=now,now,value
-end)
+    return true
+end
+steering.OnServerEvent:Connect(Service.steer)
 
 local function closeTo(root: BasePart, position: any, radius: number): boolean
     return math.abs(root.Position.X-position.x)<=radius
@@ -132,6 +133,7 @@ local function refreshRig(kind: string): any
 end
 
 local function clearRider(player: Player)
+    if riding and rigs[riding] then Rig.animate(rigs[riding],0) end
     riding=nil
     if regional then regional.record.rider=nil end
     speed,input=0,0
@@ -380,8 +382,7 @@ function Service.tick(dt: number)
     else
         speed=0
     end
-    phase+=math.abs(speed)*dt*1.5
     refreshRig(riding)
-    Rig.animate(rig,riding,phase,speed)
+    Rig.animate(rig,speed)
 end
 return Service
