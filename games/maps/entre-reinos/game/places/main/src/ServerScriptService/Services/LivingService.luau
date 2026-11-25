@@ -7,7 +7,11 @@ local RunService=game:GetService("RunService")
 local PhysicsService=game:GetService("PhysicsService")
 local Lighting=game:GetService("Lighting")
 local shared=ReplicatedStorage:WaitForChild("Game")
-local Profile=require(shared:WaitForChild("WorldProfile"))
+local Profile=require(shared:WaitForChild("RegionalProfile"))
+local Regions=require(shared:WaitForChild("RegionalWorld"))
+local BridgeScene=require(script.Parent:WaitForChild("BridgeScene"))
+local Travel=require(script.Parent:WaitForChild("TravelService"))
+local Saves=require(script.Parent:WaitForChild("SaveSlotService"))
 local Living=require(shared:WaitForChild("Living"):WaitForChild("LivingModel"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
 local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
@@ -19,6 +23,8 @@ local WorldService=require(script.Parent:WaitForChild("WorldService"))
 local Service={}
 local owner: Player?=nil
 local state: any=nil
+local regional: any=nil
+local bridgeFolder: Folder?=nil
 local visualization: Folder?=nil
 local figures: {[number]: Model}={}
 local buildings: {[number]: Model}={}
@@ -242,8 +248,9 @@ local function syncNPC(npc: any)
     local offset=model:GetAttribute("ER_FeetOffset")
     if type(offset)~="number" then return end
     local last=model:GetAttribute("ER_NPCPose")
-    local y=if typeof(last)=="Vector3" and last.X==x and last.Z==z then last.Y
-        else groundHeight(x,z)+offset+0.14
+    local deck=Work.deckAt(state,x,z,if Inventory.weight(npc.inventory)>0 then "carrier" else "worker")
+    local y=(deck or (if typeof(last)=="Vector3" and last.X==x and last.Z==z
+        then last.Y-offset-0.14 else groundHeight(x,z)))+offset+0.14
     local target=Vector3.new(x,y,z)
     local motion=if type(npc.motionX)=="number" then npc.motionX else 0
     local motionZ=if type(npc.motionZ)=="number" then npc.motionZ else 0
@@ -285,7 +292,7 @@ local function buildPiece(model: Model,b: any,name: string,
     return p
 end
 local function buildVisual(b: any)
-    if not visualization then return end
+    if not visualization or b.crossingId then return end
     local def=Structures.get(b.typeId)
     if not def then return end
     local model=Instance.new("Model")
@@ -422,7 +429,8 @@ end
 
 local function createSiteVisual(site: any)
     if not visualization then return end
-    local pos=Profile.sample(state.seed,site.x,0)
+    local z=site.z or (if site.item=="wood" then -6 else -4)
+    local pos=Profile.sample(state.seed,site.x,if site.z then z else 0)
     local anchor: BasePart
     if site.item=="wood" and not site.salvage and not string.match(site.id,"salvage_") then
         -- Distinct harvestable tree; background trees remain decoration.
@@ -432,13 +440,13 @@ local function createSiteVisual(site: any)
         tree:SetAttribute("ER_SourceId",site.id)
         local trunk=makePart(tree,"Trunk",
             Vector3.new(2.1,7.2,2.1),Color3.fromRGB(112,75,47))
-        trunk.Position=Vector3.new(site.x,pos.height+3.6,-6)
+        trunk.Position=Vector3.new(site.x,pos.height+3.6,z)
         for k=1,3 do
             local leaves=makePart(tree,"LeafCrown",
                 Vector3.new(7.5-k*1.1,3.8,7.5-k*1.1),
                 Color3.fromRGB(63,116,77))
             leaves.Shape=Enum.PartType.Ball
-            leaves.Position=Vector3.new(site.x,pos.height+7.1+k*1.8,-6)
+            leaves.Position=Vector3.new(site.x,pos.height+7.1+k*1.8,z)
         end
         tree.Parent=visualization
         anchor=trunk
@@ -460,7 +468,7 @@ local function createSiteVisual(site: any)
             if site.item=="food" then Vector3.new(3.7,2.6,3.7)
             else Vector3.new(3.8,3,3.4),color)
         block.Shape=if site.item=="food" then Enum.PartType.Ball else Enum.PartType.Block
-        block.Position=Vector3.new(site.x,pos.height+1.4,-4)
+        block.Position=Vector3.new(site.x,pos.height+1.4,z)
         anchor=block
     end
     anchor:SetAttribute("ResourceType",site.item)
@@ -469,7 +477,7 @@ local function createSiteVisual(site: any)
 end
 
 local function syncR3Hud(player: Player)
-    local data=R3.summary(state)
+    local data=R3.summary(regional.home)
     player:SetAttribute("ER_R3Wallet",data.wallet)
     player:SetAttribute("ER_R3Arrows",data.arrows)
     player:SetAttribute("ER_R3Day",data.day)
@@ -480,19 +488,22 @@ local function syncR3Hud(player: Player)
     player:SetAttribute("ER_R3Warning",data.warning)
     player:SetAttribute("ER_R3Forecast",data.raidForecast)
     player:SetAttribute("ER_PlayerDeaths",data.deaths)
-    Lighting.ClockTime=((state.elapsed%R3.DAY)/10+6)%24
+    Lighting.ClockTime=((regional.home.elapsed%R3.DAY)/10+6)%24
 end
 
 local function draw()
     if not state then return end
     for _,npc in ipairs(state.npcs) do
+        if npc.health>0 and not figures[npc.id] and WorldService.isLoadedAt(npc.x) then
+            figures[npc.id]=createActor(npc)
+        end
         syncNPC(npc)
     end
     for _,b in ipairs(state.buildings) do
-        syncBuild(b)
+        if not b.crossingId and WorldService.isLoadedAt(b.x) then syncBuild(b) end
     end
     for _,site in ipairs(state.sites) do
-        if not siteVisuals[site.id] then createSiteVisual(site) end
+        if not siteVisuals[site.id] and WorldService.isLoadedAt(site.x) then createSiteVisual(site) end
         if site.item=="wood" and visualization then
             local tree=visualization:FindFirstChild("HarvestableTree_"..tostring(site.id))
             if tree and tree:IsA("Model") then
@@ -515,17 +526,50 @@ local function draw()
     end
 end
 
+local function selectPopulation(x: number)
+    local selected,changed=Regions.activate(regional,x)
+    if not changed then return end
+    for _,model in pairs(figures) do model:Destroy() end
+    for _,model in pairs(buildings) do model:Destroy() end
+    for _,site in pairs(siteVisuals) do
+        if site.Parent and site.Parent:IsA("Model") then site.Parent:Destroy() else site:Destroy() end
+    end
+    table.clear(figures)
+    table.clear(buildings)
+    table.clear(siteVisuals)
+    buildPreview=nil
+    treePress=nil
+    state=selected
+    owner:SetAttribute("ER_Kingdom",if state==regional.home then "Vale do Duque" else "Vila do Cedro")
+end
+
+local function syncBridges()
+    if not bridgeFolder then return end
+    local live={}
+    for _,bridge in ipairs(regional.bridges()) do
+        if not WorldService.isLoadedAt(bridge.x) then continue end
+        local plan=Work.bridgePlan(state,bridge.x)
+        if plan then
+            BridgeScene.sync(bridgeFolder,bridge,plan,Structures.get(bridge.typeId).buildSeconds)
+            live[plan.id]=true
+        end
+    end
+    for _,model in ipairs(bridgeFolder:GetChildren()) do
+        if not live[model.Name] then model:Destroy() end
+    end
+end
+
 function Service.playerDied(player: Player)
-    if owner==player and state then R3.playerDied(state) end
+    if owner==player and regional then R3.playerDied(regional.home) end
 end
 
 function Service.playerRecovered(player: Player)
-    if owner==player and state then state.r3.awaitingRecovery=false end
+    if owner==player and regional then regional.home.r3.awaitingRecovery=false end
 end
 
-function Service.snapshot(player: Player): any
-    if owner~=player or not state then return nil end
-    return Living.clone(state)
+function Service.snapshot(player: Player): (any,any)
+    if owner~=player or not regional then return nil,nil end
+    return Living.clone(regional.home),Regions.snapshot(regional)
 end
 
 function Service.start(player: Player, worldRecord: any, onProgress: ((number, string) -> ())?): (boolean, string?)
@@ -540,29 +584,32 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
     if worldRecord.living==nil then
         Work.initializeVillage(loaded)
     end
+    local Slots=require(shared:WaitForChild("SlotModel"))
+    local origin=Slots.spawnPosition(worldRecord)
+    regional=Regions.new(worldRecord.seed,loaded,worldRecord.regionWorld,origin,WorldService.isLoadedAt)
+    if not regional then return false,"regional_schema_conflict" end
     owner=player
     state=loaded
-    state.r3.awaitingRecovery=false -- Boot placed a reconnecting character before loading the world.
+    loaded.r3.awaitingRecovery=false -- Boot placed a reconnecting character before loading the world.
     local folder=Instance.new("Folder")
     folder.Name="ER_LivingWorld"
     folder:SetAttribute("ER_Saveable",true)
     folder.Parent=workspace
     visualization=folder
+    local crossings=Instance.new("Folder")
+    crossings.Name="ER_Bridges"
+    crossings.Parent=folder
+    bridgeFolder=crossings
     local prepared, prepareError=pcall(function()
-        for _,site in ipairs(state.sites) do createSiteVisual(site) end
-        for i,npc in ipairs(state.npcs) do
-            if onProgress then
-                onProgress((i-1)/#state.npcs,
-                    "Preparando morador "..tostring(i).."/"..tostring(#state.npcs))
-            end
-            if npc.health>0 then
-                local model=createActor(npc)
-                if model then figures[npc.id]=model end
-            end
-        end
+        selectPopulation(origin.x)
         if onProgress then onProgress(1,"Moradores preparados") end
-        for _,b in ipairs(state.buildings) do buildVisual(b) end
-        Combat.start(player,state,folder)
+        Combat.start(player,regional.home,folder)
+        Travel.start(player,regional,folder,function(traveller,destination)
+            local ok,reason=Saves.save(traveller,false,destination)
+            if not ok and reason=="datastore_unavailable" then return Saves.save(traveller,false,destination) end
+            return ok,reason
+        end)
+        syncBridges()
         draw()
         syncR3Hud(player)
     end)
@@ -577,6 +624,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
     lastTreePress=0
         visualization=nil
         Combat.stop()
+        Travel.stop()
         folder:Destroy()
         return false,"living_visual_setup_failed"
     end
@@ -586,7 +634,17 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
     connection=RunService.Heartbeat:Connect(function(dt: number)
         if not owner or not state or player.Parent~=Players
             or player:GetAttribute("ER_WorldLoaded")~=true then return end
-        simulationAccumulator+=math.min(dt,0.25)
+        local character=player.Character
+        local currentRoot=if character then character:FindFirstChild("HumanoidRootPart") else nil
+        if currentRoot and currentRoot:IsA("BasePart") then
+            selectPopulation(currentRoot.Position.X)
+        end
+        local observerX=if currentRoot and currentRoot:IsA("BasePart") then currentRoot.Position.X else 0
+        local hasNearbyResident=false
+        for _,npc in ipairs(state.npcs) do
+            if npc.health>0 and math.abs(observerX-npc.x)<160 then hasNearbyResident=true; break end
+        end
+        simulationAccumulator=if hasNearbyResident then simulationAccumulator+math.min(dt,0.25) else 0
         local ticks=0
         while simulationAccumulator>=0.1 and ticks<3 do
             Work.step(state,0.1)
@@ -597,7 +655,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
             local h=if player.Character then player.Character:FindFirstChildOfClass("Humanoid") else nil
             local y=if currentRoot and currentRoot:IsA("BasePart") and h and h.Health>0
                 then currentRoot.Position.Y else -100
-            local damage=R3.step(state,0.1,x,Combat.fireResident,y)
+            local damage=if state==regional.home then R3.step(state,0.1,x,Combat.fireResident,y) else 0
             if damage>0 and player.Character then
                 local h=player.Character:FindFirstChildOfClass("Humanoid")
                 if h and h.Health>0 then h:TakeDamage(damage) end
@@ -606,6 +664,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
             ticks+=1
         end
         Combat.tick(dt)
+        Travel.tick(dt)
         drawAccumulator+=dt
         if drawAccumulator>=0.12 then
             -- Expose the real interval to the pose velocity estimator;
@@ -616,7 +675,9 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
             -- Workers can reach the west before the player; the same
             -- deterministic streaming contract must apply to NPC movement.
             for _,npc in ipairs(state.npcs) do
-                if npc.health>0 and not WorldService.isLoadedAt(npc.x) then
+                local ahead=math.clamp(npc.x+math.sign((npc.targetX or npc.x)-npc.x)*10,
+                    -Profile.PLAY_EDGE,Profile.PLAY_EDGE)
+                if npc.health>0 and not WorldService.isLoadedAt(ahead) then
                     local streamed,reason=WorldService.ensureNear(state.seed,npc.x)
                     if not streamed and reason~="world_generation_in_progress" then
                         warn("[EntreReinos][Living] Worker chunk load: ",reason)
@@ -625,6 +686,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
                 end
             end
             Combat.present()
+            syncBridges()
             draw()
             syncR3Hud(player)
             drawAccumulator=0
@@ -640,11 +702,14 @@ function Service.stop(player: Player)
     if connection then connection:Disconnect() end
     connection=nil
     Combat.stop()
+    Travel.stop()
     buildPreview=nil
     lastPreviewAt=0
     lastActionAt=0
     owner=nil
     state=nil
+    regional=nil
+    bridgeFolder=nil
     figures={}
     buildings={}
     siteVisuals={}
@@ -654,13 +719,33 @@ function Service.stop(player: Player)
     visualization=nil
 end
 
-local function placementGround(typeId: string, x: number, root: BasePart): (boolean, any)
+local function placementGround(typeId: string, x: number, root: BasePart): (boolean, any, any?)
     local allowed,reason=Work.canPlace(state,typeId,x)
     if not allowed then return false,reason end
+    local definition=Structures.get(typeId)
+    if definition.kind=="crossing" then
+        local crossing=Work.bridgePlan(state,x)
+        if not crossing then return false,"invalid_bridge_banks" end
+        if math.min(math.abs(root.Position.X-crossing.west.x),math.abs(root.Position.X-crossing.east.x))
+            >Structures.PLACEMENT_RANGE then return false,"build_too_far" end
+        local wet=RaycastParams.new()
+        wet.FilterType=Enum.RaycastFilterType.Include
+        wet.FilterDescendantsInstances={workspace.Terrain}
+        for _,bank in ipairs({crossing.west,crossing.east}) do
+            if not WorldService.ensureNear(state.seed,bank.x) then return false,"terrain_not_ready" end
+            for _,z in ipairs({-2,0,2}) do
+                local hit=workspace:Raycast(Vector3.new(bank.x,70,z),Vector3.new(0,-120,0),wet)
+                if not hit then return false,"terrain_not_ready" end
+                if hit.Material==Enum.Material.Water or math.abs(hit.Position.Y-bank.y)>3 then
+                    return false,"invalid_bridge_banks"
+                end
+            end
+        end
+        return true,(crossing.deckWestY+crossing.deckEastY)/2,crossing
+    end
     if math.abs(x-root.Position.X)>Structures.PLACEMENT_RANGE then
         return false,"build_too_far"
     end
-    local definition=Structures.get(typeId)
     local streamed=WorldService.ensureNear(state.seed,x-definition.footprint/2)
     if not streamed then return false,"terrain_not_ready" end
     local minHeight=math.huge
@@ -671,7 +756,7 @@ local function placementGround(typeId: string, x: number, root: BasePart): (bool
         local origin=Vector3.new(x+offset.X*definition.footprint/2,70,
             Structures.DEPTH_Z+offset.Y*3.5)
         local hit=workspace:Raycast(origin,Vector3.new(0,-120,0),groundCast)
-        if not hit or hit.Position.Y<=Profile.WATER_SURFACE then
+        if not hit or Profile.sample(state.seed,origin.X,origin.Z).wet then
             return false,"invalid_footprint_or_slope"
         end
         minHeight=math.min(minHeight,hit.Position.Y)
@@ -733,6 +818,13 @@ local function treeAction(player: Player,action: string,arg: any): any
         site.marked=not site.marked
         return {ok=true,marked=site.marked}
     end
+    if state~=regional.home or site.z then
+        if Work.sourceAvailable(state,site)<2 or not Inventory.add(regional.home.r3.playerBag,"wood",2) then
+            return {ok=false,error="insufficient_wood"}
+        end
+        site.remaining-=2
+        return {ok=true}
+    end
     local ok,value=R3.takeWood(state,root.Position.X,root.Position.Y,site.id)
     return {ok=ok,error=if not ok then value else nil}
 end
@@ -747,20 +839,21 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         local overview=Work.summary(state)
         local character=player.Character
         local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
-        local nearby={wood=0,canTrade=false,canSellWood=false,canCraftArrows=false,npcId=0,coinId=0,
+        local nearby={kingdom=player:GetAttribute("ER_Kingdom"),wood=0,canTrade=false,canSellWood=false,canCraftArrows=false,npcId=0,coinId=0,
             nearestWoodDistance=-1,nearestWoodDirection=""}
         if root and root:IsA("BasePart") then
             local x=root.Position.X
             local y=root.Position.Y
+            nearby.travel=Travel.status(player,root)
             nearby.district=Work.districtAt(state,x)
-            nearby.storyAction=R3.storyAction(state,x)
+            nearby.storyAction=R3.storyAction(regional.home,x)
             nearby.localThreats=0
-            for _,enemy in ipairs(state.r3.enemies) do
+            for _,enemy in ipairs(regional.home.r3.enemies) do
                 if Work.districtAt(state,enemy.x)==nearby.district then nearby.localThreats+=1 end
             end
-            nearby.canTrade=R3.marketNear(state,x,y)
+            nearby.canTrade=state==regional.home and R3.marketNear(state,x,y)
             nearby.canSellWood=nearby.canTrade and R3.canSell(state,"wood",x,y)
-            nearby.canCraftArrows=R3.arrowMaterial(state,x,y)~=nil
+            nearby.canCraftArrows=R3.arrowMaterial(regional.home,x,y)~=nil
             local closestNPC=15
             for _,npc in ipairs(state.npcs) do
                 local distance=math.abs(npc.x-x)
@@ -813,7 +906,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
                 end
             end
             local closestCoin=6
-            for _,coin in ipairs(state.r3.drops) do
+            for _,coin in ipairs(regional.home.r3.drops) do
                 local distance=math.abs(coin.x-x)
                 if not coin.claimed and distance<=closestCoin then
                     closestCoin=distance
@@ -821,8 +914,10 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
                 end
             end
         end
-        return {ok=true,data=overview,hud=R3.summary(state),nearby=nearby}
+        return {ok=true,data=overview,hud=R3.summary(regional.home),nearby=nearby}
     end
+    if action=="travel" then return Travel.action(player,arg) end
+    if Travel.busy() then return {ok=false,error="travel_unavailable"} end
     if action=="tree_press" or action=="tree_mark" or action=="tree_cancel" or action=="tree_take" then
         return treeAction(player,action,arg)
     end
@@ -857,11 +952,13 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             return {ok=false,error="outside_region"}
         end
         local x=math.round(candidateX)
-        local available,height=placementGround(arg,x,root)
+        local available,height,crossing=placementGround(arg,x,root)
         if not available then return {ok=false,error=height} end
         previewId+=1
         buildPreview={id=previewId,x=x,typeId=arg}
-        return {ok=true,previewId=previewId,x=x,y=height,district=Work.districtAt(state,x)}
+        return {ok=true,previewId=previewId,
+            x=if crossing then (crossing.west.x+crossing.east.x)/2 else x,
+            y=height,district=Work.districtAt(state,x),bridge=crossing}
     end
     if action=="build" and buildPreview and arg==buildPreview.id and buildPreview.result then
         return buildPreview.result
@@ -888,7 +985,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
     local placed,result=Work.place(state,plan.typeId,plan.x,height)
     if not placed then return {ok=false,error=result} end
     plan.result={ok=true,buildingId=result.id,x=result.x,typeId=plan.typeId}
-    buildVisual(result)
+    if result.crossingId then syncBridges() else buildVisual(result) end
     return plan.result
 end
 return Service

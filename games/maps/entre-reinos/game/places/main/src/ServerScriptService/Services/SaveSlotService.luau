@@ -9,15 +9,16 @@ local WorldProfile = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild
 local Policy = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("SlotLeasePolicy"))
 local LivingModel = require(ReplicatedStorage:WaitForChild("Game")
     :WaitForChild("Living"):WaitForChild("LivingModel"))
+local Regions = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("RegionalWorld"))
 local store = DataStoreService:GetDataStore("EntreReinos_WorldSlots_v1")
 local SaveSlotService = {}
 
 local LOCK_SECONDS = 240
 local AUTOSAVE_SECONDS = 70
 local sessions: {[Player]: any} = {}
-local livingSnapshotProvider: ((Player) -> any)? = nil
+local livingSnapshotProvider: ((Player) -> (any, any))? = nil
 
-function SaveSlotService.setLivingProvider(provider: (Player) -> any)
+function SaveSlotService.setLivingProvider(provider: (Player) -> (any, any))
     livingSnapshotProvider = provider
 end
 
@@ -31,6 +32,7 @@ local function cloneRecord(source: {[string]: any}): {[string]: any}
     if type(source.frontierPosition)=="table" then copy.frontierPosition=table.clone(source.frontierPosition) end
     if source.regions then copy.regions = table.clone(source.regions) end
     if source.storyFlags then copy.storyFlags = table.clone(source.storyFlags) end
+    if source.regionWorld then copy.regionWorld=LivingModel.clone(source.regionWorld) end
     if source.living then copy.living = LivingModel.clone(source.living) end
     return copy
 end
@@ -169,6 +171,9 @@ local function trackWorld(player: Player, s: any, record: any): number
     local humanoid = if char then char:FindFirstChildOfClass("Humanoid") else nil
     if root and root:IsA("BasePart") and humanoid and humanoid.Health > 0 then
         local p = root.Position
+        if record.regionWorld and math.abs(p.Z)<=2 and Regions.validPosition({x=p.X,y=p.Y,z=0}) then
+            record.regionWorld.position={x=p.X,y=p.Y,z=0}
+        end
         if math.abs(p.Z)<=2 and Slots.validTravel(p.X,p.Y,0) then
             if Slots.validPosition(p.X,p.Y,0) then
                 record.position={x=p.X,y=p.Y,z=0}
@@ -204,7 +209,7 @@ local function backupLegacy(player: Player, session: any): (boolean, string?)
     return true,nil
 end
 
-function SaveSlotService.save(player: Player, release: boolean?): (boolean, string?)
+function SaveSlotService.save(player: Player, release: boolean?, destination: any?): (boolean, string?)
     local s = sessions[player]
     if not s then
         return false, "no_session"
@@ -217,12 +222,22 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
         return false, "save_busy"
     end
     if sessions[player] ~= s then return false, "no_session" end
+    if destination and (not Regions.validPosition(destination) or release) then
+        return false,"invalid_travel_destination"
+    end
+    if destination and s.pending and (not s.pending.destination
+        or s.pending.destination.x~=destination.x or s.pending.destination.y~=destination.y) then
+        return false,"save_busy"
+    end
+    if destination and DataStoreService:GetRequestBudgetForRequestType(Enum.DataStoreRequestType.UpdateAsync)<1 then
+        return false,"save_busy"
+    end
     s.busy = true
     if not s.pending then
         local record = cloneRecord(s.data)
         local upgrading = false
         if livingSnapshotProvider and player:GetAttribute("ER_WorldLoaded") == true then
-            local invoked, state = pcall(livingSnapshotProvider, player)
+            local invoked, state, regional = pcall(livingSnapshotProvider, player)
             if not invoked or (state ~= nil and not LivingModel.valid(state)) then
                 s.busy = false
                 warn("[EntreReinos] Refusing save of invalid population snapshot.")
@@ -232,12 +247,26 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
                 -- Materialize a deep copy. DataStore's UpdateAsync may retry
                 -- while the live NPC simulation is still ticking.
                 record.living = LivingModel.clone(state)
-                upgrading = (s.data.rulesetVersion or 1)<Slots.RULESET_VERSION
-                record.rulesetVersion = Slots.RULESET_VERSION
+                if regional~=nil then
+                    if not Regions.valid(regional,record.seed,state) then
+                        s.busy=false
+                        return false,"invalid_regional_snapshot"
+                    end
+                    record.regionWorld=LivingModel.clone(regional)
+                end
+                record.rulesetVersion = if record.regionWorld then Slots.RULESET_VERSION else Slots.LEGACY_RULESET_VERSION
+                upgrading = (s.data.rulesetVersion or 1)<record.rulesetVersion
                 record.saveFormatVersion = Slots.SAVE_FORMAT_VERSION
             end
         end
         local capturedAt = trackWorld(player, s, record)
+        if destination then
+            if not record.regionWorld or record.regionWorld.rider then
+                s.busy=false
+                return false,"invalid_travel_destination"
+            end
+            record.regionWorld.position=table.clone(destination)
+        end
         record.revision = s.data.revision + 1
         record.updatedAt = os.time()
         local id = ownedToken() .. ":save:" .. tostring(record.revision)
@@ -246,6 +275,13 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
             s.busy = false
             return false, "world_snapshot_invalid"
         end
+        if record.regionWorld then
+            local serialized,encoded=pcall(HttpService.JSONEncode,HttpService,record)
+            if not serialized or #encoded>Regions.MAX_JSON_BYTES then
+                s.busy=false
+                return false,"regional_snapshot_too_large"
+            end
+        end
         if upgrading then
             local backedUp,reason=backupLegacy(player,s)
             if not backedUp then
@@ -253,7 +289,7 @@ function SaveSlotService.save(player: Player, release: boolean?): (boolean, stri
                 return false,reason
             end
         end
-        s.pending = {record = record, id = id, releasing = release == true}
+        s.pending = {record = record, id = id, releasing = release == true,destination=destination}
         s.lastClock = capturedAt
     elseif release and not s.pending.releasing then
         -- First resolve an uncertain autosave before creating a release record.

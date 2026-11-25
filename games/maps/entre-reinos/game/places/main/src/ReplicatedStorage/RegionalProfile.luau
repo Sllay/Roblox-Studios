@@ -111,7 +111,7 @@ function Profile.signature(seed: number): string
     return tostring(Profile.GENERATOR_VERSION) .. ":" .. tostring(seed)
 end
 
-local function channelAt(seed: number, side: number, outward: number, z: number): (number, number, boolean)
+local function channelAt(seed: number, side: number, outward: number, z: number): (number, number, boolean, number)
     -- Each region gets a connected course from the background to the
     -- foreground. The first is a ford, the second a navigable deep river.
     local band = math.clamp(math.floor(outward / regionWidth), 0, Profile.REGIONS_PER_SIDE - 1)
@@ -119,8 +119,8 @@ local function channelAt(seed: number, side: number, outward: number, z: number)
     local center = band * regionWidth + (if band == 0 then 228 else 320) + phase % 64
         + math.noise(z / 47, phase, 8.4) * 13
     local bedDistance = math.abs(outward - center)
-    local water = 12 + 9 * smooth((-z - 9) / 33)
-    return bedDistance, water, band == 0
+    local water = 12 + 9 * smooth((-z - 21) / 16)
+    return bedDistance, water, band == 0, center
 end
 
 function Profile.sample(seed: number, x: number, z: number)
@@ -187,6 +187,22 @@ function Profile.settlement(seed: number, regionIndex: number): {id: string, x: 
     local anchor = Profile.sample(seed, x, -10)
     if not meadow.settlement or anchor.wet then return nil end
     return {id = region.id .. ":town", x = x, y = anchor.height, z = -10}
+end
+
+export type CascadePoint={x: number,y: number,z: number}
+function Profile.waterfall(seed: number,chunk: number): {CascadePoint}?
+    local region=Profile.regionOfChunk(chunk)
+    if region==0 then return nil end
+    local side=math.sign(region)
+    local outward=(math.abs(region)-0.5)*regionWidth
+    local _,_,_,center=channelAt(seed,side,outward,-29)
+    if Profile.chunkAt(side*(Legacy.BOUNDS.xMax+center))~=chunk then return nil end
+    local points: {CascadePoint}={}
+    for z=-40,-20,4 do
+        local _,water,_,channel=channelAt(seed,side,outward,z)
+        table.insert(points,{x=side*(Legacy.BOUNDS.xMax+channel),y=water+0.12,z=z})
+    end
+    return points
 end
 
 export type NaturalSite = {id: string, x: number, y: number, z: number, item: string, initialAmount: number}

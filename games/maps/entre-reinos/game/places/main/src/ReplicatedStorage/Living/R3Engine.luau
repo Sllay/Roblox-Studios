@@ -79,6 +79,14 @@ local function ledger(d: any,kind: string,value: number,reference: string)
     while #d.ledger>80 do table.remove(d.ledger,1) end
 end
 
+function R3.payTravel(state: any,cost: number,asset: string): boolean
+    local d=state.r3
+    if not d or not finite(cost) or cost%1~=0 or cost<1 or d.wallet<cost then return false end
+    d.wallet-=cost
+    ledger(d,"travel_purchase",-cost,asset)
+    return true
+end
+
 local function makeDrop(d: any,x: number,value: number,reason: string): any
     -- Reap claimed items, while never recycling their unique IDs. Double
     -- pickup remains impossible even after old tombstones are pruned.
@@ -446,6 +454,29 @@ local function ruin(state: any,b: any)
     table.insert(state.events,{kind="ruined",buildingId=b.id,time=state.elapsed})
 end
 
+function R3.damageStructure(state: any,b: any,amount: number): boolean
+    if not b or not finite(amount) or amount<=0 or b.health<=0
+        or (b.state~="complete" and b.state~="damaged") then return false end
+    b.health=math.max(0,b.health-amount)
+    b.state="damaged"
+    ruin(state,b)
+    return true
+end
+
+local function bridgeAtEnemy(state: any,e: any): (any, number?)
+    local graph=Work.crossings(state)
+    if not graph then return nil,nil end
+    for _,b in ipairs(state.buildings) do
+        if not b.crossingId or b.health<=0 or (b.state~="complete" and b.state~="damaged") then continue end
+        for _,crossing in ipairs(graph.crossings) do
+            if b.crossingId~=crossing.id then continue end
+            local x=if e.side==1 then crossing.east.x else crossing.west.x
+            if b.x*e.side>0 and (e.x-x)*e.side>=-1 then return b,x end
+        end
+    end
+    return nil,nil
+end
+
 local function wallBeforeTown(state: any,e: any): any
     local best=nil
     local nearest=math.huge
@@ -570,7 +601,8 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
         local block=if e.typeId=="infected_duke" then nil else wallBeforeTown(state,e)
         local innerLine=story.scene and story.stage=="last_ring" and e.typeId~="infected_duke"
         local target=if block or innerLine or e.typeId=="infected_duke" then nil else raiderGoal(state,e)
-        local goal=if block then block.x elseif e.typeId=="infected_duke" then math.clamp(playerX,-118,118)
+        local bridge,bank=bridgeAtEnemy(state,e)
+        local goal=if bridge and bank and not story.scene then bank elseif block then block.x elseif e.typeId=="infected_duke" then math.clamp(playerX,-118,118)
             elseif innerLine then e.side*7 elseif target then target.x else 0
         local diff=goal-e.x
         local delta=math.clamp(diff,-4.8*dt,4.8*dt)
@@ -579,6 +611,8 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
         if math.abs(diff)>2.8 then
             e.x+=delta
             e.motionX=delta/dt
+        elseif bridge and bank and not story.scene then
+            R3.damageStructure(state,bridge,9*dt)
         elseif block then
             local siege=story.scene and story.stage=="crisis" and block.districtBoundary
             block.health=math.max(0,block.health-(if siege then 115 else 7)*dt)

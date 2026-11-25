@@ -1,0 +1,331 @@
+--!strict
+local ReplicatedStorage=game:GetService("ReplicatedStorage")
+local shared=ReplicatedStorage:WaitForChild("Game")
+local Profile=require(shared:WaitForChild("RegionalProfile"))
+local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
+local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
+local World=require(script.Parent:WaitForChild("WorldService"))
+local Rig=require(script.Parent:WaitForChild("VehicleRig"))
+local Service={}
+local owner: Player?=nil
+local regional: any=nil
+local folder: Folder?=nil
+local rigs: {[string]: any}={}
+local stops: {any}={}
+local dockModels: {[number]: Instance}={}
+local riding: string?=nil
+local input=0
+local received=0
+local speed=0
+local phase=0
+local heading=1
+local lastAction=0
+local lastInput=0
+local changePosition: ((Player, any) -> (boolean, string?))?=nil
+local transit=false
+local updateTime=0
+local WALK_SPEED, RUN_SPEED, ROW_SPEED=17,26,9
+local HORSE_PRICE=12
+
+local remotes=shared
+local steering=Instance.new("RemoteEvent")
+steering.Name="ER_TravelSteering"
+steering.Parent=remotes
+
+local function character(player: Player): (BasePart?, Humanoid?)
+    local avatar=player.Character
+    local root=if avatar then avatar:FindFirstChild("HumanoidRootPart") else nil
+    local human=if avatar then avatar:FindFirstChildOfClass("Humanoid") else nil
+    if root and root:IsA("BasePart") and human and human.Health>0 then return root,human end
+    return nil,nil
+end
+
+steering.OnServerEvent:Connect(function(player: Player, value: any)
+    if player~=owner or not riding or type(value)~="number" or not (value>=-1 and value<=1) then return end
+    local now=os.clock()
+    if now-lastInput<0.045 then return end
+    lastInput,received,input=now,now,value
+end)
+
+local function closeTo(root: BasePart, position: any, radius: number): boolean
+    return math.abs(root.Position.X-position.x)<=radius
+        and math.abs(root.Position.Y-position.y)<=8 and math.abs(root.Position.Z)<=2.5
+end
+
+local function nearStop(root: BasePart, limit: number): any
+    for _,stop in ipairs(stops) do
+        if math.abs(stop.moor.x-root.Position.X)<=limit then return stop end
+    end
+    return nil
+end
+
+local function nearbyCapital(x: number): (string?, any)
+    if math.abs(x)<=12 then return "0",Profile.spawn(regional.seed) end
+    local town=Profile.settlement(regional.seed,2)
+    if town and math.abs(town.x-x)<=12 then return "2",{x=town.x,y=Profile.sample(regional.seed,town.x,0).height+4,z=0} end
+    return nil,nil
+end
+
+local function mapStops()
+    for _,crossing in ipairs(regional.graph.crossings) do
+        if crossing.region~=0 then continue end
+        for _,sign in ipairs({1,-1}) do
+            local bank=if sign==1 then crossing.west else crossing.east
+            for offset=2,32,1 do
+                local x=bank.x+sign*offset
+                local terrain=Profile.sample(regional.seed,x,0)
+                if not terrain.waterSurface or terrain.waterSurface-terrain.height<1.8 then continue end
+                table.insert(stops,{bank={x=bank.x,y=bank.y,z=0},moor={x=x,y=terrain.waterSurface,z=0}})
+                break
+            end
+        end
+        break
+    end
+end
+
+local function drawDock(index: number,stop: any)
+    if dockModels[index] or not World.isLoadedAt(stop.bank.x) then return end
+    local hull=Instance.new("Model")
+    hull.Name=if index==1 then "Ancoradouro do Vale" else "Ancoradouro da Margem"
+    local function plank(name: string, size: Vector3,pose: CFrame): Part
+        local p=Instance.new("Part")
+        p.Name=name
+        p.Anchored=true
+        p.Size=size
+        p.CFrame=pose
+        p.Color=Color3.fromRGB(114,80,50)
+        p.Material=Enum.Material.WoodPlanks
+        p.Parent=hull
+        return p
+    end
+    local length=math.abs(stop.moor.x-stop.bank.x)
+    -- Lateral walk lane remains clear for native swimming. Dock alongside it.
+    local y=math.max(stop.moor.y+0.5,stop.bank.y+0.35)
+    local center=(stop.moor.x+stop.bank.x)/2
+    plank("Píer",Vector3.new(length+1.2,0.52,3.2),CFrame.new(center,y,-3.5))
+    for _,x in ipairs({stop.bank.x,stop.moor.x}) do
+        plank("Pilote",Vector3.new(0.62,14,0.62),CFrame.new(x,y-6,-4.55))
+        plank("Amarra",Vector3.new(0.7,1.35,0.7),CFrame.new(x,y+0.64,-4.55))
+    end
+    hull.Parent=folder
+    dockModels[index]=hull
+end
+
+local function refreshRig(kind: string): any
+    local record=regional.record[kind]
+    if not record then return nil end
+    local existing=rigs[kind]
+    local position=record.position
+    if not World.isLoadedAt(position.x) then return nil end
+    if not existing then
+        existing=Rig.create(kind,folder)
+        rigs[kind]=existing
+    end
+    existing.model:PivotTo(CFrame.new(position.x,position.y,0)*CFrame.Angles(0,-heading*math.pi/2,0))
+    existing.model:SetAttribute("ER_VehicleId",record.id)
+    existing.model:SetAttribute("ER_Energy",record.energy)
+    existing.model:SetAttribute("ER_Vitality",record.health)
+    return existing
+end
+
+local function clearRider(player: Player)
+    riding=nil
+    if regional then regional.record.rider=nil end
+    speed,input=0,0
+    player:SetAttribute("ER_Riding",nil)
+    local _,human=character(player)
+    if human then human:SetStateEnabled(Enum.HumanoidStateType.Jumping,true) end
+end
+
+local function board(player: Player,kind: string,human: Humanoid): boolean
+    local rig=refreshRig(kind)
+    if not rig or rig.seat.Occupant then return false end
+    riding=kind
+    regional.record.rider=kind
+    player:SetAttribute("ER_Riding",kind)
+    human:SetStateEnabled(Enum.HumanoidStateType.Jumping,false)
+    rig.seat:Sit(human)
+    return true
+end
+
+function Service.start(player: Player,session: any,parent: Folder,
+        checkpoint: (Player,any) -> (boolean,string?))
+    owner,regional,changePosition=player,session,checkpoint
+    local group=Instance.new("Folder")
+    group.Name="ER_Travel"
+    group.Parent=parent
+    folder=group
+    mapStops()
+    if #stops==2 and not regional.record.boat then
+        regional.record.boat={id="boat:2",position=table.clone(stops[1].moor),health=100}
+    end
+    local _,human=character(player)
+    local saved=regional.record.rider
+    if human and (saved=="mount" or saved=="boat") and regional.record[saved] then
+        board(player,saved,human)
+    end
+end
+
+function Service.stop()
+    if owner then clearRider(owner) end
+    if folder then folder:Destroy() end
+    owner,regional,folder,changePosition=nil,nil,nil,nil
+    table.clear(rigs)
+    table.clear(stops)
+    table.clear(dockModels)
+    transit=false
+    input,speed,updateTime,lastAction,lastInput,received=0,0,0,0,0,0
+end
+
+function Service.busy(): boolean return transit end
+
+function Service.status(player: Player,root: BasePart): string?
+    if player~=owner or not regional or not regional.home.r3
+        or regional.home.r3.prologue.stage~="sandbox" then return nil end
+    if riding then return if riding=="mount" then "dismount" elseif nearStop(root,5) then "disembark" else nil end
+    local mount=regional.record.mount
+    if mount and mount.health>0 and closeTo(root,mount.position,7) then return "mount" end
+    local boat=regional.record.boat
+    if boat and boat.health>0 and closeTo(root,boat.position,6) then return "board" end
+    local capital=nearbyCapital(root.Position.X)
+    local setup=Profile.sample(regional.seed,18,0)
+    if not mount and closeTo(root,{x=18,y=setup.height,z=0},6) then return "buy_mount" end
+    if capital and regional.record.discovered[if capital=="0" then "2" else "0"] then return "travel" end
+    return nil
+end
+
+function Service.action(player: Player,arg: any): any
+    if type(arg)~="string" or #arg>16 or player~=owner or transit then return {ok=false,error="travel_unavailable"} end
+    local root,human=character(player)
+    if not root or not human or Service.status(player,root)~=arg then return {ok=false,error="travel_unavailable"} end
+    local now=os.clock()
+    if now-lastAction<0.45 then return {ok=false,error="rate_limited"} end
+    lastAction=now
+    if arg=="buy_mount" then
+        if not R3.payTravel(regional.home,HORSE_PRICE,"horse:1") then return {ok=false,error="travel_cost"} end
+        local ground=Profile.sample(regional.seed,18,0)
+        regional.record.mount={id="horse:1",health=100,energy=100,position={x=18,y=ground.height,z=0}}
+        refreshRig("mount")
+        return {ok=true}
+    end
+    if arg=="mount" or arg=="board" then
+        return {ok=board(player,if arg=="mount" then "mount" else "boat",human),error="travel_unavailable"}
+    end
+    if arg=="dismount" or arg=="disembark" then
+        local stop=nearStop(root,5)
+        local record=regional.record[riding :: string]
+        local x=if arg=="disembark" and stop then stop.bank.x else record.position.x
+        local y=if arg=="disembark" and stop then stop.bank.y else record.position.y
+        if not World.isLoadedAt(x) then return {ok=false,error="terrain_not_ready"} end
+        human.Sit=false
+        clearRider(player)
+        root.CFrame=CFrame.new(x,y+4.1,0)
+        root.AssemblyLinearVelocity=Vector3.zero
+        return {ok=true}
+    end
+    if arg=="travel" and changePosition then
+        local from=nearbyCapital(root.Position.X)
+        local town=Profile.settlement(regional.seed,2)
+        local x=if from=="0" and town then town.x else 0
+        local ground=Profile.sample(regional.seed,x,0)
+        if ground.wet or human.SeatPart then return {ok=false,error="travel_unavailable"} end
+        transit=true
+        root.Anchored=true
+        local ready=World.ensureNear(regional.seed,x)
+        if ready then task.wait() end
+        local groundOnly=RaycastParams.new()
+        groundOnly.FilterType=Enum.RaycastFilterType.Include
+        groundOnly.FilterDescendantsInstances={workspace.Terrain}
+        local hit=if ready then workspace:Raycast(Vector3.new(x,70,0),Vector3.new(0,-105,0),groundOnly) else nil
+        local ok=false
+        local err="terrain_not_ready"
+        if hit and hit.Material~=Enum.Material.Water and human.Health>0 and player.Character==root.Parent then
+            local destination={x=x,y=hit.Position.Y+3.6,z=0}
+            local safe,reason=changePosition(player,destination)
+            ok,err=safe,reason or "travel_unavailable"
+            if safe and player.Character==root.Parent and human.Health>0 then
+                root.CFrame=CFrame.new(destination.x,destination.y,0)
+                root.AssemblyLinearVelocity=Vector3.zero
+            end
+        end
+        if root.Parent then root.Anchored=false end
+        transit=false
+        return {ok=ok,error=err}
+    end
+    return {ok=false,error="travel_unavailable"}
+end
+
+function Service.tick(dt: number)
+    local player=owner
+    if not player or not regional or not folder then return end
+    updateTime+=dt
+    if updateTime<0.065 then return end
+    dt=math.min(updateTime,0.15)
+    updateTime=0
+    for i,stop in ipairs(stops) do drawDock(i,stop) end
+    local root,human=character(player)
+    if not root or not human then
+        if riding then clearRider(player) end
+        return
+    end
+    for _,kind in ipairs({"mount","boat"}) do
+        local record=regional.record[kind]
+        if not record then continue end
+        if kind~=riding and math.abs(record.position.x-root.Position.X)>170 then
+            if rigs[kind] then rigs[kind].model:Destroy(); rigs[kind]=nil end
+        elseif not rigs[kind] then
+            refreshRig(kind)
+        end
+    end
+    if not riding then return end
+    local record=regional.record[riding]
+    local rig=rigs[riding]
+    if not rig then clearRider(player); return end
+    if rig.seat.Occupant~=human then
+        -- Roblox may briefly leave Occupant unset while establishing welds.
+        if human.SeatPart~=nil or not human.Sit then clearRider(player) end
+        return
+    end
+    local command=if os.clock()-received<=0.3 then input else 0
+    local mounted=riding=="mount"
+    local gallop=mounted and math.abs(command)>0.92 and record.energy>0
+    local limit=if mounted then (if gallop then RUN_SPEED else WALK_SPEED) else ROW_SPEED
+    speed+=math.clamp(command*limit-speed,-28*dt,28*dt)
+    local old=record.position
+    local nextX=math.clamp(old.x+speed*dt,-Profile.PLAY_EDGE,Profile.PLAY_EDGE)
+    local ground=Profile.sample(regional.seed,nextX,0)
+    local nextY=ground.height
+    local valid=World.isLoadedAt(nextX)
+    if mounted then
+        local deck=Work.deckAt(regional.home,nextX,0,"mount")
+        local depth=if ground.waterSurface then ground.waterSurface-ground.height else 0
+        nextY=deck or ground.height
+        valid=valid and (depth<=2 or deck~=nil) and math.abs(nextY-old.y)<=2.8
+        if valid and math.abs(speed)>0.01 then
+            local obstacle=RaycastParams.new()
+            obstacle.FilterType=Enum.RaycastFilterType.Exclude
+            obstacle.FilterDescendantsInstances={workspace.Terrain,rig.model,root.Parent :: Instance}
+            obstacle.RespectCanCollide=true
+            local hit=workspace:Raycast(Vector3.new(old.x,old.y+2,0),
+                Vector3.new(nextX-old.x+math.sign(speed)*1.65,0,0),obstacle)
+            valid=hit==nil
+        end
+        record.energy=math.clamp(record.energy+(if gallop then -13 else 8)*dt,0,100)
+        player:SetAttribute("ER_MountEnergy",math.floor(record.energy))
+    else
+        if #stops~=2 then valid=false else nextX=math.clamp(nextX,stops[1].moor.x,stops[2].moor.x) end
+        local water=Profile.sample(regional.seed,nextX,0)
+        valid=valid and water.waterSurface~=nil and water.waterSurface-water.height>=1.25
+        nextY=water.waterSurface or old.y
+    end
+    if valid then
+        record.position={x=nextX,y=nextY,z=0}
+        if math.abs(speed)>0.5 then heading=math.sign(speed) end
+    else
+        speed=0
+    end
+    phase+=math.abs(speed)*dt*1.5
+    refreshRig(riding)
+    Rig.animate(rig,riding,phase,speed)
+end
+return Service

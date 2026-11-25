@@ -6,7 +6,82 @@ local Structures=require("./StructureDefs")
 local Professions=require("./ProfessionDefs")
 local Inventory=require("./Inventory")
 local World=require("../WorldProfile")
+local Regions=require("../RegionalProfile")
+local Routes=require("../RegionalCrossings")
 local Engine={}
+local contexts=setmetatable({} :: {[any]: any}, {__mode="k"})
+local DECK_HALF_WIDTH=3.2
+
+-- Runtime references stay outside the persisted population.
+function Engine.bindRegion(state: any, graph: Routes.Graph, origin: number,
+        allBridgeRecords: () -> {any}, readyAt: ((number) -> boolean)?)
+    contexts[state]={graph=graph,origin=origin,bridges=allBridgeRecords,readyAt=readyAt}
+end
+
+function Engine.crossings(state: any): Routes.Graph?
+    local context=contexts[state]
+    return if context then context.graph else nil
+end
+
+local function sample(state: any, x: number, z: number)
+    return if contexts[state] then Regions.sample(state.seed,x,z) else World.sample(state.seed,x,z)
+end
+
+local function bridgeAt(state: any, id: string): any
+    for _,b in ipairs(contexts[state].bridges()) do
+        if b.crossingId==id then return b end
+    end
+    return nil
+end
+
+local function passable(state: any,crossing: Routes.Crossing,class: string): string?
+    local building=bridgeAt(state,crossing.id)
+    return Routes.passage(crossing,class,building and {
+        tier=Structures.get(building.typeId).tier,state=building.state,health=building.health,load=0,
+    })
+end
+
+function Engine.canReach(state: any, from: number, to: number, class: string): boolean
+    local context=contexts[state]
+    if not context then return true end
+    local a,b=math.min(from,to),math.max(from,to)
+    for _,crossing in ipairs(context.graph.crossings) do
+        if a<crossing.east.x-1 and b>crossing.west.x+1 and not passable(state,crossing,class) then
+            return false
+        end
+    end
+    return true
+end
+
+local function builderTarget(state: any, npc: any, b: any): (number,number)
+    if b.crossingId then
+        for _,crossing in ipairs(contexts[state].graph.crossings) do
+            if crossing.id==b.crossingId then
+                local west=npc.x<=b.x
+                return if west then crossing.west.x-2 else crossing.east.x+2, 0
+            end
+        end
+    end
+    return b.x,-4.4
+end
+
+function Engine.deckAt(state: any, x: number, z: number, class: string): (number?, any)
+    local context=contexts[state]
+    if not context or math.abs(z)>DECK_HALF_WIDTH then return nil,nil end
+    for _,crossing in ipairs(context.graph.crossings) do
+        if x<crossing.west.x-0.35 or x>crossing.east.x+0.35 then continue end
+        if passable(state,crossing,class)~="bridge" then return nil,nil end
+        local t=math.clamp((x-crossing.west.x)/crossing.span,0,1)
+        return crossing.deckWestY+(crossing.deckEastY-crossing.deckWestY)*t,crossing
+    end
+    return nil,nil
+end
+
+function Engine.bridgePlan(state: any,x: number): (Routes.Crossing?,string?)
+    local graph=Engine.crossings(state)
+    if not graph then return nil,"invalid_structure" end
+    return Routes.bridgePlan(graph,x)
+end
 local NEAR=1.6
 
 local function findBuilding(state: any, id: any): any
@@ -70,11 +145,13 @@ function Engine.sourceAvailable(state: any, site: any, except: any?): number
     return math.max(0,remaining)
 end
 
-local function availableSource(state: any, item: string, x: number): any
+local function availableSource(state: any, item: string, x: number, target: number?): any
     local best=nil
     local bestDist=math.huge
     for _,site in ipairs(state.sites) do
-        if site.item==item and Engine.sourceAvailable(state,site)>0 then
+        if site.item==item and Engine.sourceAvailable(state,site)>0
+            and Engine.canReach(state,x,site.x,"worker")
+            and (target==nil or Engine.canReach(state,site.x,target,"carrier")) then
             local distance=math.abs(x-site.x)
                 -(if item=="wood" and site.marked==true then 80 else 0)
             if distance<bestDist then
@@ -137,9 +214,10 @@ local function assignStorage(npc: any,state: any): boolean
                 if storageSpace(state,b,id)<=0 then continue end
                 local carried=Inventory.count(npc.inventory,id)
                 local s=if carried==0 and freeUnits(npc.inventory,id)>0
-                    then availableSource(state,id,npc.x) else nil
+                    then availableSource(state,id,npc.x,b.x) else nil
                 local ordered=s and s.marked==true and id=="wood"
-                if carried>0 or (s and (ordered or Inventory.count(b.stored,id)<STOCK_TARGET[id])) then
+                if (carried>0 and Engine.canReach(state,npc.x,b.x,"carrier"))
+                    or (s and (ordered or Inventory.count(b.stored,id)<STOCK_TARGET[id])) then
                     local score=math.abs(npc.x-b.x)
                         +(if s then math.abs(s.x-b.x) else 0)
                         -(if carried>0 then 500 else 0)
@@ -189,8 +267,9 @@ local function assign(npc: any, state: any): boolean
     local funded=nil
     local nearest=math.huge
     for _,b in ipairs(state.buildings) do
-        if b.state~="complete" and ready(b) then
-            local distance=math.abs(npc.x-b.x)
+        local target=builderTarget(state,npc,b)
+        if b.state~="complete" and ready(b) and Engine.canReach(state,npc.x,target,"worker") then
+            local distance=math.abs(npc.x-target)
             if distance<nearest then
                 nearest=distance
                 funded=b
@@ -221,25 +300,29 @@ local function assign(npc: any, state: any): boolean
     for _,b in ipairs(state.buildings) do
         if b.state=="blueprint" or b.state=="ruined" then
             local def=Structures.get(b.typeId)
+            local target=builderTarget(state,npc,b)
             local district=Engine.districtAt(state,b.x)
             for _,item in ipairs({"wood","stone","iron","food"}) do
                 local missing=needed(b,item)
                 if missing<=0 or not def.cost[item] then continue end
-                consider(b,item,math.min(missing,Inventory.count(npc.inventory,item)),
-                    500-math.abs(npc.x-b.x),nil,nil)
+                if Engine.canReach(state,npc.x,target,"carrier") then
+                    consider(b,item,math.min(missing,Inventory.count(npc.inventory,item)),
+                        500-math.abs(npc.x-target),nil,nil)
+                end
                 local limit=math.min(missing,freeUnits(npc.inventory,item),
                     Professions.gatherYield(npc.profession,item))
                 if limit<=0 then continue end
                 for _,depot in ipairs(state.buildings) do
                     local free=Engine.stockAvailable(state,depot,item)
-                    if free>0 then
+                    if free>0 and Engine.canReach(state,npc.x,depot.x,"worker")
+                        and Engine.canReach(state,depot.x,target,"carrier") then
                         local localDepot=district~=nil and Engine.districtAt(state,depot.x)==district
                         consider(b,item,math.min(limit,free),
                             325-(math.abs(npc.x-depot.x)+math.abs(depot.x-b.x))*0.35
                                 +(if localDepot then 8 else 0),nil,depot)
                     end
                 end
-                local site=availableSource(state,item,npc.x)
+                local site=availableSource(state,item,npc.x,target)
                 if site then
                     local score=200-(math.abs(npc.x-site.x)+math.abs(site.x-b.x))*0.35
                         -npc.fatigue*0.15+math.min(25,missing*2)
@@ -264,17 +347,36 @@ end
 
 local function freeGround(state: any,npc: any,x: number,z: number): boolean
     if math.abs(z)>20 then return false end
-    local current=World.sample(state.seed,npc.x,npc.z or 0)
-    local nextGround=World.sample(state.seed,x,z)
-    if nextGround.wet or math.abs(nextGround.height-current.height)>1.4 then return false end
+    local context=contexts[state]
+    if context and context.readyAt and not context.readyAt(x) then return false end
+    local class=if Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
+    local current=sample(state,npc.x,npc.z or 0)
+    local nextGround=sample(state,x,z)
+    local deck,crossing=Engine.deckAt(state,x,z,class)
+    local fromDeck=Engine.deckAt(state,npc.x,npc.z or 0,class)
+    local shallow=context and nextGround.waterSurface
+        and nextGround.waterSurface-nextGround.height<=2
+    if nextGround.wet and not shallow and not deck then return false end
+    if math.abs((deck or nextGround.height)-(fromDeck or current.height))>(if deck or fromDeck then 2.4 else 1.4) then return false end
+    if crossing and not fromDeck then
+        local load=if class=="carrier" then 2 else 1
+        local limit=if Structures.get(bridgeAt(state,crossing.id).typeId).tier=="light" then 2 else 6
+        for _,other in ipairs(state.npcs) do
+            if other~=npc and other.health>0 and other.x>crossing.west.x
+                and other.x<crossing.east.x and math.abs(other.z or 0)<=DECK_HALF_WIDTH then
+                load+=if Inventory.weight(other.inventory)>0 then 2 else 1
+            end
+        end
+        if load>limit then return false end
+    end
     for _,site in ipairs(state.sites) do
         if site.item=="wood" and site.remaining>0 and not site.salvage then
-            local after=(x-site.x)^2+(z+6)^2
-            if after<1.26^2 and after<(npc.x-site.x)^2+((npc.z or 0)+6)^2 then return false end
+            local after=(x-site.x)^2+(z-(site.z or -6))^2
+            if after<1.26^2 and after<(npc.x-site.x)^2+((npc.z or 0)-(site.z or -6))^2 then return false end
         end
     end
     for _,b in ipairs(state.buildings) do
-        if b.health<=0 or b.ruined then continue end
+        if b.health<=0 or b.ruined or b.crossingId then continue end
         local width=Structures.get(b.typeId).footprint/2+0.45
         local depth=Structures.DEPTH_Z
         if math.abs(x-b.x)<width and math.abs(z-depth)<4.65 then
@@ -290,11 +392,48 @@ local steering={0,0.61,-0.61,1.15,-1.15,1.84,-1.84}
 function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ: number?,speed: number?): boolean
     local z=npc.z or 0
     local targetZ=destZ or z
+    local finalX,finalZ=destX,targetZ
+    local context=contexts[state]
+    if context then
+        local class=if Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
+        local entry=npc.bridgeEntry
+        if entry then
+            local deck=Engine.deckAt(state,npc.x,z,class)
+            if not deck then
+                npc.x,npc.z=entry.x,entry.z
+                npc.bridgeEntry=nil
+                clearJob(npc,state)
+                return false
+            end
+        end
+        if not Engine.canReach(state,npc.x,destX,class) then
+            -- Keep a loaded worker and its materials on the current bank.
+            -- Release the claim only if no route returns within the wait window.
+            npc.routeBlocked=(npc.routeBlocked or 0)+dt
+            if npc.routeBlocked>=14 then clearJob(npc,state); npc.routeBlocked=nil end
+            return false
+        end
+        npc.routeBlocked=nil
+        local east=destX>=npc.x
+        for i=1,#context.graph.crossings do
+            local crossing=context.graph.crossings[if east then i else #context.graph.crossings-i+1]
+            local enter,exit=if east then crossing.west.x else crossing.east.x,
+                if east then crossing.east.x else crossing.west.x
+            local dir=if east then 1 else -1
+            if (destX-enter)*dir>1 and (exit-npc.x)*dir>0 then
+                destX=if (enter-npc.x)*dir>0.8 and math.abs(z)>0.7 then enter-dir*1.2 else exit+dir*1.4
+                targetZ=0
+                break
+            end
+        end
+    end
     npc.targetX=destX
     npc.targetZ=targetZ
     local dx,dz=destX-npc.x,targetZ-z
     local distance=math.sqrt(dx*dx+dz*dz)
-    if distance<=NEAR then return true end
+    if distance<=(if destX~=finalX or targetZ~=finalZ then 0.48 else NEAR) then
+        return (finalX-npc.x)^2+(finalZ-z)^2<=NEAR^2
+    end
     local travel=math.min(distance,(speed or Professions.get(npc.profession).moveSpeed)*dt)
     local angle=math.atan2(dz,dx)
     local bestX,bestZ=npc.x,z
@@ -322,9 +461,18 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
     npc.motionZ=(bestZ-z)/dt
     local turn=dx*(bestZ-z)-dz*(bestX-npc.x)
     npc.steerSide=if math.abs(turn)<0.01 then nil elseif turn>0 then 1 else -1
+    if context then
+        local class=if Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
+        local deck=Engine.deckAt(state,bestX,bestZ,class)
+        if deck and not npc.bridgeEntry then
+            npc.bridgeEntry={x=npc.x,z=z}
+        elseif not deck then
+            npc.bridgeEntry=nil
+        end
+    end
     npc.x,npc.z=bestX,bestZ
     npc.fatigue=math.min(100,npc.fatigue+dt*0.03)
-    return (destX-npc.x)^2+(targetZ-npc.z)^2<=NEAR^2
+    return (finalX-npc.x)^2+(finalZ-npc.z)^2<=NEAR^2
 end
 
 local function wander(npc: any,state: any,dt: number)
@@ -339,8 +487,9 @@ local function wander(npc: any,state: any,dt: number)
         local epoch=math.floor((state.elapsed+npc.id*1.6)/5)
         for attempt=0,11 do
             local targetX=((state.seed%997)*17+npc.id*53+epoch*71+attempt*19)%53-26
+                +(if contexts[state] then contexts[state].origin else 0)
             local targetZ=1+(((state.seed%89)*13+npc.id*29+epoch*31+attempt*7)%12)
-            local free=not World.sample(state.seed,targetX,targetZ).wet
+            local free=not sample(state,targetX,targetZ).wet
             if free then
                 for _,other in ipairs(state.npcs) do
                     if other~=npc and other.health>0
@@ -382,25 +531,40 @@ end
 function Engine.canPlace(state: any, typeId: string, x: number): (boolean, string?)
     local def=Structures.get(typeId)
     if not def then return false,"invalid_structure" end
-    if type(x)~="number" or x~=x or math.abs(x)+def.footprint/2>World.PLAY_EDGE then
+    if type(x)~="number" or x~=x or math.abs(x)+def.footprint/2>(if contexts[state] then Regions.PLAY_EDGE else World.PLAY_EDGE) then
         return false,"outside_region"
+    end
+    if def.kind=="crossing" then
+        local crossing,reason=Engine.bridgePlan(state,x)
+        if not crossing then return false,reason end
+        local existing=bridgeAt(state,crossing.id)
+        if existing and (def.tier~="reinforced" or existing.typeId~="bridge_light"
+            or existing.state~="complete" or findBuilding(state,existing.id)~=existing) then
+            return false,"overlapping_footprint"
+        end
+        return #state.buildings<120 or existing~=nil, "building_limit"
     end
     if #state.buildings>=120 then return false,"building_limit" end
     local low=math.huge
     local high=-math.huge
     for _,z in ipairs({World.LANE_Z,Structures.DEPTH_Z-3.5,Structures.DEPTH_Z+3.5}) do
         for step=-2,2 do
-            local sample=World.sample(state.seed,x+step*def.footprint/4,z)
+            local sample=sample(state,x+step*def.footprint/4,z)
             if sample.wet or sample.shore then return false,"invalid_footprint_or_slope" end
             low=math.min(low,sample.height)
             high=math.max(high,sample.height)
         end
     end
     if high-low>def.maxSlope then return false,"invalid_footprint_or_slope" end
-    local direction=if x<0 then -1 else 1
-    for distance=4,math.abs(x),4 do
-        if World.sample(state.seed,distance*direction,World.LANE_Z).wet then
-            return false,"no_worker_route"
+    local context=contexts[state]
+    if context then
+        if not Engine.canReach(state,context.origin,x,"carrier") then return false,"no_worker_route" end
+    else
+        local direction=if x<0 then -1 else 1
+        for distance=4,math.abs(x),4 do
+            if World.sample(state.seed,distance*direction,World.LANE_Z).wet then
+                return false,"no_worker_route"
+            end
         end
     end
     for _,site in ipairs(state.sites) do
@@ -423,10 +587,26 @@ function Engine.place(state: any, typeId: string, x: number, groundY: number?): 
     local valid,reason=Engine.canPlace(state,typeId,x)
     if not valid then return false,reason end
     local def=Structures.get(typeId)
-    local center=World.sample(state.seed,x,Structures.DEPTH_Z)
+    local crossing=if def.kind=="crossing" then Engine.bridgePlan(state,x) else nil
+    if crossing then
+        local existing=bridgeAt(state,crossing.id)
+        x=(crossing.west.x+crossing.east.x)*0.5
+        groundY=(crossing.deckWestY+crossing.deckEastY)*0.5
+        if existing then
+            Engine.releaseBuildingJobs(state,existing.id)
+            existing.typeId=typeId
+            existing.health=def.health
+            existing.state="blueprint"
+            existing.progress=0
+            existing.upgrading=true
+            return true,existing
+        end
+    end
+    local center=sample(state,x,Structures.DEPTH_Z)
     local b={id=state.nextBuildingId,typeId=typeId,x=x,y=groundY or center.height,
         state="blueprint",progress=0,health=def.health,
         delivered={},claimed={},stored=Inventory.new(if def.storageMass>0 then def.storageMass else 1)}
+    if crossing then b.crossingId=crossing.id end
     state.nextBuildingId+=1
     table.insert(state.buildings,b)
     table.insert(state.events,{kind="placed",buildingId=b.id,time=state.elapsed})
@@ -434,7 +614,7 @@ function Engine.place(state: any, typeId: string, x: number, groundY: number?): 
 end
 
 function Engine.canCancel(b: any): boolean
-    return b~=nil and (b.state=="blueprint" or b.state=="building") and b.ruined~=true
+    return b~=nil and (b.state=="blueprint" or b.state=="building") and b.ruined~=true and not b.upgrading
 end
 
 function Engine.cancel(state: any, id: number): (boolean, string?)
@@ -472,7 +652,7 @@ function Engine.districtAt(state: any,x: number): string?
     return "Centro"
 end
 
-function Engine.initializeVillage(state: any): boolean
+function Engine.initializeVillage(state: any, origin: number?): boolean
     if #state.buildings>0 or state.nextBuildingId~=1 then return false end
     local plan={
         {typeId="castle",x=0},
@@ -482,7 +662,7 @@ function Engine.initializeVillage(state: any): boolean
     }
     for _,entry in ipairs(plan) do
         local id=entry.typeId
-        local placed,b=Engine.place(state,id,entry.x)
+        local placed,b=Engine.place(state,id,(origin or 0)+entry.x)
         if not placed then
             -- The shelter is optional on a steep seed. All core buildings
             -- fit on the deterministic central plateau.
@@ -547,7 +727,7 @@ function Engine.step(state: any, dt: number)
                 if not storage or not source or not item
                     or source.item~=item then
                     clearJob(npc,state)
-                elseif Engine.walkResident(state,npc,source.x,dt,if source.item=="wood" then -6 else -4) and working(npc,dt,"collect") then
+                elseif Engine.walkResident(state,npc,source.x,dt,source.z or (if source.item=="wood" then -6 else -4)) and working(npc,dt,"collect") then
                     local n=math.min(npc.reserved,Engine.sourceAvailable(state,source,npc),
                         storageSpace(state,storage,item,npc))
                     if n>0 and Inventory.add(npc.inventory,item,n) then
@@ -578,13 +758,14 @@ function Engine.step(state: any, dt: number)
                 clearJob(npc,state)
             elseif b then
                 local item=npc.carryItem
+                local targetX,targetZ=builderTarget(state,npc,b)
                 if npc.state=="gather" and item then
                     local site=findSite(state,npc.siteId)
                     local storage=storeBuilding(state,npc.storageId)
                     if not storage and (not site or site.item~=item) then
                         clearJob(npc,state)
                     elseif Engine.walkResident(state,npc,if storage then storage.x else site.x,dt,
-                        if storage then -5 else if site.item=="wood" then -6 else -4)
+                        if storage then -5 else site.z or (if site.item=="wood" then -6 else -4))
                         and working(npc,dt,if storage then "load" else "collect") then
                         local available=if storage then Engine.stockAvailable(state,storage,item,npc)
                             else Engine.sourceAvailable(state,site,npc)
@@ -607,7 +788,7 @@ function Engine.step(state: any, dt: number)
                         end
                     end
                 elseif npc.state=="deliver" and item then
-                    if Engine.walkResident(state,npc,b.x,dt,-4.4) then
+                    if Engine.walkResident(state,npc,targetX,dt,targetZ) then
                         local n=math.min(npc.reserved,Inventory.count(npc.inventory,item),
                             math.max(0,(Structures.get(b.typeId).cost[item] or 0)
                                 -(b.delivered[item] or 0)))
@@ -620,7 +801,7 @@ function Engine.step(state: any, dt: number)
                 elseif npc.state=="build" then
                     if not ready(b) then
                         clearJob(npc,state)
-                    elseif Engine.walkResident(state,npc,b.x,dt,-4.4) then
+                    elseif Engine.walkResident(state,npc,targetX,dt,targetZ) then
                         npc.activity="build"
                         local def=Structures.get(b.typeId)
                         local rate=Professions.buildRate(npc.profession)
@@ -638,6 +819,7 @@ function Engine.step(state: any, dt: number)
                             b.state="building"
                             if b.progress>=def.buildSeconds then
                                 b.state="complete"
+                                b.upgrading=nil
                                 -- A ruin becomes physically usable only after
                                 -- a completely new material-backed rebuild.
                                 if b.ruined==true then

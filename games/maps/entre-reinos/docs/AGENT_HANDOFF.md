@@ -327,3 +327,7 @@ O playtest touch e visual do criador continua pendente. Os pontos principais sã
 ## 25/11/2026 — Preparação de T2-R1 em branch isolada
 
 O criador aceitou a v18 como fundação e autorizou o trabalho técnico. A T1 segue em certificação. ER-001–020 permanecem PARCIAIS e o aceite não equivale a aprovação individual. O perfil regional de desenvolvimento prolonga o campo da v18, reusa o gerador nativo e é verificável em sessão Open Cloud descartável. Mantém-se a v18 no staging e o fluxo de save no perfil anterior. A integração do runner depende do protocolo de transição e dos gates ER-021–027. [Recibo T2-R1](runner-receipts/T2-R1.md)
+
+## 25/11/2026 — Runtime regional em desenvolvimento no PR #13
+
+A branch isolada carrega o perfil regional no Boot, convida o jogador a construir as pontes pelo caderno e usa WorkEngine em ambos os reinos. Ruleset 4 grava o estado regional, o destino e os veículos com backup da v18 no mesmo lease. O SaveSlotService mantém um limite explícito para o snapshot. O PR continua em rascunho. O staging permanece na v18. Consultar o [recibo T2-R1](runner-receipts/T2-R1.md) para evidências, parâmetros provisórios e verificações de cliente pendentes.

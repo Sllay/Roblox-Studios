@@ -37,7 +37,12 @@ end
 local probeGame={JobId="ER_F1_Probe"}
 function probeGame:GetService(name)
     if name=="DataStoreService" then
-        return {GetDataStore=function(_,store,scope) return testStore(store,scope) end}
+        return {
+            GetDataStore=function(_,store,scope) return testStore(store,scope) end,
+            GetRequestBudgetForRequestType=function(_,requestType)
+                return dataStores:GetRequestBudgetForRequestType(requestType)
+            end,
+        }
     end
     return game:GetService(name)
 end
@@ -90,7 +95,7 @@ assert(first.save(player,true),"could not release first session")
 
 local reopened,record=second.open(player,1)
 assert(reopened,record)
-assert(record.rulesetVersion==Slots.RULESET_VERSION and record.revision==2)
+assert(record.rulesetVersion==(Slots.LEGACY_RULESET_VERSION or Slots.RULESET_VERSION) and record.revision==2)
 local restored=assert(Living.restore(record.living,seed))
 assert(restored.buildings[2].claimed.wood==blueprint.claimed.wood)
 for _,site in ipairs(restored.sites) do site.remaining=0 end

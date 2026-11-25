@@ -47,7 +47,7 @@ jobs:
           game = Path("games/maps/entre-reinos")
           staging = json.loads((game / "deploy.targets.json").read_text())["environments"]["staging"]
           src = game / "game/places/main/src/ReplicatedStorage"
-          names = ("WorldProfile", "SlotModel", "SlotLeasePolicy", "WorldRoute", "InputProjection",
+          names = ("WorldProfile", "RegionalProfile", "RegionalCrossings", "RegionalWorld", "SlotModel", "SlotLeasePolicy", "WorldRoute", "InputProjection",
                    "ItemDefs", "ProfessionDefs", "StructureDefs", "Inventory",
                    "WorkEngine", "Campaign", "Trajectory", "Ballistics", "R3Engine", "LivingModel")
           paths = {p.stem: p for p in src.rglob("*.luau")}
@@ -122,7 +122,7 @@ jobs:
 
           save_service = (game / "game/places/main/src/ServerScriptService/Services/SaveSlotService.luau").read_text()
           for name, module in (("Slots", "SlotModel"), ("WorldProfile", "WorldProfile"),
-                               ("Policy", "SlotLeasePolicy"), ("LivingModel", "LivingModel")):
+                               ("Policy", "SlotLeasePolicy"), ("LivingModel", "LivingModel"), ("Regions", "RegionalWorld")):
               save_service, count = re.subn(
                   rf"local {name} = require\(ReplicatedStorage:[^\n]*(?:\n +:[^\n]*)?\)\n",
                   f'local {name} = loadCandidate("{module}")\n', save_service, flags=re.S)

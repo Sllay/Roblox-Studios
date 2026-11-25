@@ -17,6 +17,7 @@ type RuntimeProfile = {
         height: number, wet: boolean, shore: boolean, riverDist: number,
         material: string, waterSurface: number?,
     },
+    waterfall: ((number, number) -> {{x: number,y: number,z: number}}?)?,
     naturalSites: ((number, number) -> {{id: string, x: number, y: number, z: number,
         item: string, initialAmount: number}})?,
 }
@@ -196,6 +197,30 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
                 tree.Parent=chunkFolder
             end
         end
+    end
+    local waterfall=if Profile.waterfall then Profile.waterfall(seed,id) else nil
+    if waterfall then
+        local model=Instance.new("Model")
+        model.Name="ER_Cascade"
+        model:SetAttribute("ER_VisualLayer","background")
+        for index=1,#waterfall-1 do
+            local a,b=waterfall[index],waterfall[index+1]
+            local from,to=Vector3.new(a.x,a.y,a.z),Vector3.new(b.x,b.y,b.z)
+            local middle=(from+to)*0.5
+            local span=(to-from).Magnitude
+            for strip=-1,1 do
+                local current=part(model,"WaterSheet",Vector3.new(2.1,0.25,span+0.18),
+                    middle,Color3.fromRGB(130+strip*9,193+strip*8,202+strip*9))
+                current.Material=Enum.Material.Glass
+                current.Transparency=0.3+math.abs(strip)*0.14
+                current.CFrame=CFrame.lookAt(middle,to)*CFrame.new(strip*2.1,0,0)
+            end
+        end
+        local endPoint=waterfall[#waterfall]
+        local foam=part(model,"Foam",Vector3.new(6,0.26,3.2),
+            Vector3.new(endPoint.x,endPoint.y,endPoint.z),Color3.fromRGB(210,244,238),Enum.PartType.Ball)
+        foam.Transparency=0.52
+        model.Parent=chunkFolder
     end
     chunkFolder.Parent = scene
 end

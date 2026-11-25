@@ -29,6 +29,10 @@ local C={
 local resourceNames={wood="Madeira",stone="Pedra",iron="Ferro",food="Alimento"}
 local resourceOrder={"wood","stone","iron","food"}
 local errorTexts={
+    travel_cost="Você precisa de 12 moedas para o cavalo.",
+    travel_unavailable="Chegue perto da montaria, de uma doca ou de um reino já visitado.",
+    save_busy="O save está ocupado. Tente viajar novamente.",
+    datastore_unavailable="O save está indisponível. A viagem não foi confirmada.",
     rate_limited="Aguarde um instante.",
     no_arrows="Sem flechas. Fabrique perto de uma fonte de madeira.",
     no_target="Nenhum inimigo ao alcance.",
@@ -532,6 +536,8 @@ function UI.start(player: Player)
     fill.BorderSizePixel=0
     fill.Size=UDim2.fromScale(0,1)
     fill.Parent=track
+    local travelLabels={buy_mount="CAVALO • 12 MOEDAS",mount="MONTAR",dismount="DESMONTAR",
+        board="EMBARCAR",disembark="DESEMBARCAR",travel="VIAJAR ENTRE REINOS"}
     local contextKind="none"
     local contextTarget: any=0
     local pressedTree: any=nil
@@ -552,7 +558,9 @@ function UI.start(player: Player)
     player.CharacterRemoving:Connect(closeDialogue)
 
     local function interactNow()
-        if contextKind=="coin" then
+        if contextKind=="travel" then
+            request("travel",contextTarget)
+        elseif contextKind=="coin" then
             request("pickup_coin",contextTarget)
         elseif contextKind=="npc" then
             selectedNpcId=contextTarget
@@ -673,6 +681,8 @@ function UI.start(player: Player)
     warning.Visible=false
 
     local function redraw()
+        local kingdom=player:GetAttribute("ER_Kingdom")
+        if type(kingdom)=="string" then head.Text=string.upper(kingdom) end
         local day=player:GetAttribute("ER_R3Day") or 1
         local night=player:GetAttribute("ER_R3Night")==true
         local wallet=player:GetAttribute("ER_R3Wallet") or 0
@@ -716,6 +726,10 @@ function UI.start(player: Player)
             interact.Text=if phase=="guard" then "FALAR COM DUQUE"
                 else if phase=="evacuation" then "EVACUAR"
                 else "ACEITAR COROA"
+        elseif nearby.travel and travelLabels[nearby.travel] then
+            contextKind="travel"
+            contextTarget=nearby.travel
+            interact.Text=travelLabels[nearby.travel]
         elseif (nearby.coinId or 0)>0 then
             contextKind="coin"
             contextTarget=nearby.coinId
