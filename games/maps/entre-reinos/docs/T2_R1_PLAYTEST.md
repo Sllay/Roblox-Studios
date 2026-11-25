@@ -1,6 +1,6 @@
 # Prévia regional · T2-R1
 
-**Situação em 25/11/2026:** candidato no [PR #13](https://github.com/Sllay/Roblox-Studios/pull/13), em rascunho. O staging ainda carrega v18 (Universe `10769712413`, Place `90623742498445`). O probe abaixo carregou essa versão e executou os módulos da branch em uma sessão descartável. A versão regional ainda não está disponível no cliente. [CI do candidato](https://github.com/Sllay/Roblox-Studios/actions/runs/45671239634) · [Motor Roblox e DataStore isolado](https://github.com/Sllay/Roblox-Studios/actions/runs/45671224264) · [Readback da v18](https://github.com/Sllay/Roblox-Studios/actions/runs/45531334560) · [Scene Sync da v18](https://github.com/Sllay/Roblox-Studios/actions/runs/45525381881)
+**Situação em 25/11/2026:** a prévia regional **v19** está disponível no staging existente, Universe `10769712413`, Place `90623742498445`. A API confirmou a publicação. A leitura independente conferiu os 41 scripts e o Scene Sync posterior confirmou o mesmo digest. O PR #13 segue em rascunho e a certificação visual está aberta. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/45686307039) · [Readback](https://github.com/Sllay/Roblox-Studios/actions/runs/45686307039/job/139459713609) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45686521277)
 
 ## Caminhos que entram pela interface normal
 

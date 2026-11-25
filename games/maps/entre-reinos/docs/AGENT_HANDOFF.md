@@ -351,3 +351,7 @@ O criador autorizou uma prévia T2-R1 do PR #13 em Universe independente, com ca
 ## 25/11/2026 — Correção do destino da prévia T2-R1
 
 O criador autorizou usar o staging existente e migrar saves compatíveis de ruleset 3 para 4 pelo fluxo com backup. O PR #13 permanece em rascunho. A publicação usa o candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` e a credencial existente. O Scene Sync confirmou v18 sem alterações externas. Consultar o recibo para revisão final e recuperação. [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45685859918) · [Procedimento](T2_R1_PLAYTEST.md)
+
+## 25/11/2026 — Prévia regional v19 disponível
+
+O candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` foi publicado no staging existente. A API confirmou v19 e o readback verificou 41 scripts. O Scene Sync pós-publicação confirmou o digest da cena. O backup da v18 permanece no histórico de versões e no artefato verificado. Os saves migram durante a partida pelo fluxo com backup por slot. O PR #13 continua em rascunho e T2-R2 aguarda os gates. [Jogar](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R1.md) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45686521277)
