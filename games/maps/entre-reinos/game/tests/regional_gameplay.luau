@@ -55,6 +55,22 @@ local graph=Routes.compile(seed)
 local bridge=graph.crossings[3]
 assert(bridge.region==0 and bridge.buildable)
 assert(Regions.new(seed,home,nil,Profile.spawn(seed)))
+local function ride(old: {x: number,y: number,z: number}, destination: number): {x: number,y: number,z: number}
+    for _=1,90 do
+        local target=old.x+math.clamp(destination-old.x,-2.6,2.6)
+        local x,y=Work.mountStep(home,old,target)
+        if not x or not y or old.x==x then break end
+        old={x=x,y=y,z=0}
+        if x==destination then break end
+    end
+    return old
+end
+local bankStart=bridge.west.x-6
+local anchor=ride({x=bankStart,y=Profile.sample(seed,bankStart,0).height,z=0},bridge.east.x+6)
+assert(anchor.x==bridge.west.x and anchor.y==bridge.west.y)
+local reverseStart=bridge.east.x+6
+local reverse=ride({x=reverseStart,y=Profile.sample(seed,reverseStart,0).height,z=0},bridge.west.x-6)
+assert(reverse.x==bridge.east.x and reverse.y==bridge.east.y)
 local west=bridge.west.x-5
 local east=bridge.east.x+7
 npc.x=west
@@ -83,6 +99,14 @@ for _=1,5500 do
 end
 assert(work.state=="complete" and work.delivered.wood==20 and work.delivered.stone==12)
 assert(Work.deckAt(home,work.x,0,"carrier"))
+assert(ride(anchor,bridge.east.x+6).x==bridge.east.x+6)
+assert(ride(reverse,bridge.west.x-6).x==bridge.west.x-6)
+local lowerX=54.76
+local lower={x=lowerX,y=Profile.sample(seed,lowerX,0).height,z=0}
+local retreat=ride(lower,bridge.west.x-6)
+assert(retreat.x==bridge.west.x-6)
+local rim=ride({x=529,y=Profile.sample(seed,529,0).height,z=0},566)
+assert(rim.x==566 and Profile.regionAt(rim.x)==1)
 local incoming=Inventory.count(npc.inventory,"wood")
 assert(Inventory.add(npc.inventory,"wood",math.max(1,2-incoming)))
 for _=1,2500 do

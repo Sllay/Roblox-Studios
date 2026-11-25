@@ -61,8 +61,8 @@ local function probeTravel(Travel,BridgeScene,seed)
         "saddle moved without the rider")
     local crossing=session.graph.crossings[3]
     drive(30,crossing.east.x+7,"mount")
-    assert(session.record.mount.position.x<(crossing.west.x+crossing.east.x)/2,
-        "horse entered deep water without a reinforced deck")
+    assert(session.record.mount.position.x<=crossing.west.x+0.1,
+        "horse passed the supported entrance without a reinforced deck")
     local built,bridge=Work.place(home,"bridge_reinforced",crossing.west.x+1)
     assert(built)
     local def=Structures.get("bridge_reinforced")
@@ -71,7 +71,8 @@ local function probeTravel(Travel,BridgeScene,seed)
     BridgeScene.sync(folder,bridge,crossing,def.buildSeconds)
     drive(90,crossing.east.x+6,"mount")
     assert(session.record.mount.position.x>crossing.east.x and root.Position.X>crossing.east.x,
-        "reinforced bridge failed to carry the horse and rider")
+        string.format("reinforced bridge failed to carry the horse and rider: mount=(%.2f, %.2f) rider=%s east=%.2f",
+            session.record.mount.position.x, session.record.mount.position.y, tostring(root.Position),crossing.east.x))
     assert(Travel.action(player,"dismount").ok)
     assert(R3.damageStructure(home,bridge,300))
     BridgeScene.sync(folder,bridge,crossing,def.buildSeconds)
@@ -81,7 +82,8 @@ local function probeTravel(Travel,BridgeScene,seed)
     local elevation=Profile.sample(seed,edge,0).height
     session.record.mount.position={x=edge,y=elevation,z=0}
     place(edge,elevation+4)
-    assert(Travel.action(player,"mount").ok)
+    local remount=Travel.action(player,"mount")
+    assert(remount.ok, "could not remount at regional boundary: "..tostring(remount.error))
     task.wait(0.15)
     drive(90,560,"mount")
     assert(Profile.regionAt(root.Position.X)==1,

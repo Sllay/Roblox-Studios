@@ -154,7 +154,7 @@ end
 
 local function board(player: Player,kind: string,human: Humanoid): boolean
     local rig=refreshRig(kind)
-    if not rig or rig.seat.Occupant then return false end
+    if not rig or riding or rig.seat:FindFirstChild("SeatWeld") then return false end
     riding=kind
     regional.record.rider=kind
     player:SetAttribute("ER_Riding",kind)
@@ -375,15 +375,13 @@ function Service.tick(dt: number)
     local valid=World.isLoadedAt(nextX)
     if mounted then
         local district=regional.active or regional.home
-        local deck,crossing=Work.deckAt(district,nextX,0,"mount")
-        local preceding=Work.deckAt(district,old.x,0,"mount")
-        if crossing and not preceding and not Work.deckHasSpace(district,crossing,"mount") then
+        local steppedX,surface=Work.mountStep(district,old,nextX)
+        if steppedX and surface then
+            nextX,nextY=steppedX,surface
+            valid=World.isLoadedAt(nextX)
+        else
             valid=false
         end
-        local depth=if ground.waterSurface then ground.waterSurface-ground.height else 0
-        nextY=deck or ground.height
-        valid=valid and (depth<=2 or deck~=nil) and math.abs(nextY-old.y)<=2.8
-        if valid and depth<=0 and not deck then record.lastLand={x=nextX,y=nextY,z=0} end
         if valid and math.abs(speed)>0.01 then
             local obstacle=RaycastParams.new()
             obstacle.FilterType=Enum.RaycastFilterType.Exclude
@@ -393,7 +391,15 @@ function Service.tick(dt: number)
                 Vector3.new(nextX-old.x+math.sign(speed)*1.65,0,0),obstacle)
             valid=hit==nil
         end
-        record.energy=math.clamp(record.energy+(if gallop then -13 else 8)*dt,0,100)
+        if valid then
+            local support=Profile.sample(regional.seed,nextX,0)
+            local deck=Work.deckAt(district,nextX,0,"mount")
+            if not deck and (support.waterSurface or support.height)<=support.height then
+                record.lastLand={x=nextX,y=nextY,z=0}
+            end
+        end
+        local running=gallop and valid and math.abs(nextX-old.x)>WALK_SPEED*dt*0.8
+        record.energy=math.clamp(record.energy+(if running then -13 else 8)*dt,0,100)
         player:SetAttribute("ER_MountEnergy",math.floor(record.energy))
     else
         if #stops~=2 then valid=false else nextX=math.clamp(nextX,stops[1].moor.x,stops[2].moor.x) end
@@ -402,6 +408,7 @@ function Service.tick(dt: number)
         nextY=water.waterSurface or old.y
     end
     if valid then
+        if mounted then speed=(nextX-old.x)/dt end
         record.position={x=nextX,y=nextY,z=0}
         if math.abs(speed)>0.5 then heading=math.sign(speed) end
     else

@@ -91,6 +91,50 @@ function Engine.deckHasSpace(state: any,crossing: any,class: string,entrant: any
     return weight<=limit
 end
 
+-- Stop at the supported entrance before the bank slopes into a closed
+-- crossing. A mount parked on the lower bank by an older save can turn back.
+function Engine.mountStep(state: any, old: {x: number,y: number,z: number}, targetX: number): (number?, number?)
+    local context=contexts[state]
+    if not context then return nil,nil end
+    for _,crossing in ipairs(context.graph.crossings) do
+        local west,east=crossing.west.x,crossing.east.x
+        if math.min(old.x,targetX)>=east or math.max(old.x,targetX)<=west
+            or passable(state,crossing,"mount") then continue end
+        if old.x<=west and targetX>west then
+            targetX=west
+        elseif old.x>=east and targetX<east then
+            targetX=east
+        elseif old.x>west and old.x<east then
+            local middle=(west+east)/2
+            if (old.x<middle and targetX>old.x) or (old.x>=middle and targetX<old.x) then
+                return nil,nil
+            end
+        end
+    end
+
+    local previousDeck=Engine.deckAt(state,old.x,0,"mount")
+    local ridingDeck=previousDeck~=nil and math.abs(previousDeck-old.y)<0.8
+    for _=1,4 do
+        local ground=Regions.sample(state.seed,targetX,0)
+        local depth=(ground.waterSurface or ground.height)-ground.height
+        local deck,crossing=Engine.deckAt(state,targetX,0,"mount")
+        -- The tabuleiro is above a lower shore surface. A saved rider under
+        -- it can regain the ramp without snapping vertically onto the deck.
+        if deck and not ridingDeck and deck-old.y>2.8 then deck=nil end
+        if deck and crossing and not ridingDeck and not Engine.deckHasSpace(state,crossing,"mount") then
+            return nil,nil
+        end
+        local surface=deck or ground.height
+        if (depth<=2 or deck~=nil) and math.abs(surface-old.y)<=2.8 then
+            return targetX,surface
+        end
+        -- Slow across steeper continuous ground with a shorter step. A
+        -- fixed speed step could otherwise repeatedly stall at the old rim.
+        targetX=(old.x+targetX)*0.5
+    end
+    return nil,nil
+end
+
 function Engine.bridgePlan(state: any,x: number): (Routes.Crossing?,string?)
     local graph=Engine.crossings(state)
     if not graph then return nil,"invalid_structure" end
