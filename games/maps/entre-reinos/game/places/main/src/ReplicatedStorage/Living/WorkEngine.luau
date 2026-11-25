@@ -5,6 +5,7 @@ local Items=require("./ItemDefs")
 local Production=require("./Production")
 local Needs=require("./VillageNeeds")
 local Market=require("./Market")
+local Social=require("./Social")
 local Structures=require("./StructureDefs")
 local Professions=require("./ProfessionDefs")
 local Inventory=require("./Inventory")
@@ -825,7 +826,8 @@ function Engine.step(state: any, dt: number)
         -- During a real nearby raid, civilians pause their tasks without
         -- canceling reserved materials or losing work progress. R3Engine
         -- determines danger and defensive/escape movement after this tick.
-        if npc.underAttack or npc.state=="freight" then continue end
+        if npc.state=="freight" then continue end
+        if Social.stepResident(state,npc,dt,Engine) or npc.underAttack then continue end
         if Needs.care(state,npc,dt,Engine) then continue end
         if not state.production and npc.hunger>70 and Inventory.count(npc.inventory,"food")>0 then
             if Inventory.take(npc.inventory,"food",1) then npc.hunger-=45 end
@@ -1036,6 +1038,9 @@ function Engine.summary(state: any): any
         table.insert(workers,{id=n.id,name=n.name,profession=n.profession,
             state=n.activity or n.state,defense=n.defense or "none",
             district=Engine.districtAt(state,n.x),health=n.health,arrows=n.arrows or 0,hunger=n.hunger,fatigue=n.fatigue,homeId=n.homeId,
+            social=n.social and {trust=n.social.trust,mood=Social.mood(n),courage=n.social.courage,
+                memory=n.social.memories[#n.social.memories] and table.clone(n.social.memories[#n.social.memories]),
+                relationships=#n.social.links},
             level=math.max(Needs.level(n,"craft"),Needs.level(n,"build"),Needs.level(n,"gather"),
                 Needs.level(n,"hunt"),Needs.level(n,"farm")),
             carryWeight=Inventory.weight(n.inventory),tool=n.tool and table.clone(n.tool),

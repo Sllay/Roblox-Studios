@@ -7,6 +7,7 @@ local Inventory=require("./Inventory")
 local Items=require("./ItemDefs")
 local Work=require("./WorkEngine")
 local Story=require("./Campaign")
+local Social=require("./Social")
 local R3={}
 R3.storyActors=Story.actors
 R3.VERSION=1
@@ -676,7 +677,7 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
         end
         npc.defenseClock=math.max(0,(npc.defenseClock or 0)-dt)
         if npc.underAttack and npc.defense==nil then
-            local shelter=shelterFor(state,npc,nearest)
+            local shelter=Social.shelter(state,npc,Work) or shelterFor(state,npc,nearest)
             if evacuating then
                 for _,b in ipairs(state.buildings) do
                     if b.typeId=="castle" and b.health>0 and not b.ruined then shelter=b; break end
@@ -686,7 +687,7 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
                 then "sheltered" else "flee"
             if npc.activity=="flee" then
                 local safe=if shelter then shelter.x elseif nearest then npc.x+(if npc.x>=nearest.x then 8 else -8) else 0
-                Work.walkResident(state,npc,math.clamp(safe,-116,116),dt,
+                Work.walkResident(state,npc,if state.production and shelter then safe else math.clamp(safe,-116,116),dt,
                     if shelter then -4.4 else math.clamp((npc.z or 0)+4,-3,15),7.2)
             end
         elseif nearest and npc.defense and npc.defenseClock<=0 then

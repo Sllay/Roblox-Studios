@@ -53,7 +53,7 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 | ER-030 | T2-R2 | PARCIAL | Skill XP/níveis e aprendizagem de profissão com efeito mensurável no trabalho, necessidades/fome/sono/sobrevivência, ferramentas/equipamentos usados e quebrados/repostos. |
 | ER-031 | T2-R2 | PARCIAL | Fazenda, irrigação/terreno próximo a água, caça/pesca quando aprovada, alimento finito, refeições e cadeia econômica sem geração espontânea. |
 | ER-032 | T2-R2 | PARCIAL | Mercado/preços dinâmicos, compras, venda, contratos, salário, tributo, impostos, tesouro e economia entre reinos contabilizados e persistidos sem inflação artificial. |
-| ER-033 | T2-R2 | PLANEJADO | Relacionamentos NPC↔NPC/jogador: presentes, resgates, confiança/memórias/traços, decisões distintas sob medo/alegria, UI e save. |
+| ER-033 | T2-R2 | PARCIAL | Relacionamentos NPC↔NPC/jogador: presentes, resgates, confiança/memórias/traços, decisões distintas sob medo/alegria, UI e save. |
 | ER-034 | T2-R2 | PLANEJADO | Prioridades de trabalhadores, ordens individuais/de grupo, reatribuição manual, filas e utilidade, sem decisão aleatória que ignore necessidade do jogador. |
 | ER-035 | T2-R2 | PLANEJADO | Facções, alianças, reputação, comércio com reinos NPCs e feedback de decisões na diplomacia/logística; simulação offline/agregada coerente. |
 | ER-036 | T2-R3 | PLANEJADO | Inimigos variados por registro, saque com custódia, objetivos distintos e resistências; telemetria do comportamento sem IA cara. |

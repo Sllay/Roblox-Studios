@@ -16,6 +16,7 @@ local Living=require(shared:WaitForChild("Living"):WaitForChild("LivingModel"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
 local Production=require(shared:WaitForChild("Living"):WaitForChild("Production"))
 local Market=require(shared:WaitForChild("Living"):WaitForChild("Market"))
+local Social=require(shared:WaitForChild("Living"):WaitForChild("Social"))
 local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
 local Combat=require(script.Parent:WaitForChild("CombatService"))
 local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
@@ -1084,7 +1085,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return Combat.action(player,action,arg)
     end
     if action~="build" and action~="build_preview" and action~="build_cancel" and action~="produce" and action~="profession"
-        and action~="market" and action~="freight" and action~="freight_cancel" then
+        and action~="market" and action~="freight" and action~="freight_cancel" and action~="social" then
         return {ok=false,error="invalid_action"}
     end
     local character=player.Character
@@ -1115,6 +1116,20 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             ok=Market.cancel(regional)
         end
         return {ok=ok,error=if not ok then reason else nil}
+    end
+    if action=="social" then
+        if type(arg)~="table" or type(arg.id)~="number" or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        for _,npc in ipairs(state.npcs) do
+            if npc.id==arg.id and math.abs(root.Position.X-npc.x)<=9
+                and math.abs(root.Position.Y-groundHeight(npc.x,npc.z or 0))<8 then
+                lastActionAt=now
+                local ok,value=Social.interact(state,npc,arg.kind,regional.home.r3.playerBag,Work)
+                return {ok=ok,error=if not ok then value else nil,message=if ok then value else nil}
+            end
+        end
+        return {ok=false,error="action_unavailable"}
     end
     if action=="profession" then
         if not state.production or type(arg)~="string" or #arg>30 or now-lastActionAt<0.55 then

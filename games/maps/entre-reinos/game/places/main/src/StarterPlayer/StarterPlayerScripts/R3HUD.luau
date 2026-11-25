@@ -68,6 +68,10 @@ local errorTexts={
     market_route="Sem rota terrestre de carga entre os reinos.",
     market_contract_active="Já há um frete em andamento.",
     market_hostile="A relação entre os reinos impede o contrato.",
+    social_wait="Dê um tempo antes de oferecer outra ajuda.",
+    social_no_need="O morador está bem agora.",
+    social_need_item="O presente usa uma tábua. A ajuda usa um alimento da sua bolsa.",
+    social_no_shelter="Nenhum abrigo está acessível.",
     unknown_recipe="Receita inválida.",
     production_queue_full="A fila de fabricação está cheia.",
     production_station_required="Aproxime-se de uma oficina ou forja concluída.",
@@ -324,6 +328,8 @@ function UI.start(player: Player)
             notify("Flecha disparada.")
         elseif action=="trade" then
             notify("Madeira vendida; moedas recebidas do tesouro.")
+        elseif action=="social" then
+            notify(tostring(result.message))
         elseif action=="produce" then
             notify("Receita adicionada à fila da vila.")
         elseif action=="craft_arrows" then
@@ -375,7 +381,7 @@ function UI.start(player: Player)
     villTitle.Font=Enum.Font.GothamBold
     villTitle.TextColor3=C.paper
     local villHelp=rowText(villagersPage,"Help",
-        "Equipe um morador próximo. Arco: 3 madeira. Lança: 2 ferro. Use a bolsa ou o estoque local.",2,53)
+        "Aproxime-se para interagir, definir o ofício ou equipar. Depois do prólogo, armas vêm da oficina e da forja.",2,53)
     local workerRows: {[number]: TextButton}={}
     local selectedNpcId=0
     local updateVillage: ()->()
@@ -401,6 +407,16 @@ function UI.start(player: Player)
         request("profession",tostring(selectedNpcId)..":"..Professions.order[roleIndex])
     end)
     updateRole()
+    local socialControls={}
+    for i,entry in ipairs({{"talk","CONVERSAR"},{"gift","PRESENTEAR · 1 TÁBUA"},
+        {"help","AJUDAR · 1 ALIMENTO"},{"rescue","AJUDAR A CHEGAR AO ABRIGO"}}) do
+        local control=button(villagersPage,"Social_"..entry[1],entry[2])
+        control.LayoutOrder=503+i
+        control.Size=UDim2.new(1,-10,0,40)
+        control.Visible=false
+        control.Activated:Connect(function() request("social",{id=selectedNpcId,kind=entry[1]}) end)
+        table.insert(socialControls,control)
+    end
     local equipBar=Instance.new("Frame")
     equipBar.Name="Equipment"
     equipBar.BackgroundTransparency=1
@@ -921,7 +937,8 @@ function UI.start(player: Player)
                     "\n"..(stateName[w.state] or tostring(w.state))..
                     (if w.tool then " · "..tostring(w.tool.item).." "..tostring(w.tool.remaining) else "")..
                     " · nível "..tostring(w.level or 1).." · fome "..tostring(math.floor(w.hunger or 0)).."% · fadiga "..tostring(math.floor(w.fatigue or 0)).."% · carga "..tostring(math.floor(w.carryWeight)).." u."..
-                    (if w.district then " · "..w.district else "")
+                    (if w.district then " · "..w.district else "")..
+                    (if w.social then " · "..w.social.mood.." · confiança "..tostring(w.social.trust) else "")
                 b.TextColor3=if w.id==selectedNpcId then C.gold else C.paper
                 b.Visible=true
             end
@@ -936,6 +953,7 @@ function UI.start(player: Player)
         equipBar.Visible=nearSelected
         nextRole.Visible=nearSelected and snapshot~=nil and snapshot.production~=nil
         applyRole.Visible=nextRole.Visible
+        for _,control in ipairs(socialControls) do control.Visible=nextRole.Visible end
         local dist=nearby.nearestWoodDistance or -1
         local direction=if dist>=0 then
             "Árvore: "..tostring(dist).." studs à "..
