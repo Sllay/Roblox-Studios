@@ -13,6 +13,8 @@ local function probeRegions(world, profile, publishedLegacy, seed)
             assert(loaded, errorCode)
             assert(world.isLoadedAt(side * x))
             assert(world.getChunkCount() - old <= 2, "generated past neighboring window")
+            -- Let Terrain update its physical query data between player steps.
+            if world.getChunkCount() > old then task.wait() end
         end
         assert(world.ensureNear(seed, side * profile.PLAY_EDGE))
     end
@@ -20,6 +22,7 @@ local function probeRegions(world, profile, publishedLegacy, seed)
     assert(complete.chunks == profile.CHUNK_COUNT and complete.chunks == 49)
     assert(complete.waterCells > start.waterCells and complete.decorations > start.decorations)
     assert(not world.isLoadedAt(profile.BOUNDS.xMax))
+    task.wait()
 
     local terrain = workspace.Terrain
     local b = publishedLegacy.BOUNDS
@@ -61,7 +64,7 @@ local function probeRegions(world, profile, publishedLegacy, seed)
         for x = region.xMin + 2, region.xMax - 2, 8 do
             if profile.sample(seed, x, 0).waterSurface then waterColumns += 1 end
             local hit = workspace:Raycast(Vector3.new(x, 70, 0), Vector3.new(0, -100, 0), rayParams)
-            assert(hit, "missing native terrain column")
+            assert(hit, "missing native terrain support at x=" .. x .. ", region=" .. index)
             supported += 1
         end
         local settlement = profile.settlement(seed, index)
