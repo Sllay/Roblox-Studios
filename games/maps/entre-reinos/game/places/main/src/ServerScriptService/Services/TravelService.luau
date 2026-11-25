@@ -4,6 +4,7 @@ local shared=ReplicatedStorage:WaitForChild("Game")
 local Profile=require(shared:WaitForChild("RegionalProfile"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
 local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
+local Inventory=require(shared:WaitForChild("Living"):WaitForChild("Inventory"))
 local World=require(script.Parent:WaitForChild("WorldService"))
 local Rig=require(script.Parent:WaitForChild("VehicleRig"))
 local Service={}
@@ -17,6 +18,8 @@ local riding: string?=nil
 local input=0
 local received=0
 local speed=0
+local exhausted=false
+local mountHealth: RBXScriptConnection?=nil
 local phase=0
 local heading=1
 local lastAction=0
@@ -102,7 +105,7 @@ local function drawDock(index: number,stop: any)
     -- Lateral walk lane remains clear for native swimming. Dock alongside it.
     local y=math.max(stop.moor.y+0.5,stop.bank.y+0.35)
     local center=(stop.moor.x+stop.bank.x)/2
-    plank("Píer",Vector3.new(length+1.2,0.52,3.2),CFrame.new(center,y,-3.5))
+    plank("Píer",Vector3.new(length+1.2,0.52,3.8),CFrame.new(center,y,-1.05))
     for _,x in ipairs({stop.bank.x,stop.moor.x}) do
         plank("Pilote",Vector3.new(0.62,14,0.62),CFrame.new(x,y-6,-4.55))
         plank("Amarra",Vector3.new(0.7,1.35,0.7),CFrame.new(x,y+0.64,-4.55))
@@ -132,6 +135,8 @@ local function clearRider(player: Player)
     riding=nil
     if regional then regional.record.rider=nil end
     speed,input=0,0
+    exhausted=false
+    if mountHealth then mountHealth:Disconnect(); mountHealth=nil end
     player:SetAttribute("ER_Riding",nil)
     local _,human=character(player)
     if human then human:SetStateEnabled(Enum.HumanoidStateType.Jumping,true) end
@@ -144,6 +149,14 @@ local function board(player: Player,kind: string,human: Humanoid): boolean
     regional.record.rider=kind
     player:SetAttribute("ER_Riding",kind)
     human:SetStateEnabled(Enum.HumanoidStateType.Jumping,false)
+    local record=regional.record[kind]
+    local previousHealth=human.Health
+    mountHealth=human.HealthChanged:Connect(function(health)
+        if health<previousHealth and riding==kind then
+            record.health=math.max(0,record.health-(previousHealth-health)*0.5)
+        end
+        previousHealth=health
+    end)
     rig.seat:Sit(human)
     return true
 end
@@ -159,6 +172,8 @@ function Service.start(player: Player,session: any,parent: Folder,
     if #stops==2 and not regional.record.boat then
         regional.record.boat={id="boat:2",position=table.clone(stops[1].moor),health=100}
     end
+    local boat=regional.record.boat
+    if boat and not boat.cargo then boat.cargo=Inventory.new(36) end
     local _,human=character(player)
     local saved=regional.record.rider
     if human and (saved=="mount" or saved=="boat") and regional.record[saved] then
@@ -192,6 +207,31 @@ function Service.status(player: Player,root: BasePart): string?
     if not mount and closeTo(root,{x=18,y=setup.height,z=0},6) then return "buy_mount" end
     if capital and regional.record.discovered[if capital=="0" then "2" else "0"] then return "travel" end
     return nil
+end
+
+function Service.cargo(player: Player, direction: any): any
+    if player~=owner or not regional or transit or (direction~="load" and direction~="unload") then
+        return {ok=false,error="travel_unavailable"}
+    end
+    local root=character(player)
+    local boat=regional.record.boat
+    local stop=if root then nearStop(root,7) else nil
+    if not root or not stop or not boat or boat.health<=0 or not closeTo(root,boat.position,7)
+        or math.abs(boat.position.x-stop.moor.x)>3 then return {ok=false,error="travel_unavailable"} end
+    if os.clock()-lastAction<0.45 then return {ok=false,error="rate_limited"} end
+    lastAction=os.clock()
+    local bag=regional.home.r3.playerBag
+    local from,to=if direction=="load" then bag else boat.cargo, if direction=="load" then boat.cargo else bag
+    if not Inventory.transfer(from,to,"wood",1) then return {ok=false,error="travel_cargo_capacity"} end
+    return {ok=true}
+end
+
+function Service.cargoAvailable(player: Player,root: BasePart): number?
+    local boat=if regional then regional.record.boat else nil
+    local stop=nearStop(root,7)
+    if player~=owner or not boat or not stop or not closeTo(root,boat.position,7)
+        or math.abs(boat.position.x-stop.moor.x)>3 then return nil end
+    return Inventory.count(boat.cargo,"wood")
 end
 
 function Service.action(player: Player,arg: any): any
@@ -286,9 +326,24 @@ function Service.tick(dt: number)
         if human.SeatPart~=nil or not human.Sit then clearRider(player) end
         return
     end
-    local command=if os.clock()-received<=0.3 then input else 0
+    local command=if os.clock()-received<=0.3 and record.health>0 then input else 0
     local mounted=riding=="mount"
-    local gallop=mounted and math.abs(command)>0.92 and record.energy>0
+    if mounted then
+        local wet=Profile.sample(regional.seed,record.position.x,0)
+        local unsupported=wet.waterSurface and wet.waterSurface-wet.height>2
+            and not Work.deckAt(regional.home,record.position.x,0,"mount")
+        if unsupported and record.lastLand and World.isLoadedAt(record.lastLand.x) then
+            record.position=table.clone(record.lastLand)
+            human.Sit=false
+            clearRider(player)
+            root.CFrame=CFrame.new(record.position.x,record.position.y+4,0)
+            root.AssemblyLinearVelocity=Vector3.zero
+            refreshRig("mount")
+            return
+        end
+        if record.energy<=1 then exhausted=true elseif record.energy>=23 then exhausted=false end
+    end
+    local gallop=mounted and math.abs(command)>0.92 and not exhausted
     local limit=if mounted then (if gallop then RUN_SPEED else WALK_SPEED) else ROW_SPEED
     speed+=math.clamp(command*limit-speed,-28*dt,28*dt)
     local old=record.position
@@ -301,6 +356,7 @@ function Service.tick(dt: number)
         local depth=if ground.waterSurface then ground.waterSurface-ground.height else 0
         nextY=deck or ground.height
         valid=valid and (depth<=2 or deck~=nil) and math.abs(nextY-old.y)<=2.8
+        if valid and depth<=0 and not deck then record.lastLand={x=nextX,y=nextY,z=0} end
         if valid and math.abs(speed)>0.01 then
             local obstacle=RaycastParams.new()
             obstacle.FilterType=Enum.RaycastFilterType.Exclude

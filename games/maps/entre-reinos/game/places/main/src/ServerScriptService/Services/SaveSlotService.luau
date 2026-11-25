@@ -252,7 +252,9 @@ function SaveSlotService.save(player: Player, release: boolean?, destination: an
                         s.busy=false
                         return false,"invalid_regional_snapshot"
                     end
+                    local previous=record.regionWorld
                     record.regionWorld=LivingModel.clone(regional)
+                    if previous then record.regionWorld.position=table.clone(previous.position) end
                 end
                 record.rulesetVersion = if record.regionWorld then Slots.RULESET_VERSION else Slots.LEGACY_RULESET_VERSION
                 upgrading = (s.data.rulesetVersion or 1)<record.rulesetVersion

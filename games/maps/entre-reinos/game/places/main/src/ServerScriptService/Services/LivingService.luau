@@ -845,6 +845,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             local x=root.Position.X
             local y=root.Position.Y
             nearby.travel=Travel.status(player,root)
+            nearby.boatCargo=Travel.cargoAvailable(player,root)
             nearby.district=Work.districtAt(state,x)
             nearby.storyAction=R3.storyAction(regional.home,x)
             nearby.localThreats=0
@@ -917,6 +918,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return {ok=true,data=overview,hud=R3.summary(regional.home),nearby=nearby}
     end
     if action=="travel" then return Travel.action(player,arg) end
+    if action=="travel_cargo" then return Travel.cargo(player,arg) end
     if Travel.busy() then return {ok=false,error="travel_unavailable"} end
     if action=="tree_press" or action=="tree_mark" or action=="tree_cancel" or action=="tree_take" then
         return treeAction(player,action,arg)

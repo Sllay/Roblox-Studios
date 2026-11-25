@@ -90,7 +90,7 @@ for _=1,2500 do
 end
 assert(npc.x>bridge.east.x,"loaded worker must reach the opposite bank through the deck")
 R3.ensure(home,false)
-assert(R3.damageStructure(home,work,270) and work.state=="ruined")
+assert(R3.damageStructure(home,work,270) and (work :: any).state=="ruined")
 assert(not Work.deckAt(home,work.x,0,"carrier"))
 for _=1,200 do assert(not Work.walkResident(home,npc,west,0.1,0)) end
 assert(npc.x>bridge.east.x and Inventory.count(npc.inventory,"wood")>0)

@@ -4,6 +4,7 @@ local Routes=require("./RegionalCrossings")
 local Living=require("./Living/LivingModel")
 local Work=require("./Living/WorkEngine")
 local Structures=require("./Living/StructureDefs")
+local Inventory=require("./Living/Inventory")
 
 local World={}
 World.VERSION=1
@@ -55,12 +56,14 @@ function World.valid(record: any, seed: number, home: any): boolean
     if record.mount~=nil then
         local mount=record.mount
         if type(mount)~="table" or mount.id~="horse:1" or not World.validPosition(mount.position)
-            or not range(mount.health,0,100) or not range(mount.energy,0,100) then return false end
+            or not range(mount.health,0,100) or not range(mount.energy,0,100)
+            or (mount.lastLand~=nil and not World.validPosition(mount.lastLand)) then return false end
     end
     if record.boat~=nil then
         local boat=record.boat
         if type(boat)~="table" or boat.id~="boat:2" or not World.validPosition(boat.position)
-            or not range(boat.health,0,100) then return false end
+            or not range(boat.health,0,100)
+            or (boat.cargo~=nil and (not Inventory.valid(boat.cargo) or boat.cargo.maxMass~=36)) then return false end
     end
     if record.rider~=nil and ((record.rider~="mount" and record.rider~="boat")
         or not record[record.rider]) then return false end

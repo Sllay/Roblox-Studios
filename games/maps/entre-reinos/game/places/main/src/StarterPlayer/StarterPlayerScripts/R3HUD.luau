@@ -29,6 +29,7 @@ local C={
 local resourceNames={wood="Madeira",stone="Pedra",iron="Ferro",food="Alimento"}
 local resourceOrder={"wood","stone","iron","food"}
 local errorTexts={
+    travel_cargo_capacity="Confira a madeira e o espaço disponível.",
     travel_cost="Você precisa de 12 moedas para o cavalo.",
     travel_unavailable="Chegue perto da montaria, de uma doca ou de um reino já visitado.",
     save_busy="O save está ocupado. Tente viajar novamente.",
@@ -706,6 +707,16 @@ function UI.start(player: Player)
 
     end
 
+    local loadCargo=button(workshop,"BoatLoad","GUARDAR 1 MADEIRA NO BARCO")
+    local unloadCargo=button(workshop,"BoatUnload","RETIRAR 1 MADEIRA DO BARCO")
+    for index,control in ipairs({loadCargo,unloadCargo}) do
+        control.LayoutOrder=10+index
+        control.Size=UDim2.new(1,-12,0,42)
+        control.Visible=false
+    end
+    loadCargo.Activated:Connect(function() request("travel_cargo","load") end)
+    unloadCargo.Activated:Connect(function() request("travel_cargo","unload") end)
+
     local orderButton=button(workshop,"StoryOrder","CONTINUAR O PRÓLOGO")
     orderButton.LayoutOrder=9
     orderButton.Size=UDim2.new(1,-12,0,42)
@@ -718,6 +729,9 @@ function UI.start(player: Player)
     end)
 
     local function updateContext()
+        loadCargo.Visible=type(nearby.boatCargo)=="number"
+        unloadCargo.Visible=loadCargo.Visible
+        unloadCargo.Text="RETIRAR 1 MADEIRA DO BARCO • "..tostring(nearby.boatCargo or 0)
         contextKind="none"
         contextTarget=0
         local phase=player:GetAttribute("ER_R3Phase")
