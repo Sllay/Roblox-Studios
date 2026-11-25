@@ -359,3 +359,7 @@ O candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` foi publicado no staging 
 ## 25/11/2026 — Feedback v19 e início da T2-R2
 
 O criador confirmou as duas categorias de construção de ponte, a travessia do jogador corretamente restrita à reforçada e a exploração de múltiplos biomas. O refinamento visual dos biomas ficou para depois. Autorizou iniciar o desenvolvimento da T2-R2 em branch derivada de PR #13. O aceite cobre apenas os fluxos observados. [T2-R1](runner-receipts/T2-R1.md) · [T2-R2](runner-receipts/T2-R2.md)
+
+## 25/11/2026 — Candidato T2-R2 e preparo de playtest
+
+O [PR #14](https://github.com/Sllay/Roblox-Studios/pull/14) contém os checkpoints A–F, com a branch T2-R1 como base. O código `c905eca3437ecd124c6afac6cce0df21df31f8e1` passou em CI e no motor v19, em sessão descartável. A migração 4 → 5 usa backup por slot e o avanço distante vale apenas durante a sessão. O ensaio de dois reinos cobriu 2.400 s de simulação. O staging v19 segue publicado e a nova prévia depende de autorização específica. [Recibo](runner-receipts/T2-R2.md) · [Roteiro e publicação](T2_R2_PLAYTEST.md)

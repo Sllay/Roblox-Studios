@@ -166,3 +166,5 @@ A revisão de [ER-001–020](T1_CERTIFICATION_V18.md) registra a prova aproveit�
 O roteiro de [ER-021–027](T2_R1_PLAYTEST.md) identifica a entrada pela interface e a prova de cliente de cada contrato. O probe mais recente confirmou o encerramento do vínculo ao morrer no barco, a travessia montada, o DataStore isolado e a preservação do Terrain v18. O PR #13 permanece em rascunho e a prévia depende de autorização formal antes de R3. [Probe](https://github.com/Sllay/Roblox-Studios/actions/runs/45671224264) · [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45671239634)
 
 O criador confirmou na v19 construção das duas pontes, restrição de travessia do jogador à reforçada e exploração de vários biomas. Melhorias visuais dos biomas ficam para refinamento posterior. O aceite autoriza continuar o desenvolvimento da T2-R2 e não fecha outros critérios da T2-R1. [Recibo](runner-receipts/T2-R1.md)
+
+ER-028–035 têm candidato integrado em branch e evidência automatizada por contrato. A definição e as pendências de jogo continuam no [recibo T2-R2](runner-receipts/T2-R2.md). Nenhum contrato foi elevado para VALIDADO.

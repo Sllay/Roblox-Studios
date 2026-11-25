@@ -228,3 +228,9 @@ Correção v9 em desenvolvimento:
 
 - [CONFIRMADO PELO CRIADOR] Construção das duas categorias de ponte, travessia do jogador exclusivamente na reforçada e exploração de múltiplos biomas. Ajustes visuais dos biomas ficam para refinamento posterior.
 - [AUTORIZADO PELO CRIADOR] Iniciar T2-R2 usando a base da v19. Produção recebe parâmetros provisórios em desenvolvimento. Certificação cumulativa e autorização para nova prévia permanecem próprias.
+
+## 25/11/2026 — Parâmetros provisórios da T2-R2
+
+- [PROVISÓRIO] Preços variam por estoque dentro de limites. Salário de uma moeda por dia quando a tesouraria tem saldo e imposto de uma moeda a partir de quatro na bolsa do morador. Tributo custa três moedas; acordo reduz a unidade do valor do frete.
+- [PROVISÓRIO] Plantio usa um grão e colhe quatro. Crescimento leva 30 s de simulação irrigada e é mais lento em solo seco. Reposição dos frutos é limitada e depende de tempo de sessão. Dois animais preservam o piso de reprodução.
+- [ESTADO] A produção distante roda durante sessão ativa. O avanço offline continua em aberto. Nenhum destes valores equivale a balanceamento final aprovado.
