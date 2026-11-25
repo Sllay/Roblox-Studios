@@ -93,7 +93,6 @@ function Production.release(state: any,npc: any)
     for _,order in ipairs(data.orders) do
         if order.worker==npc.id then
             order.worker=nil
-            order.progress=0
         end
     end
 end
@@ -198,6 +197,7 @@ function Production.step(state: any,npc: any,dt: number,work: any): boolean
         if not work.walkResident(state,npc,station.x,dt,-4.4) then return true end
         npc.activity="fabricate"
         local rate=(if profession.craft==recipe.station then 1.65 else 1)*Production.toolRate(npc,"hammer")
+            *work.activityRate(npc,"craft")
         order.progress=math.min(recipe.time,order.progress+dt*rate)
         if order.progress<recipe.time then return true end
         local after=Inventory.new(npc.inventory.maxMass)
@@ -211,6 +211,7 @@ function Production.step(state: any,npc: any,dt: number,work: any): boolean
         end
         npc.inventory.items=after.items
         Production.wear(npc,"hammer")
+        work.learn(state,npc,"craft",6)
         data.completed+=1
         table.remove(data.orders,i)
         npc.state="idle"

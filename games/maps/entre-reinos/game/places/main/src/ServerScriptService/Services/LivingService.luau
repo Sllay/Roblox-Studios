@@ -28,6 +28,7 @@ local regional: any=nil
 local bridgeFolder: Folder?=nil
 local visualization: Folder?=nil
 local figures: {[number]: Model}={}
+local animals: {[number]: Model}={}
 local buildings: {[number]: Model}={}
 local siteVisuals: {[string]: BasePart}={}
 local treePress: any=nil
@@ -233,7 +234,7 @@ local function attachment(model: Model, name: string, key: string, limb: string,
 end
 
 local activities={
-    collect="Coletando",load="Retirando estoque",build="Construindo",fabricate="Fabricando",
+    collect="Coletando",load="Retirando estoque",build="Construindo",fabricate="Fabricando",farm="Cultivando",hunt="Caçando",rest="Descansando",
     flee="Em fuga",sheltered="Em abrigo",strike="Defendendo",
 }
 
@@ -363,6 +364,11 @@ local function buildVisual(b: any)
         for row=-1,1 do
             buildPiece(model,b,"Soil",Vector3.new(12,0.3,1.4),
                 Vector3.new(0,0.75,row*2),Color3.fromRGB(117,81,48))
+            for column=-2,2 do
+                local plant=buildPiece(model,b,"Crop",Vector3.new(0.55,1.1,0.58),
+                    Vector3.new(column*2,1.4,row*2),Color3.fromRGB(132,151,67))
+                plant.CanCollide=false
+            end
         end
     elseif b.typeId=="castle" then
         buildPiece(model,b,"Keep",Vector3.new(12,14,7),Vector3.new(0,7,0),stone)
@@ -422,7 +428,7 @@ local function syncBuild(b: any)
     local cargo=math.clamp(math.ceil(stock/30),0,3)
     local damage=if ratio<=0.35 then 2 elseif ratio<=0.68 then 1 else 0
     local visual=b.state..":"..tostring(progress)..":"..tostring(damage)..":"..tostring(cargo)
-        ..":"..tostring(b.open==true)
+        ..":"..tostring(b.open==true)..":"..tostring(b.plot and b.plot.stage)
     if model:GetAttribute("ER_LastVisualState")~=visual then
         model:SetAttribute("ER_LastVisualState",visual)
         local index,crate=0,0
@@ -431,7 +437,11 @@ local function syncBuild(b: any)
             index+=1
             if p.Name=="SupplyCrate" then crate+=1 end
             local section=math.clamp(math.floor((p.Position.Y-b.y)/def.height*6),0,5)
-            if b.state=="blueprint" then
+            if p.Name=="Crop" then
+                local crop=b.state=="complete" and b.plot and (b.plot.stage=="grow" or b.plot.stage=="harvest")
+                p.Transparency=if crop then 0 else 1
+                p.Color=if b.plot and b.plot.stage=="harvest" then Color3.fromRGB(222,178,70) else Color3.fromRGB(132,151,67)
+            elseif b.state=="blueprint" then
                 p.Transparency=if section<=1 then 0.48 else 1
             elseif b.state=="building" then
                 p.Transparency=if section<=progress then 0.08 else 1
@@ -454,7 +464,7 @@ local function syncBuild(b: any)
                 base=p.Color
                 p:SetAttribute("ER_UndamagedColor",base)
             end
-            p.Color=base:Lerp(Color3.fromRGB(54,42,38),damage*0.20)
+            if p.Name~="Crop" then p.Color=base:Lerp(Color3.fromRGB(54,42,38),damage*0.20) end
         end
     end
 
@@ -524,8 +534,45 @@ local function syncR3Hud(player: Player)
     Lighting.ClockTime=((regional.home.elapsed%R3.DAY)/10+6)%24
 end
 
+local function drawAnimals(observerX: number)
+    local live={}
+    local population=if state.production then state.production.fauna else nil
+    for _,a in ipairs(population or {}) do
+        if math.abs(a.x-observerX)>145 or not WorldService.isLoadedAt(a.x) then continue end
+        local figure=animals[a.id]
+        if not figure then
+            figure=Instance.new("Model")
+            figure.Name="Deer_"..tostring(a.id)
+            local brown=Color3.fromRGB(139,97,64)
+            local function piece(name: string,size: Vector3,offset: Vector3)
+                local part=makePart(figure :: Model,name,size,brown)
+                part.Position=offset
+                part.CanCollide=false
+                part.CanQuery=false
+            end
+            piece("Body",Vector3.new(2.8,1.35,0.9),Vector3.new(0,1.45,0))
+            piece("Head",Vector3.new(0.95,0.85,0.65),Vector3.new(1.5,2.26,0))
+            piece("Neck",Vector3.new(0.55,1.1,0.6),Vector3.new(1.06,1.95,0))
+            for _,dx in ipairs({-0.95,0.9}) do
+                for _,z in ipairs({-0.33,0.33}) do
+                    piece("Leg",Vector3.new(0.23,1.15,0.24),Vector3.new(dx,0.59,z))
+                end
+            end
+            figure.WorldPivot=CFrame.identity
+            figure.Parent=visualization
+            animals[a.id]=figure
+        end
+        figure:PivotTo(CFrame.new(a.x,groundHeight(a.x,a.z),a.z)*CFrame.Angles(0,if a.flight<0 then math.pi else 0,0))
+        live[a.id]=true
+    end
+    for id,model in pairs(animals) do
+        if not live[id] then model:Destroy();animals[id]=nil end
+    end
+end
+
 local function draw(observerX: number)
     if not state then return end
+    drawAnimals(observerX)
     for _,npc in ipairs(state.npcs) do
         local distance=math.abs(npc.x-observerX)
         if distance>220 and figures[npc.id] then
@@ -571,6 +618,8 @@ local function selectPopulation(x: number)
     if not changed then return end
     Combat.setTownVisible(selected==regional.home)
     for _,model in pairs(figures) do model:Destroy() end
+    for _,model in pairs(animals) do model:Destroy() end
+    table.clear(animals)
     for _,model in pairs(buildings) do model:Destroy() end
     for _,site in pairs(siteVisuals) do
         if site.Parent and site.Parent:IsA("Model") then site.Parent:Destroy() else site:Destroy() end

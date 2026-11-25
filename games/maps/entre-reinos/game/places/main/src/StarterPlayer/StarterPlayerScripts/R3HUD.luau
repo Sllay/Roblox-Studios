@@ -885,7 +885,7 @@ function UI.start(player: Player)
                     (if w.defense=="bow" then " · "..tostring(w.arrows).." flechas" else "")..
                     "\n"..(stateName[w.state] or tostring(w.state))..
                     (if w.tool then " · "..tostring(w.tool.item).." "..tostring(w.tool.remaining) else "")..
-                    "  ·  carga "..tostring(math.floor(w.carryWeight)).." u."..
+                    " · nível "..tostring(w.level or 1).." · fome "..tostring(math.floor(w.hunger or 0)).."% · fadiga "..tostring(math.floor(w.fatigue or 0)).."% · carga "..tostring(math.floor(w.carryWeight)).." u."..
                     (if w.district then " · "..w.district else "")
                 b.TextColor3=if w.id==selectedNpcId then C.gold else C.paper
                 b.Visible=true

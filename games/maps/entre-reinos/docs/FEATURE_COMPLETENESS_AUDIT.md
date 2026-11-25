@@ -50,8 +50,8 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 | ER-027 | T2-R1 | PARCIAL | Segundo reino NPC e seus distritos/estruturas/pessoas/economia/território persistidos em mesmo mundo; dois reinos vivos sem duplicação. |
 | ER-028 | T2-R2 | PARCIAL | Todos ofícios-base: ferreiro, artesão, fazendeiro, caçador, transportador, guarda, arqueiro, lanceiro além dos atuais, com trabalho realmente executável. |
 | ER-029 | T2-R2 | PARCIAL | Ferramentas e receitas registradas, forja/tecelagem/agricultura/refinamento/crafting/equipar, insumos → produto → transporte → consumo, UI interativa. |
-| ER-030 | T2-R2 | PLANEJADO | Skill XP/níveis e aprendizagem de profissão com efeito mensurável no trabalho, necessidades/fome/sono/sobrevivência, ferramentas/equipamentos usados e quebrados/repostos. |
-| ER-031 | T2-R2 | PLANEJADO | Fazenda, irrigação/terreno próximo a água, caça/pesca quando aprovada, alimento finito, refeições e cadeia econômica sem geração espontânea. |
+| ER-030 | T2-R2 | PARCIAL | Skill XP/níveis e aprendizagem de profissão com efeito mensurável no trabalho, necessidades/fome/sono/sobrevivência, ferramentas/equipamentos usados e quebrados/repostos. |
+| ER-031 | T2-R2 | PARCIAL | Fazenda, irrigação/terreno próximo a água, caça/pesca quando aprovada, alimento finito, refeições e cadeia econômica sem geração espontânea. |
 | ER-032 | T2-R2 | PLANEJADO | Mercado/preços dinâmicos, compras, venda, contratos, salário, tributo, impostos, tesouro e economia entre reinos contabilizados e persistidos sem inflação artificial. |
 | ER-033 | T2-R2 | PLANEJADO | Relacionamentos NPC↔NPC/jogador: presentes, resgates, confiança/memórias/traços, decisões distintas sob medo/alegria, UI e save. |
 | ER-034 | T2-R2 | PLANEJADO | Prioridades de trabalhadores, ordens individuais/de grupo, reatribuição manual, filas e utilidade, sem decisão aleatória que ignore necessidade do jogador. |
