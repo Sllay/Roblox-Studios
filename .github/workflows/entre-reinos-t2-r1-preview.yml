@@ -1,0 +1,89 @@
+name: Entre Reinos T2-R1 isolated development preview
+
+on:
+  push:
+    branches: [entre-reinos/t2-r1-world-regions]
+    paths: [games/maps/entre-reinos/docs/sync/t2-r1-preview/target.json]
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: roblox-place-write-entre-reinos-t2-r1-preview
+  cancel-in-progress: false
+
+jobs:
+  isolated-preview:
+    if: ${{ github.repository == 'Sllay/Roblox-Studios' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 20
+    env:
+      CANDIDATE: f7d4ac685f2372d066cdf49a19b2b978f2454745
+      ENGINE_HEAD: 7bf8a7bafc9e7cf6d0da893fb813ecab3ff4bc55
+      PLAN: games/maps/entre-reinos/docs/sync/t2-r1-preview/target.json
+      PREVIEW_TOOL: games/maps/entre-reinos/ops/t2_r1_preview.py
+      EVIDENCE: dist/entre-reinos-t2-r1-preview
+      PYTHONPATH: ${{ github.workspace }}/preview-candidate/tools
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: f7d4ac685f2372d066cdf49a19b2b978f2454745
+          path: preview-candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Check the reviewed source and existing successful runs
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          phase="$(jq -er '.action | select(. == "inspect" or . == "publish")' "$PLAN")"
+          test "$(jq -er .candidate "$PLAN")" = "$CANDIDATE"
+          test "$(git -C preview-candidate rev-parse HEAD)" = "$CANDIDATE"
+          git -C preview-candidate diff --exit-code "$ENGINE_HEAD" "$CANDIDATE" -- \
+            games/maps/entre-reinos/game packages games/maps/entre-reinos/game.manifest.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45671927799" \
+            --jq '.conclusion + " " + .head_sha + " " + .path' \
+            | grep -Fx "success $CANDIDATE .github/workflows/ci.yml"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45671224264" \
+            --jq '.conclusion + " " + .head_sha + " " + .path' \
+            | grep -Fx "success $ENGINE_HEAD .github/workflows/entre-reinos-t2-r1-engine-probe.yml"
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+      - run: python -m pip install Pillow==11.3.0
+      - name: Verify isolated identity and take the reviewable Scene Sync baseline
+        if: steps.gate.outputs.phase == 'inspect'
+        env:
+          ROBLOX_T2_R1_PREVIEW_API_KEY: ${{ secrets.ROBLOX_T2_R1_PREVIEW_API_KEY }}
+        run: python "$PREVIEW_TOOL" inspect --plan "$PLAN" --output "$EVIDENCE"
+      - name: Install pinned official Luau
+        if: steps.gate.outputs.phase == 'publish'
+        run: bash preview-candidate/tools/install-luau.sh
+      - uses: CompeyDev/setup-rokit@v0.2.1
+        if: steps.gate.outputs.phase == 'publish'
+      - name: Build only the approved Entre Reinos Place
+        if: steps.gate.outputs.phase == 'publish'
+        working-directory: preview-candidate
+        run: python tools/workspace.py build --game entre-reinos --place main
+      - name: Recheck Scene Sync and publish the isolated Place through Open Cloud
+        if: steps.gate.outputs.phase == 'publish'
+        env:
+          ROBLOX_T2_R1_PREVIEW_API_KEY: ${{ secrets.ROBLOX_T2_R1_PREVIEW_API_KEY }}
+        run: python "$PREVIEW_TOOL" publish --plan "$PLAN" --output "$EVIDENCE"
+      - name: Independently read the published revision, Scene Sync and script hashes
+        if: steps.gate.outputs.phase == 'publish'
+        env:
+          ROBLOX_T2_R1_PREVIEW_API_KEY: ${{ secrets.ROBLOX_T2_R1_PREVIEW_API_KEY }}
+        run: python "$PREVIEW_TOOL" readback --plan "$PLAN" --output "$EVIDENCE"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: entre-reinos-t2-r1-preview
+          path: dist/entre-reinos-t2-r1-preview/
+          if-no-files-found: ignore

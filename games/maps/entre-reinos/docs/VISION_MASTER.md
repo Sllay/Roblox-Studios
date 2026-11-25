@@ -113,6 +113,8 @@ Regras: [FIXADO] = definido pelo criador; [PROPOSTA] = proposta técnica/creativ
 [PROPOSTA] DataStoreService no servidor com versionamento, session-lock, migrações, controle de duplicação, orçamento de escrita, restauração e backups. Não confundir save de jogador com salvamento de IDEIAS: ideias ficam neste repositório e documentos.
 [FIXADO] Build e validação de scripts antes da publicação em staging; testes no Studio/mobile separados. Production isolada para versões estáveis.
 
+[EXCEÇÃO AUTORIZADA] Uma prévia intermediária do candidato T2-R1 do PR #13 pode ser publicada em um Universe de desenvolvimento isolado para playtest. A publicação da temporada segue o gate depois de R3. Consulte a autorização específica no [protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1).
+
 ## 13 — Monetização opcional, anúncios e Robux
 
 [FIXADO] PvE solo aceita benefícios opcionais pagos/ads, mas gratuito precisa ser viável. Queremos monetizar onde útil e divertido, sem obrigar anúncio a cada ação.

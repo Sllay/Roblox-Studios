@@ -343,3 +343,7 @@ O PR #13 recebeu `7bf8a7bafc9e7cf6d0da893fb813ecab3ff4bc55`. Ao morrer montado o
 O criador aceitou a v18 para continuar o desenvolvimento. A [revisão individual da T1](T1_CERTIFICATION_V18.md) identifica as provas técnicas reaproveitadas, os ensaios em cliente e as decisões de recuperação pendentes. Os requisitos formais continuam parciais. O PR segue em rascunho e staging em v18. Uma prévia antecipada exige autorização formal registrada, com destino identificado e workflow aprovado para o SHA. O [roteiro da prévia](T2_R1_PLAYTEST.md) contém os passos depois da liberação e o plano de preservação da v18.
 
 O [mapa T2-R2](T2_R2_INTEGRATION_MAP.md) cobre ER-028–035. A proposta de avanço agregado durante sessão ativa usa o mesmo estado de produção regional. O avanço offline continua aberto. A implementação aguarda fechamento dos gates da T1 e T2-R1.
+
+## 25/11/2026 — Autorização formal da prévia isolada
+
+O criador autorizou uma prévia T2-R1 do PR #13 em Universe independente, com candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745`. O workflow na branch usa o secret de staging `ROBLOX_T2_R1_PREVIEW_API_KEY`. A criação da experiência isolada depende da interface oficial do Roblox e do provisionamento da chave pelo dono. O staging v18, o DataStore e os gates de integração continuam separados. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1) · [Procedimento](T2_R1_PLAYTEST.md) · [Inventário v18](https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920)

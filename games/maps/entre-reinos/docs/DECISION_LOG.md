@@ -212,3 +212,8 @@ Correção v9 em desenvolvimento:
 - [PROPOSTA] Liberar reservas no cancelamento e permitir que trabalhadores recuperem materiais entregues. A regra provisória usa pilhas físicas. Em ponte, a pilha fica na margem de trabalho da população proprietária. O cancelamento de um reforço em andamento depende da regra de crédito dos materiais reaproveitados.
 - [ABERTO] Na ruína de galpão, definir o destino do roubo e a partição configurável entre perdido, roubado e recuperável. Até essa decisão, o estoque permanece isolado e uma reparação não recria recursos.
 - [PROPOSTA] Economia agregada em regiões distantes durante uma sessão ativa, com custódia e progresso confirmados por região. O tempo de save fechado continua uma decisão independente. [Mapa T2-R2](T2_R2_INTEGRATION_MAP.md)
+
+## 25/11/2026 — Prévia de desenvolvimento da T2-R1 autorizada
+
+- [AUTORIZADO PELO CRIADOR] Uma publicação intermediária do candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` do PR #13 para playtest, antes de R3. O fluxo usa uma experiência isolada e preserva a v18. A exceção está no [protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1).
+- [ESTADO] A inspeção oficial confirmou um único Place no Universe da v18. Falta provisionar uma experiência independente e sua chave restrita. [Inventário Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920)

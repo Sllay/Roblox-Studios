@@ -41,6 +41,15 @@ Os status oficiais sao planned, in_progress, blocked, validated; no inicio todos
 5. Pedir ao criador teste completo da camada da temporada e aguardar aprovacao/reprovacao antes de iniciar a proxima.
 6. Caso haja problemas, abrir camada de 3 runners de refinamento, sem antecipar a temporada seguinte.
 
+## Exceção autorizada T2-R1
+
+Em 25/11/2026, o criador autorizou uma publicação intermediária do PR #13, branch `entre-reinos/t2-r1-world-regions`, antes de R3 e exclusivamente para playtest. O candidato fixado é `f7d4ac685f2372d066cdf49a19b2b978f2454745`. Essa autorização mantém os gates da temporada e da integração do PR.
+
+- Publicar em uma experiência privada e independente, com Start Place verificado e chave Open Cloud restrita ao novo Universe. O DataStore é separado por Universe. Preservar a v18 e os seis slots atuais.
+- O [workflow específico](../../../../.github/workflows/entre-reinos-t2-r1-preview.yml) adapta a publicação oficial e reutiliza Place Provision, Scene Sync, Rojo, compilação Luau e o publicador Open Cloud existente. Um registro versionado do destino aciona a inspeção de somente leitura. Um registro posterior confirma expressamente a substituição da cena vazia, com revisão e digest verificados. O ambiente GitHub é `staging`.
+- Registrar `isPublished=true`, revisão, inventário e hashes de scripts por leitura independente. A revisão inicial do Place isolado fica como referência para restauração. Se uma resposta de escrita se perder, verificar a revisão pela API antes de qualquer nova tentativa.
+- Aceite visual e validação formal continuam sujeitos aos recibos do jogo. O escopo da T2-R2 permanece no seu gate. [Roteiro da prévia](T2_R1_PLAYTEST.md)
+
 ## Refinamento (pacotes adicionais de tres runners)
 T1-F1/F2/F3, T2-F1/F2/F3 ou T3-F1/F2/F3. Quando houver mais de um ciclo, usar sufixo numerado para diferenciar.
 F1: auditar defeitos, arquitetura, instrumentacao e corrigir a causa das falhas do escopo atual.

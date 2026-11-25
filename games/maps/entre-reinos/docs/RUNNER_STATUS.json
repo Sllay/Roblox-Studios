@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-25",
-  "note": "V18 accepted as a development foundation. Individual T1 certification and the T2-R1 client gate remain open. PR 13 holds the tested regional candidate. The intermediate preview requires formal authorization.",
+  "note": "V18 accepted as a development foundation. Individual T1 certification and the T2-R1 client gate remain open. One isolated T2-R1 preview is authorized and awaits a dedicated Roblox target and scoped staging key.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -339,7 +339,7 @@
           "blockers": [
             "T1-R2 and T1-R3 remain in progress. ER-001 through ER-020 still require full certification.",
             "T2-R1 client and mobile playtest with creator evidence remains pending before formal validation.",
-            "Pre-R3 preview requires a recorded exception specifying the staging target and approved workflow for the verified candidate."
+            "The authorized pre-R3 preview awaits a separate private Roblox Universe, its Start Place and the restricted staging secret."
           ],
           "branch": "entre-reinos/t2-r1-world-regions",
           "pr": "https://github.com/Sllay/Roblox-Studios/pull/13",
@@ -347,9 +347,16 @@
           "baselineReadbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45531334560",
           "baselineSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45525381881",
           "developmentPreview": {
-            "status": "authorization_pending",
+            "status": "authorized_awaiting_isolated_target",
             "baselineRevision": 18,
-            "plan": "docs/T2_R1_PLAYTEST.md"
+            "plan": "docs/T2_R1_PLAYTEST.md",
+            "authorizedCandidate": "f7d4ac685f2372d066cdf49a19b2b978f2454745",
+            "authorizationDate": "2026-11-25",
+            "universeId": null,
+            "placeId": null,
+            "revision": null,
+            "isolatedKeyName": "ROBLOX_T2_R1_PREVIEW_API_KEY",
+            "baselineIdentityRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920"
           }
         },
         {
@@ -563,7 +570,7 @@
       "ER-020"
     ],
     "requirement": "All release requirements must have owner and real engine, mobile, save/load and human approval evidence; incomplete T1/T2 systems may not be pushed to T3.",
-    "next": "Use the individual T1 review to collect missing evidence. Keep PR 13 in draft and preserve staging v18 while the preview and integration gates remain open.",
+    "next": "Collect the missing T1 evidence. Keep PR 13 in draft and provision the authorized isolated preview while staging v18 is preserved.",
     "t1CertificationReview": "docs/T1_CERTIFICATION_V18.md"
   },
   "evidenceHistory": [

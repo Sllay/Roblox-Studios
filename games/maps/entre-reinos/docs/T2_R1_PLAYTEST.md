@@ -16,17 +16,21 @@
 
 ## Autorização e procedimento
 
-O [protocolo](RUNNER_PROTOCOL.md#publicacao-depois-de-r3) publica a temporada depois de R3. A exceção anterior se aplica a [uma única prévia de T1-R1](../../../../.github/workflows/entre-reinos-preview-dispatch.yml). O [workflow oficial de publicação](../../../../.github/workflows/publish.yml) exige ref `main`, confirmação de publicação e substituição integral e o ambiente configurado. O gate normal de integração do PR #13 depende da [certificação individual da T1](T1_CERTIFICATION_V18.md). A autorização anterior do criador registra a continuidade do desenvolvimento em branch.
+O criador autorizou formalmente uma prévia antes de R3 para o candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745`. A autorização está no [protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1). O [workflow específico](../../../../.github/workflows/entre-reinos-t2-r1-preview.yml) usa a infraestrutura de publicação em um checkout do SHA aprovado. O PR #13 segue em rascunho.
 
-A prévia antecipada exige aceite explícito do criador, registrado no protocolo ou em decisão vinculada a ele, **para uma única prévia de desenvolvimento T2-R1 antes de R3**, com destino Universe/Place identificado, SHA candidato com CI e prova no motor e procedimento oficial aprovado para publicar esse SHA. Se o caminho escolhido for o workflow atual, o PR precisa estar liberado para integrar na `main` pelos gates normais. Uma prévia anterior à integração precisaria de uma exceção formal com workflow e destino de staging isolado, mantendo as proteções de ambiente e as verificações de identidade, baseline e candidato. A autorização da prévia sozinha não libera merge nem certifica uma temporada.
+O Place Provision confirmou que a v18 é o único Place do Universe atual. O destino deve ser outra experiência Roblox, com DataStore separado pelo próprio Universe. A chave atual não oferece criação de Universe pela API documentada. [Inventário v18](https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920) · [Place Provision](../../../../docs/PLACE_PROVISION.md)
 
-Para manter os saves v18 de jogo em uso, a opção de laboratório é um destino de staging isolado do DataStore dos seis slots atuais. Caso o criador escolha atualizar o staging v18, a autorização precisa cobrir expressamente a substituição do Place e a possibilidade de migração para ruleset 4. O roteiro usa slots dispensáveis. A v18 recusa abrir um ruleset futuro e o backup deve existir antes da primeira gravação em ruleset 4.
+### Ação do criador
 
-Após liberação:
+1. No Roblox Studio, abrir um Baseplate vazio e escolher **File → Publish to Roblox As… → Create new experience**. Manter a experiência privada, sob o proprietário da v18. Para convidar outros testadores, conceder acesso de playtest no Creator Dashboard.
+2. Enviar o **Universe ID** e o **Start Place ID** do Creator Dashboard. No [ambiente staging do GitHub](https://github.com/Sllay/Roblox-Studios/settings/environments), configurar o secret `ROBLOX_T2_R1_PREVIEW_API_KEY` com uma chave Open Cloud restrita à experiência nova, com **Assets Read/Write** e **Luau Execution Sessions Read/Write**. Compartilhar somente a confirmação de configuração.
 
-1. Conferir proteções do PR, SHA de código, CI, probe e vínculo Universe/Place. Capturar snapshot verificável do Place e Scene Sync recente com revisão, digest, inventário e conflitos.
-2. Aprovar a publicação pelo workflow oficial e obter `isPublished=true` e a revisão pela API. Executar readback separado de revisão, scripts e smoke, seguido de Scene Sync pós-publicação. Registrar as URLs no recibo.
-3. Se for necessário retornar à v18, encerrar as sessões de teste, repor a cena verificada pelo procedimento oficial e recuperar apenas saves de teste migrados a partir do backup correspondente. A restauração de um save de jogador requer identificação e autorização próprias. Reverter o Place sozinho mantém os saves em ruleset 4.
+### Execução após receber os IDs
+
+1. Registrar `docs/sync/t2-r1-preview/target.json` na branch do PR com `action: inspect`, `candidate`, `universeId` e `placeId`. O workflow confirma proprietário, Place único, revisão e digest do Scene Sync. Conferir `PREVIEW_BASELINE` e o artefato da cena original. Essa revisão fica preservada para restauração. O inventário fornece prova estrutural.
+2. Aprovar por commit o mesmo registro com `action: publish`, `confirmFullReplacement: true`, `expectedVersion` e `expectedDigest` iguais aos observados. O processo recompila o SHA fixado, inspeciona novamente e usa o publicador oficial. Uma mudança na revisão ou no digest interrompe a operação.
+3. Verificar a resposta confirmada da Assets API e o log `PREVIEW_READBACK`. Registrar revisão, hash do RBXLX, hashes dos scripts, inventário posterior e link de jogo. Se a resposta for ambígua, verificar a revisão remota antes de tentar publicar novamente.
+4. Para desativar a prévia, manter o destino privado e usar o histórico do Place isolado. O staging v18 e seus saves continuam separados.
 
 ## Roteiro de playtest mobile
 
