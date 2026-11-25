@@ -157,6 +157,12 @@ function Profile.sample(seed: number, x: number, z: number)
     local distance, water, ford = channelAt(seed, side, outward, z)
     local halfBed = if ford then 10 else 15
     local bank = if ford then 12 else 25
+    -- Keep opposing bridge approaches viable despite different biomes.
+    -- The low shoulder tapers out toward the hills and along Z so the
+    -- background channel still follows the rising surrounding terrain.
+    local shoulder = (1 - smooth((distance - halfBed - bank) / 24))
+        * (1 - smooth((math.abs(z) - 6) / 20))
+    surface = mix(surface, water + 6, shoulder)
     local bankBlend = smooth((distance - halfBed) / bank)
     local crossing = if ford then 1 - smooth((math.abs(z) - 4) / 15) else 0
     local depth = mix(if ford then 6 else 13, 1.4, crossing)

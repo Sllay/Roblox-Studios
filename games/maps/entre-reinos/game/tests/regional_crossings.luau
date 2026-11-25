@@ -51,4 +51,14 @@ for _, seed in ipairs({1, 42, 1009, 870001, 123456789, 516639272, 2147483646}) d
     local acrossWorld = assert(Routes.route(graph, -Profile.PLAY_EDGE, Profile.PLAY_EDGE, "player", {}))
     assert(#acrossWorld == 5)
 end
-print("ENTRE_REINOS_T2_R1_ROUTE: five crossings and bridge restrictions tested on seven seeds")
+
+-- Adjacent biome heights vary with the seed. The deliberate regional
+-- bridge approaches must keep a usable span even when those heights differ.
+for index = 1, 1024 do
+    local seed = (index * 196613 + 970123) % 2147483646 + 1
+    local graph = Routes.compile(seed)
+    assert(#graph.crossings == 5)
+    assert(graph.crossings[1].buildable and graph.crossings[5].buildable,
+        string.format("regional bridge has infeasible banks in seed %d", seed))
+end
+print("ENTRE_REINOS_T2_R1_ROUTE: permissions on seven seeds and 2,048 outer spans verified")
