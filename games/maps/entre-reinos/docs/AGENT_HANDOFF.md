@@ -347,3 +347,7 @@ O [mapa T2-R2](T2_R2_INTEGRATION_MAP.md) cobre ER-028–035. A proposta de avan�
 ## 25/11/2026 — Autorização formal da prévia isolada
 
 O criador autorizou uma prévia T2-R1 do PR #13 em Universe independente, com candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745`. O workflow na branch usa o secret de staging `ROBLOX_T2_R1_PREVIEW_API_KEY`. A criação da experiência isolada depende da interface oficial do Roblox e do provisionamento da chave pelo dono. O staging v18, o DataStore e os gates de integração continuam separados. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1) · [Procedimento](T2_R1_PLAYTEST.md) · [Inventário v18](https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920)
+
+## 25/11/2026 — Correção do destino da prévia T2-R1
+
+O criador autorizou usar o staging existente e migrar saves compatíveis de ruleset 3 para 4 pelo fluxo com backup. O PR #13 permanece em rascunho. A publicação usa o candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` e a credencial existente. O Scene Sync confirmou v18 sem alterações externas. Consultar o recibo para revisão final e recuperação. [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45685859918) · [Procedimento](T2_R1_PLAYTEST.md)

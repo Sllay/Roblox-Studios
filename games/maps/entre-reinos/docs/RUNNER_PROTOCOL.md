@@ -43,12 +43,13 @@ Os status oficiais sao planned, in_progress, blocked, validated; no inicio todos
 
 ## Exceção autorizada T2-R1
 
-Em 25/11/2026, o criador autorizou uma publicação intermediária do PR #13, branch `entre-reinos/t2-r1-world-regions`, antes de R3 e exclusivamente para playtest. O candidato fixado é `f7d4ac685f2372d066cdf49a19b2b978f2454745`. Essa autorização mantém os gates da temporada e da integração do PR.
+Em 25/11/2026, o criador autorizou uma publicação intermediária do PR #13, branch `entre-reinos/t2-r1-world-regions`, antes de R3 e exclusivamente para playtest. O candidato fixado é `f7d4ac685f2372d066cdf49a19b2b978f2454745`. O destino autorizado é o staging existente do Entre Reinos, Universe `10769712413`, Place `90623742498445`, substituindo a v18. O lançamento oficial terá outra experiência. Esta decisão substitui o procedimento anterior que exigia um Universe isolado.
 
-- Publicar em uma experiência privada e independente, com Start Place verificado e chave Open Cloud restrita ao novo Universe. O DataStore é separado por Universe. Preservar a v18 e os seis slots atuais.
-- O [workflow específico](../../../../.github/workflows/entre-reinos-t2-r1-preview.yml) adapta a publicação oficial e reutiliza Place Provision, Scene Sync, Rojo, compilação Luau e o publicador Open Cloud existente. Um registro versionado do destino aciona a inspeção de somente leitura. Um registro posterior confirma expressamente a substituição da cena vazia, com revisão e digest verificados. O ambiente GitHub é `staging`.
-- Registrar `isPublished=true`, revisão, inventário e hashes de scripts por leitura independente. A revisão inicial do Place isolado fica como referência para restauração. Se uma resposta de escrita se perder, verificar a revisão pela API antes de qualquer nova tentativa.
-- Aceite visual e validação formal continuam sujeitos aos recibos do jogo. O escopo da T2-R2 permanece no seu gate. [Roteiro da prévia](T2_R1_PLAYTEST.md)
+- Reutilizar o secret `ROBLOX_OPEN_CLOUD_API_KEY` e as proteções do ambiente `staging`. A exceção permite publicar a partir da branch, sem integrar o PR. O workflow genérico continua sob as regras normais da `main`.
+- O [workflow da prévia](../../../../.github/workflows/entre-reinos-t2-r1-preview.yml) usa Place Provision, Scene Sync, Rojo, o gate Luau e o publicador oficial. O registro versionado exige confirmação explícita de substituição, IDs, SHA, revisão e digest da v18. Usar o mesmo grupo de concorrência do publish normal. Confirmar a revisão histórica e guardar o RBXLX de recuperação verificado antes de escrever.
+- O criador autorizou migrar saves compatíveis de ruleset 3 para 4 pelo fluxo existente. A migração ocorre sob lease por slot e exige backup anterior à gravação. A autorização preserva os seis slots e exclui qualquer operação de deleção.
+- Registrar `isPublished=true`, revisão, inventário e hashes por leitura independente. Qualquer resposta ambígua exige consulta do Place antes de nova tentativa. O rollback de Place e o restauro por slot têm efeitos distintos.
+- O playtest visual ocorre após disponibilizar a prévia. Certificação, integração do PR, escopo da T2-R2 e publicação de temporada seguem seus próprios gates. [Procedimento de prévia e rollback](T2_R1_PLAYTEST.md)
 
 ## Refinamento (pacotes adicionais de tres runners)
 T1-F1/F2/F3, T2-F1/F2/F3 ou T3-F1/F2/F3. Quando houver mais de um ciclo, usar sufixo numerado para diferenciar.

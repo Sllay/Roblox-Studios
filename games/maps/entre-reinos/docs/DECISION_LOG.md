@@ -217,3 +217,9 @@ Correção v9 em desenvolvimento:
 
 - [AUTORIZADO PELO CRIADOR] Uma publicação intermediária do candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` do PR #13 para playtest, antes de R3. O fluxo usa uma experiência isolada e preserva a v18. A exceção está no [protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1).
 - [ESTADO] A inspeção oficial confirmou um único Place no Universe da v18. Falta provisionar uma experiência independente e sua chave restrita. [Inventário Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920)
+
+## 25/11/2026 — Staging existente autorizado para a prévia T2-R1
+
+- [AUTORIZADO PELO CRIADOR] O Universe `10769712413` e o Place `90623742498445` são o ambiente de desenvolvimento. Publicar a prévia do SHA `f7d4ac685f2372d066cdf49a19b2b978f2454745` nesse destino, substituindo a v18. Usar credenciais e ferramentas existentes.
+- [AUTORIZADO PELO CRIADOR] Migrar saves compatíveis de ruleset 3 para 4 com o backup, a validação e a recuperação existentes. Preservar os seis slots. A autorização não inclui excluir saves.
+- [ESTADO] A decisão substitui o plano de Universe separado. Certificação visual ocorre após publicar a prévia. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1)

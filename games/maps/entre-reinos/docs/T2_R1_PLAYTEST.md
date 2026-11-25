@@ -16,21 +16,16 @@
 
 ## Autorização e procedimento
 
-O criador autorizou formalmente uma prévia antes de R3 para o candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745`. A autorização está no [protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1). O [workflow específico](../../../../.github/workflows/entre-reinos-t2-r1-preview.yml) usa a infraestrutura de publicação em um checkout do SHA aprovado. O PR #13 segue em rascunho.
+Em 25/11/2026 o criador confirmou que o Universe `10769712413`, Place `90623742498445`, já é o ambiente de desenvolvimento do Entre Reinos. Autorizou uma única prévia regional para substituir a v18 nesse Place e a migração de saves compatíveis 3 → 4 pelo fluxo existente, sem apagar slots. O candidato é `f7d4ac685f2372d066cdf49a19b2b978f2454745`. Esta decisão substitui o plano de outra experiência. O PR #13 segue em rascunho. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1)
 
-O Place Provision confirmou que a v18 é o único Place do Universe atual. O destino deve ser outra experiência Roblox, com DataStore separado pelo próprio Universe. A chave atual não oferece criação de Universe pela API documentada. [Inventário v18](https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920) · [Place Provision](../../../../docs/PLACE_PROVISION.md)
+O [workflow da prévia](../../../../.github/workflows/entre-reinos-t2-r1-preview.yml) usa o secret existente do ambiente staging e recebe a confirmação no [registro de destino](sync/t2-r1-preview/target.json). Ele confere as evidências por SHA, inspeciona identidade e revisão, verifica a cena da v18 e o arquivo de rollback, recompila o candidato e aciona o mesmo publicador da Assets API. Uma mudança de revisão ou digest bloqueia o upload. O Scene Sync prévio observou 90 objetos e nenhuma alteração ou conflito desde a v18 registrada. [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45685859918)
 
-### Ação do criador
+### Dados e recuperação
 
-1. No Roblox Studio, abrir um Baseplate vazio e escolher **File → Publish to Roblox As… → Create new experience**. Manter a experiência privada, sob o proprietário da v18. Para convidar outros testadores, conceder acesso de playtest no Creator Dashboard.
-2. Enviar o **Universe ID** e o **Start Place ID** do Creator Dashboard. No [ambiente staging do GitHub](https://github.com/Sllay/Roblox-Studios/settings/environments), configurar o secret `ROBLOX_T2_R1_PREVIEW_API_KEY` com uma chave Open Cloud restrita à experiência nova, com **Assets Read/Write** e **Luau Execution Sessions Read/Write**. Compartilhar somente a confirmação de configuração.
-
-### Execução após receber os IDs
-
-1. Registrar `docs/sync/t2-r1-preview/target.json` na branch do PR com `action: inspect`, `candidate`, `universeId` e `placeId`. O workflow confirma proprietário, Place único, revisão e digest do Scene Sync. Conferir `PREVIEW_BASELINE` e o artefato da cena original. Essa revisão fica preservada para restauração. O inventário fornece prova estrutural.
-2. Aprovar por commit o mesmo registro com `action: publish`, `confirmFullReplacement: true`, `expectedVersion` e `expectedDigest` iguais aos observados. O processo recompila o SHA fixado, inspeciona novamente e usa o publicador oficial. Uma mudança na revisão ou no digest interrompe a operação.
-3. Verificar a resposta confirmada da Assets API e o log `PREVIEW_READBACK`. Registrar revisão, hash do RBXLX, hashes dos scripts, inventário posterior e link de jogo. Se a resposta for ambígua, verificar a revisão remota antes de tentar publicar novamente.
-4. Para desativar a prévia, manter o destino privado e usar o histórico do Place isolado. O staging v18 e seus saves continuam separados.
+- A publicação só altera o Place. O SaveSlotService migra cada slot compatível na primeira escrita de ruleset 4, após validar e persistir o backup da revisão legada do slot. Formatos futuros continuam protegidos. O probe da branch testou backup, restauro e reabertura em DataStore sintético. [Probe](https://github.com/Sllay/Roblox-Studios/actions/runs/45671224264)
+- O rollback de cena usa a revisão histórica **18** do mesmo Place. O workflow guarda também o RBXLX compilado do SHA que publicou a v18, `98f81262ff93066c759b915253d557193e3efc9f`, com hashes de scripts conferidos. Em caso de rollback autorizado, encerrar as sessões de teste, restaurar a v18 pelo histórico do Roblox e confirmar nova revisão, Scene Sync e hashes.
+- Voltar a cena para v18 mantém os slots já migrados em ruleset 4, que a v18 recusa abrir. Restaurar só o slot identificado, mediante autorização própria e validação do backup correspondente, preservando uma cópia do snapshot regional para evitar descartar o progresso do playtest. A publicação não faz restauração ou exclusão de dados.
+- Depois da confirmação pela Assets API, o workflow lê novamente o Place publicado e compara os scripts com o RBXLX. O recibo registra revisão, hashes e inventários. Em caso de resposta ambígua, consultar o Place antes de qualquer nova tentativa.
 
 ## Roteiro de playtest mobile
 
@@ -41,4 +36,4 @@ O Place Provision confirmou que a v18 é o único Place do Universe atual. O des
 5. Após descobrir as duas capitais, testar a ação contextual de viagem a pé junto ao centro. Salvar perto da Vila do Cedro e reabrir. Conferir a posição, a integridade da bolsa, o veículo e o estado de cada reino. Para testar migração, usar somente cópia ou slot sintético v18 com backup verificado.
 6. Repetir as transições mais custosas com as estatísticas do cliente ativadas. Registrar tempo de carregamento, FPS, frame pacing, memória e vídeo de qualquer travamento ou ação difícil de operar.
 
-O roteiro é válido para uma revisão regional publicada e confirmada por readback. O staging atualmente disponível oferece apenas o playtest da [fundação v18](T1_CERTIFICATION_V18.md).
+Use esse roteiro na revisão regional especificada no [recibo de publicação](runner-receipts/T2-R1.md). A [certificação da fundação](T1_CERTIFICATION_V18.md) continua rastreada.

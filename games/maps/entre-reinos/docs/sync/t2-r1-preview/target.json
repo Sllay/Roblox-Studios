@@ -1,0 +1,9 @@
+{
+  "action": "publish",
+  "candidate": "f7d4ac685f2372d066cdf49a19b2b978f2454745",
+  "universeId": "10769712413",
+  "placeId": "90623742498445",
+  "expectedVersion": 18,
+  "expectedDigest": "136e70ba80ea9af4ac9934b933ade766310fdaa45f1b40a366e3940be5783de7",
+  "confirmFullReplacement": true
+}

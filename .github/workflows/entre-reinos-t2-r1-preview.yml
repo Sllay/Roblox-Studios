@@ -1,4 +1,4 @@
-name: Entre Reinos T2-R1 isolated development preview
+name: Entre Reinos T2-R1 staging development preview
 
 on:
   push:
@@ -10,11 +10,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: roblox-place-write-entre-reinos-t2-r1-preview
+  group: roblox-place-write-entre-reinos-main-staging
   cancel-in-progress: false
 
 jobs:
-  isolated-preview:
+  staging-preview:
     if: ${{ github.repository == 'Sllay/Roblox-Studios' }}
     runs-on: ubuntu-latest
     environment: staging
@@ -36,15 +36,19 @@ jobs:
           path: preview-candidate
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 98f81262ff93066c759b915253d557193e3efc9f
+          path: preview-rollback
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - name: Check the reviewed source and existing successful runs
-        id: gate
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          phase="$(jq -er '.action | select(. == "inspect" or . == "publish")' "$PLAN")"
+          test "$(jq -er .action "$PLAN")" = publish
           test "$(jq -er .candidate "$PLAN")" = "$CANDIDATE"
           test "$(git -C preview-candidate rev-parse HEAD)" = "$CANDIDATE"
           git -C preview-candidate diff --exit-code "$ENGINE_HEAD" "$CANDIDATE" -- \
@@ -55,31 +59,25 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/45671224264" \
             --jq '.conclusion + " " + .head_sha + " " + .path' \
             | grep -Fx "success $ENGINE_HEAD .github/workflows/entre-reinos-t2-r1-engine-probe.yml"
-          echo "phase=$phase" >> "$GITHUB_OUTPUT"
       - run: python -m pip install Pillow==11.3.0
-      - name: Verify isolated identity and take the reviewable Scene Sync baseline
-        if: steps.gate.outputs.phase == 'inspect'
-        env:
-          ROBLOX_T2_R1_PREVIEW_API_KEY: ${{ secrets.ROBLOX_T2_R1_PREVIEW_API_KEY }}
-        run: python "$PREVIEW_TOOL" inspect --plan "$PLAN" --output "$EVIDENCE"
       - name: Install pinned official Luau
-        if: steps.gate.outputs.phase == 'publish'
         run: bash preview-candidate/tools/install-luau.sh
       - uses: CompeyDev/setup-rokit@v0.2.1
-        if: steps.gate.outputs.phase == 'publish'
       - name: Build only the approved Entre Reinos Place
-        if: steps.gate.outputs.phase == 'publish'
         working-directory: preview-candidate
         run: python tools/workspace.py build --game entre-reinos --place main
-      - name: Recheck Scene Sync and publish the isolated Place through Open Cloud
-        if: steps.gate.outputs.phase == 'publish'
+      - name: Build the exact v18 rollback file
+        run: |
+          (cd preview-rollback && python tools/workspace.py build --game entre-reinos --place main)
+          mkdir -p "$EVIDENCE"
+          cp preview-rollback/dist/entre-reinos/main.rbxlx "$EVIDENCE/entre-reinos-v18-rollback.rbxlx"
+      - name: Verify v18 backup and Scene Sync, then publish staging through Open Cloud
         env:
-          ROBLOX_T2_R1_PREVIEW_API_KEY: ${{ secrets.ROBLOX_T2_R1_PREVIEW_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python "$PREVIEW_TOOL" publish --plan "$PLAN" --output "$EVIDENCE"
       - name: Independently read the published revision, Scene Sync and script hashes
-        if: steps.gate.outputs.phase == 'publish'
         env:
-          ROBLOX_T2_R1_PREVIEW_API_KEY: ${{ secrets.ROBLOX_T2_R1_PREVIEW_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python "$PREVIEW_TOOL" readback --plan "$PLAN" --output "$EVIDENCE"
       - uses: actions/upload-artifact@v4
         if: always()
