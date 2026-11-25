@@ -22,7 +22,16 @@ jobs:
           python-version: '3.13'
       - run: python -m pip install Pillow==11.3.0
       - run: bash tools/install-luau.sh
-      - run: luau games/maps/entre-reinos/game/tests/regional_profile.luau
+      - run: bash tools/install-luau-lsp.sh
+      - name: Execute and type-check regional terrain and crossing contracts
+        run: |
+          game=games/maps/entre-reinos/game
+          src="$game/places/main/src/ReplicatedStorage"
+          luau "$game/tests/regional_profile.luau"
+          luau "$game/tests/regional_crossings.luau"
+          luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" \
+            "$src/RegionalProfile.luau" "$src/RegionalCrossings.luau" \
+            "$game/tests/regional_profile.luau" "$game/tests/regional_crossings.luau"
       - name: Compare with the published v18 in an unsaved session
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
@@ -42,6 +51,8 @@ jobs:
           old = (replicated / "WorldProfile.luau").read_text()
           profile = (replicated / "RegionalProfile.luau").read_text()
           profile = profile.replace('require("./WorldProfile")', "loadLegacy()")
+          crossings = (replicated / "RegionalCrossings.luau").read_text()
+          crossings = crossings.replace('require("./RegionalProfile")', "profile")
           world = (services / "WorldService.luau").read_text()
           published = """
           assert(game.PlaceVersion == 18, "unexpected published baseline")
@@ -60,8 +71,13 @@ jobs:
           local function loadWorld()
           {world}
           end
+          local function loadRoutes(profile)
+          {crossings}
+          end
           {test}
-          local result = probeRegions(loadWorld(), loadProfile(), published, 516639272)
+          local regionalProfile = loadProfile()
+          local routes = loadRoutes(regionalProfile)
+          local result = probeRegions(loadWorld(), regionalProfile, published, routes, 516639272)
           result.universeId = tostring(game.GameId)
           result.placeId = tostring(game.PlaceId)
           return game:GetService("HttpService"):JSONEncode(result)
@@ -70,6 +86,7 @@ jobs:
                             os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], source)
           assert report["loadedVersion"] == 18, report
           assert report["complete"]["chunks"] == 49 and report["legacyVoxels"] == 156672
+          assert report["crossings"]["checked"] == 5 and report["crossings"]["nativeBanks"] == 4
           assert report["streaming"]
           print("ENTRE_REINOS_T2_R1_NATIVE", json.dumps(report, sort_keys=True))
           PY

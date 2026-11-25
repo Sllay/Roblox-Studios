@@ -1,5 +1,6 @@
 -- Runs in the disposable Open Cloud engine session, never saving its Terrain.
-local function probeRegions(world, profile, publishedLegacy, seed)
+local function probeRegions(world, profile, publishedLegacy, routes, seed)
+    local heapBeforeKB = gcinfo()
     local ok, reason = world.activate(seed, nil, profile)
     assert(ok, reason)
     local start = world.metrics()
@@ -75,8 +76,33 @@ local function probeRegions(world, profile, publishedLegacy, seed)
         end
     end
     assert(waterColumns >= 12)
+    local graph = routes.compile(seed)
+    local banks = 0
+    for _, crossing in ipairs(graph.crossings) do
+        if math.abs(crossing.region) ~= 2 then continue end
+        local plan = assert(routes.bridgePlan(graph, (crossing.west.x + crossing.east.x) / 2))
+        assert(plan == crossing)
+        for _, bank in ipairs({crossing.west, crossing.east}) do
+            local dryParams = RaycastParams.new()
+            dryParams.FilterType = Enum.RaycastFilterType.Include
+            dryParams.FilterDescendantsInstances = {terrain}
+            local hit = workspace:Raycast(Vector3.new(bank.x, 70, 0), Vector3.new(0, -100, 0), dryParams)
+            assert(hit and hit.Material ~= Enum.Material.Water
+                and math.abs(hit.Position.Y - bank.y) < 3, "bridge bank lacks dry support")
+            banks += 1
+        end
+        local bridge = {tier = "reinforced", state = "complete", health = 120, load = 0}
+        local active = {[crossing.id] = bridge}
+        assert(routes.passage(crossing, "worker", nil) == nil)
+        assert(routes.passage(crossing, "worker", bridge) == "bridge")
+        assert(routes.route(graph, crossing.west.x - 1, crossing.east.x + 1, "mount", active))
+        bridge.state, bridge.health = "ruined", 0
+        assert(not routes.route(graph, crossing.west.x - 1, crossing.east.x + 1, "mount", active))
+    end
     return {
         start = start, complete = complete, legacyVoxels = compared, nativeSupports = supported,
         waterColumns = waterColumns, streaming = workspace.StreamingEnabled, seed = seed,
+        heapBeforeKB = heapBeforeKB, heapAfterKB = gcinfo(),
+        crossings = {checked = #graph.crossings, nativeBanks = banks},
     }
 end
