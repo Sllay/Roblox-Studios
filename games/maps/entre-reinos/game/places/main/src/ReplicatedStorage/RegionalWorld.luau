@@ -36,6 +36,22 @@ function World.valid(record: any, seed: number, home: any): boolean
     end
     local foreign=record.foreign
     if foreign~=nil and (not Living.valid(foreign) or foreign.seed~=seed or foreign.r3~=nil) then return false end
+    local market=home and home.production and home.production.market
+    local contract=market and market.contract
+    if foreign and foreign.production and foreign.production.market and foreign.production.market.contract then
+        return false
+    end
+    if contract then
+        if not foreign or not foreign.production or not foreign.production.market then return false end
+        if contract.worker then
+            local origin=if contract.seller=="home" then home else foreign
+            local found=false
+            for _,npc in ipairs(origin.npcs) do
+                if npc.id==contract.worker then found=true;break end
+            end
+            if not found then return false end
+        end
+    end
     local graph=Routes.compile(seed)
     local crossings={}
     for _,crossing in ipairs(graph.crossings) do crossings[crossing.id]=crossing end

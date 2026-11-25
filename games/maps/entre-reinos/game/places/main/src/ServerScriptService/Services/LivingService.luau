@@ -15,6 +15,7 @@ local Saves=require(script.Parent:WaitForChild("SaveSlotService"))
 local Living=require(shared:WaitForChild("Living"):WaitForChild("LivingModel"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
 local Production=require(shared:WaitForChild("Living"):WaitForChild("Production"))
+local Market=require(shared:WaitForChild("Living"):WaitForChild("Market"))
 local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
 local Combat=require(script.Parent:WaitForChild("CombatService"))
 local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
@@ -234,7 +235,7 @@ local function attachment(model: Model, name: string, key: string, limb: string,
 end
 
 local activities={
-    collect="Coletando",load="Retirando estoque",build="Construindo",fabricate="Fabricando",farm="Cultivando",hunt="Caçando",rest="Descansando",
+    collect="Coletando",load="Retirando estoque",build="Construindo",fabricate="Fabricando",farm="Cultivando",hunt="Caçando",rest="Descansando",freight="Em transporte comercial",
     flee="Em fuga",sheltered="Em abrigo",strike="Defendendo",
 }
 
@@ -284,7 +285,7 @@ local function syncNPC(npc: any)
             elseif weapon=="bow" then Vector3.new(0.2,1.65,0.24)
             else Vector3.new(0.35,1.45,0.35),
         Color3.fromRGB(115,78,50),CFrame.new(0,-0.6,-0.5))
-    attachment(model,"Cargo",if Inventory.weight(npc.inventory)>0 then "bag" else "",
+    attachment(model,"Cargo",if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "bag" else "",
         "Torso",Vector3.new(1.65,1.3,0.72),Color3.fromRGB(156,125,77),CFrame.new(0,0,0.82))
 
 end
@@ -583,6 +584,21 @@ local function draw(observerX: number)
         end
         syncNPC(npc)
     end
+    local _,courier=Market.freight(regional)
+    if courier and math.abs(courier.x-observerX)<145 and courier.health>0 and WorldService.isLoadedAt(courier.x)
+        and not table.find(state.npcs,courier) then
+        if not figures[courier.id] then figures[courier.id]=createActor(courier) end
+        syncNPC(courier)
+    end
+    for id,figure in pairs(figures) do
+        if figure:GetAttribute("ER_ExternalCourier")==true and (not courier or courier.id~=id or math.abs(courier.x-observerX)>=145) then
+            figure:Destroy()
+            figures[id]=nil
+        end
+    end
+    if courier and figures[courier.id] then
+        figures[courier.id]:SetAttribute("ER_ExternalCourier",not table.find(state.npcs,courier))
+    end
     for _,b in ipairs(state.buildings) do
         if not b.crossingId and WorldService.isLoadedAt(b.x) then syncBuild(b) end
     end
@@ -742,6 +758,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         while simulationAccumulator>=0.1 and ticks<3 do
             if regional.home.r3.prologue.stage=="sandbox" then Production.ensure(state) end
             Work.step(state,0.1)
+            Market.stepFreight(regional,0.1,Work)
             local currentRoot=if player.Character then
                 player.Character:FindFirstChild("HumanoidRootPart") else nil
             local x=if currentRoot and currentRoot:IsA("BasePart")
@@ -1018,6 +1035,16 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
                 end
             end
         end
+        if overview.market and root and root:IsA("BasePart") then
+            local center=Market.center(state)
+            nearby.marketHere=center~=nil and math.abs(root.Position.X-center.x)<=18
+                and math.abs(root.Position.Y-center.y-3)<=10
+            nearby.canContract=regional.record.discovered["2"]==true
+            local contract=Market.freight(regional)
+            if contract then
+                nearby.freight={item=contract.item,units=contract.units,stage=contract.stage,returning=contract.returning}
+            end
+        end
         return {ok=true,data=overview,hud=R3.summary(regional.home),nearby=nearby}
     end
     if action=="travel" then return Travel.action(player,arg) end
@@ -1044,6 +1071,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
     if action=="tree_press" or action=="tree_mark" or action=="tree_cancel" or action=="tree_take" then
         return treeAction(player,action,arg)
     end
+    if action=="trade" and state.production then return {ok=false,error="invalid_market_order"} end
     if action=="arm_defender" and state~=regional.home then
         return Combat.action(player,action,arg,state)
     end
@@ -1055,7 +1083,8 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         or action=="prologue" or action=="r3_status" then
         return Combat.action(player,action,arg)
     end
-    if action~="build" and action~="build_preview" and action~="build_cancel" and action~="produce" and action~="profession" then
+    if action~="build" and action~="build_preview" and action~="build_cancel" and action~="produce" and action~="profession"
+        and action~="market" and action~="freight" and action~="freight_cancel" then
         return {ok=false,error="invalid_action"}
     end
     local character=player.Character
@@ -1068,6 +1097,25 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return {ok=false,error="outside_playable_lane"}
     end
     local now=os.clock()
+    if action=="market" or action=="freight" or action=="freight_cancel" then
+        if not state.production or not state.production.market or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        local center=Market.center(state)
+        if not center or math.abs(root.Position.X-center.x)>18 or math.abs(root.Position.Y-center.y-3)>10 then
+            return {ok=false,error="too_far_from_market"}
+        end
+        lastActionAt=now
+        local ok,reason=false,"invalid_market_order"
+        if action=="market" and type(arg)=="table" then
+            ok,reason=Market.playerTrade(state,regional.home.r3,arg.id,arg.verb,arg.item,Work)
+        elseif action=="freight" and type(arg)=="table" then
+            ok,reason=Market.openContract(regional,arg.seller,arg.item,arg.units,arg.id,Work)
+        elseif action=="freight_cancel" and regional.home.production and regional.home.production.market then
+            ok=Market.cancel(regional)
+        end
+        return {ok=ok,error=if not ok then reason else nil}
+    end
     if action=="profession" then
         if not state.production or type(arg)~="string" or #arg>30 or now-lastActionAt<0.55 then
             return {ok=false,error="action_unavailable"}

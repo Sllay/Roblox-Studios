@@ -8,6 +8,7 @@ local Items=require("./ItemDefs")
 local R3=require("./R3Engine")
 local Production=require("./Production")
 local Needs=require("./VillageNeeds")
+local Market=require("./Market")
 local Living={}
 Living.VERSION=1
 
@@ -117,7 +118,7 @@ function Living.valid(state: any): boolean
         end
         buildingIds[b.id]=true
     end
-    return state.production==nil or (Production.valid(state.production,state) and Needs.valid(state))
+    return state.production==nil or (Production.valid(state.production,state) and Needs.valid(state) and Market.valid(state))
 end
 function Living.restore(data: any, seed: number): any
     if data==nil then return Living.new(seed) end

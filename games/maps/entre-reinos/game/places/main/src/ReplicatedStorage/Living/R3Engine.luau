@@ -346,8 +346,8 @@ function R3.arm(state: any,npcId: any,weapon: string,playerData: any?): (boolean
                 end
                 return false,"already_equipped"
             end
-            local required=if weapon=="bow" then "wood" else "iron"
-            local cost=if weapon=="bow" then 3 else 2
+            local required=if state.production then weapon elseif weapon=="bow" then "wood" else "iron"
+            local cost=if state.production then 1 elseif weapon=="bow" then 3 else 2
             local stock=nil
             for _,depot in ipairs(state.buildings) do
                 if math.abs(npc.x-depot.x)<=24 and Work.stockAvailable(state,depot,required)>=cost then
@@ -356,12 +356,21 @@ function R3.arm(state: any,npcId: any,weapon: string,playerData: any?): (boolean
                 end
             end
             if not stock then stock=d.playerBag end
+            if state.production and npc.defense and not Inventory.canAdd(d.playerBag,npc.defense,1) then
+                return false,"player_bag_full"
+            end
             if not stock or not Inventory.take(stock,required,cost) then
                 return false,"not_enough_equipment_materials"
             end
+            if state.production and npc.defense then
+                assert(Inventory.add(d.playerBag,npc.defense,1))
+                d.arrows=math.min(30,d.arrows+(npc.arrows or 0))
+            end
             npc.defense=weapon
             npc.defenseClock=0
-            npc.arrows=if weapon=="bow" then 8 else 0
+            local ammo=if weapon=="bow" then (if state.production then math.min(8,d.arrows) else 8) else 0
+            npc.arrows=ammo
+            if state.production then d.arrows-=ammo end
             ledger(d,"equipment",0,tostring(npcId)..":"..weapon)
             return true,npcId
         end

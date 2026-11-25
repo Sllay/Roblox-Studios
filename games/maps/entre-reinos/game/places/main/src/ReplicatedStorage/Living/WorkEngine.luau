@@ -4,6 +4,7 @@
 local Items=require("./ItemDefs")
 local Production=require("./Production")
 local Needs=require("./VillageNeeds")
+local Market=require("./Market")
 local Structures=require("./StructureDefs")
 local Professions=require("./ProfessionDefs")
 local Inventory=require("./Inventory")
@@ -290,6 +291,8 @@ local function storageSpace(state: any, depot: any, item: string, except: any?):
     return math.max(0,math.floor(space/Items.get(item).mass))
 end
 
+Engine.storageFree=storageSpace
+
 local function assignStorage(npc: any,state: any): boolean
     -- Low priority after construction. Stocking is not a free resource mint:
     -- resources first enter a real worker bag, then a finite galpão inventory.
@@ -438,7 +441,7 @@ local function freeGround(state: any,npc: any,x: number,z: number): boolean
     if math.abs(z)>20 then return false end
     local context=contexts[state]
     if context and context.readyAt and not context.readyAt(x) then return false end
-    local class=if Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
+    local class=if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
     local current=sample(state,npc.x,npc.z or 0)
     local nextGround=sample(state,x,z)
     local deck,crossing=Engine.deckAt(state,x,z,class)
@@ -474,7 +477,7 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
     local finalX,finalZ=destX,targetZ
     local context=contexts[state]
     if context then
-        local class=if Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
+        local class=if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
         local entry=npc.bridgeEntry
         if entry then
             local deck=Engine.deckAt(state,npc.x,z,class)
@@ -783,6 +786,8 @@ function Engine.step(state: any, dt: number)
         local context=contexts[state]
         Needs.seedLandscape(state,if context then context.origin else 0)
         Needs.stepLand(state,dt)
+        Market.ensure(state)
+        Market.payroll(state)
     end
     if state.production and math.floor(state.elapsed/4)~=math.floor((state.elapsed-dt)/4) then
         for _,depot in ipairs(state.buildings) do
@@ -820,7 +825,7 @@ function Engine.step(state: any, dt: number)
         -- During a real nearby raid, civilians pause their tasks without
         -- canceling reserved materials or losing work progress. R3Engine
         -- determines danger and defensive/escape movement after this tick.
-        if npc.underAttack then continue end
+        if npc.underAttack or npc.state=="freight" then continue end
         if Needs.care(state,npc,dt,Engine) then continue end
         if not state.production and npc.hunger>70 and Inventory.count(npc.inventory,"food")>0 then
             if Inventory.take(npc.inventory,"food",1) then npc.hunger-=45 end
@@ -1042,7 +1047,7 @@ function Engine.summary(state: any): any
         for _,order in ipairs(state.production.orders) do table.insert(orders,table.clone(order)) end
         production={orders=orders,completed=state.production.completed}
     end
-    return {buildings=buildings,workers=workers,districts=districts,stats=table.clone(state.stats),production=production,
+    return {buildings=buildings,workers=workers,districts=districts,stats=table.clone(state.stats),production=production,market=Market.summary(state,Engine),
         resources={sources=sources,carried=carried,reserved=reserved,
             committed=committed,stored=deposited,isolated=isolated,markedTrees=markedTrees}}
 end

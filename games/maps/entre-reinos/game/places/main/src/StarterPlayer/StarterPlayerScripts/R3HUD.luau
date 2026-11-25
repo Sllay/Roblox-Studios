@@ -5,9 +5,12 @@
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local UserInputService=game:GetService("UserInputService")
+local HttpService=game:GetService("HttpService")
 local BuildMenu=require(script.Parent:WaitForChild("BuildMenu"))
 local Professions=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("ProfessionDefs"))
 local Production=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("Production"))
+local Market=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("Market"))
+local Items=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("ItemDefs"))
 local Gesture=require(script.Parent:WaitForChild("PressGesture"))
 local WeaponControls=require(script.Parent:WaitForChild("WeaponControls"))
 local DukeDialogue=require(script.Parent:WaitForChild("DukeDialogue"))
@@ -59,6 +62,12 @@ local errorTexts={
     dialogue_open="Feche o diálogo para voltar ao jogo.",
 
     character_not_ready="Aguarde o personagem carregar.",
+    invalid_market_order="Pedido de mercado inválido.",
+    market_funds="Saldo insuficiente.",
+    market_stock="Confira o estoque e o espaço no destino.",
+    market_route="Sem rota terrestre de carga entre os reinos.",
+    market_contract_active="Já há um frete em andamento.",
+    market_hostile="A relação entre os reinos impede o contrato.",
     unknown_recipe="Receita inválida.",
     production_queue_full="A fila de fabricação está cheia.",
     production_station_required="Aproxime-se de uma oficina ou forja concluída.",
@@ -437,6 +446,32 @@ function UI.start(player: Player)
     craftButton.LayoutOrder=4
     craftButton.Size=UDim2.new(1,-12,0,42)
     local tradeInfo=rowText(workshop,"TradeInfo","",5,67)
+    local marketIndex=1
+    local marketChoice=button(workshop,"MarketChoice","")
+    local buyGood=button(workshop,"BuyGood","COMPRAR")
+    local sellGood=button(workshop,"SellGood","VENDER")
+    local exportGood=button(workshop,"ExportGood","ENVIAR 2 AO CEDRO")
+    local importGood=button(workshop,"ImportGood","TRAZER 2 DO CEDRO")
+    local cancelContract=button(workshop,"CancelContract","CANCELAR CONTRATO")
+    local marketControls={marketChoice,buyGood,sellGood,exportGood,importGood,cancelContract}
+    for index,control in ipairs(marketControls) do
+        control.LayoutOrder=30+index
+        control.Size=UDim2.new(1,-12,0,42)
+        control.Visible=false
+    end
+    marketChoice.Activated:Connect(function()
+        marketIndex=marketIndex%#Market.goods+1
+        updateVillage()
+    end)
+    buyGood.Activated:Connect(function()
+        request("market",{verb="buy",item=Market.goods[marketIndex],id=HttpService:GenerateGUID(false)})
+    end)
+    sellGood.Activated:Connect(function()
+        request("market",{verb="sell",item=Market.goods[marketIndex],id=HttpService:GenerateGUID(false)})
+    end)
+    exportGood.Activated:Connect(function() request("freight",{seller="home",units=2,item=Market.goods[marketIndex],id=HttpService:GenerateGUID(false)}) end)
+    importGood.Activated:Connect(function() request("freight",{seller="foreign",units=2,item=Market.goods[marketIndex],id=HttpService:GenerateGUID(false)}) end)
+    cancelContract.Activated:Connect(function() request("freight_cancel",nil) end)
     local tradeButton=button(workshop,"SellWood","VENDER 1 MADEIRA")
     tradeButton.LayoutOrder=6
     tradeButton.Size=UDim2.new(1,-12,0,42)
@@ -932,6 +967,28 @@ function UI.start(player: Player)
         tradeInfo.Text="1 MADEIRA POR 1 MOEDA\n"..tradeStatus
         tradeButton.BackgroundColor3=if nearby.canTrade and nearby.canSellWood
             and (hud.treasury or 0)>=1 then C.raised else C.surface
+        local market=if snapshot then snapshot.market else nil
+        local currentGood=Market.goods[marketIndex]
+        local quote=if market then market.goods[currentGood] else nil
+        for _,control in ipairs(marketControls) do
+            control.Visible=market~=nil
+        end
+        exportGood.Visible=market~=nil and nearby.canContract==true
+        importGood.Visible=exportGood.Visible
+        cancelContract.Visible=market~=nil and nearby.freight~=nil and not nearby.freight.returning
+        tradeButton.Visible=market==nil
+        if market and quote then
+            local last=market.latest
+            local freight=nearby.freight
+            tradeInfo.Text="TESOURO · "..tostring(market.treasury).." moedas"
+                ..(if last then "  ·  "..tostring(last.kind).." "..tostring(last.value) else "")
+                ..(if freight then "\nFrete: "..tostring(freight.units).." "..Items.get(freight.item).label
+                    ..(if freight.returning then " · devolução" else "") else "")
+                ..(if nearby.marketHere then "" else "\nAproxime-se do castelo para negociar.")
+            marketChoice.Text=Items.get(currentGood).label.." · "..tostring(quote.stock).." em estoque →"
+            buyGood.Text="COMPRAR · "..tostring(quote.buy).." moedas"
+            sellGood.Text="VENDER · "..tostring(quote.sell).." moedas"
+        end
         coinsInfo.Text="SUA BOLSA  ·  "..tostring(player:GetAttribute("ER_R3Wallet") or 0)..
             " moedas. Soltar uma moeda deixa um item físico no chão."
         dropCoin.Active=(player:GetAttribute("ER_R3Wallet") or 0)>0
