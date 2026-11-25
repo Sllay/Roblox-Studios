@@ -331,3 +331,7 @@ O criador aceitou a v18 como fundação e autorizou o trabalho técnico. A T1 se
 ## 25/11/2026 — Runtime regional em desenvolvimento no PR #13
 
 A branch isolada carrega o perfil regional no Boot, convida o jogador a construir as pontes pelo caderno e usa WorkEngine em ambos os reinos. Ruleset 4 grava o estado regional, o destino e os veículos com backup da v18 no mesmo lease. O SaveSlotService mantém um limite explícito para o snapshot. O PR continua em rascunho. O staging permanece na v18. Consultar o [recibo T2-R1](runner-receipts/T2-R1.md) para evidências, parâmetros provisórios e verificações de cliente pendentes.
+
+## 25/11/2026 — regressão de montagem e travessia corrigida no PR #13
+
+O candidato `04d9be796ae944324b7ffd61bba6d2f93ffeeee3` passou no probe Roblox com R6 sintético, incluindo espera na margem, ponte reforçada, remontagem, fronteira, barco com carga e retry da viagem. A migração v18, o restore do segundo reino, a montaria e a carga também passaram no DataStore isolado. O status do runner permanece bloqueado para integração pela certificação da T1 e pela prova em cliente/mobile. A main e o staging v18 foram preservados. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45658252612) · [Motor](https://github.com/Sllay/Roblox-Studios/actions/runs/45658231902) · [Recibo](runner-receipts/T2-R1.md)

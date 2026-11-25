@@ -197,3 +197,10 @@ Correção v9 em desenvolvimento:
 - [ESTADO] O criador avaliou positivamente a v18 como fundação e autorizou iniciar o trabalho técnico de T2-R1. O aceite de fundação é registrado separadamente do fechamento da T1.
 - [ESTADO] A certificação ER-001–020 continua pendente. A preparação segue em branch isolada, com ensaios sem gravação do Place. O staging continua v18 e o gate cumulativo permanece ativo.
 - [ABERTO] Escala final das regiões, progresso de regiões distantes, balanceamento e custos de montarias e embarcações. Os valores do laboratório são provisórios.
+
+## T2-R1 — políticas provisórias do candidato
+
+- [PROVISÓRIO] A população distante preserva estoque, reservas, saúde e tarefas com o relógio local parado. Avanço agregado com orçamento por ciclo permanece uma alternativa de design, condicionada a regras de produção, déficit e recuperação.
+- [PROVISÓRIO] A passagem reforçada permite montaria com capacidade controlada. Se o tabuleiro cair sob um agente, a recuperação usa a última margem comprovada e mantém sua carga. Custos, capacidade e recuperação definitiva aguardam playtest.
+- [PROVISÓRIO] O cavalo custa 12 moedas e o barco opcional liga as duas docas do rio do Vale. O transporte de carga inicial aceita madeira. Viagem rápida exige visita às duas capitais e confirmação do save do destino.
+- [ABERTO] Balanceamento e aparência em partida, parâmetros de montaria e barco, escala final e política de tempo distante. As decisões da T1 sobre perdas permanecem no gate próprio.

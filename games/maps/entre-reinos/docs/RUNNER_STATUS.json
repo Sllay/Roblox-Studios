@@ -324,25 +324,25 @@
         {
           "id": "T2-R1",
           "status": "blocked",
-          "commit": "d608006e58772303befe015625d028875617fd49",
-          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45527380081",
+          "commit": "04d9be796ae944324b7ffd61bba6d2f93ffeeee3",
+          "ciRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45658252612",
           "receipt": "docs/runner-receipts/T2-R1.md",
           "validation": {
             "structure": "pass",
             "luau": "pass",
             "unit": "pass",
             "rojo": "pass",
-            "runtime": "isolated_native_terrain_crossing_geometry_and_legacy_datastore_pass",
-            "mobile": "not_run"
+            "runtime": "pass_isolated_roblox_regional_terrain_bridge_rider_boat_travel_datastore",
+            "mobile": "awaiting_client_playtest"
           },
           "blockers": [
-            "T1-R2 and T1-R3 are in progress. Twenty T1 requirements still require cumulative release evidence.",
-            "Isolated T2-R1 development is authorized; no main integration or staging rollout before gates."
+            "T1-R2 and T1-R3 remain in progress. ER-001 through ER-020 still require full certification.",
+            "T2-R1 client and mobile playtest with creator evidence remains pending before formal validation."
           ],
           "branch": "entre-reinos/t2-r1-world-regions",
           "pr": "https://github.com/Sllay/Roblox-Studios/pull/13",
-          "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45527372966",
-          "baselineReadbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45526678248",
+          "engineProbeRunUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45658231902",
+          "baselineReadbackUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45531334560",
           "baselineSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45525381881"
         },
         {
@@ -445,7 +445,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R1_isolated_preparation_T1_certification_pending",
+  "programStage": "T2_R1_integrated_candidate_T1_and_client_certification_pending",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
@@ -527,9 +527,9 @@
       "validated": 0
     },
     "t2": {
-      "planned": 21,
+      "planned": 17,
       "validated": 0,
-      "partial": 3
+      "partial": 7
     },
     "t3": {
       "planned": 14,
@@ -553,7 +553,7 @@
       "ER-020"
     ],
     "requirement": "All release requirements must have owner and real engine, mobile, save/load and human approval evidence; incomplete T1/T2 systems may not be pushed to T3.",
-    "next": "Certify T1 cumulatively and continue isolated T2-R1 preparation."
+    "next": "Keep PR 13 in draft while T1 certification and T2-R1 client and mobile evidence are pending."
   },
   "evidenceHistory": [
     {

@@ -44,10 +44,10 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 | ER-021 | T2-R1 | PARCIAL | Multi-bioma/multi-reino procedural por seed, rios/cachoeiras, relevo caminhável e localidades coerentes, persistência regional e geração estável em longa distância. |
 | ER-022 | T2-R1 | PARCIAL | Pontes provisórias/reforçadas com custos, workers, acesso por classes de NPC/montarias, travessia e rotas recalculadas ao destruir ponte. |
 | ER-023 | T2-R1 | PARCIAL | Grafo de rotas, navegação NPC/carga/expedição com margens, pontes, abrigos e bloqueio por raid; não caminhar através de água/estrutura sem permissão. |
-| ER-024 | T2-R1 | PLANEJADO | Streaming e simulação agregada de cidades longínquas, NPCs/estoques sem duplicação ao ativar/desativar regiões, custo previsível em mobile. |
-| ER-025 | T2-R1 | PLANEJADO | Montarias físicas, compra/domesticação, equipamento, stamina/vida, save, travessias e integração real aos controles/raids/rotas. |
-| ER-026 | T2-R1 | PLANEJADO | Portos/barco quando geografia requer e alternativa de fast travel solo funcional, não duplicar ou perder veículos/carga ao trocar região. |
-| ER-027 | T2-R1 | PLANEJADO | Segundo reino NPC e seus distritos/estruturas/pessoas/economia/território persistidos em mesmo mundo; dois reinos vivos sem duplicação. |
+| ER-024 | T2-R1 | PARCIAL | Streaming e simulação agregada de cidades longínquas, NPCs/estoques sem duplicação ao ativar/desativar regiões, custo previsível em mobile. |
+| ER-025 | T2-R1 | PARCIAL | Montarias físicas, compra/domesticação, equipamento, stamina/vida, save, travessias e integração real aos controles/raids/rotas. |
+| ER-026 | T2-R1 | PARCIAL | Portos/barco quando geografia requer e alternativa de fast travel solo funcional, não duplicar ou perder veículos/carga ao trocar região. |
+| ER-027 | T2-R1 | PARCIAL | Segundo reino NPC e seus distritos/estruturas/pessoas/economia/território persistidos em mesmo mundo; dois reinos vivos sem duplicação. |
 | ER-028 | T2-R2 | PLANEJADO | Todos ofícios-base: ferreiro, artesão, fazendeiro, caçador, transportador, guarda, arqueiro, lanceiro além dos atuais, com trabalho realmente executável. |
 | ER-029 | T2-R2 | PLANEJADO | Ferramentas e receitas registradas, forja/tecelagem/agricultura/refinamento/crafting/equipar, insumos → produto → transporte → consumo, UI interativa. |
 | ER-030 | T2-R2 | PLANEJADO | Skill XP/níveis e aprendizagem de profissão com efeito mensurável no trabalho, necessidades/fome/sono/sobrevivência, ferramentas/equipamentos usados e quebrados/repostos. |
@@ -152,3 +152,7 @@ Os estados canônicos ER-001–020 permanecem PARCIAIS enquanto as provas de jog
 ### Preparação regional de T2-R1
 
 ER-021 possui um campo regional determinístico no laboratório, com testes de continuidade e comparação com a v18. As fontes regionais são candidatas e a prova de simulação, população e jogo móvel permanece pendente. ER-022 e ER-023 têm cálculo de apoios e grafo de travessias com classes e invalidação. Entrega de materiais, construção física, reservas de capacidade e seguimento por NPC ainda precisam da integração. ER-024–027 continuam planejados. A avaliação favorável da fundação v18 convive com a certificação pendente de ER-001–020. [Recibo de preparação](runner-receipts/T2-R1.md)
+
+### Candidato integrado T2-R1 no PR #13
+
+O candidato liga ER-021–027 ao runtime da branch. A execução isolada no Roblox confirmou a extensão do Terrain sem alteração da v18, construção e ruína de ponte, passagem de trabalhador com carga, bloqueio de água profunda para o cavalo, travessia montada pela ponte reforçada, remonte e passagem para a região vizinha, navegação e carga no barco, recuperação da viagem rápida e migração de save com reabertura do segundo reino. Evidência em partida com cliente, mobile e aceite do criador continuam pendentes. Os sete contratos estão PARCIAIS. O aceite da v18 como fundação e a certificação incompleta de ER-001–020 continuam registrados separadamente. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45658252612) · [Motor Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/45658231902) · [Recibo](runner-receipts/T2-R1.md)
