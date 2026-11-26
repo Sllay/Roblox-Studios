@@ -50,6 +50,9 @@ local function probeRefinement(world,profile,scenery,combat,living,r3)
     combat.start(nil,state,folder)
     local duke=assert(folder:FindFirstChild("Story_duke"))
     local avatar=Instance.new("Part")
+    avatar.Anchored=true
+    avatar.Position=Vector3.new(0,155,0)
+    avatar.Parent=folder
     local ghostParts=0
     for _,part in ipairs(duke:GetDescendants()) do
         if part:IsA("BasePart") then
