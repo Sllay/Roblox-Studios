@@ -102,7 +102,7 @@ function UI.start(player: Player)
     topLimit.Parent=top
     top.BackgroundTransparency=0.14
     local vitals=label(top,"Vitals","DIA 1  ·  Moedas 0  ·  Flechas 12",13,C.paper)
-    vitals.Font=Enum.Font.GothamSemibold
+    vitals.Font=Enum.Font.GothamMedium
     vitals.TextXAlignment=Enum.TextXAlignment.Center
     vitals.Size=UDim2.new(1,-16,1,0)
 
@@ -300,7 +300,7 @@ function UI.start(player: Player)
     villTitle.TextColor3=C.paper
     local villHelp=rowText(villagersPage,"Help",
         "Dê ordens a partir do caderno. Para conversar ou presentear, aproxime-se do morador.",2,53)
-    local workerRows: {[number]: TextButton}={}
+    local workerRows: {[number]: TextButton?}={}
     local selectedNpcId=0
     local updateVillage: ()->()
     local selectedWorker=label(villagersPage,"Selected","Selecione um morador.",12,C.secondary)
@@ -425,6 +425,10 @@ function UI.start(player: Player)
     end
     local castle=panels.castle
     local tradeInfo=rowText(castle,"TradeInfo","",5,67)
+    local crossKingdom=button(castle,"CrossKingdom","VIAJAR ENTRE REINOS")
+    crossKingdom.LayoutOrder=9
+    crossKingdom.Size=UDim2.new(1,-12,0,42)
+    crossKingdom.Activated:Connect(function() request("travel","travel") end)
     local marketIndex=1
     local marketChoice=button(castle,"MarketChoice","")
     local buyGood=button(castle,"BuyGood","COMPRAR")
@@ -487,7 +491,7 @@ function UI.start(player: Player)
     end
     local function showTab(nextTab: string)
         tab=nextTab
-        tabs.Visible=panels[tab]==nil
+        tabs.Visible=siteLabels[tab]==nil
         for key,page in pairs(pages) do page.Visible=(key==tab) end
         for key,b in pairs(tabsUI) do
             b.BackgroundColor3=if key==tab then C.raised else C.surface
@@ -651,7 +655,7 @@ function UI.start(player: Player)
             local previous=pressedTree
             task.spawn(finishTree,previous)
         end
-        local press={treeId=contextTarget,at=os.clock(),duration=0}
+        local press: any={treeId=contextTarget,at=os.clock(),duration=0}
         pressedTree=press
         fill.Size=UDim2.fromScale(0,1)
         track.Visible=true
@@ -740,6 +744,13 @@ function UI.start(player: Player)
 
     end
 
+    local board=button(panels.dock,"BoardBoat","EMBARCAR")
+    board.LayoutOrder=7
+    board.Size=UDim2.new(1,-12,0,42)
+    board.Activated:Connect(function()
+        showJournal(false,nil)
+        request("travel","board")
+    end)
     local loadCargo=button(panels.dock,"BoatLoad","GUARDAR 1 MADEIRA NO BARCO")
     local unloadCargo=button(panels.dock,"BoatUnload","RETIRAR 1 MADEIRA DO BARCO")
     for index,control in ipairs({loadCargo,unloadCargo}) do
@@ -751,9 +762,11 @@ function UI.start(player: Player)
     unloadCargo.Activated:Connect(function() request("travel_cargo","unload") end)
 
     local function updateContext()
+        board.Visible=nearby.travel=="board"
+        crossKingdom.Visible=nearby.travel=="travel"
         loadCargo.Visible=type(nearby.boatCargo)=="number"
         unloadCargo.Visible=loadCargo.Visible
-        unloadCargo.Text="RETIRAR 1 MADEIRA DO BARCO · "..tostring(nearby.boatCargo or 0)
+        unloadCargo.Text="RETIRAR 1 MADEIRA DO BARCO · "..tostring((nearby.boatCargo :: any) or 0)
         local target=selectedContext
         contextKind=if target then target.kind else "none"
         contextTarget=if target then target.id else 0
@@ -774,6 +787,7 @@ function UI.start(player: Player)
     interactions.OnClientEvent:Connect(function(target: any)
         selectedContext=target
         updateContext()
+        if target and (target.kind=="dock" or target.kind=="structure") then task.defer(refreshStatus) end
     end)
     refreshContext=updateContext
 

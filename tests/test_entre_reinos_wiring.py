@@ -307,7 +307,7 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('RunService:BindToRenderStep("ER_CoinVFX"', ui)
         self.assertIn('remote:InvokeServer(action,arg)', ui)
         self.assertIn('root.Position.X', combat)
-        self.assertIn('local target,alpha=sweep(a.p,nextPos)', combat)
+        self.assertIn('local target,alpha=Combat.trace(a.p,nextPos)', combat)
         self.assertNotIn('DataStoreService', ui)
         self.assertNotIn('UpdateAsync(', ui)
         self.assertNotIn('Humanoid:TakeDamage(', ui)

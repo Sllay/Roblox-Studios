@@ -334,7 +334,7 @@ end
 
 -- Swept body volumes use the same authoritative pose as each R6 model.
 -- The first collidable part or Terrain stops the segment before enemy damage.
-local function sweep(origin: Vector3,goal: Vector3): (number?, number)
+function Combat.trace(origin: Vector3,goal: Vector3): (number?, number)
     local delta=goal-origin
     local distance=delta.Magnitude
     if distance<1e-6 then return nil,1 end
@@ -535,7 +535,7 @@ function Combat.action(player: Player,action: string,arg: any,population: any?):
         end
         local side=direction(root)
         local start=Vector3.new(root.Position.X-side*0.15,root.Position.Y,0)
-        local target=sweep(start,start+Vector3.new(side*(if mode=="spear" then 5.5 else 6),0,0))
+        local target=Combat.trace(start,start+Vector3.new(side*(if mode=="spear" then 5.5 else 6),0,0))
         local hit=target~=nil and R3.damageEnemy(state,target,16)
         return {ok=true,hit=hit,target=if hit then target else nil}
     elseif action=="bow_cancel" then
@@ -639,7 +639,7 @@ function Combat.tick(dt: number)
         a.age+=elapsed
         local nextVelocity=a.v+Vector3.new(0,-workspace.Gravity*elapsed,0)
         local nextPos=a.p+(a.v+nextVelocity)*0.5*elapsed
-        local target,alpha=sweep(a.p,nextPos)
+        local target,alpha=Combat.trace(a.p,nextPos)
         local impact=alpha<1
         if target then R3.damageEnemy(state,target,a.damage) end
         if impact or a.age>3 or math.abs(nextPos.X)>World.BOUNDS.xMax or nextPos.Y< -28 then

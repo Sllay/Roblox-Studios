@@ -168,7 +168,7 @@ local function presentInteraction(player: Player)
                 if travel=="dismount" or travel=="disembark" then -29 else if travel=="travel" then 5 else -2)
         end
         if Travel.cargoAvailable(player,root)~=nil then
-            offer("dock","dock","Doca",Travel.interactionPoint("dock",root),9,1)
+            offer("dock","dock","Doca",Travel.interactionPoint("dock",root),9,-8)
         end
         for _,b in ipairs(state.buildings) do
             local gate=b.typeId=="gate" and b.health>0 and (b.state=="complete" or b.state=="damaged")
@@ -1165,8 +1165,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         end
         if overview.market and root and root:IsA("BasePart") then
             local center=Market.center(state)
-            nearby.marketHere=center~=nil and math.abs(root.Position.X-center.x)<=18
-                and math.abs(root.Position.Y-center.y-3)<=10
+            nearby.marketHere=center~=nil and accessible(root,structurePoint(center),14)
             nearby.canContract=regional.record.discovered["2"]==true
             nearby.relations=Market.relations(regional)
             nearby.canManage=state==regional.home or (nearby.relations and nearby.relations.accord=="alliance")

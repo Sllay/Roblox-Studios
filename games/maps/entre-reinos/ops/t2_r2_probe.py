@@ -1,4 +1,4 @@
-"""Run village domain suites and synthetic DataStore in a disposable v19 session."""
+"""Run village domain suites and synthetic DataStore in a disposable v20 session."""
 
 import json
 import os
@@ -34,6 +34,12 @@ def bundle_source():
                                f'local {variable} = loadCandidate("{name}")', saves, count=1)
         assert count == 1, variable
 
+    services = {}
+    for service in ("WorldService", "CombatService"):
+        source = (MODULES.parent / f"ServerScriptService/Services/{service}.luau").read_text()
+        source = re.sub(r'require\([^\n]+:WaitForChild\("([\w]+)"\)\)', r'loadCandidate("\1")', source)
+        services[service] = f"local function load{service}()\n{source}\nend"
+
     tests = ("production", "food", "market", "relationships", "regions", "soak")
     suites = [
         f'local start_{name}=os.clock()\ndo\n{candidate((TESTS / f"society_{name}.luau").read_text())}\nend\n'
@@ -41,7 +47,7 @@ def bundle_source():
         for name in tests
     ]
     return "\n".join([
-        'assert(game.PlaceVersion==19,"Unexpected published staging baseline")',
+        'assert(game.PlaceVersion==20,"Unexpected published staging baseline")',
         'local modules,cache={},{}',
         'local function loadCandidate(name)\n'
         ' if cache[name]==nil then cache[name]=assert(modules[name],name)() end\n'
@@ -50,6 +56,10 @@ def bundle_source():
         f'local function loadSaveService(game)\n{saves}\nend',
         'local report={universeId=tostring(game.GameId),placeId=tostring(game.PlaceId),milliseconds={}}',
         *suites,
+        *services.values(),
+        (TESTS / "staging_v20_refinement.luau").read_text(),
+        'report.refinement=probeRefinement(loadWorldService(),loadCandidate("RegionalProfile"),'
+        'loadCandidate("SceneryProfile"),loadCombatService(),loadCandidate("LivingModel"),loadCandidate("R3Engine"))',
         f'local function datastoreProbe()\n{(TESTS / "staging_society_datastore.luau").read_text()}\nend',
         'report.datastore=datastoreProbe()',
         'return game:GetService("HttpService"):JSONEncode(report)',
@@ -61,7 +71,8 @@ if __name__ == "__main__":
     assert cfg["universeId"] == "10769712413" and cfg["placeIds"]["main"] == "90623742498445"
     result = run_task(cfg["universeId"], cfg["placeIds"]["main"],
                       os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], bundle_source())
-    assert result["loadedVersion"] == 19
+    assert result["loadedVersion"] == 20
     assert result["datastore"]["backupRestored"] and result["datastore"]["replyRetry"]
     assert result["datastore"]["newRuleset"] == 5
+    assert result["refinement"]["nativeLegacyUnchanged"] == 9216
     print("ENTRE_REINOS_T2_R2_PROBE", json.dumps(result, sort_keys=True))

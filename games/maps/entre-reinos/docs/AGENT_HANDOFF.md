@@ -371,3 +371,5 @@ O candidato `c905eca3437ecd124c6afac6cce0df21df31f8e1` foi publicado no staging 
 ## 26/11/2026 — Refino profundo após o playtest da v20
 
 O feedback da v20 cobre interface mobile, hotbars, alvos e estrutura contextual, ordens remotas, congestionamento, evacuação, hitboxes, duque e guardas, streaming antecipado e profundidade aquática/florestal. Manter o PR #14, os contratos da economia regional e os saves; suspender T2-R3. Trabalhar em A interface, B estruturas e ordens, C multidões, D combate e evacuação, E mundo e F integração/provas. [Feedback integral](VISION_MASTER.md#26112026--refinamento-do-playtest-v20) · [Decisões](DECISION_LOG.md#26112026--feedback-da-v20-e-escopo-do-refinamento)
+
+O candidato de refinamento está no PR #14, com recibo por checkpoint e provas separadas para Luau e Roblox. As ordens de equipamento e a revisão da paisagem adicionam campos opcionais ou dados derivados ao ruleset 5. A área jogável conserva a geração regional 2. O staging continua na v20 e a autorização registrada para a publicação anterior é específica para o candidato econômico original. [Recibo do refinamento](runner-receipts/T2-R2-v20-refino.md)

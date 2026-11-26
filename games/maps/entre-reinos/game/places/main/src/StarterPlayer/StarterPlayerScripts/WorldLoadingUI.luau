@@ -76,7 +76,7 @@ function WorldLoadingUI.start(player: Player, remote: RemoteFunction, onReady: (
     back.Name = "ReturnLobby"
     back.Text = "Voltar ao lobby"
     back.TextSize = 16
-    back.Font = Enum.Font.GothamSemibold
+    back.Font = Enum.Font.GothamMedium
     back.TextColor3 = Color3.fromRGB(245, 244, 232)
     back.BackgroundColor3 = Color3.fromRGB(72, 94, 76)
     back.Size = UDim2.new(0.46, 0, 0, 40)

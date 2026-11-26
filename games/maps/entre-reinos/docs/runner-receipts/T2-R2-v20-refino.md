@@ -35,3 +35,10 @@ Referências revisadas · [Position and size](https://create.roblox.com/docs/ui/
 - A paisagem usa o relevo e os cursos d'água existentes como referência. As novas cabeceiras sobem em trechos graduais, com cascatas tridimensionais perto da primeira fileira. Uma faixa de água frontal recebe os canais. Vegetação decorativa determinística varia por bioma, inclinação e distância.
 - A câmera e o servidor usam o mesmo limite de enquadramento. O servidor prepara terreno à frente com base na velocidade. O cliente solicita streaming adiantado em intervalos limitados. A viagem rápida prepara o destino antes da confirmação.
 - Luau comparou amostras jogáveis, extremidades, água frontal, elevação em Z e vegetação em três seeds. As 26 verificações Python específicas passaram. Visibilidade antes da transição, continuidade percebida e custo de renderização dependem de partida real.
+
+## F — Integração
+
+- Os commits `da2763f`, `8a2eda1`, `2a6e86c`, `fca7d22` e `28d39b8` entregam os checkpoints A–E no PR #14. O checkpoint F conecta viagens e embarque às páginas físicas, cobra reservas na hotbar e corrige a fonte aplicada à interface.
+- Foram executados validadores de workspace e deploy, compilação Luau, Quality Gate V2, 171 testes Python, build Rojo e suítes Luau de produção, alimentação, mercado, regiões, pontes, combate e terreno.
+- O probe de candidato na v20 verifica os voxels antigos antes e depois da expansão, o Terrain nos dois horizontes, água frontal, orientação e colisão do prólogo, volumes R6 e oclusão física. O probe usa sessão descartável e o namespace isolado de DataStore já estabelecido.
+- A autorização anterior identificava o SHA `c905eca` e a substituição da v19 pela v20. A publicação deste refinamento depende de autorização específica para o novo candidato, workflow e baseline v20. T2-R3 segue suspensa.

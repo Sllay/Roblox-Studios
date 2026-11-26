@@ -3,8 +3,8 @@
   "project": "entre-reinos",
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
-  "recordedAt": "2026-11-25",
-  "note": "The authorized T2-R2 development preview is live on the existing Entre Reinos staging v20. API confirmation, independent script hashes and post-publish Scene Sync passed. Creator playtest and formal certification remain open.",
+  "recordedAt": "2026-11-26",
+  "note": "Staging v20 remains the published preview. Creator feedback triggered a mobile, NPC, combat and world refinement on the existing draft PR #14.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -432,6 +432,14 @@
             "rollbackArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249/artifacts/15073386602",
             "evidenceArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249/artifacts/15073622153",
             "playUrl": "https://www.roblox.com/games/90623742498445"
+          },
+          "v20Refinement": {
+            "status": "in_progress",
+            "receipt": "docs/runner-receipts/T2-R2-v20-refino.md",
+            "stagingBaseline": 20,
+            "requiresCreatorPreviewAuthorization": true,
+            "clientMobile": "awaiting_candidate_playtest",
+            "nextRunner": "blocked_pending_refinement"
           }
         },
         {
@@ -518,7 +526,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R2_staging_preview_published_awaiting_creator_playtest",
+  "programStage": "T2_R2_v20_refinement_in_progress",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",

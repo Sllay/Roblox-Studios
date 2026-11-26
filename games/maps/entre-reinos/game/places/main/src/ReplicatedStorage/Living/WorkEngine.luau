@@ -1180,6 +1180,9 @@ function Engine.summary(state: any): any
             if npc.state=="gather" and npc.storageId and usable[npc.storageId] and npc.carryItem then
                 claims[npc.carryItem]=(claims[npc.carryItem] or 0)+npc.reserved
             end
+            if npc.gearOrder and usable[npc.gearDepot] and (npc.gearUntil or 0)>state.elapsed then
+                claims[npc.gearOrder]=(claims[npc.gearOrder] or 0)+1
+            end
             for item,count in pairs(npc.inventory.items) do
                 local committed=if npc.carryItem==item and (npc.state=="deliver" or npc.state=="store_deliver")
                     then math.min(npc.reserved,count) else 0
@@ -1207,7 +1210,8 @@ function Engine.summary(state: any): any
             committed[item]=(committed[item] or 0)+count
         end
     end
-    for item,def in pairs(Items.all) do
+    for item in pairs(Items.all) do
+        local def=Items.get(item)
         local stock=math.max(0,(deposited[item] or 0)-(claims[item] or 0))+(held[item] or 0)
         quickStock[item]={stock=stock,capacity=stock+math.floor(math.max(0,freeMass)/def.mass)}
     end

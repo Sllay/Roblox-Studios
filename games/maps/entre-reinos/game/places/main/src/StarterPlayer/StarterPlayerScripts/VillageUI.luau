@@ -42,7 +42,7 @@ local function button(parent: Instance,name: string,title: string): TextButton
     local b=Instance.new("TextButton")
     b.Name=name
     b.Text=title
-    b.Font=Enum.Font.GothamSemibold
+    b.Font=Enum.Font.GothamMedium
     b.TextSize=12
     b.TextColor3=C.paper
     b.BackgroundColor3=C.raised

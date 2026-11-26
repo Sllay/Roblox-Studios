@@ -53,7 +53,7 @@ local function actionButton(parent: Instance,name: string,caption: string): Text
     local button=Instance.new("TextButton")
     button.Name=name
     button.Text=caption
-    button.Font=Enum.Font.GothamSemibold
+    button.Font=Enum.Font.GothamMedium
     button.TextSize=13
     button.TextColor3=cream
     button.BackgroundColor3=Color3.fromRGB(50,64,54)
@@ -282,7 +282,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         stroke.Parent=card
 
         local title=text(card,def.label,15,cream)
-        title.Font=Enum.Font.GothamSemibold
+        title.Font=Enum.Font.GothamMedium
         title.Position=UDim2.fromOffset(13,7)
         title.Size=UDim2.new(1,-74,0,24)
         local marker=text(card,"LOCAR",10,amber)

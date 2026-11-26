@@ -22,7 +22,7 @@ local function button(parent: Instance, name: string, text: string, size: UDim2,
     local b = Instance.new("TextButton")
     b.Name = name
     b.Text = text
-    b.Font = Enum.Font.GothamSemibold
+    b.Font = Enum.Font.GothamMedium
     b.TextSize = 16
     b.TextScaled = false
     b.TextColor3 = Color3.fromRGB(245, 246, 232)
