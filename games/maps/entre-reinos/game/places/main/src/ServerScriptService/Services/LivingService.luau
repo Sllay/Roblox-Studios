@@ -1111,7 +1111,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
     if action=="arm_defender" and state~=regional.home then
         return Combat.action(player,action,arg,state)
     end
-    if action=="attack" or action=="bow_begin" or action=="bow_release" or action=="bow_cancel"
+    if action=="attack" or action=="tool_use" or action=="bow_begin" or action=="bow_release" or action=="bow_cancel"
         or action=="select_weapon" or action=="duke_talk" or action=="duke_accept" or action=="duke_close"
         or action=="drop_coin"
         or action=="pickup_coin" or action=="arm_defender"

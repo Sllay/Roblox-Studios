@@ -239,3 +239,11 @@ Correção v9 em desenvolvimento:
 
 - [AUTORIZADO PELO CRIADOR] Publicar o candidato `c905eca3437ecd124c6afac6cce0df21df31f8e1` do PR #14 no staging existente, Universe `10769712413`, Place `90623742498445`, substituindo a v19.
 - [AUTORIZADO PELO CRIADOR] Migrar saves compatíveis de ruleset 4 para 5 com backup por slot, preservando os seis slots. A autorização exclui deleção de saves e publicação em produção. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r2)
+
+## 26/11/2026 — Feedback da v20 e escopo do refinamento
+
+- [FIXADO PELO CRIADOR] Redesign mobile compartilhado, hotbars superior e inferior, alvo contextual na direção, controles circulares, acesso físico a telas de estrutura, e ordens remotas autorizadas com retirada física de equipamento.
+- [FIXADO PELO CRIADOR] Separar navegação, filas e apresentação. Corrigir congestionamento, ausência de progresso e pausas; civis precisam reagir à ameaça real e defensores à própria função.
+- [FIXADO PELO CRIADOR] Corrigir volumes de dano, voo contínuo de projéteis, colisão do duque e orientação/hesitação dos guardas. Preservar roteiro e alcance.
+- [FIXADO PELO CRIADOR] Geração antecipada, dois chunks decorativos nas extremidades e três camadas elevadas em Z. Faixa frontal visual de água com continuidade dos rios. Preservar corredor, pontes, seed e saves.
+- [ESTADO] Checkpoints A–F no PR #14. Staging v20 fica como baseline até nova publicação autorizada. A próxima temporada aguarda a validação. [Especificação integral](VISION_MASTER.md#26112026--refinamento-do-playtest-v20)

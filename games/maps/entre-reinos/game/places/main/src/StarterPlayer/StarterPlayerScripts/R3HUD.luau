@@ -18,17 +18,9 @@ local Ballistics=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Li
 local UI={}
 local started=false
 
-local C={
-    background=Color3.fromRGB(26,38,33),
-    surface=Color3.fromRGB(39,57,46),
-    raised=Color3.fromRGB(49,71,55),
-    stroke=Color3.fromRGB(132,143,104),
-    paper=Color3.fromRGB(248,236,203),
-    secondary=Color3.fromRGB(192,199,175),
-    gold=Color3.fromRGB(230,184,97),
-    danger=Color3.fromRGB(208,110,100),
-    positive=Color3.fromRGB(149,202,147),
-}
+local Style=require(script.Parent:WaitForChild("VillageUI"))
+local Hotbars=require(script.Parent:WaitForChild("Hotbars"))
+local C=Style.colors
 local resourceNames={wood="Madeira",stone="Pedra",iron="Ferro",food="Alimento"}
 local resourceOrder={"wood","stone","iron","food"}
 local errorTexts={
@@ -80,81 +72,7 @@ local errorTexts={
     world_not_loaded="O mundo está carregando.",
 }
 
-local function rounded(parent: Instance,radius: number,border: boolean?)
-    local corner=Instance.new("UICorner")
-    corner.CornerRadius=UDim.new(0,radius)
-    corner.Parent=parent
-    if border then
-        local stroke=Instance.new("UIStroke")
-        stroke.Color=C.stroke
-        stroke.Transparency=0.48
-        stroke.Thickness=1
-        stroke.Parent=parent
-    end
-end
-local function label(parent: Instance,name: string,content: string,
-        fontSize: number,color: Color3): TextLabel
-    local t=Instance.new("TextLabel")
-    t.Name=name
-    t.BackgroundTransparency=1
-    t.Text=content
-    t.Font=Enum.Font.Gotham
-    t.TextSize=fontSize
-    t.TextColor3=color
-    t.TextWrapped=true
-    t.TextXAlignment=Enum.TextXAlignment.Left
-    t.TextYAlignment=Enum.TextYAlignment.Center
-    t.Parent=parent
-    return t
-end
-local function button(parent: Instance,name: string,title: string): TextButton
-    local b=Instance.new("TextButton")
-    b.Name=name
-    b.Text=title
-    b.Font=Enum.Font.GothamSemibold
-    b.TextSize=12
-    b.TextColor3=C.paper
-    b.BackgroundColor3=C.raised
-    b.BorderSizePixel=0
-    b.AutoButtonColor=true
-    b.Parent=parent
-    rounded(b,9,true)
-    return b
-end
-local function panel(parent: Instance,name: string,bg: Color3): Frame
-    local f=Instance.new("Frame")
-    f.Name=name
-    f.BackgroundColor3=bg
-    f.BorderSizePixel=0
-    f.Parent=parent
-    rounded(f,11,true)
-    return f
-end
-local function scroll(parent: Instance,name: string): ScrollingFrame
-    local f=Instance.new("ScrollingFrame")
-    f.Name=name
-    f.BackgroundTransparency=1
-    f.ScrollBarThickness=3
-    f.BorderSizePixel=0
-    f.Size=UDim2.fromScale(1,1)
-    f.CanvasSize=UDim2.fromOffset(0,0)
-    f.Parent=parent
-    local l=Instance.new("UIListLayout")
-    l.SortOrder=Enum.SortOrder.LayoutOrder
-    l.Padding=UDim.new(0,8)
-    l.Parent=f
-    l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        f.CanvasSize=UDim2.fromOffset(0,l.AbsoluteContentSize.Y+12)
-    end)
-    return f
-end
-local function rowText(parent: Instance,name: string,content: string,
-        order: number,height: number): TextLabel
-    local t=label(parent,name,content,12,C.secondary)
-    t.LayoutOrder=order
-    t.Size=UDim2.new(1,-12,0,height)
-    return t
-end
+local label,button,panel,scroll,rowText=Style.label,Style.button,Style.panel,Style.scroll,Style.rowText
 
 function UI.start(player: Player)
     if started then return end
@@ -176,8 +94,8 @@ function UI.start(player: Player)
     -- A short top strip; everything else is either contextual or collapsible.
     local top=panel(gui,"KingdomVitals",C.background)
     top.AnchorPoint=Vector2.new(1,0)
-    top.Position=UDim2.new(1,-10,0,7)
-    top.Size=UDim2.new(1,-105,0,35)
+    top.Position=UDim2.new(1,-10,0,57)
+    top.Size=UDim2.fromOffset(138,29)
     local topLimit=Instance.new("UISizeConstraint")
     topLimit.MaxSize=Vector2.new(432,35)
     topLimit.Parent=top
@@ -187,40 +105,31 @@ function UI.start(player: Player)
     vitals.TextXAlignment=Enum.TextXAlignment.Center
     vitals.Size=UDim2.new(1,-16,1,0)
 
-    local stockBar=panel(gui,"VillageStock",C.background)
-    stockBar.AnchorPoint=Vector2.new(0.5,0)
-    stockBar.Position=UDim2.new(0.5,0,0,49)
-    stockBar.Size=UDim2.new(1,-22,0,25)
-    local stockLimit=Instance.new("UISizeConstraint")
-    stockLimit.MaxSize=Vector2.new(450,25)
-    stockLimit.Parent=stockBar
-    stockBar.BackgroundTransparency=0.2
-    local stock=label(stockBar,"Stock","FONTES DA VILA  ·  consultando…",11,C.secondary)
-    stock.Size=UDim2.new(1,-12,1,0)
-    stock.TextXAlignment=Enum.TextXAlignment.Center
+    local stock=Hotbars.resources(gui)
 
     local openJournal=button(gui,"VillageButton","VILA")
-    openJournal.Position=UDim2.fromOffset(12,7)
-    openJournal.Size=UDim2.fromOffset(76,35)
+    openJournal.Position=UDim2.fromOffset(12,57)
+    openJournal.Size=UDim2.fromOffset(76,42)
     openJournal.BackgroundColor3=C.background
 
     local journal=panel(gui,"VillageJournal",C.background)
-    journal.Position=UDim2.fromOffset(12,48)
+    journal.Position=UDim2.fromOffset(11,90)
     journal.Size=UDim2.new(0,300,0.70,0)
     journal.Visible=false
     journal.ClipsDescendants=true
     local maxSize=Instance.new("UISizeConstraint")
     maxSize.MaxSize=Vector2.new(310,490)
-    maxSize.MinSize=Vector2.new(240,225)
+    maxSize.MinSize=Vector2.new(210,112)
     maxSize.Parent=journal
+    Style.fitJournal(gui,journal)
     local head=label(journal,"JournalTitle","CADERNO DA VILA",16,C.paper)
     head.Font=Enum.Font.GothamBold
-    head.Position=UDim2.fromOffset(15,8)
+    head.Position=UDim2.fromOffset(15,7)
     head.Size=UDim2.new(1,-61,0,33)
     local close=button(journal,"Close","×")
     close.AnchorPoint=Vector2.new(1,0)
-    close.Position=UDim2.new(1,-10,0,10)
-    close.Size=UDim2.fromOffset(29,29)
+    close.Position=UDim2.new(1,-7,0,5)
+    close.Size=UDim2.fromOffset(42,42)
     close.BackgroundColor3=C.surface
 
     local tabs=Instance.new("Frame")
@@ -366,7 +275,7 @@ function UI.start(player: Player)
     local cedroRoute=rowText(resourcesPage,"CedroRoute","",2,36)
     cedroRoute.Visible=false
     local resHint=rowText(resourcesPage,"Hint",
-        "Fontes são depósitos naturais; bolsas são materiais que NPCs estão carregando. Recursos aplicados às obras não estão mais livres.",3,58)
+        "Barra: bolsa pessoal / estoque livre (galpões e moradores vivos) / máximo livre considerando o espaço restante. Reservas ficam separadas.",3,58)
     resHint.TextColor3=C.secondary
     local resourceCards: {[string]: TextLabel}={}
     for i,id in ipairs(resourceOrder) do
@@ -601,21 +510,14 @@ function UI.start(player: Player)
     combat.Name="CombatControls"
     combat.BackgroundTransparency=1
     combat.AnchorPoint=Vector2.new(1,0.5)
-    combat.Position=UDim2.new(1,-10,0.60,0)
-    combat.Size=UDim2.fromOffset(114,106)
+    combat.Position=UDim2.new(1,-12,0.59,0)
+    combat.Size=UDim2.fromOffset(62,62)
     combat.Parent=gui
-    local sword=button(combat,"SwordSlot","1 ESPADA")
-    sword.Size=UDim2.fromOffset(56,44)
-    sword.TextSize=10
-    local bow=button(combat,"BowSlot","2 ARCO")
-    bow.Position=UDim2.fromOffset(58,0)
-    bow.Size=UDim2.fromOffset(56,44)
-    bow.TextSize=10
     local attack=button(combat,"Attack","ATACAR")
-    attack.Position=UDim2.fromOffset(0,49)
-    attack.Size=UDim2.fromOffset(114,48)
+    attack.Size=UDim2.fromScale(1,1)
     attack.BackgroundColor3=Color3.fromRGB(105,65,48)
-    attack.TextSize=12
+    attack.TextSize=11
+    Style.roundAction(attack)
 
     local function call(action: string,arg: any): any
         local ok,result=pcall(function() return remote:InvokeServer(action,arg) end)
@@ -628,15 +530,17 @@ function UI.start(player: Player)
         end
         return result
     end
-    local cancelAttack=WeaponControls.mount(player,attack,sword,bow,call,notify)
+    local weapons=WeaponControls.mount(player,gui,attack,call,notify)
 
     local interact=button(gui,"ContextAction","INTERAGIR")
     interact.AnchorPoint=Vector2.new(1,1)
-    interact.Position=UDim2.new(1,-10,0.60,-58)
-    interact.Size=UDim2.fromOffset(114,46)
+    interact.Position=UDim2.new(1,-12,0.59,-40)
+    interact.Size=UDim2.fromOffset(62,62)
+    Style.roundAction(interact)
     interact.TextSize=10
     interact.BackgroundColor3=C.surface
     interact.Visible=false
+    Style.fitActions(gui,combat,interact)
     local track=Instance.new("Frame")
     track.Position=UDim2.new(0,6,1,-5)
     track.Size=UDim2.new(1,-12,0,2)
@@ -659,7 +563,8 @@ function UI.start(player: Player)
         local open=not talking and not journal.Visible and player:GetAttribute("ER_LocalPlacement")~=true
         combat.Visible=open
         attack.Visible=open
-        if not open then cancelAttack() end
+        weapons.show(open)
+        if not open then weapons.cancel() end
         interact.Visible=open and contextKind~="none"
         openJournal.Visible=not talking
     end
@@ -784,7 +689,7 @@ function UI.start(player: Player)
 
     local warning=label(gui,"RaidBanner","",12,C.gold)
     warning.AnchorPoint=Vector2.new(0.5,0)
-    warning.Position=UDim2.new(0.5,0,0,78)
+    warning.Position=UDim2.new(0.5,0,0,86)
     warning.Size=UDim2.new(1,-24,0,42)
     warning.TextWrapped=true
     local maxWarning=Instance.new("UISizeConstraint")
@@ -801,14 +706,12 @@ function UI.start(player: Player)
         local day=player:GetAttribute("ER_R3Day") or 1
         local night=player:GetAttribute("ER_R3Night")==true
         local wallet=player:GetAttribute("ER_R3Wallet") or 0
-        local arrows=player:GetAttribute("ER_R3Arrows") or 0
         local enemies=player:GetAttribute("ER_R3Enemies") or 0
         local phase=player:GetAttribute("ER_R3Phase") or "sandbox"
         local isRaid=player:GetAttribute("ER_R3Raid")==true
         local message=player:GetAttribute("ER_R3Warning")
-        vitals.Text="DIA "..tostring(day)..(if night then " · NOITE" else " · SOL")..
-            " · MOEDAS "..tostring(wallet).." · FLECHAS "..tostring(arrows)..
-            " · BOLSA MAD "..tostring(hud.playerWood or 0)
+        Style.text(vitals,"Dia "..tostring(day)..(if night then " · Noite" else "")
+            .."  ·  "..tostring(wallet).." moedas")
         if type(message)~="string" then message="" end
         local recovering=player:GetAttribute("ER_Recovering")==true
         warning.Visible=recovering or phase~="sandbox" or isRaid
@@ -881,9 +784,6 @@ function UI.start(player: Player)
         elseif (nearby.wood or 0)>=2 then
             contextKind="wood"
             interact.Text="PEGAR MADEIRA"
-        elseif (hud.playerWood or 0)>=2 and (hud.arrows or 0)<=24 then
-            contextKind="craft"
-            interact.Text="CRIAR FLECHAS"
         elseif nearby.canTrade then
             contextKind="market"
             interact.Text="MERCADO"
@@ -907,18 +807,8 @@ function UI.start(player: Player)
         local committed=if resources then resources.committed else nil
         local stocked=if resources then resources.stored else nil
         local isolated=if resources then resources.isolated else nil
-        if not sources then
-            stock.Text="FONTES DA VILA  ·  consultando..."
-        else
-            stock.Text=(nearby.district or "Vila").."  ·  MADEIRA "..tostring(sources.wood or 0).."+"..
-                tostring(if stocked then stocked.wood or 0 else 0)..
-                "   PEDRA "..tostring(sources.stone or 0)..
-                "   FERRO "..tostring(sources.iron or 0)..
-                "   COMIDA "..tostring(sources.food or 0)
-        end
-        if (nearby.localThreats or 0)>0 then
-            stock.Text=(nearby.district or "Vila").." · "..tostring(nearby.localThreats).." ameaças próximas"
-        end
+        stock.update(hud.playerItems,if snapshot then snapshot.quickStock else nil)
+        weapons.update(hud.playerItems)
         for _,item in ipairs(resourceOrder) do
             local t=resourceCards[item]
             t.Text=(resourceNames[item] or item)..

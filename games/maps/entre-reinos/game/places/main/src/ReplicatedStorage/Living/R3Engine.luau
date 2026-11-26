@@ -740,6 +740,7 @@ end
 function R3.summary(state: any): any
     local d=state.r3
     return {wallet=d.wallet,treasury=d.treasury,arrows=d.arrows,
+        playerItems=if d.playerBag then table.clone(d.playerBag.items) else {},
         playerWood=if d.playerBag then Inventory.count(d.playerBag,"wood") else 0,
         bagMass=if d.playerBag then Inventory.weight(d.playerBag) else 0,
         bagCapacity=if d.playerBag then d.playerBag.maxMass else 24,

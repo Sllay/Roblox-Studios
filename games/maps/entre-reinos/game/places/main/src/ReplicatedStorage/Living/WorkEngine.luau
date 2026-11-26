@@ -1037,6 +1037,17 @@ function Engine.summary(state: any): any
     local reserved={wood=0,stone=0,iron=0,food=0}
     local committed={wood=0,stone=0,iron=0,food=0}
     local deposited={wood=0,stone=0,iron=0,food=0}
+    local quickStock: {[string]:any}={}
+    local freeMass=0
+    local held: {[string]:number}={}
+    local claims: {[string]:number}={}
+    local usable: {[number]:boolean}={}
+    for _,b in ipairs(state.buildings) do
+        if Engine.usableStorage(b) then
+            usable[b.id]=true
+            freeMass+=b.stored.maxMass-Inventory.weight(b.stored)
+        end
+    end
     local isolated={wood=0,stone=0,iron=0,food=0}
     for _,site in ipairs(state.sites) do
         sources[site.item]=(sources[site.item] or 0)+site.remaining
@@ -1045,6 +1056,17 @@ function Engine.summary(state: any): any
         end
     end
     for _,npc in ipairs(state.npcs) do
+        if npc.health>0 then
+            freeMass+=npc.inventory.maxMass-Inventory.weight(npc.inventory)
+            if npc.state=="gather" and npc.storageId and usable[npc.storageId] and npc.carryItem then
+                claims[npc.carryItem]=(claims[npc.carryItem] or 0)+npc.reserved
+            end
+            for item,count in pairs(npc.inventory.items) do
+                local committed=if npc.carryItem==item and (npc.state=="deliver" or npc.state=="store_deliver")
+                    then math.min(npc.reserved,count) else 0
+                held[item]=(held[item] or 0)+count-committed
+            end
+        end
         for item,count in pairs(npc.inventory.items) do
             local account=if npc.health<=0 then isolated else carried
             account[item]=(account[item] or 0)+count
@@ -1065,6 +1087,10 @@ function Engine.summary(state: any): any
         for item,count in pairs(b.delivered) do
             committed[item]=(committed[item] or 0)+count
         end
+    end
+    for item,def in pairs(Items.all) do
+        local stock=math.max(0,(deposited[item] or 0)-(claims[item] or 0))+(held[item] or 0)
+        quickStock[item]={stock=stock,capacity=stock+math.floor(math.max(0,freeMass)/def.mass)}
     end
     local buildings={}
     local districts={}
@@ -1103,7 +1129,7 @@ function Engine.summary(state: any): any
         for _,order in ipairs(state.production.orders) do table.insert(orders,table.clone(order)) end
         production={orders=orders,completed=state.production.completed,focusFood=state.production.focusFood==true}
     end
-    return {buildings=buildings,workers=workers,districts=districts,stats=table.clone(state.stats),production=production,market=Market.summary(state,Engine),
+    return {buildings=buildings,workers=workers,districts=districts,stats=table.clone(state.stats),production=production,market=Market.summary(state,Engine),quickStock=quickStock,
         resources={sources=sources,carried=carried,reserved=reserved,
             committed=committed,stored=deposited,isolated=isolated,markedTrees=markedTrees}}
 end

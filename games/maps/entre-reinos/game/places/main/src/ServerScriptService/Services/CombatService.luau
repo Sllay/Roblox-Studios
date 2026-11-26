@@ -9,6 +9,8 @@ local living=ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living")
 local Trajectory=require(living:WaitForChild("Trajectory"))
 local Ballistics=require(living:WaitForChild("Ballistics"))
 local Structures=require(living:WaitForChild("StructureDefs"))
+local Quick=require(living:WaitForChild("QuickItems"))
+local Inventory=require(living:WaitForChild("Inventory"))
 local Combat={}
 local owner: Player?=nil
 local state: any=nil
@@ -362,8 +364,10 @@ local function equipAvatar(root: BasePart): Trail?
     local hand=character:FindFirstChild("Right Arm")
     if not hand or not hand:IsA("BasePart") then return nil end
     local grip=CFrame.new(0,-0.72,-0.24)*CFrame.Angles(-math.pi/2,0,0)
-    local blade=costume(character,"ER_PlayerWeapon",hand,
-        if equipped=="sword" then Vector3.new(0.31,2.4,0.16) else Vector3.new(0.18,1.5,0.2),
+    local size=if equipped=="spear" then Vector3.new(0.17,3.4,0.17)
+        elseif equipped=="sword" then Vector3.new(0.31,2.4,0.16)
+        elseif equipped=="food" then Vector3.new(0.48,0.32,0.48) else Vector3.new(0.18,1.5,0.2)
+    local blade=costume(character,"ER_PlayerWeapon",hand,size,
         grip*CFrame.new(0,1.2,0),if equipped=="sword" then Color3.fromRGB(206,213,201)
             else Color3.fromRGB(137,89,43))
     blade:SetAttribute("Mode",equipped)
@@ -375,6 +379,11 @@ local function equipAvatar(root: BasePart): Trail?
         end
         return nil
     end
+    if equipped=="axe" or equipped=="spear" then
+        costume(character,"Head",blade,if equipped=="axe" then Vector3.new(0.65,0.42,0.12) else Vector3.new(0.2,0.62,0.16),
+            CFrame.new(0,size.Y/2,0),Color3.fromRGB(188,198,186)).Parent=blade
+        return nil
+    elseif equipped=="food" then return nil end
     blade.Material=Enum.Material.Metal
     costume(character,"Hilt",blade,Vector3.new(0.74,0.14,0.25),
         CFrame.new(0,-1.15,0),Color3.fromRGB(160,111,55)).Parent=blade
@@ -449,15 +458,31 @@ function Combat.action(player: Player,action: string,arg: any,population: any?):
     if dialogue then return {ok=false,error="dialogue_open"} end
     if action=="r3_status" then return {ok=true,data=R3.summary(state)} end
     if action=="select_weapon" then
-        if arg~="sword" and arg~="bow" then return {ok=false,error="invalid_weapon"} end
+        if not Quick.owned(arg,state.r3.playerBag) then return {ok=false,error="invalid_weapon"} end
         if not allowed("weapon",0.18) then return {ok=false,error="rate_limited"} end
         charge=nil
         equipped=arg
         equipAvatar(root)
         return {ok=true}
     end
+    if action=="tool_use" then
+        if not Quick.owned(equipped,state.r3.playerBag) or not allowed("tool",0.8) then
+            return {ok=false,error="action_unavailable"}
+        end
+        if equipped=="food" and h.Health<h.MaxHealth and Inventory.take(state.r3.playerBag,"food",1) then
+            h.Health=math.min(h.MaxHealth,h.Health+15)
+            return {ok=true}
+        elseif equipped=="axe" then
+            local ok,value=R3.takeWood(state,root.Position.X,root.Position.Y)
+            return {ok=ok,error=if not ok then value else nil}
+        end
+        return {ok=false,error="action_unavailable"}
+    end
     if action=="attack" then
-        if equipped~="sword" then return {ok=false,error="invalid_weapon"} end
+        local mode=equipped
+        if (mode~="sword" and mode~="spear") or not Quick.owned(mode,state.r3.playerBag) then
+            return {ok=false,error="invalid_weapon"}
+        end
         if not allowed("attack",0.52) then return {ok=false,error="rate_limited"} end
         local trail=equipAvatar(root)
         playSwing(h)
@@ -465,12 +490,12 @@ function Combat.action(player: Player,action: string,arg: any,population: any?):
         player:SetAttribute("ER_PlayerAttack",workspace:GetServerTimeNow())
         task.wait(0.12)
         if trail and trail.Parent then trail.Enabled=false end
-        if playerRoot(player)~=root or player~=owner or not state or dialogue or equipped~="sword" then
+        if playerRoot(player)~=root or player~=owner or not state or dialogue or equipped~=mode then
             return {ok=false,error="action_unavailable"}
         end
         local side=direction(root)
         local start=Vector3.new(root.Position.X-side*0.15,root.Position.Y,0)
-        local target=sweep(start,start+Vector3.new(side*6,0,0))
+        local target=sweep(start,start+Vector3.new(side*(if mode=="spear" then 5.5 else 6),0,0))
         local hit=target~=nil and R3.damageEnemy(state,target,16)
         return {ok=true,hit=hit,target=if hit then target else nil}
     elseif action=="bow_cancel" then

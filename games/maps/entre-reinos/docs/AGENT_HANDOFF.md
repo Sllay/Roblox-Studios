@@ -367,3 +367,7 @@ O [PR #14](https://github.com/Sllay/Roblox-Studios/pull/14) contém os checkpoin
 ## 25/11/2026 — Prévia econômica v20 disponível
 
 O candidato `c905eca3437ecd124c6afac6cce0df21df31f8e1` foi publicado no staging existente após autorização específica para substituir a v19 e migrar saves compatíveis de ruleset 4 para 5. O readback verificou 45 scripts e o Scene Sync posterior confirmou o digest. O rollback exato da v19 está arquivado. A próxima ação é o playtest do criador. [Jogar](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R2.md) · [Roteiro](T2_R2_PLAYTEST.md)
+
+## 26/11/2026 — Refino profundo após o playtest da v20
+
+O feedback da v20 cobre interface mobile, hotbars, alvos e estrutura contextual, ordens remotas, congestionamento, evacuação, hitboxes, duque e guardas, streaming antecipado e profundidade aquática/florestal. Manter o PR #14, os contratos da economia regional e os saves; suspender T2-R3. Trabalhar em A interface, B estruturas e ordens, C multidões, D combate e evacuação, E mundo e F integração/provas. [Feedback integral](VISION_MASTER.md#26112026--refinamento-do-playtest-v20) · [Decisões](DECISION_LOG.md#26112026--feedback-da-v20-e-escopo-do-refinamento)
