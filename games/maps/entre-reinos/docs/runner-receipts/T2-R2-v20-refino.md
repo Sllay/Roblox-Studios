@@ -55,3 +55,9 @@ Na seed 516639272, a preparação adicional ao nascer levou 666 ms no servidor, 
 2. Interaja com castelo, galpão, carpintaria, ferraria, fazenda e doca. Confirme o catálogo de cada estrutura. No caderno, longe do morador, solicite uma lança e observe a reserva, a caminhada ao estoque e a entrega. Veja se outros moradores conseguem usar o mesmo depósito.
 3. No prólogo, caminhe junto ao duque, confira a hesitação dos guardas e atire na cabeça e no corpo de um invasor. Na invasão, observe os civis abandonarem a área de risco e depois retomarem o trabalho. Compare com uma noite tranquila.
 4. Monte e acelere até uma fronteira. Confira rio frontal, cascatas, fundo e continuidade do terreno na câmera larga. Embarque e teste carga na doca. Salve e reabra para conferir posição, equipamento e estoques.
+
+### Candidato e restauração
+
+O candidato `c4fb0790c14cd7c42cead0ae17e8f013b36fab1c` atualiza a apresentação dos moradores por eventos de replicação e repete as provas do motor. CI e Roblox passaram. A preparação adicional da seed de referência levou 666 ms, com pico de 12,8 ms por volume. A medição de outro servidor registrou o mesmo tempo total, com pico de 6,9 ms na região inicial. [CI do candidato](https://github.com/Sllay/Roblox-Studios/actions/runs/45732024313) · [Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/45732016659)
+
+O Scene Sync em leitura confirmou v20, 101 objetos e zero conflitos. O digest `ac7bccae902771c3e1c250886119741a0e2033772e74b650476ebda57e0c726c` coincide com o readback da publicação anterior. O build separado de `c905eca` reproduziu exatamente o artefato da v20, SHA-256 `63d2ffe7261cb815dfe514a0ad9498e4259bf8364410c87db50708954a0e470f`. A futura publicação deve arquivar esse rollback, conferir novamente o baseline e manter o ruleset 5. [Scene Sync v20](https://github.com/Sllay/Roblox-Studios/actions/runs/45732024958) · [Publicação original da v20](https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249)

@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-26",
-  "note": "Staging v20 remains the published preview. Creator feedback triggered a mobile, NPC, combat and world refinement on the existing draft PR #14.",
+  "note": "The v20 refinement candidate passed CI and the disposable Roblox engine probe. Preview authorization and client mobile playtest are pending. The existing staging baseline remains v20.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -439,7 +439,14 @@
             "stagingBaseline": 20,
             "requiresCreatorPreviewAuthorization": true,
             "clientMobile": "awaiting_candidate_playtest",
-            "nextRunner": "blocked_pending_refinement"
+            "nextRunner": "blocked_pending_refinement",
+            "candidate": "c4fb0790c14cd7c42cead0ae17e8f013b36fab1c",
+            "technicalVerification": "passed",
+            "ci": "https://github.com/Sllay/Roblox-Studios/actions/runs/45732024313",
+            "robloxProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/45732016659",
+            "baselineSceneSync": "https://github.com/Sllay/Roblox-Studios/actions/runs/45732024958",
+            "baselineDigest": "ac7bccae902771c3e1c250886119741a0e2033772e74b650476ebda57e0c726c",
+            "rollbackPlaceArtifactSha256": "63d2ffe7261cb815dfe514a0ad9498e4259bf8364410c87db50708954a0e470f"
           }
         },
         {
@@ -526,7 +533,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R2_v20_refinement_in_progress",
+  "programStage": "T2_R2_v20_refinement_awaiting_preview_authorization",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",
