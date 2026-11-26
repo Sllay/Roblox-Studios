@@ -22,16 +22,16 @@ import scene_sync
 
 
 GAME = "entre-reinos"
-CANDIDATE = "c905eca3437ecd124c6afac6cce0df21df31f8e1"
+CANDIDATE = "c4fb0790c14cd7c42cead0ae17e8f013b36fab1c"
 STAGING_UNIVERSE = "10769712413"
 STAGING_PLACE = "90623742498445"
 # Verified with the official Place Provision inventory run 45681890920.
 OWNER = ("User", "8136365379")
 SCRIPT_CLASSES = {"Script", "LocalScript", "ModuleScript"}
-BASELINE_VERSION = 19
-BASELINE_DIGEST = "4791eeead3928fe5187339b982f594a71987866b6ee263d06fe41b1453b0d482"
-ROLLBACK_SHA = "f7d4ac685f2372d066cdf49a19b2b978f2454745"
-ROLLBACK_BUILD_SHA = "1c18dfcebe528e3aa693db951148607cc417a5632c5ebc4e0418d3397466b885"
+BASELINE_VERSION = 20
+BASELINE_DIGEST = "ac7bccae902771c3e1c250886119741a0e2033772e74b650476ebda57e0c726c"
+ROLLBACK_SHA = "c905eca3437ecd124c6afac6cce0df21df31f8e1"
+ROLLBACK_BUILD_SHA = "63d2ffe7261cb815dfe514a0ad9498e4259bf8364410c87db50708954a0e470f"
 
 require = scene_sync.require
 
@@ -49,7 +49,7 @@ def checked_target(plan, games, targets):
             "Explicit staging replacement confirmation required")
     require(plan.get("expectedVersion") == BASELINE_VERSION
             and plan.get("expectedDigest") == BASELINE_DIGEST,
-            "This preview only replaces the reviewed staging v19 baseline")
+            "This preview only replaces the reviewed staging v20 baseline")
     return target
 
 
@@ -57,7 +57,7 @@ def check_identity(target, key):
     identity = place_provision.task(target, key, "identity")
     require(identity.get("verified") is True, "Staging identity unverified")
     require((identity["creatorType"], identity["creatorId"]) == OWNER, "Staging owner mismatch")
-    require(identity["loadedVersion"] == BASELINE_VERSION, "Staging is no longer at v19")
+    require(identity["loadedVersion"] == BASELINE_VERSION, "Staging is no longer at v20")
 
 
 def script_hashes(artifact):
@@ -95,16 +95,16 @@ def verify_scripts(expected, observed):
 def publish(target, key, out):
     artifact = target["file"]
     hashes = script_hashes(artifact)
-    rollback_file = out / "entre-reinos-v19-rollback.rbxlx"
+    rollback_file = out / "entre-reinos-v20-rollback.rbxlx"
     rollback_build = hashlib.sha256(rollback_file.read_bytes()).hexdigest()
-    require(rollback_build == ROLLBACK_BUILD_SHA, "Rollback differs from the published v19 build")
+    require(rollback_build == ROLLBACK_BUILD_SHA, "Rollback differs from the published v20 build")
     rollback_scripts = script_hashes(rollback_file)
     subprocess.run([sys.executable, str(deploy.ROOT / "tools/script_quality.py")], check=True)
 
     check_identity(target, key)
     historical = scene_sync.capture(target, key, read_version=BASELINE_VERSION)
     require(historical["loadedVersion"] == BASELINE_VERSION and historical["stateDigest"] == BASELINE_DIGEST,
-            "Historical v19 rollback scene not verified")
+            "Historical v20 rollback scene not verified")
     verify_scripts(rollback_scripts, historical)
     scene_sync.write(out / "baseline.json", historical)
     rollback = {
@@ -115,7 +115,7 @@ def publish(target, key, out):
     scene_sync.write(out / "rollback.json", rollback)
     print("PREVIEW_ROLLBACK", json.dumps(rollback), flush=True)
 
-    # The approved gameplay commit predates the v19 Scene Sync. Refresh the
+    # The approved gameplay commit predates the v20 Scene Sync. Refresh the
     # disposable checkout's baseline so the official publisher can still
     # compare the current scene immediately before the Assets API write.
     path = scene_sync.state_path(target)

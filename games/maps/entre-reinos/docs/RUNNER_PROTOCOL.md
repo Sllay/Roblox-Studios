@@ -57,6 +57,12 @@ Em 25/11/2026, o criador autorizou uma publicação intermediária do PR #14 par
 
 O [workflow da prévia T2-R2](../../../../.github/workflows/entre-reinos-t2-r2-preview.yml) reaproveita a operação de publicação do R1, a credencial existente, o mesmo grupo de concorrência do staging e o publicador oficialmente suportado. Exige CI e prova Roblox do SHA, v19 com digest aprovado, arquivo de recuperação conferido e confirmação da API e do readback. A prévia é independente de integração, produção e certificação visual. [Scene Sync prévio](https://github.com/Sllay/Roblox-Studios/actions/runs/45723157400) · [Playtest e recuperação](T2_R2_PLAYTEST.md)
 
+## Exceção autorizada do refinamento da T2-R2
+
+Em 26/11/2026, o criador autorizou a prévia do candidato `c4fb0790c14cd7c42cead0ae17e8f013b36fab1c` no staging existente do Entre Reinos, Universe `10769712413`, Place `90623742498445`, substituindo a v20. Preservar os seis slots e o ruleset 5. A autorização abrange somente o candidato e o destino registrados.
+
+Reutilizar o workflow oficial da prévia do PR #14, suas proteções de staging e sua verificação de CI e prova Roblox no SHA exato. Conferir a v20 pelo Scene Sync e arquivar o RBXLX de rollback com o mesmo SHA-256 da publicação original antes de escrever. Confirmar a nova revisão pela API e pelo readback de scripts. Executar o Scene Sync posterior e registrar os comprovantes. A T2-R3 aguarda o feedback do criador. [Recibo e roteiro](runner-receipts/T2-R2-v20-refino.md)
+
 ## Refinamento (pacotes adicionais de tres runners)
 T1-F1/F2/F3, T2-F1/F2/F3 ou T3-F1/F2/F3. Quando houver mais de um ciclo, usar sufixo numerado para diferenciar.
 F1: auditar defeitos, arquitetura, instrumentacao e corrigir a causa das falhas do escopo atual.

@@ -247,3 +247,8 @@ Correção v9 em desenvolvimento:
 - [FIXADO PELO CRIADOR] Corrigir volumes de dano, voo contínuo de projéteis, colisão do duque e orientação/hesitação dos guardas. Preservar roteiro e alcance.
 - [FIXADO PELO CRIADOR] Geração antecipada, dois chunks decorativos nas extremidades e três camadas elevadas em Z. Faixa frontal visual de água com continuidade dos rios. Preservar corredor, pontes, seed e saves.
 - [ESTADO] Checkpoints A–F no PR #14. Staging v20 fica como baseline até nova publicação autorizada. A próxima temporada aguarda a validação. [Especificação integral](VISION_MASTER.md#26112026--refinamento-do-playtest-v20)
+
+## 26/11/2026 — Prévia do refinamento da T2-R2 autorizada
+
+- [AUTORIZADO PELO CRIADOR] Publicar exatamente `c4fb0790c14cd7c42cead0ae17e8f013b36fab1c` no staging do Entre Reinos, Universe `10769712413`, Place `90623742498445`, em substituição à v20.
+- [AUTORIZADO PELO CRIADOR] Preservar o ruleset 5, os seis slots e o rollback exato da v20. Usar as provas já aprovadas, o workflow oficial, readback independente e Scene Sync após a publicação. A T2-R3 aguarda o feedback do playtest. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-do-refinamento-da-t2-r2)
