@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-26",
-  "note": "The creator authorized the exact T2-R2 refinement candidate for staging, keeping ruleset 5 and the v20 rollback.",
+  "note": "The v21 T2-R2 refinement is available for creator playtest on the existing staging Place. Roblox API confirmation, independent readback and post-publication Scene Sync passed. T2-R3 awaits creator feedback.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -438,8 +438,8 @@
             "receipt": "docs/runner-receipts/T2-R2-v20-refino.md",
             "stagingBaseline": 20,
             "requiresCreatorPreviewAuthorization": false,
-            "clientMobile": "awaiting_candidate_playtest",
-            "nextRunner": "blocked_pending_refinement",
+            "clientMobile": "awaiting_creator_playtest_v21",
+            "nextRunner": "blocked_awaiting_creator_feedback",
             "candidate": "c4fb0790c14cd7c42cead0ae17e8f013b36fab1c",
             "technicalVerification": "passed",
             "ci": "https://github.com/Sllay/Roblox-Studios/actions/runs/45732024313",
@@ -449,7 +449,25 @@
             "rollbackPlaceArtifactSha256": "63d2ffe7261cb815dfe514a0ad9498e4259bf8364410c87db50708954a0e470f",
             "authorizationDate": "2026-11-26",
             "authorizedRuleset": 5,
-            "prePublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45741759182"
+            "prePublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45741759182",
+            "publicationStatus": "published_awaiting_creator_playtest",
+            "publicationDate": "2026-11-26",
+            "revision": 21,
+            "universeId": "10769712413",
+            "placeId": "90623742498445",
+            "playUrl": "https://www.roblox.com/games/90623742498445",
+            "workflowCommit": "386df4ec75fd405754c2e55ec38c557b1e031524",
+            "publicationRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503",
+            "robloxConfirmed": true,
+            "readbackRun": "https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503/job/139648702946",
+            "scriptsVerified": 50,
+            "buildSha256": "1565386ebe41d92b8530c9c2b6d4cac9afceb3d6609c0323561a9306271850d9",
+            "postPublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45742069302",
+            "postPublishSceneDigest": "b8d6d7db0c1813d29431cdf6f93505a8786d3473607d5b73e13f963751b1b5e6",
+            "rollbackRevision": 20,
+            "rollbackScriptsVerified": 45,
+            "rollbackArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503/artifacts/15081372944",
+            "evidenceArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503/artifacts/15081107686"
           }
         },
         {
@@ -536,7 +554,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R2_v20_refinement_preview_authorized",
+  "programStage": "T2_R2_v21_refinement_published_awaiting_creator_playtest",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",

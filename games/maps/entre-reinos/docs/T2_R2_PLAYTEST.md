@@ -1,8 +1,12 @@
-# Prévia econômica T2-R2 · ER-028 a ER-035
+# Playtest T2-R2 · ER-028 a ER-035
 
-A prévia econômica **v20** está disponível no staging existente do Entre Reinos. A API confirmou a revisão, o readback verificou 45 scripts e o Scene Sync posterior confirmou o mesmo digest. O [PR #14](https://github.com/Sllay/Roblox-Studios/pull/14) permanece em rascunho. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45723519651)
+A prévia ativa no staging é a **v21**, com o refinamento mobile, NPCs, combate e cenário. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Roteiro mobile](runner-receipts/T2-R2-v20-refino.md#roteiro-para-a-próxima-revisão-de-staging) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503)
 
-## Roteiro de partida
+## Histórico da prévia v20
+
+A prévia econômica **v20** foi publicada no staging existente do Entre Reinos. A API confirmou a revisão, o readback verificou 45 scripts e o Scene Sync posterior confirmou o mesmo digest. O [PR #14](https://github.com/Sllay/Roblox-Studios/pull/14) permanece em rascunho. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/45723383249) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45723519651)
+
+### Roteiro da partida na v20
 
 1. Abra um slot dispensável e chegue ao sandbox. Em **VILA → PESSOAS**, aproxime-se de um morador. Atribua a profissão e observe ferramenta, atividade, carga e evolução da habilidade. Compare as ordens de obra, estoque e alimentos. Confirme as duas pontes, água, joystick e câmera sob a UI.
 2. Em **OBRAS**, construa uma oficina e uma horta. Mande priorizar uma obra. Na **OFICINA**, enfileire tábuas com madeira disponível. Confira o resultado no depósito, o débito de insumos e a formação de um ferreiro/artesão. Use tábuas para construir a forja. Experimente ferro → metal → ferramenta, inclusive quando faltar um insumo.
@@ -11,7 +15,7 @@ A prévia econômica **v20** está disponível no staging existente do Entre Rei
 5. Em **PESSOAS**, converse, presenteie com uma tábua, ofereça comida a alguém com necessidade e ajude um morador ameaçado a alcançar abrigo. Observe relações e mudança de disposição. Navegue e construa sem esconder a área central com controles de gerenciamento.
 6. Passe tempo longe de um dos reinos e volte. Registre o progresso dentro da mesma sessão. Salve, saia e reabra. Confirme que ambos os estoques, a tesouraria, o estágio do frete, a posição e os moradores continuam coerentes. Nenhum progresso é acumulado com o jogo fechado.
 
-## Preparação da publicação
+### Preparação da publicação da v20
 
 O criador autorizou uma publicação intermediária do candidato `c905eca3437ecd124c6afac6cce0df21df31f8e1` no staging existente do Entre Reinos, Universe `10769712413`, Place `90623742498445`, em substituição à v19. A autorização permite migrar saves compatíveis de ruleset 4 para 5 com backup por slot. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r2)
 
