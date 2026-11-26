@@ -149,6 +149,7 @@ local function clearRider(player: Player)
     exhausted=false
     if mountHealth then mountHealth:Disconnect(); mountHealth=nil end
     player:SetAttribute("ER_Riding",nil)
+    player:SetAttribute("ER_TravelVelocity",nil)
     local _,human=character(player)
     if human then human:SetStateEnabled(Enum.HumanoidStateType.Jumping,true) end
 end
@@ -333,9 +334,19 @@ function Service.action(player: Player,arg: any): any
             return {ok=false,error="travel_unavailable"}
         end
         transit=true
+        player:SetAttribute("ER_TravelPending",true)
         root.Anchored=true
-        local ready=World.ensureNear(regional.seed,x)
-        if ready then task.wait() end
+        local ready,reason=World.ensureNear(regional.seed,x)
+        local deadline=os.clock()+1.2
+        while not ready and reason=="world_generation_in_progress" and os.clock()<deadline do
+            task.wait()
+            ready,reason=World.ensureNear(regional.seed,x)
+        end
+        if ready then ready=World.prefetch(regional.seed,x,0,true) end
+        if ready then
+            pcall(function() player:RequestStreamAroundAsync(Vector3.new(x,ground.height,0),1.25) end)
+            task.wait()
+        end
         local groundOnly=RaycastParams.new()
         groundOnly.FilterType=Enum.RaycastFilterType.Include
         groundOnly.FilterDescendantsInstances={workspace.Terrain}
@@ -353,6 +364,7 @@ function Service.action(player: Player,arg: any): any
         end
         if root.Parent then root.Anchored=false end
         transit=false
+        player:SetAttribute("ER_TravelPending",nil)
         return {ok=ok,error=err}
     end
     return {ok=false,error="travel_unavailable"}
@@ -456,6 +468,7 @@ function Service.tick(dt: number)
         speed=0
     end
     refreshRig(riding)
+    player:SetAttribute("ER_TravelVelocity",math.round(speed))
     Rig.animate(rig,speed)
 end
 return Service

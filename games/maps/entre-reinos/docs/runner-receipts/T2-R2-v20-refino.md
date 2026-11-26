@@ -28,3 +28,10 @@ Referências revisadas · [Position and size](https://create.roblox.com/docs/ui/
 - Cada flecha usa o primeiro impacto do segmento entre posições consecutivas. Os seis volumes vêm das partes do rig R6. Terrain, estruturas físicas e muralhas da faixa jogável limitam o impacto.
 - Atores da campanha usam grupo de colisão próprio e orientação explícita em cada cena. A hesitação continua no roteiro. Flechas para um arqueiro são entregues perto dele a partir da bolsa real.
 - Luau confirmou noite tranquila, evacuação por ameaça, custódia preservada, retomada e interseções 3D. A animação, o contato do jogador com o duque e a flecha contra um rig no cliente seguem para prova Roblox.
+
+## E — Paisagem e streaming
+
+- A revisão de cenário é independente do gerador jogável. O escritor nativo mantém leitura de segurança, escrita e releitura. As três novas fileiras traseiras, a margem frontal e os dois chunks decorativos por extremidade ocupam volumes externos ao envelope dos saves.
+- A paisagem usa o relevo e os cursos d'água existentes como referência. As novas cabeceiras sobem em trechos graduais, com cascatas tridimensionais perto da primeira fileira. Uma faixa de água frontal recebe os canais. Vegetação decorativa determinística varia por bioma, inclinação e distância.
+- A câmera e o servidor usam o mesmo limite de enquadramento. O servidor prepara terreno à frente com base na velocidade. O cliente solicita streaming adiantado em intervalos limitados. A viagem rápida prepara o destino antes da confirmação.
+- Luau comparou amostras jogáveis, extremidades, água frontal, elevação em Z e vegetação em três seeds. As 26 verificações Python específicas passaram. Visibilidade antes da transição, continuidade percebida e custo de renderização dependem de partida real.

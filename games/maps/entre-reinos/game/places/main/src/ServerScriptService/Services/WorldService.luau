@@ -4,6 +4,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LegacyProfile = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
 
+local Scenery = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("SceneryProfile"))
+
 type RuntimeProfile = {
     GENERATOR_VERSION: number, CELL: number, CHUNK_STUDS: number, PLAY_EDGE: number,
     CHUNK_RADIUS: number, INITIAL_CHUNKS: {number},
@@ -39,6 +41,10 @@ local waterCount = 0
 local totalChunkMs = 0
 local peakChunkMs = 0
 local scene: Folder? = nil
+local sceneryReady: {[string]: boolean} = {}
+local sceneryCount=0
+local sceneryVoxels=0
+local sceneryPeakMs=0
 
 local function fail(reason: string): (boolean, string?)
     failure = reason
@@ -64,6 +70,7 @@ function World.metrics()
         chunks = World.getChunkCount(), voxels = voxelCount, waterCells = waterCount,
         totalChunkMs = totalChunkMs, peakChunkMs = peakChunkMs,
         decorations = if scene then #scene:GetDescendants() else 0,
+        sceneryVolumes=sceneryCount,sceneryVoxels=sceneryVoxels,sceneryPeakMs=sceneryPeakMs,
     }
 end
 
@@ -90,14 +97,15 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
         f.Name = "ER_World_3D"
         f:SetAttribute("GeneratorVersion", Profile.GENERATOR_VERSION)
         f:SetAttribute("Seed", seed)
+        f:SetAttribute("SceneryVersion", Scenery.VERSION)
         f.Parent = workspace
         scene = f
         for _, side in ipairs({-1, 1}) do
             local wall = Instance.new("Part")
             wall.Name = "RegionEdge_" .. tostring(side)
             wall.Anchored = true
-            wall.Size = Vector3.new(3, 120, 96)
-            wall.Position = Vector3.new(side * (Profile.PLAY_EDGE + 2), 20, 0)
+            wall.Size = Vector3.new(4, 200, 96)
+            wall.Position = Vector3.new(side * (Profile.PLAY_EDGE + 2), 54, 0)
             wall.Transparency = 1
             wall.CanCollide = true
             wall.CanTouch = false
@@ -108,9 +116,9 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
     local chunkFolder = Instance.new("Folder")
     chunkFolder.Name = "Chunk_" .. tostring(id)
     for i = 1, 18 do
-        local x = -119 + i * 12
+        local x = -119 + i * 12 + 3*math.noise(seed%999,i,0.8)
         if x >= xmin and x < xmax then
-            local z = -22 - (i % 3) * 7
+            local z = -30 - 21*math.noise(i*0.7,seed%787,8)
             local surface = Profile.sample(seed, x, z)
             if not surface.wet and surface.riverDist > 20 then
                 local model = Instance.new("Model")
@@ -124,10 +132,6 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
                         Vector3.new(x, y + 5 + k * 2.2, z),
                         Color3.fromRGB(62, 118, 80), Enum.PartType.Ball)
                 end
-                local anchor = part(model, "WorkAnchor", Vector3.new(2, 3, 2),
-                    Vector3.new(x, Profile.sample(seed, x, 0).height + 2, 0), Color3.new(0, 0, 0))
-                anchor.Transparency = 1
-                anchor:SetAttribute("InteractionKind", "Tree")
                 model.Parent = chunkFolder
             end
         end
@@ -229,20 +233,14 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
     chunkFolder.Parent = scene
 end
 
-local function createChunk(seed: number, id: number): (boolean, string?)
-    if generated[id] then return true, nil end
-    if math.abs(id)>Profile.CHUNK_RADIUS or id%1~=0 then return fail("invalid_chunk") end
-    if failure then return false, failure end
-    local startedAt = os.clock()
-    local b = Profile.BOUNDS
+local function paintVolume(seed: number, id: number, bounds: any, sampler: any): (boolean, string?, number?, number?)
     local resolution = Profile.CELL
-    local xmin,xmax = Profile.chunkBounds(id)
     local region = Region3.new(
-        Vector3.new(xmin, b.yMin, b.zMin),
-        Vector3.new(xmax, b.yMax, b.zMax))
-    local sx = Profile.CHUNK_STUDS / resolution
-    local sy = (b.yMax - b.yMin) / resolution
-    local sz = (b.zMax - b.zMin) / resolution
+        Vector3.new(bounds.xMin, bounds.yMin, bounds.zMin),
+        Vector3.new(bounds.xMax, bounds.yMax, bounds.zMax))
+    local sx = (bounds.xMax - bounds.xMin) / resolution
+    local sy = (bounds.yMax - bounds.yMin) / resolution
+    local sz = (bounds.zMax - bounds.zMin) / resolution
     phase = "read_chunk_" .. tostring(id)
     local readOk, existing = pcall(function()
         return Terrain:ReadVoxelChannels(region, resolution, {"SolidOccupancy", "LiquidOccupancy"})
@@ -264,11 +262,11 @@ local function createChunk(seed: number, id: number): (boolean, string?)
     local liquidCells = 0
     for ix = 1, sx do
         solids[ix], liquids[ix], materials[ix] = {}, {}, {}
-        local x = xmin + (ix - 0.5) * resolution
+        local x = bounds.xMin + (ix - 0.5) * resolution
         local columns={}
         local columnMaterials={}
         for iz=1,sz do
-            local column=Profile.sample(seed,x,b.zMin+(iz-0.5)*resolution)
+            local column=sampler(seed,x,bounds.zMin+(iz-0.5)*resolution)
             local material=terrainMaterials[column.material]
             if not material then return fail("terrain_material_unsupported") end
             columns[iz]=column
@@ -276,7 +274,7 @@ local function createChunk(seed: number, id: number): (boolean, string?)
         end
         for iy = 1, sy do
             solids[ix][iy], liquids[ix][iy], materials[ix][iy] = {}, {}, {}
-            local bottom = b.yMin + (iy - 1) * resolution
+            local bottom = bounds.yMin + (iy - 1) * resolution
             for iz = 1, sz do
                 local sample=columns[iz]
                 local solid = math.clamp((sample.height - bottom) / resolution, 0, 1)
@@ -324,6 +322,19 @@ local function createChunk(seed: number, id: number): (boolean, string?)
             end
         end
     end
+    return true,nil,sx*sy*sz,liquidCells
+end
+
+local function createChunk(seed: number,id: number): (boolean,string?)
+    if generated[id] then return true,nil end
+    if math.abs(id)>Profile.CHUNK_RADIUS or id%1~=0 then return fail("invalid_chunk") end
+    if failure then return false,failure end
+    local startedAt=os.clock()
+    local xmin,xmax=Profile.chunkBounds(id)
+    local bounds=table.clone(Profile.BOUNDS)
+    bounds.xMin,bounds.xMax=xmin,xmax
+    local ok,reason,volume,water=paintVolume(seed,id,bounds,Profile.sample)
+    if not ok then return false,reason end
     phase = "decorate_chunk_" .. tostring(id)
     local decorated, reason = pcall(function()
         decoratedChunk(seed,id,xmin,xmax)
@@ -334,8 +345,8 @@ local function createChunk(seed: number, id: number): (boolean, string?)
         return fail("world_decoration_requires_new_server")
     end
     generated[id] = true
-    voxelCount += sx * sy * sz
-    waterCount += liquidCells
+    voxelCount += volume or 0
+    waterCount += water or 0
     local chunkMs = (os.clock() - startedAt) * 1000
     totalChunkMs += chunkMs
     peakChunkMs = math.max(peakChunkMs, chunkMs)
@@ -343,6 +354,92 @@ local function createChunk(seed: number, id: number): (boolean, string?)
     workspace:SetAttribute("ER_WorldWaterCells", waterCount)
     workspace:SetAttribute("ER_WorldChunkCount", World.getChunkCount())
     return true, nil
+end
+
+local function createScenery(seed: number,id: number,row: number): (boolean,string?)
+    local key=tostring(id).."_"..tostring(row)
+    if sceneryReady[key] then return true,nil end
+    local startedAt=os.clock()
+    local ok,reason,volume=paintVolume(seed,id,Scenery.bounds(id,row),Scenery.sample)
+    if not ok then return false,reason end
+    local layer=Instance.new("Folder")
+    layer.Name="Scenery_"..key
+    layer:SetAttribute("ER_VisualLayer",if row==1 then "foreground" else "background")
+    for _,tree in ipairs(Scenery.trees(seed,id,row)) do
+        local height=tree.size*(if tree.conifer then 12 else 8)
+        local trunk=part(layer,"Trunk",Vector3.new(tree.size,height,tree.size),
+            Vector3.new(tree.x,tree.y+height/2,tree.z),Color3.fromRGB(92,68,48))
+        trunk.Orientation=Vector3.new(0,math.deg(tree.angle),0)
+        for crown=1,(if row<=-2 then 1 else 2) do
+            local width=tree.size*(if tree.conifer then 7-crown else 8-crown/2)
+            local leaves=part(layer,"Canopy",Vector3.new(width,height*0.65,width*0.86),
+                Vector3.new(tree.x,tree.y+height*(0.77+crown*0.15),tree.z),
+                if tree.conifer then Color3.fromRGB(62,102,81) else Color3.fromRGB(84,126,70),Enum.PartType.Ball)
+            leaves.Orientation=Vector3.new(0,math.deg(tree.angle),0)
+        end
+    end
+    local cascade=if row==-1 then Scenery.cascade(seed,id) else nil
+    if cascade then
+        for index=1,#cascade-1 do
+            local a,b=cascade[index],cascade[index+1]
+            local from,to=Vector3.new(a.x,a.y,a.z),Vector3.new(b.x,b.y,b.z)
+            local middle=(from+to)*0.5
+            local sheet=part(layer,"FeederCascade",Vector3.new(6,0.2,(to-from).Magnitude+0.25),
+                middle,Color3.fromRGB(158,207,211))
+            sheet.CFrame=CFrame.lookAt(middle,to)
+            sheet.Material=Enum.Material.Glass
+            sheet.Transparency=0.47
+        end
+    end
+    layer.Parent=scene
+    sceneryReady[key]=true
+    sceneryCount+=1
+    sceneryVoxels+=volume or 0
+    sceneryPeakMs=math.max(sceneryPeakMs,(os.clock()-startedAt)*1000)
+    workspace:SetAttribute("ER_SceneryVolumeCount",sceneryCount)
+    return true,nil
+end
+
+-- One work list per camera envelope. Streaming clients still control their
+-- replication; these flags report that the server wrote and read the region.
+function World.prefetch(seed: number,x: number,velocity: number,initial: boolean?): (boolean,string?)
+    if not active or seed~=currentSeed then return false,"world_not_ready" end
+    if failure then return false,failure end
+    if Profile.GENERATOR_VERSION~=2 then return true,nil end
+    if generating then return false,"world_generation_in_progress" end
+    local wanted={}
+    local current=Profile.chunkAt(x)
+    local direction=math.sign(velocity)
+    for _,row in ipairs({0,1,-1,-2,-3}) do
+        local west,east=Scenery.coverage(x,velocity,row)
+        for id=west,east do
+            local base=row==0 and math.abs(id)<=Profile.CHUNK_RADIUS
+            local key=tostring(id).."_"..tostring(row)
+            if (base and generated[id]) or (not base and sceneryReady[key]) then continue end
+            local delta=id-current
+            local priority=math.abs(delta)-(if delta*direction>0 then 0.6 else 0)
+                +(if base then -7 elseif row==-3 then 1.8 elseif row==-2 then 0.8 else 0.3)
+            table.insert(wanted,{row=row,id=id,base=base,priority=priority})
+        end
+    end
+    table.sort(wanted,function(a,b) return a.priority<b.priority end)
+    local limit=if initial then #wanted else math.min(3,#wanted)
+    if limit==0 then return true,nil end
+    generating=true
+    for i=1,limit do
+        local chunk=wanted[i]
+        local invoked,ok,reason=pcall(if chunk.base then createChunk else createScenery,
+            seed,chunk.id,chunk.row)
+        if not invoked or not ok then
+            generating=false
+            if not invoked then return fail("terrain_prefetch_exception") end
+            return false,reason
+        end
+        task.wait()
+    end
+    generating=false
+    phase="ready"
+    return true,nil
 end
 
 function World.activate(seed: number, progress: ((number, string) -> ())?,
@@ -400,7 +497,6 @@ end
 function World.ensureNear(seed: number, x: number): (boolean, string?)
     if not active or currentSeed~=seed then return false,"world_not_ready" end
     if failure then return false,failure end
-    if generating then return false,"world_generation_in_progress" end
     if not withinBounds(x) then return false,"outside_region" end
     local current=Profile.chunkAt(x)
     local west,east=Profile.chunkAt(x-38),Profile.chunkAt(x+38)
@@ -408,6 +504,7 @@ function World.ensureNear(seed: number, x: number): (boolean, string?)
     for index=west,east do if index~=current then table.insert(wanted,index) end end
     for _,index in ipairs(wanted) do
         if not generated[index] then
+            if generating then return false,"world_generation_in_progress" end
             generating=true
             local invoked,ok,reason=pcall(createChunk,seed,index)
             generating=false

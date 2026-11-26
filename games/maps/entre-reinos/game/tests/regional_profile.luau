@@ -114,3 +114,35 @@ end
 checkRegions()
 for _, seed in ipairs({1, 42, 1009, 870001, 123456789, 516639272, 2147483646}) do checkSeed(seed) end
 print("ENTRE_REINOS_T2_R1_PROFILE: five regions, 49 chunks and seven seeds passed")
+
+local Scenery=require("../places/main/src/ReplicatedStorage/SceneryProfile")
+local scenicSeeds={516639272,17071985,382775}
+for _,worldSeed in ipairs(scenicSeeds) do
+    local left,right=Scenery.coverage(0,24,0)
+    local rearLeft,rearRight=Scenery.coverage(0,24,-3)
+    assert(right>=-left and rearLeft<left and rearRight>right)
+    for x=-1500,1500,12 do
+        for _,z in ipairs({-46,-2,46}) do
+            local legacy=Regions.sample(worldSeed,x,z)
+            local current=Scenery.sample(worldSeed,x,z)
+            assert(current.height==legacy.height and current.material==legacy.material and current.waterSurface==legacy.waterSurface)
+        end
+        assert(Scenery.sample(worldSeed,x,92).wet)
+    end
+    for _,side in ipairs({-1,1}) do
+        local id=side*(Regions.CHUNK_RADIUS+2)
+        assert(Scenery.bounds(id,-3).zMin==-240 and Scenery.bounds(id,1).zMax==112)
+        assert(math.abs(Scenery.bounds(id,0).xMin)>Regions.PLAY_EDGE or math.abs(Scenery.bounds(id,0).xMax)>Regions.PLAY_EDGE)
+    end
+    for row=-3,-1 do
+        local a,b=Scenery.trees(worldSeed,4,row),Scenery.trees(worldSeed,4,row)
+        assert(#a==#b and #a<=13)
+        for i,tree in ipairs(a) do
+            assert(tree.x==b[i].x and tree.y==b[i].y and tree.z==b[i].z)
+            assert(not Scenery.sample(worldSeed,tree.x,tree.z).wet)
+        end
+    end
+    local deep=Scenery.sample(worldSeed,0,-232)
+    assert(deep.height>Scenery.sample(worldSeed,0,-48).height+20)
+end
+print("ENTRE_REINOS_V20_SCENERY: unchanged playable samples, exterior terrain and wet frontage in three seeds")
