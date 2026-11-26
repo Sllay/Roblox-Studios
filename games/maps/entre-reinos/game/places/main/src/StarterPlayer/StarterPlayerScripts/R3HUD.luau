@@ -298,7 +298,7 @@ function UI.start(player: Player)
     villTitle.TextSize=15
     villTitle.Font=Enum.Font.GothamBold
     villTitle.TextColor3=C.paper
-    local villHelp=rowText(villagersPage,"Help",
+    rowText(villagersPage,"Help",
         "Dê ordens a partir do caderno. Para conversar ou presentear, aproxime-se do morador.",2,53)
     local workerRows: {[number]: TextButton?}={}
     local selectedNpcId=0
@@ -729,10 +729,10 @@ function UI.start(player: Player)
         local enemies=player:GetAttribute("ER_R3Enemies") or 0
         local phase=player:GetAttribute("ER_R3Phase") or "sandbox"
         local isRaid=player:GetAttribute("ER_R3Raid")==true
-        local message=player:GetAttribute("ER_R3Warning")
+        local notice=player:GetAttribute("ER_R3Warning")
+        local message=if type(notice)=="string" then notice else ""
         Style.text(vitals,"Dia "..tostring(day)..(if night then " · Noite" else "")
             .."  ·  "..tostring(wallet).." moedas")
-        if type(message)~="string" then message="" end
         local recovering=player:GetAttribute("ER_Recovering")==true
         warning.Visible=recovering or phase~="sandbox" or isRaid
             or player:GetAttribute("ER_R3Forecast")==true
@@ -826,23 +826,26 @@ function UI.start(player: Player)
                 active[w.id]=true
                 local b=workerRows[w.id]
                 if not b then
-                    b=button(villagersPage,"Citizen_"..tostring(w.id),"")
-                    b.LayoutOrder=10+w.id
-                    b.Size=UDim2.new(1,-12,0,58)
-                    workerRows[w.id]=b
+                    local created=button(villagersPage,"Citizen_"..tostring(w.id),"")
+                    created.LayoutOrder=10+w.id
+                    created.Size=UDim2.new(1,-12,0,58)
+                    workerRows[w.id]=created
+                    b=created
                     local workerId=w.id
-                    b.Activated:Connect(function()
+                    created.Activated:Connect(function()
                         selectedNpcId=workerId
                         showTab("villagers")
                         updateVillage()
                     end)
                 end
+                if not b then continue end
                 local stateName={
                     gather="coletando",deliver="transportando",build="construindo",
                     idle="disponível",rest="descansando",
                     store_gather="buscando estoque",store_deliver="levando ao galpão",
                     collect="coletando",load="retirando estoque",flee="em fuga",
-                    sheltered="abrigado",dead="morto",strike="defendendo"}
+                    sheltered="abrigado",dead="morto",strike="defendendo",
+                    waiting_access="aguardando atendimento",receiving_gear="buscando equipamento"}
                 local role=if w.defense=="bow" then " · arqueiro"
                     else if w.defense=="spear" then " · lanceiro" else ""
                 local profession=Professions.get(w.profession)
@@ -859,7 +862,7 @@ function UI.start(player: Player)
             end
         end
         for id,b in pairs(workerRows) do
-            if not active[id] then b.Visible=false end
+            if b and not active[id] then b.Visible=false end
         end
         local nearSelected=nearby.npcId==selectedNpcId and selectedNpcId>0
         local canOrder=active[selectedNpcId] and nearby.canManage==true and snapshot~=nil and snapshot.production~=nil

@@ -128,7 +128,9 @@ function Style.fitActions(gui: ScreenGui,attack: Frame,interact: TextButton)
 end
 
 function Style.text(control: TextLabel | TextButton,value: string)
-    if control.Text~=value then control.Text=value end
+    if control.Text==value then return end
+    if control:IsA("TextLabel") then control.Text=value
+    else (control :: TextButton).Text=value end
 end
 
 return Style

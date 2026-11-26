@@ -42,3 +42,16 @@ Referências revisadas · [Position and size](https://create.roblox.com/docs/ui/
 - Foram executados validadores de workspace e deploy, compilação Luau, Quality Gate V2, 171 testes Python, build Rojo e suítes Luau de produção, alimentação, mercado, regiões, pontes, combate e terreno.
 - O probe de candidato na v20 verifica os voxels antigos antes e depois da expansão, o Terrain nos dois horizontes, água frontal, orientação e colisão do prólogo, volumes R6 e oclusão física. O probe usa sessão descartável e o namespace isolado de DataStore já estabelecido.
 - A autorização anterior identificava o SHA `c905eca` e a substituição da v19 pela v20. A publicação deste refinamento depende de autorização específica para o novo candidato, workflow e baseline v20. T2-R3 segue suspensa.
+
+### Evidência em Roblox
+
+O probe da revisão v20 aprovou o candidato `c239c77` em sessão descartável. Comparou 9.216 voxels jogáveis antes e depois de gerar a paisagem. Confirmou água nativa na faixa frontal, relevo elevado, barreiras nas duas extremidades, 11 partes do duque sem colisão com o grupo do jogador, orientação dos guardas durante a hesitação, acerto em cabeça e torso R6 e bloqueio por uma parede física. O DataStore real isolado aprovou seis slots distintos, backup, restauração, tentativa repetida sem duplicação e migração 4 → 5 com trabalho regional preservado. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45731778502) · [Probe](https://github.com/Sllay/Roblox-Studios/actions/runs/45731768610)
+
+Na seed 516639272, a preparação adicional ao nascer levou 666 ms no servidor, com 38 volumes de cenário e 437.760 voxels adicionais. O maior tempo por volume adicional foi 6,9 ms na região inicial e 7,4 ms após visitar ambas as extremidades. A simulação Luau local de dois reinos por 2.400 s levou 4,62–4,86 s no código da v20 e 4,68–4,82 s no candidato após otimização. Os intervalos se sobrepõem. Memória de cliente, frame pacing, tráfego e fluidez touch exigem sessão real. [Creator Hub sobre streaming](https://create.roblox.com/docs/workspace/streaming) · [Desempenho](https://create.roblox.com/docs/performance-optimization/improve)
+
+### Roteiro para a próxima revisão de staging
+
+1. Em tela pequena, abra um slot existente. Role e solte a barra superior enquanto o estoque muda. Confira rótulos, posição, joystick e salto. Equipe espada e arco e teste pressionar, soltar e cancelar.
+2. Interaja com castelo, galpão, carpintaria, ferraria, fazenda e doca. Confirme o catálogo de cada estrutura. No caderno, longe do morador, solicite uma lança e observe a reserva, a caminhada ao estoque e a entrega. Veja se outros moradores conseguem usar o mesmo depósito.
+3. No prólogo, caminhe junto ao duque, confira a hesitação dos guardas e atire na cabeça e no corpo de um invasor. Na invasão, observe os civis abandonarem a área de risco e depois retomarem o trabalho. Compare com uma noite tranquila.
+4. Monte e acelere até uma fronteira. Confira rio frontal, cascatas, fundo e continuidade do terreno na câmera larga. Embarque e teste carga na doca. Salve e reabra para conferir posição, equipamento e estoques.

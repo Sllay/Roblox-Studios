@@ -74,10 +74,25 @@ local function register(model: Model)
             actionTrack=loadTrack(animator,R6_TOOL_SLASH,Enum.AnimationPriority.Action,false)
         end
     end
-    actors[model]={from=pose,to=pose,position=pose,t0=now,t1=now,
-        yaw=0,
-        native=isNative,idleTrack=idleTrack,walkTrack=walkTrack,
-        actionTrack=actionTrack,animState="",lastAction=0}
+    local item: any={from=pose,to=pose,position=pose,t0=now,t1=now,
+        yaw=0,native=isNative,idleTrack=idleTrack,walkTrack=walkTrack,
+        actionTrack=actionTrack,animState="",lastAction=0,connections={}}
+    local function observe(attribute: string,read: (any)->())
+        local function changed() read(model:GetAttribute(attribute)) end
+        changed()
+        table.insert(item.connections,model:GetAttributeChangedSignal(attribute):Connect(changed))
+    end
+    observe("ER_NPCPose",function(p)
+        if typeof(p)=="Vector3" and p~=item.to then
+            item.from,item.t0=item.to,item.t1
+            item.to,item.t1=p,os.clock()
+        end
+    end)
+    observe("ER_NPCVelocityX",function(v) item.velocityX=if type(v)=="number" then v else 0 end)
+    observe("ER_NPCVelocityZ",function(v) item.velocityZ=if type(v)=="number" then v else 0 end)
+    observe("ER_NPCFacing",function(v) item.facing=if type(v)=="number" then v else nil end)
+    observe("ER_NPCActivity",function(v) item.activity=if type(v)=="string" then v else "" end)
+    actors[model]=item
 end
 
 function Presentation.start()
@@ -95,6 +110,7 @@ function Presentation.start()
         if not child:IsA("Model") then return end
         local actor=actors[child]
         if actor then
+            for _,connection in ipairs(actor.connections) do connection:Disconnect() end
             for _,key in ipairs({"idleTrack","walkTrack","actionTrack"}) do
                 if actor[key] then actor[key]:Destroy() end
             end
@@ -107,39 +123,24 @@ function Presentation.start()
         local step=math.clamp(dt,1/240,1/20)
         local blend=1-math.exp(-18*step)
         for model,item in pairs(actors) do
-            local pose=model:GetAttribute("ER_NPCPose")
-            if typeof(pose)~="Vector3" then continue end
-            if pose~=item.to then
-                item.from,item.t0=item.to,item.t1
-                item.to,item.t1=pose,now
-            end
-            local velocity=model:GetAttribute("ER_NPCVelocityX")
-            local velocityZ=model:GetAttribute("ER_NPCVelocityZ")
-            local speed=if type(velocity)=="number" then velocity else 0
-            local speedZ=if type(velocityZ)=="number" then velocityZ else 0
             local fraction=math.clamp((targetTime-item.t0)/math.max(0.001,item.t1-item.t0),0,1)
             local buffered=item.from:Lerp(item.to,fraction)
             local lead=math.clamp(targetTime-item.t1,0,MAX_LEAD)
-            local target=buffered+Vector3.new(speed*lead,0,speedZ*lead)
+            local target=buffered+Vector3.new(item.velocityX*lead,0,item.velocityZ*lead)
             local old: Vector3=item.position
             local position=if (target-old).Magnitude>12 then target else old:Lerp(target,blend)
             local travel=(Vector2.new(old.X,old.Z)
                 -Vector2.new(position.X,position.Z)).Magnitude
             item.speed=(item.speed or 0)+(travel/step-(item.speed or 0))*(1-math.exp(-9*step))
             local actualSpeed=item.speed
-            if item.native then
-                local activity=model:GetAttribute("ER_NPCActivity")
-                updateNative(item,if type(activity)=="string" then activity else "",
-                    actualSpeed,now)
-            end
+            if item.native then updateNative(item,item.activity,actualSpeed,now) end
             item.position=position
-            local facing=model:GetAttribute("ER_NPCFacing")
+            local facing=item.facing
             if type(facing)=="number" then
                 local difference=(facing-item.yaw+math.pi)%(2*math.pi)-math.pi
                 item.yaw+=difference*blend
             end
-            local activity=model:GetAttribute("ER_NPCActivity")
-            local tilt=if activity=="fallen" then math.pi*0.46 else 0
+            local tilt=if item.activity=="fallen" then math.pi*0.46 else 0
             local render=CFrame.new(position)*CFrame.Angles(0,item.yaw,tilt)
             if render~=item.render then
                 item.render=render

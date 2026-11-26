@@ -160,7 +160,9 @@ local function presentInteraction(player: Player)
         end
         local story=R3.storyAction(regional.home,x)
         if story then
-            offer("story",story,if story=="evacuate" then "Evacuar" elseif story=="coronation" then "Coroação" else "Duque",nil,0,-30)
+            local actorX=if story=="training" then regional.home.r3.prologue.dukeX or -4 else 0
+            offer("story",story,if story=="evacuate" then "Evacuar" elseif story=="coronation" then "Coroação" else "Duque",
+                Vector3.new(actorX,root.Position.Y,-1),10,-30)
         end
         local travel=Travel.status(player,root)
         if travel then
