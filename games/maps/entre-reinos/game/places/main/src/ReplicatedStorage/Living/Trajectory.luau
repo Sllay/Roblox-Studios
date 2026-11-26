@@ -22,4 +22,14 @@ function Trajectory.intersection(x: number,y: number,dx: number,dy: number,
     return if near<=far then near else nil
 end
 
+function Trajectory.box(x: number,y: number,z: number,dx: number,dy: number,dz: number,
+        halfX: number,halfY: number,halfZ: number): number?
+    local near,far=slab(x,dx,-halfX,halfX,0,1)
+    if near>far then return nil end
+    near,far=slab(y,dy,-halfY,halfY,near,far)
+    if near>far then return nil end
+    near,far=slab(z,dz,-halfZ,halfZ,near,far)
+    return if near<=far then near else nil
+end
+
 return Trajectory

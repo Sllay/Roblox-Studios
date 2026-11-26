@@ -371,6 +371,12 @@ function UI.start(player: Player)
         request("equipment_order",{id=selectedNpcId,item=equipment[gearIndex]})
     end)
 
+    local reload=button(villagersPage,"ReloadArcher","ENTREGAR 6 FLECHAS")
+    reload.LayoutOrder=509
+    reload.Size=UDim2.new(1,-10,0,40)
+    reload.Visible=false
+    reload.Activated:Connect(function() request("arm_defender",tostring(selectedNpcId)..":bow") end)
+
     local panels: {[string]: ScrollingFrame}={}
     local details: {[string]: TextLabel}={}
     local siteLabels={castle="Castelo",forge="Ferraria",workshop="Carpintaria",
@@ -853,9 +859,13 @@ function UI.start(player: Player)
         applyRole.Visible=nextRole.Visible
         for _,control in ipairs(socialControls) do control.Visible=nearSelected and snapshot~=nil and snapshot.production~=nil end
         equip.Text="SOLICITAR"
+        reload.Visible=false
         for _,worker in ipairs(workers or {}) do
-            if worker.id==selectedNpcId and worker.gearOrder then
-                selectedWorker.Text=Items.get(worker.gearOrder).label..(if worker.gettingGear then " · a caminho do estoque" else " · aguardando estoque")
+            if worker.id==selectedNpcId then
+                reload.Visible=nearSelected and worker.defense=="bow" and worker.arrows==0
+                if worker.gearOrder then
+                    selectedWorker.Text=Items.get(worker.gearOrder).label..(if worker.gettingGear then " · a caminho do estoque" else " · aguardando estoque")
+                end
                 break
             end
         end

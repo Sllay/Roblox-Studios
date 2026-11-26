@@ -7,7 +7,6 @@ local Inventory=require("./Inventory")
 local Items=require("./ItemDefs")
 local Work=require("./WorkEngine")
 local Story=require("./Campaign")
-local Social=require("./Social")
 local R3={}
 R3.storyActors=Story.actors
 R3.VERSION=1
@@ -556,15 +555,16 @@ function R3.playerDied(state: any)
     state.r3.awaitingRecovery=true
 end
 
-local function shelterFor(state: any,npc: any,threat: any): any
+local function shelterFor(state: any,npc: any,threat: any,evacuating: boolean): any
     local best=nil
     local distance=math.huge
     for _,b in ipairs(state.buildings) do
         local kind=Structures.get(b.typeId).kind
         if (kind=="habitation" or kind=="treasury") and b.health>0 and not b.ruined
             and (b.state=="complete" or b.state=="damaged")
-            and (not threat or (b.x-npc.x)*(npc.x-threat.x)>=0 or math.abs(b.x-npc.x)<2) then
-            local range=math.abs(b.x-npc.x)
+            and Work.canReach(state,npc.x,b.x,if Inventory.weight(npc.inventory)>0 then "carrier" else "worker")
+            and (not threat or (b.x-threat.x)*(npc.x-threat.x)>=0) then
+            local range=math.abs(b.x-npc.x)+(if evacuating and b.typeId~="castle" then 25 else 0)
             if range<distance then best=b; distance=range end
         end
     end
@@ -662,6 +662,14 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
         end
     end
 
+    local evacuating=story.scene and (story.stage=="evacuation" or story.stage=="last_ring")
+    local confirmed=false
+    for _,enemy in ipairs(d.enemies) do
+        if enemy.hp>0 and enemy.typeId~="infected_duke" and math.abs(enemy.x)<92 then
+            confirmed=true
+            break
+        end
+    end
     for _,npc in ipairs(state.npcs) do
         if npc.health<=0 then continue end
         local nearest=nil
@@ -670,37 +678,47 @@ function R3.step(state: any,dt: number,playerX: number,fire: Fire?,playerY: numb
             local delta=math.sqrt((npc.x-e.x)^2+(npc.z or 0)^2)
             if e.hp>0 and delta<dist then nearest=e; dist=delta end
         end
-        local evacuating=story.scene and (story.stage=="evacuation" or story.stage=="last_ring")
-        local previous=npc.underAttack
-        npc.underAttack=(nearest~=nil and dist<16) or evacuating
-        if npc.underAttack and not previous and npc.defense==nil then
-            Work.releaseWorker(state,npc)
+        local direct=nearest~=nil and dist<19
+        local ordered=evacuating or (confirmed and math.abs(npc.x)<108)
+        if ordered or direct then
+            npc.threatUntil=state.elapsed+4
         end
+        npc.underAttack=ordered or direct or (npc.threatUntil or 0)>state.elapsed
         npc.defenseClock=math.max(0,(npc.defenseClock or 0)-dt)
-        if npc.underAttack and npc.defense==nil then
-            local shelter=Social.shelter(state,npc,Work) or shelterFor(state,npc,nearest)
-            if evacuating then
-                for _,b in ipairs(state.buildings) do
-                    if b.typeId=="castle" and b.health>0 and not b.ruined then shelter=b; break end
-                end
-            end
-            npc.activity=if shelter and (shelter.x-npc.x)^2+((npc.z or 0)+4.4)^2<=4
-                then "sheltered" else "flee"
-            if npc.activity=="flee" then
-                local safe=if shelter then shelter.x elseif nearest then npc.x+(if npc.x>=nearest.x then 8 else -8) else 0
-                Work.walkResident(state,npc,if state.production and shelter then safe else math.clamp(safe,-116,116),dt,
-                    if shelter then -4.4 else math.clamp((npc.z or 0)+4,-3,15),7.2)
-            end
-        elseif nearest and npc.defense and npc.defenseClock<=0 then
-            if npc.defense=="bow" and (npc.arrows or 0)>0 and dist>=4 and dist<=24 and fire
-                and fire(npc,nearest) then
+        local defender=npc.defense=="spear" or (npc.defense=="bow" and (npc.arrows or 0)>0)
+        if npc.underAttack and not defender then
+            local shelter=shelterFor(state,npc,nearest,evacuating==true)
+            local safe=if shelter then shelter.x elseif nearest then npc.x+(if npc.x>=nearest.x then 8 else -8) else 0
+            local target=if state.production and shelter then safe else math.clamp(safe,-116,116)
+            local depth=if shelter then -4.4 else math.clamp((npc.z or 0)+4,-3,15)
+            npc.activity="flee"
+            if Work.walkResident(state,npc,target,dt,depth,7.2) and shelter then npc.activity="sheltered" end
+            npc.safety=if npc.activity=="sheltered" then "sheltered" else "evacuating"
+        elseif nearest and defender and npc.underAttack then
+            npc.safety="defending"
+            local wall=wallBeforeTown(state,nearest)
+            local blocked=wall and (npc.x-wall.x)*(nearest.x-wall.x)<0
+            if npc.defenseClock<=0 and npc.defense=="bow" and dist>=4 and dist<=24 and fire and fire(npc,nearest) then
                 npc.arrows-=1
+                npc.activity="strike"
                 npc.defenseClock=if npc.profession=="archer" then 1.18 else 1.5
-            elseif npc.defense=="spear" and dist<4.5
+            elseif npc.defenseClock<=0 and npc.defense=="spear" and dist<4.5 and not blocked
                 and math.abs(World.sample(state.seed,npc.x,0).height-World.sample(state.seed,nearest.x,0).height)<3 then
                 nearest.hp-=if npc.profession=="spearman" then 10 else 7
+                npc.activity="strike"
                 npc.defenseClock=if npc.profession=="guard" then 0.95 else 1.2
+            elseif dist>(if npc.defense=="bow" then 20 else 3.7) then
+                local side=if npc.x>=nearest.x then 1 else -1
+                local position=if blocked then wall.x+side*6
+                    else nearest.x+side*(if npc.defense=="bow" then 14 else 2.8)
+                if Work.canReach(state,npc.x,position,"guard") then
+                    Work.walkResident(state,npc,position,dt,0,6)
+                end
             end
+        else
+            npc.safety=if npc.safety=="evacuating" or npc.safety=="sheltered" or npc.safety=="defending"
+                then "resuming" else if story.stage=="sandbox" and scheduled and not night and dayTick>=R3.NIGHT_START-25
+                    and dayTick<R3.NIGHT_START and d.lastNight<day then "alert" else "safe"
         end
         if nearest and dist<2.8 and npc.activity~="sheltered" and nearest.typeId~="infected_duke" then
             local wall=wallBeforeTown(state,nearest)

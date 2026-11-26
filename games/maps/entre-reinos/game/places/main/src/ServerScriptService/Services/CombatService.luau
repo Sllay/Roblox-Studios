@@ -2,6 +2,13 @@
 -- T1-R3 server-only combat, projectile raycasts, enemy and physical coin views.
 -- UI has no authority over position, damage, currency, target or raid state.
 local Players=game:GetService("Players")
+local PhysicsService=game:GetService("PhysicsService")
+local ACTOR_GROUP="ER_StoryAndEnemies"
+if not PhysicsService:IsCollisionGroupRegistered(ACTOR_GROUP) then
+    PhysicsService:RegisterCollisionGroup(ACTOR_GROUP)
+end
+PhysicsService:CollisionGroupSetCollidable(ACTOR_GROUP,"Default",false)
+PhysicsService:CollisionGroupSetCollidable(ACTOR_GROUP,ACTOR_GROUP,false)
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local World=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("WorldProfile"))
 local R3=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("R3Engine"))
@@ -24,6 +31,16 @@ local cast=RaycastParams.new()
 cast.FilterType=Enum.RaycastFilterType.Include
 cast.FilterDescendantsInstances={workspace.Terrain}
 cast.IgnoreWater=true
+local obstruction=RaycastParams.new()
+obstruction.FilterType=Enum.RaycastFilterType.Include
+obstruction.RespectCanCollide=true
+obstruction.IgnoreWater=true
+local bodyVolumes: {{offset: CFrame,half: Vector3}}={}
+local function facing(enemy: any): number
+    return if (enemy.motionX or 0)>0.1 then -math.pi/2
+        elseif (enemy.motionX or 0)<-0.1 then math.pi/2
+        else if enemy.side<0 then -math.pi/2 else math.pi/2
+end
 local MAX_PROJECTILES=10
 local equipped="sword"
 local charge: any=nil
@@ -125,6 +142,14 @@ local function enemyModel(e: any): Model
         costume(m,"GuardBlade",hand,Vector3.new(0.25,2.5,0.14),CFrame.new(0,-1.65,-0.28),Color3.fromRGB(194,197,181)).Material=Enum.Material.Metal
         costume(m,"GuardHilt",hand,Vector3.new(0.75,0.17,0.21),CFrame.new(0,-0.51,-0.28),Color3.fromRGB(127,84,39))
     end
+    for _,body in ipairs(m:GetDescendants()) do
+        if body:IsA("BasePart") then
+            body.CollisionGroup=ACTOR_GROUP
+            body.CanCollide=false
+            body.CanTouch=false
+            body.CanQuery=false
+        end
+    end
     m.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
     m:SetAttribute("ER_NativeR6",true)
     m:SetAttribute("ER_NPCVisual",true)
@@ -136,8 +161,8 @@ local function enemyModel(e: any): Model
     m.PrimaryPart=root
     m:SetAttribute("ER_NPCPose",pose)
     m:SetAttribute("ER_NPCVelocityX",0)
-    m:SetAttribute("ER_NPCFacing",if e.side<0 then -math.pi/2 else math.pi/2)
-    m:PivotTo(CFrame.new(pose))
+    m:SetAttribute("ER_NPCFacing",facing(e))
+    m:PivotTo(CFrame.new(pose)*CFrame.Angles(0,facing(e),0))
     m.Parent=folder
     return m
 end
@@ -171,7 +196,7 @@ local function syncViews()
         model:SetAttribute("ER_NPCVelocityX",velocity)
         model:SetAttribute("ER_NPCPose",Vector3.new(actor.x,groundAt(actor.x)+3.06,-1))
         model:SetAttribute("ER_NPCActivity",actor.activity)
-        model:SetAttribute("ER_NPCFacing",if actor.kind=="creature" then -math.pi/2 else math.pi/2)
+        model:SetAttribute("ER_NPCFacing",if actor.direction==1 then -math.pi/2 else math.pi/2)
     end
     for id,model in pairs(storyFigures) do
         if not activeStory[id] then model:Destroy(); storyFigures[id]=nil end
@@ -184,9 +209,7 @@ local function syncViews()
         local y=groundAt(e.x)+3.06
         local velocity=e.motionX or 0
         model:SetAttribute("ER_NPCVelocityX",velocity)
-        if math.abs(velocity)>0.1 then
-            model:SetAttribute("ER_NPCFacing",if velocity>0 then -math.pi/2 else math.pi/2)
-        end
+        model:SetAttribute("ER_NPCFacing",facing(e))
         model:SetAttribute("ER_NPCPose",Vector3.new(e.x,y,0))
         model:SetAttribute("ER_NPCActivity",if e.attackClock>1.42 then "strike" else "idle")
         model:SetAttribute("ER_EnemyHealth",math.max(0,e.hp))
@@ -265,11 +288,18 @@ function Combat.start(player: Player,living: any,worldFolder: Folder)
         local h=rig:FindFirstChildOfClass("Humanoid") :: Humanoid
         h.AutoRotate=false
         if not h:FindFirstChildOfClass("Animator") then Instance.new("Animator").Parent=h end
+        local bodyRoot=rig:FindFirstChild("HumanoidRootPart") :: BasePart
+        for _,name in ipairs({"Head","Torso","Left Arm","Right Arm","Left Leg","Right Leg"}) do
+            local bone=rig:FindFirstChild(name) :: BasePart
+            table.insert(bodyVolumes,{offset=bodyRoot.CFrame:ToObjectSpace(bone.CFrame),
+                half=bone.Size*0.5+Vector3.new(0.12,0.12,0.12)})
+        end
         rigTemplate=rig
     end
     owner=player
     state=living
     folder=worldFolder
+    obstruction.FilterDescendantsInstances={workspace.Terrain,worldFolder}
     syncViews()
 end
 
@@ -278,6 +308,7 @@ function Combat.stop()
     owner=nil
     state=nil
     folder=nil
+    obstruction.FilterDescendantsInstances={}
 end
 
 local function playerRoot(player: Player): (BasePart?,Humanoid?)
@@ -301,27 +332,36 @@ local function allowed(action: string,seconds: number): boolean
     return true
 end
 
--- Return the first swept hit in the same X/Y lane used by the rendered
--- hostile rig. Terrain and standing fortifications can occlude the target.
+-- Swept body volumes use the same authoritative pose as each R6 model.
+-- The first collidable part or Terrain stops the segment before enemy damage.
 local function sweep(origin: Vector3,goal: Vector3): (number?, number)
     local delta=goal-origin
-    local ray=workspace:Raycast(origin,delta,cast)
-    local limit=if ray then ray.Distance/delta.Magnitude else 1
+    local distance=delta.Magnitude
+    if distance<1e-6 then return nil,1 end
+    local ray=workspace:Raycast(origin,delta,obstruction)
+    local limit=if ray then ray.Distance/distance else 1
+    -- Legacy ramparts defend the playable lane even when their masonry is
+    -- drawn in the back row. Keep the authoritative lane obstruction.
     for _,b in ipairs(state.buildings) do
         local def=Structures.get(b.typeId)
         if def.kind=="defense" and b.health>0 and b.progress>=def.buildSeconds then
-            local hit=Trajectory.intersection(origin.X,origin.Y,delta.X,delta.Y,
-                b.x,b.y,0.55,def.height-1)
+            local hit=Trajectory.box(origin.X-b.x,origin.Y-b.y-def.height*0.5,origin.Z,
+                delta.X,delta.Y,delta.Z,0.55,def.height*0.5,3.6)
             if hit and hit>0 and hit<limit then limit=hit end
         end
     end
     local target: number?=nil
+    local minX,maxX=math.min(origin.X,goal.X)-2,math.max(origin.X,goal.X)+2
     for _,enemy in ipairs(state.r3.enemies) do
-        local hit=Trajectory.intersection(origin.X,origin.Y,delta.X,delta.Y,
-            enemy.x,groundAt(enemy.x)+0.35,1.25,5.4)
-        if enemy.hp>0 and hit and hit<limit and math.abs(origin.Z+delta.Z*hit)<=2 then
-            target=enemy.id
-            limit=hit
+        if enemy.hp<=0 or enemy.x<minX or enemy.x>maxX then continue end
+        local root=CFrame.new(enemy.x,groundAt(enemy.x)+3.06,0)*CFrame.Angles(0,facing(enemy),0)
+        for _,volume in ipairs(bodyVolumes) do
+            local pose=root*volume.offset
+            local p=pose:PointToObjectSpace(origin)
+            local d=pose:VectorToObjectSpace(delta)
+            local half=volume.half
+            local hit=Trajectory.box(p.X,p.Y,p.Z,d.X,d.Y,d.Z,half.X,half.Y,half.Z)
+            if hit and hit<limit then target,limit=enemy.id,hit end
         end
     end
     return target,limit

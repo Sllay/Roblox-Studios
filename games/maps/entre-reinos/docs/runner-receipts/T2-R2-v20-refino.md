@@ -21,3 +21,10 @@ Referências revisadas · [Position and size](https://create.roblox.com/docs/ui/
 - Pontos de atendimento distintos são reservados ao chegar à estrutura. O detector compara a distância ao destino ao longo do tempo e pode liberar um trabalho parado sem descartar carga.
 - A apresentação usa velocidade suavizada e limiares diferentes para iniciar e parar a animação de caminhada.
 - Passaram as suítes Luau de produção, alimentação, mercado, regiões, pontes, trabalho e 2.400 segundos de simulação de dois reinos. A regressão de atendimento confirmou três pontos distintos e transferência da vaga. Cadência de rede e fluidez visual ainda precisam de cliente Roblox.
+
+## D — Ameaça, combate e prólogo
+
+- Invasores que alcançam a área habitada acionam evacuação. Uma noite tranquila não interrompe o trabalho. Civis preservam os trabalhos e a custódia e buscam abrigo alcançável sem atravessar o inimigo. Defensores armados mantêm posição ou avançam até alcance útil.
+- Cada flecha usa o primeiro impacto do segmento entre posições consecutivas. Os seis volumes vêm das partes do rig R6. Terrain, estruturas físicas e muralhas da faixa jogável limitam o impacto.
+- Atores da campanha usam grupo de colisão próprio e orientação explícita em cada cena. A hesitação continua no roteiro. Flechas para um arqueiro são entregues perto dele a partir da bolsa real.
+- Luau confirmou noite tranquila, evacuação por ameaça, custódia preservada, retomada e interseções 3D. A animação, o contato do jogador com o duque e a flecha contra um rig no cliente seguem para prova Roblox.

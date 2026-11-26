@@ -363,3 +363,29 @@ assert(cappedX==longX and cappedY==longY)
 local dx,early=Ballistics.offset(longX,longY,196.2,0.15)
 local _,late=Ballistics.offset(longX,longY,196.2,0.75)
 assert(dx>0 and early>0 and late<0,"preview has to fall under the same gravity as the server")
+
+local Sweep=require("../places/main/src/ReplicatedStorage/Living/Trajectory")
+assert(Sweep.box(-8,0.4,0.3,20,0,0,1,1,0.55)==0.35)
+assert(Sweep.box(-8,0.4,1.8,20,0,0,1,1,0.55)==nil)
+assert(Sweep.box(0,0,0,20,0,0,1,1,0.55)==0)
+
+local safety=Living.new(516639272)
+R3.ensure(safety,false)
+safety.r3.prologue.stage="sandbox"
+local worker=safety.npcs[1]
+worker.x,worker.z=-10,-4.4
+worker.state="gather"
+worker.reserved=2
+safety.elapsed=R3.NIGHT_START+1
+R3.step(safety,0.1,0)
+assert(not worker.underAttack)
+R3.spawnWave(safety,2)
+safety.r3.enemies[1].x=45
+R3.step(safety,0.1,0)
+assert(worker.underAttack and worker.safety=="evacuating")
+assert(worker.state=="gather" and worker.reserved==2)
+table.clear(safety.r3.enemies)
+safety.elapsed+=5
+R3.step(safety,0.1,0)
+assert(not worker.underAttack and worker.safety=="resuming")
+print("ENTRE_REINOS_V20_RAID: threat-driven evacuation preserves working custody; 3D sweep")

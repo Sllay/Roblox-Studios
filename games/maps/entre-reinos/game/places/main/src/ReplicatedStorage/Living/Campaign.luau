@@ -74,12 +74,12 @@ function Story.actors(p: any): {any}
     if not p.scene then return {} end
     local phase=p.stage
     if phase=="coronation" then
-        return {{id="herald",label="Porta-voz dos sobreviventes",x=0,kind="guard",activity="crown"}}
+        return {{id="herald",label="Porta-voz dos sobreviventes",x=0,kind="guard",activity="crown",direction=1}}
     end
     if phase=="duke_fight" or phase=="crisis" then
         return {
-            {id="guard_one",label="",x=p.dukeX+3,kind="guard",activity="fallen"},
-            {id="guard_two",label="",x=p.dukeX+6,kind="guard",activity="fallen"},
+            {id="guard_one",label="",x=p.dukeX+3,kind="guard",activity="fallen",direction=-1},
+            {id="guard_two",label="",x=p.dukeX+6,kind="guard",activity="fallen",direction=-1},
         }
     end
     if not (phase=="guard" or phase=="escort" or phase=="encounter" or phase=="hesitation") then
@@ -87,13 +87,13 @@ function Story.actors(p: any): {any}
     end
     local activity=if phase=="hesitation" then "stagger" elseif phase=="escort" then "escort" else "idle"
     local result={
-        {id="duke",label="Duque",x=p.dukeX,kind="duke",activity=activity},
-        {id="guard_one",label="Guarda real",x=p.dukeX+3,kind="guard",activity=activity},
-        {id="guard_two",label="Guarda real",x=p.dukeX+6,kind="guard",activity=activity},
+        {id="duke",label="Duque",x=p.dukeX,kind="duke",activity=activity,direction=-1},
+        {id="guard_one",label="Guarda real",x=p.dukeX+3,kind="guard",activity=activity,direction=-1},
+        {id="guard_two",label="Guarda real",x=p.dukeX+6,kind="guard",activity=activity,direction=-1},
     }
     if phase=="encounter" or phase=="hesitation" then
         table.insert(result,{id="creature",label="Criatura infectante",
-            x=p.creatureX,kind="creature",activity="encounter"})
+            x=p.creatureX,kind="creature",activity="encounter",direction=1})
     end
     return result
 end
