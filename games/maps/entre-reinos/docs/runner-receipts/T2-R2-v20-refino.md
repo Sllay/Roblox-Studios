@@ -14,3 +14,10 @@ Referências revisadas · [Position and size](https://create.roblox.com/docs/ui/
 - Castelo, carpintaria, ferraria, galpão, fazenda e doca têm páginas próprias. Produção exige a estação específica. Transferências do galpão verificam proximidade, autorização, reservas e capacidade.
 - Profissões, prioridades e equipamento usam ordens no caderno. Uma reserva de equipamento é temporária. A entrega exige chegada ao depósito que realmente tem o item. Ferramentas substituídas conservam a durabilidade.
 - Luau verificou uma lança disputada por dois moradores, reserva exclusiva, reabertura e retirada após deslocamento. Os 26 testes Python específicos passaram. Layout, seleção de alvos e acesso às estruturas seguem pendentes em cliente Roblox.
+
+## C — Navegação local e atendimento
+
+- Índice espacial por tick reduz o conjunto de vizinhos consultado pelo desvio. A procura de rota regional e a capacidade de pontes continuam nos motores existentes.
+- Pontos de atendimento distintos são reservados ao chegar à estrutura. O detector compara a distância ao destino ao longo do tempo e pode liberar um trabalho parado sem descartar carga.
+- A apresentação usa velocidade suavizada e limiares diferentes para iniciar e parar a animação de caminhada.
+- Passaram as suítes Luau de produção, alimentação, mercado, regiões, pontes, trabalho e 2.400 segundos de simulação de dois reinos. A regressão de atendimento confirmou três pontos distintos e transferência da vaga. Cadência de rede e fluidez visual ainda precisam de cliente Roblox.

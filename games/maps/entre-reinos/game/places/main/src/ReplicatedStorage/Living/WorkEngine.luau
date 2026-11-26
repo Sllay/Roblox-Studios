@@ -12,6 +12,7 @@ local Inventory=require("./Inventory")
 local World=require("../WorldProfile")
 local Regions=require("../RegionalProfile")
 local Routes=require("../RegionalCrossings")
+local Crowd=require("./Crowd")
 local Engine={}
 Engine.orders=table.freeze({"balanced","building","stock","food"})
 Engine.learn=Needs.learn
@@ -189,6 +190,7 @@ local function ready(b: any): boolean
     return true
 end
 local function clearJob(npc: any, state: any)
+    Crowd.release(state,npc)
     local b=findBuilding(state,npc.jobId)
     if b and npc.reserved and npc.reserved>0 and npc.carryItem then
         b.claimed[npc.carryItem]=math.max(0,(b.claimed[npc.carryItem] or 0)-npc.reserved)
@@ -238,6 +240,7 @@ local function projectPriority(state: any,b: any): number
 end
 
 function Engine.releaseBuildingJobs(state: any, buildingId: number)
+    Crowd.index(state).approaches[buildingId]=nil
     for _,npc in ipairs(state.npcs) do
         if npc.jobId==buildingId or npc.storageId==buildingId then clearJob(npc,state) end
     end
@@ -573,13 +576,13 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
     local angle=math.atan2(dz,dx)
     local bestX,bestZ=npc.x,z
     local bestScore=-math.huge
+    local neighbors=Crowd.near(Crowd.index(state),npc)
     for _,offset in ipairs(steering) do
         local x=npc.x+math.cos(angle+offset)*travel
         local nextZ=z+math.sin(angle+offset)*travel
         if not freeGround(state,npc,x,nextZ,allowUnloaded) then continue end
         local score=math.cos(offset)
-        for _,other in ipairs(state.npcs) do
-            if other==npc or other.health<=0 then continue end
+        for _,other in ipairs(neighbors) do
             local before=(npc.x-other.x)^2+(z-(other.z or 0))^2
             local after=(x-other.x)^2+(nextZ-(other.z or 0))^2
             if after<2.4 and after<before then score-=3*(2.4-after) end
@@ -589,19 +592,23 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
         if score>bestScore then
             bestScore,bestX,bestZ=score,x,nextZ
         end
-        if score>=1 then break end
+        if offset==0 and score>=1 then break end
     end
-    if bestScore==-math.huge then
-        if state.production and npc.state~="freight" then
-            npc.stallTime=(npc.stallTime or 0)+dt
-            if npc.stallTime>=8 then
-                npc.stallTime=nil
-                clearJob(npc,state)
-            end
-        end
+    local goalChanged=npc.progressGoalX~=destX or npc.progressGoalZ~=targetZ
+    local after=(destX-bestX)^2+(targetZ-bestZ)^2
+    if goalChanged or after+0.10<(npc.progressDistance or math.huge) then
+        npc.progressGoalX,npc.progressGoalZ=destX,targetZ
+        npc.progressDistance=after
+        npc.stallTime=0
+    else
+        npc.stallTime=(npc.stallTime or 0)+dt
+    end
+    if npc.stallTime>=8 and state.production and npc.state~="freight" and not npc.underAttack then
+        npc.stallTime,npc.progressDistance=nil,nil
+        clearJob(npc,state)
         return false
     end
-    npc.stallTime=nil
+    if bestScore==-math.huge then return false end
     npc.motionX=(bestX-npc.x)/dt
     npc.motionZ=(bestZ-z)/dt
     local turn=dx*(bestZ-z)-dz*(bestX-npc.x)
@@ -616,8 +623,41 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
         end
     end
     npc.x,npc.z=bestX,bestZ
+    Crowd.move(state,npc)
     npc.fatigue=math.min(100,npc.fatigue+dt*0.03)
     return (finalX-npc.x)^2+(finalZ-npc.z)^2<=NEAR^2
+end
+
+-- Work fronts remain outside the collision footprint. The bridge has its
+-- own bank target and its deck capacity remains authoritative.
+function Engine.walkToBuilding(state: any,npc: any,b: any,dt: number,allowUnloaded: boolean?): boolean
+    local x,z=builderTarget(state,npc,b)
+    if b.crossingId or not state.production then
+        return Engine.walkResident(state,npc,x,dt,z,nil,allowUnloaded)
+    end
+    if math.abs(npc.x-x)>14 then
+        Crowd.release(state,npc)
+        return Engine.walkResident(state,npc,x,dt,z,nil,allowUnloaded)
+    end
+    local index=Crowd.index(state)
+    local options=index.approaches[b.id]
+    if not options then
+        options={0}
+        local base=sample(state,x,z)
+        for _,offset in ipairs({-2.15,2.15}) do
+            local candidate=sample(state,x+offset,z)
+            if not candidate.wet and math.abs(candidate.height-base.height)<1.5 then
+                table.insert(options,offset)
+            end
+        end
+        index.approaches[b.id]=options
+    end
+    local offset=Crowd.stand(state,npc,b.id,options)
+    if offset==nil then
+        npc.activity="waiting_access"
+        return false
+    end
+    return Engine.walkResident(state,npc,x+offset,dt,z,nil,allowUnloaded)
 end
 
 local function wander(npc: any,state: any,dt: number)
@@ -875,7 +915,7 @@ local function receiveGear(state: any,npc: any,dt: number): boolean
         npc.gearDepot,npc.gearUntil=depot.id,state.elapsed+math.max(28,distance/2+12)
     end
     npc.activity="receiving_gear"
-    local arrived=Engine.walkResident(state,npc,depot.x,dt,-4.4)
+    local arrived=Engine.walkToBuilding(state,npc,depot,dt)
     if not arrived then return true end
     local previous=npc[field]
     if field=="tool" and type(previous)=="table" and previous.item==item then
@@ -999,7 +1039,7 @@ function Engine.step(state: any, dt: number)
                 local item=npc.carryItem
                 if not storage or not item then
                     clearJob(npc,state)
-                elseif Engine.walkResident(state,npc,storage.x,dt,-4.4) then
+                elseif Engine.walkToBuilding(state,npc,storage,dt) then
                     local carried=Inventory.count(npc.inventory,item)
                     local amount=math.min(carried,npc.reserved,storageSpace(state,storage,item,npc))
                     if amount>0 and Inventory.transfer(npc.inventory,
@@ -1012,14 +1052,12 @@ function Engine.step(state: any, dt: number)
                 clearJob(npc,state)
             elseif b then
                 local item=npc.carryItem
-                local targetX,targetZ=builderTarget(state,npc,b)
                 if npc.state=="gather" and item then
                     local site=findSite(state,npc.siteId)
                     local storage=storeBuilding(state,npc.storageId)
                     if not storage and (not site or site.item~=item) then
                         clearJob(npc,state)
-                    elseif Engine.walkResident(state,npc,if storage then storage.x else site.x,dt,
-                        if storage then -5 else sourceDepth(state,site))
+                    elseif ((storage and Engine.walkToBuilding(state,npc,storage,dt)) or (not storage and Engine.walkResident(state,npc,site.x,dt,sourceDepth(state,site))))
                         and working(npc,dt*(if storage then 1 else Production.toolRate(npc,gatherTool(item))*Needs.rate(npc,gatherSkill(item))),
                             if storage then "load" else "collect") then
                         local available=if storage then Engine.stockAvailable(state,storage,item,npc)
@@ -1045,7 +1083,7 @@ function Engine.step(state: any, dt: number)
                         end
                     end
                 elseif npc.state=="deliver" and item then
-                    if Engine.walkResident(state,npc,targetX,dt,targetZ) then
+                    if Engine.walkToBuilding(state,npc,b,dt) then
                         local n=math.min(npc.reserved,Inventory.count(npc.inventory,item),
                             math.max(0,(Structures.get(b.typeId).cost[item] or 0)
                                 -(b.delivered[item] or 0)))
@@ -1058,7 +1096,7 @@ function Engine.step(state: any, dt: number)
                 elseif npc.state=="build" then
                     if not ready(b) then
                         clearJob(npc,state)
-                    elseif Engine.walkResident(state,npc,targetX,dt,targetZ) then
+                    elseif Engine.walkToBuilding(state,npc,b,dt) then
                         npc.activity="build"
                         local def=Structures.get(b.typeId)
                         local rate=Professions.buildRate(npc.profession)*Production.toolRate(npc,"hammer")*Needs.rate(npc,"build")

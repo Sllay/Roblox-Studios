@@ -260,7 +260,7 @@ function Market.stepFreight(session: any,dt: number,work: any)
     local town=Market.center(if c.stage=="pickup" then origin else receiving)
     if not town then return end
     local b=depot(if c.stage=="pickup" then origin else receiving,c.item,c.units,town.x,c.stage=="pickup",work)
-    if not b or not work.walkResident(origin,worker,b.x,dt,-4.4,nil,true) then return end
+    if not b or not work.walkToBuilding(origin,worker,b,dt,true) then return end
     if c.stage=="pickup" then
         if work.stockAvailable(origin,b,c.item)>=c.units and Inventory.transfer(b.stored,c.cargo,c.item,c.units) then
             c.stage="delivery"

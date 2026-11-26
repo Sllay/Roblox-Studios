@@ -75,3 +75,17 @@ for _=1,200 do Work.step(requestState,0.1) end
 assert(requestState.npcs[1].defense=="spear" and requestState.npcs[2].defense==nil)
 assert(Inventory.count(requestState.buildings[1].stored,"spear")==0 and Living.valid(requestState))
 print("ENTRE_REINOS_V20_GEAR: one reserved spear retrieved on foot after restore")
+
+local Crowd=require("../places/main/src/ReplicatedStorage/Living/Crowd")
+local queue=Living.new(516639272)
+for _,worker in ipairs(queue.npcs) do worker.x,worker.z=0,0 end
+local first,second,third,fourth=queue.npcs[1],queue.npcs[2],queue.npcs[3],queue.npcs[4]
+local stands={0,-2.15,2.15}
+assert(Crowd.stand(queue,first,1,stands)==0)
+assert(Crowd.stand(queue,second,1,stands)==-2.15)
+assert(Crowd.stand(queue,third,1,stands)==2.15)
+assert(Crowd.stand(queue,fourth,1,stands)==nil)
+assert(Crowd.stand(queue,second,1,stands)==-2.15)
+Crowd.release(queue,first)
+assert(Crowd.stand(queue,fourth,1,stands)==0)
+print("ENTRE_REINOS_V20_CROWD: distinct service points and queue release")

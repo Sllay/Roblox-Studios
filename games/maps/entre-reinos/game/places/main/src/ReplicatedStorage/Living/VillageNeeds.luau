@@ -177,7 +177,7 @@ local function rest(state: any,npc: any,dt: number,work: any): boolean
     end
     if shelter then
         npc.homeId=shelter.id
-        if not work.walkResident(state,npc,shelter.x,dt,-4.4) then return true end
+        if not work.walkToBuilding(state,npc,shelter,dt) then return true end
     end
     npc.activity="rest"
     npc.fatigue=math.max(0,npc.fatigue-dt*(if shelter then 4.5 else 2.5))
@@ -193,7 +193,7 @@ function Needs.care(state: any,npc: any,dt: number,work: any): boolean
         local depot=nearbyFood(state,npc,work)
         if depot then
             if npc.state~="meal" then work.releaseWorker(state,npc);npc.state="meal" end
-            if work.walkResident(state,npc,depot.x,dt,-4.4) and work.stockAvailable(state,depot,"food")>0
+            if work.walkToBuilding(state,npc,depot,dt) and work.stockAvailable(state,depot,"food")>0
                 and Inventory.take(depot.stored,"food",1) then
                 npc.hunger-=45
                 npc.state="idle"
@@ -234,7 +234,7 @@ local function farm(state: any,npc: any,dt: number,work: any): boolean
     if plot.stage=="seed" and Inventory.count(npc.inventory,"grain")<1 then
         for _,b in ipairs(state.buildings) do
             if work.stockAvailable(state,b,"grain")>0 and work.canReach(state,npc.x,b.x,"worker") then
-                if work.walkResident(state,npc,b.x,dt,-4.4) and work.stockAvailable(state,b,"grain")>0 then
+                if work.walkToBuilding(state,npc,b,dt) and work.stockAvailable(state,b,"grain")>0 then
                     Inventory.transfer(b.stored,npc.inventory,"grain",1)
                 end
                 return true
@@ -249,7 +249,7 @@ local function farm(state: any,npc: any,dt: number,work: any): boolean
         end
         return false
     end
-    if not work.walkResident(state,npc,best.x,dt,-4.4) then return true end
+    if not work.walkToBuilding(state,npc,best,dt) then return true end
     npc.activity="farm"
     if plot.stage=="prepare" then
         plot.progress+=dt*Needs.rate(npc,"farm")*Production.toolRate(npc,"hoe")

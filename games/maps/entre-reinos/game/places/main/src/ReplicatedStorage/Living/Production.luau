@@ -153,7 +153,7 @@ function Production.step(state: any,npc: any,dt: number,work: any): boolean
         for _,storage in ipairs(state.buildings) do
             if work.stockAvailable(state,storage,wanted)>0 and work.canReach(state,npc.x,storage.x,"worker") then
                 npc.state="tool"
-                if work.walkResident(state,npc,storage.x,dt,-4.4) and Inventory.take(storage.stored,wanted,1) then
+                if work.walkToBuilding(state,npc,storage,dt) and Inventory.take(storage.stored,wanted,1) then
                     npc.tool={item=wanted,remaining=Items.get(wanted).durability}
                     npc.state="idle"
                 end
@@ -197,7 +197,7 @@ function Production.step(state: any,npc: any,dt: number,work: any): boolean
         order.worker=npc.id
         npc.state="produce"
         if depot then
-            if work.walkResident(state,npc,depot.x,dt,-4.4) then
+            if work.walkToBuilding(state,npc,depot,dt) then
                 local missing=ingredients(npc,recipe,depot,work,state)
                 if missing then
                     for item,count in pairs(missing) do
@@ -207,7 +207,7 @@ function Production.step(state: any,npc: any,dt: number,work: any): boolean
             end
             return true
         end
-        if not work.walkResident(state,npc,station.x,dt,-4.4) then return true end
+        if not work.walkToBuilding(state,npc,station,dt) then return true end
         npc.activity="fabricate"
         local rate=(if profession.craft==recipe.station then 1.65 else 1)*Production.toolRate(npc,"hammer")
             *work.activityRate(npc,"craft")

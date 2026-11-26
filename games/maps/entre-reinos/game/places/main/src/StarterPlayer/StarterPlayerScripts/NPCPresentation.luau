@@ -37,7 +37,7 @@ local function updateNative(item: any,activity: string,speed: number,now: number
         item.animState=""
         return
     end
-    local moving=speed>0.18
+    local moving=speed>(if item.animState=="walking" then 0.19 else 0.45)
     if item.animState~=(if moving then "walking" else "idle") then
         item.animState=if moving then "walking" else "idle"
         if moving then
@@ -125,7 +125,8 @@ function Presentation.start()
             local position=if (target-old).Magnitude>12 then target else old:Lerp(target,blend)
             local travel=(Vector2.new(old.X,old.Z)
                 -Vector2.new(position.X,position.Z)).Magnitude
-            local actualSpeed=travel/step
+            item.speed=(item.speed or 0)+(travel/step-(item.speed or 0))*(1-math.exp(-9*step))
+            local actualSpeed=item.speed
             if item.native then
                 local activity=model:GetAttribute("ER_NPCActivity")
                 updateNative(item,if type(activity)=="string" then activity else "",
