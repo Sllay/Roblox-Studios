@@ -53,10 +53,18 @@ function Production.valid(data: any, state: any): boolean
     for _,npc in ipairs(state.npcs) do
         if npc.order~=nil and npc.order~="balanced" and npc.order~="food" and
             npc.order~="building" and npc.order~="stock" then return false end
-        local tool=npc.tool
-        if tool~=nil then
+        local function validTool(tool: any): boolean
+            if tool==nil then return true end
             local def=type(tool)=="table" and Items.get(tool.item)
-            if not def or def.kind~="tool" or not integer(tool.remaining,1,def.durability) then return false end
+            return def~=nil and def.kind=="tool" and integer(tool.remaining,1,def.durability)
+        end
+        local requested=Items.get(npc.gearOrder)
+        if (npc.gearOrder~=nil and (not requested or (requested.kind~="tool" and requested.kind~="weapon")))
+            or not validTool(npc.tool) or not validTool(npc.gearSpare)
+            or (npc.gearDepot~=nil and not integer(npc.gearDepot,1,state.nextBuildingId-1))
+            or (npc.gearUntil~=nil and not (type(npc.gearUntil)=="number" and npc.gearUntil>=0 and npc.gearUntil<1e9))
+            or (npc.gearRetry~=nil and not (type(npc.gearRetry)=="number" and npc.gearRetry>=0 and npc.gearRetry<1e9)) then
+            return false
         end
     end
     return true
@@ -72,7 +80,7 @@ local function available(station: any): boolean
     return station~=nil and station.state=="complete" and station.health>0 and not station.ruined
 end
 
-function Production.enqueue(state: any, recipeId: any, x: number): (boolean, any)
+function Production.enqueue(state: any, recipeId: any, x: number, stationId: number?): (boolean, any)
     local data=state.production
     local recipe=type(recipeId)=="string" and Production.recipes[recipeId]
     if not data or not recipe then return false,"unknown_recipe" end
@@ -81,7 +89,7 @@ function Production.enqueue(state: any, recipeId: any, x: number): (boolean, any
     local distance=18
     for _,station in ipairs(state.buildings) do
         local d=math.abs(x-station.x)
-        if station.typeId==recipe.station and available(station) and d<distance then
+        if (stationId==nil or station.id==stationId) and station.typeId==recipe.station and available(station) and d<distance then
             closest,distance=station,d
         end
     end

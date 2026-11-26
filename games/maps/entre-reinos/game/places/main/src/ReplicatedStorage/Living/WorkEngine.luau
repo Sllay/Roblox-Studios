@@ -296,10 +296,29 @@ local function storeBuilding(state: any, id: any): any
     return if Engine.usableStorage(b) then b else nil
 end
 
+local gearItems={bow=true,spear=true,axe=true,pick=true,hoe=true,hammer=true}
+local function gearField(item: string): string
+    return if item=="bow" or item=="spear" then "defense" else "tool"
+end
+
+function Engine.orderGear(state: any,npc: any,item: any): boolean
+    if not state.production or type(item)~="string" or not gearItems[item] or npc.health<=0 then return false end
+    local field=gearField(item)
+    if npc[field]==item or (field=="tool" and npc.tool and npc.tool.item==item) or npc.gearOrder==item then return false end
+    npc.gearOrder=item
+    npc.gearDepot=nil
+    npc.gearUntil=nil
+    return true
+end
+
 function Engine.stockAvailable(state: any, b: any, item: string, except: any?): number
     if not Engine.usableStorage(b) then return 0 end
     local count=Inventory.count(b.stored,item)
     for _,npc in ipairs(state.npcs) do
+        if npc~=except and npc.health>0 and npc.gearDepot==b.id and npc.gearOrder==item
+            and (npc.gearUntil or 0)>state.elapsed then
+            count-=1
+        end
         if npc~=except and npc.storageId==b.id and npc.carryItem==item
             and npc.state=="gather" then
             count-=npc.reserved
@@ -821,6 +840,66 @@ function Engine.damage(state: any, buildingId: number, amount: number): boolean
     return true
 end
 
+function Engine.storageSpace(state: any,depot: any,item: string): number
+    return storageSpace(state,depot,item)
+end
+
+local function receiveGear(state: any,npc: any,dt: number): boolean
+    local item=npc.gearOrder
+    if not gearItems[item] then return false end
+    local field=gearField(item)
+    if npc[field]==item then
+        npc.gearOrder,npc.gearDepot,npc.gearUntil=nil,nil,nil
+        return false
+    end
+    if field=="tool" and npc.gearSpare and npc.gearSpare.item==item and npc.state=="idle" then
+        npc.tool,npc.gearSpare=npc.gearSpare,npc.tool
+        npc.gearOrder=nil
+        return false
+    end
+    local depot=findBuilding(state,npc.gearDepot)
+    if not depot or not Engine.usableStorage(depot) or (npc.gearUntil or 0)<=state.elapsed then
+        npc.gearDepot,npc.gearUntil=nil,nil
+        -- Wait for the current job to finish instead of suspending its reservation.
+        if npc.state~="idle" or (npc.gearRetry or 0)>state.elapsed then return false end
+        local distance=math.huge
+        depot=nil
+        for _,candidate in ipairs(state.buildings) do
+            local gap=math.abs(npc.x-candidate.x)
+            if gap<distance and Engine.stockAvailable(state,candidate,item)>0
+                and Engine.canReach(state,npc.x,candidate.x,"worker") then
+                depot,distance=candidate,gap
+            end
+        end
+        if not depot then npc.gearRetry=state.elapsed+4;return false end
+        npc.gearDepot,npc.gearUntil=depot.id,state.elapsed+math.max(28,distance/2+12)
+    end
+    npc.activity="receiving_gear"
+    local arrived=Engine.walkResident(state,npc,depot.x,dt,-4.4)
+    if not arrived then return true end
+    local previous=npc[field]
+    if field=="tool" and type(previous)=="table" and previous.item==item then
+        npc.gearOrder=nil
+    elseif (not previous or (field=="tool" and not npc.gearSpare)
+        or (field=="defense" and Inventory.canAdd(npc.inventory,previous,1)))
+        and Engine.stockAvailable(state,depot,item,npc)>0 and Inventory.take(depot.stored,item,1) then
+        if field=="defense" then
+            if previous then assert(Inventory.add(npc.inventory,previous,1)) end
+            npc.defense=item
+        else
+            if previous then
+                -- Keep worn tools in custody with their existing durability.
+                npc.gearSpare=previous
+            end
+            npc.tool={item=item,remaining=Items.get(item).durability}
+        end
+        npc.gearOrder=nil
+    end
+    npc.gearDepot,npc.gearUntil=nil,nil
+    npc.gearRetry=state.elapsed+4
+    return true
+end
+
 function Engine.step(state: any, dt: number)
     if type(dt)~="number" or dt~=dt or dt<=0 then return end
     -- Fixed step by the host; cap to avoid huge catch-up after a sleeping phone.
@@ -870,7 +949,9 @@ function Engine.step(state: any, dt: number)
         -- canceling reserved materials or losing work progress. R3Engine
         -- determines danger and defensive/escape movement after this tick.
         if npc.state=="freight" then continue end
-        if Social.stepResident(state,npc,dt,Engine) or npc.underAttack then continue end
+        if npc.underAttack then continue end
+        if Social.stepResident(state,npc,dt,Engine) then continue end
+        if state.production and receiveGear(state,npc,dt) then continue end
         if Needs.care(state,npc,dt,Engine) then continue end
         if not state.production and npc.hunger>70 and Inventory.count(npc.inventory,"food")>0 then
             if Inventory.take(npc.inventory,"food",1) then npc.hunger-=45 end
@@ -1104,16 +1185,23 @@ function Engine.summary(state: any): any
             if b.state=="ruined" or b.state=="damaged" then tally.damage+=1 end
             districts[district]=tally
         end
+        local available={}
+        if b.stored then
+            for item in pairs(b.stored.items) do available[item]=Engine.stockAvailable(state,b,item) end
+        end
         table.insert(buildings,{id=b.id,name=def.label,typeId=b.typeId,
             state=b.state,x=b.x,canCancel=Engine.canCancel(b),district=district,
             progress=math.floor(b.progress/def.buildSeconds*100),
             priority=state.production and state.production.priorityBuilding==b.id,health=b.health,plot=b.plot and table.clone(b.plot),delivered=table.clone(b.delivered),
-            stored=if b.stored then table.clone(b.stored.items) else {}})
+            stored=if b.stored then table.clone(b.stored.items) else {},available=available,
+            storedWeight=if b.stored then Inventory.weight(b.stored) else 0,
+            storedCapacity=if b.stored then b.stored.maxMass else 0})
     end
     local workers={}
     for _,n in ipairs(state.npcs) do
         table.insert(workers,{id=n.id,name=n.name,profession=n.profession,
             state=n.activity or n.state,defense=n.defense or "none",
+            gearOrder=n.gearOrder,gettingGear=n.gearDepot~=nil,
             district=Engine.districtAt(state,n.x),health=n.health,arrows=n.arrows or 0,hunger=n.hunger,fatigue=n.fatigue,homeId=n.homeId,order=n.order or "balanced",
             social=n.social and {trust=n.social.trust,mood=Social.mood(n),courage=n.social.courage,
                 memory=n.social.memories[#n.social.memories] and table.clone(n.social.memories[#n.social.memories]),

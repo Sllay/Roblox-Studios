@@ -54,3 +54,24 @@ assert(Production.enqueue(state,"bow",0))
 for _=1,400 do Work.step(state,0.1) end
 assert(state.production.completed==3 and #state.production.orders==1)
 print("ENTRE_REINOS_T2_R2_PRODUCTION: persisted craft, actual reagents, output, tool wear and missing input passed")
+
+local requestState=Living.new(516639272)
+requestState.sites={}
+local receiver,other=requestState.npcs[1],requestState.npcs[2]
+requestState.npcs={receiver,other}
+receiver.x,receiver.z=-23,-4.4
+other.x,other.z=-27,-4.4
+requestState.buildings={finished(1,"stockpile",-12),finished(2,"workshop",0),finished(3,"forge",12)}
+requestState.nextBuildingId=4
+Production.ensure(requestState)
+assert(not Production.enqueue(requestState,"planks",12,3))
+assert(Inventory.add(requestState.buildings[1].stored,"spear",1))
+assert(Work.orderGear(requestState,receiver,"spear") and Work.orderGear(requestState,other,"spear"))
+Work.step(requestState,0.1)
+assert(receiver.defense==nil and receiver.gearDepot==1 and other.gearDepot==nil)
+assert(Work.stockAvailable(requestState,requestState.buildings[1],"spear")==0)
+requestState=assert(Living.restore(requestState,requestState.seed))
+for _=1,200 do Work.step(requestState,0.1) end
+assert(requestState.npcs[1].defense=="spear" and requestState.npcs[2].defense==nil)
+assert(Inventory.count(requestState.buildings[1].stored,"spear")==0 and Living.valid(requestState))
+print("ENTRE_REINOS_V20_GEAR: one reserved spear retrieved on foot after restore")

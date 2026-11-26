@@ -250,6 +250,21 @@ function Service.status(player: Player,root: BasePart): string?
     return nil
 end
 
+function Service.interactionPoint(action: string,root: BasePart): Vector3?
+    local point: any=nil
+    if action=="mount" then point=regional.record.mount.position
+    elseif action=="board" then point=regional.record.boat.position
+    elseif action=="buy_mount" then point={x=18,y=Profile.sample(regional.seed,18,0).height,z=0}
+    elseif action=="dock" then
+        local stop=nearStop(root,9)
+        if stop then point=stop.moor end
+    elseif action=="travel" then
+        local _,arrival=nearbyCapital(root.Position.X)
+        point=arrival
+    end
+    return if point then Vector3.new(point.x,point.y+2,point.z or 0) else nil
+end
+
 function Service.cargo(player: Player, direction: any): any
     if player~=owner or not regional or transit or (direction~="load" and direction~="unload") then
         return {ok=false,error="travel_unavailable"}

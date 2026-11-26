@@ -42,6 +42,7 @@ local errorTexts={
     wood_source_too_far="Sem madeira próxima. Siga a indicação da árvore na oficina.",
     player_bag_full="Sua bolsa está cheia. Use a madeira antes de recolher mais.",
     ammo_capacity="Aljava cheia: gaste flechas antes de fabricar.",
+    stock_unavailable="Sem estoque livre ou espaço suficiente.",
     too_far_from_market="Troque recursos perto do centro da vila.",
     not_enough_equipment_materials="Faltam materiais para equipar.",
     too_far_from_defender="Aproxime-se do morador escolhido.",
@@ -211,6 +212,8 @@ function UI.start(player: Player)
     local busy=false
     local refreshInFlight=false
     local tab="build"
+    local openSite: any=nil
+    local selectedContext: any=nil
     local tabsUI: {[string]: TextButton}={}
     local pages: {[string]: GuiObject}={}
     local builders: any=nil
@@ -249,6 +252,10 @@ function UI.start(player: Player)
             notify("Duas madeiras recolhidas na sua bolsa.")
         elseif action=="arm_defender" then
             notify("Morador equipado para defesa.")
+        elseif action=="equipment_order" then
+            notify("Ordem recebida. O morador vai buscar o equipamento.")
+        elseif action=="stock_transfer" then
+            notify("Estoque atualizado.")
         elseif action=="pickup_coin" then
             notify("Moeda recolhida.")
         elseif action=="drop_coin" then
@@ -292,7 +299,7 @@ function UI.start(player: Player)
     villTitle.Font=Enum.Font.GothamBold
     villTitle.TextColor3=C.paper
     local villHelp=rowText(villagersPage,"Help",
-        "Aproxime-se para interagir, definir o ofício ou equipar. Depois do prólogo, armas vêm da oficina e da forja.",2,53)
+        "Dê ordens a partir do caderno. Para conversar ou presentear, aproxime-se do morador.",2,53)
     local workerRows: {[number]: TextButton}={}
     local selectedNpcId=0
     local updateVillage: ()->()
@@ -349,52 +356,76 @@ function UI.start(player: Player)
     equipBar.LayoutOrder=501
     equipBar.Size=UDim2.new(1,-8,0,40)
     equipBar.Parent=villagersPage
-    local equipBow=button(equipBar,"EquipBow","ARCO")
-    equipBow.Size=UDim2.new(0.49,0,1,0)
-    local equipSpear=button(equipBar,"EquipSpear","LANÇA")
-    equipSpear.Position=UDim2.new(0.51,0,0,0)
-    equipSpear.Size=UDim2.new(0.49,0,1,0)
-    local function equip(weapon: string)
-        if selectedNpcId==0 then notify("Escolha primeiro um morador.");return end
-        if nearby.npcId~=selectedNpcId then
-            notify("Aproxime-se do morador antes de equipá-lo.")
-            return
-        end
-        request("arm_defender",tostring(selectedNpcId)..":"..weapon)
-    end
-    equipBow.Activated:Connect(function() equip("bow") end)
-    equipSpear.Activated:Connect(function() equip("spear") end)
+    local equipment={"bow","spear","axe","pick","hammer","hoe"}
+    local gearIndex=1
+    local chooseGear=button(equipBar,"ChooseGear","Arco →")
+    chooseGear.Size=UDim2.new(0.49,0,1,0)
+    chooseGear.Activated:Connect(function()
+        gearIndex=gearIndex%#equipment+1
+        chooseGear.Text=Items.get(equipment[gearIndex]).label.." →"
+    end)
+    local equip=button(equipBar,"RequestGear","SOLICITAR")
+    equip.Position=UDim2.new(0.51,0,0,0)
+    equip.Size=UDim2.new(0.49,0,1,0)
+    equip.Activated:Connect(function()
+        request("equipment_order",{id=selectedNpcId,item=equipment[gearIndex]})
+    end)
 
-    local workshop=scroll(content,"VillageWorkshop")
-    workshop.Visible=false
-    pages.workshop=workshop
-    local craftTitle=rowText(workshop,"Title","OFICINA E COMÉRCIO",1,30)
-    craftTitle.TextSize=15
-    craftTitle.Font=Enum.Font.GothamBold
-    craftTitle.TextColor3=C.paper
-    local productionInfo=rowText(workshop,"ProductionQueue","",20,50)
+    local panels: {[string]: ScrollingFrame}={}
+    local details: {[string]: TextLabel}={}
+    local siteLabels={castle="Castelo",forge="Ferraria",workshop="Carpintaria",
+        stockpile="Galpão",farm="Fazenda",dock="Doca",property="Construção"}
+    for key,title in pairs(siteLabels) do
+        local page=scroll(content,"Site_"..key)
+        page.Visible=false
+        pages[key]=page
+        panels[key]=page
+        local heading=rowText(page,"Title",title,1,30)
+        heading.TextSize=16
+        heading.Font=Enum.Font.GothamBold
+        details[key]=rowText(page,"Details","",2,55)
+    end
     for index,recipeId in ipairs(Production.order) do
         local recipe=Production.recipes[recipeId]
-        local control=button(workshop,"Recipe_"..recipeId,recipe.label.." · "..recipe.cost)
+        local control=button(panels[recipe.station],"Recipe_"..recipeId,recipe.label.." · "..recipe.cost)
         control.LayoutOrder=20+index
         control.Size=UDim2.new(1,-12,0,44)
-        control.Activated:Connect(function() request("produce",recipeId) end)
+        control.Activated:Connect(function()
+            if openSite then request("produce",{recipe=recipeId,station=openSite.id}) end
+        end)
     end
-    local craftInfo=rowText(workshop,"AmmoInfo","",2,97)
-    local collectButton=button(workshop,"TakeWood","RECOLHER 2 MADEIRAS")
-    collectButton.LayoutOrder=3
-    collectButton.Size=UDim2.new(1,-12,0,42)
-    local craftButton=button(workshop,"CraftArrows","FABRICAR 6 FLECHAS")
-    craftButton.LayoutOrder=4
-    craftButton.Size=UDim2.new(1,-12,0,42)
-    local tradeInfo=rowText(workshop,"TradeInfo","",5,67)
+    local arrows=button(panels.workshop,"CraftArrows","FABRICAR 6 FLECHAS · 2 MADEIRAS")
+    arrows.LayoutOrder=19
+    arrows.Size=UDim2.new(1,-12,0,42)
+    arrows.Activated:Connect(function() request("craft_arrows",openSite and openSite.id) end)
+    local depotItems={}
+    for item in pairs(Items.all) do table.insert(depotItems,item) end
+    table.sort(depotItems)
+    local depotItemIndex=1
+    local depotItem=button(panels.stockpile,"Item","")
+    depotItem.LayoutOrder=3
+    depotItem.Size=UDim2.new(1,-12,0,42)
+    depotItem.Activated:Connect(function()
+        depotItemIndex=depotItemIndex%#depotItems+1
+        updateVillage()
+    end)
+    for index,direction in ipairs({"take","put"}) do
+        local transfer=button(panels.stockpile,"Stock_"..direction,if direction=="take" then "RETIRAR 1" else "DEPOSITAR 1")
+        transfer.LayoutOrder=3+index
+        transfer.Size=UDim2.new(1,-12,0,42)
+        transfer.Activated:Connect(function()
+            if openSite then request("stock_transfer",{id=openSite.id,item=depotItems[depotItemIndex],direction=direction}) end
+        end)
+    end
+    local castle=panels.castle
+    local tradeInfo=rowText(castle,"TradeInfo","",5,67)
     local marketIndex=1
-    local marketChoice=button(workshop,"MarketChoice","")
-    local buyGood=button(workshop,"BuyGood","COMPRAR")
-    local sellGood=button(workshop,"SellGood","VENDER")
-    local exportGood=button(workshop,"ExportGood","ENVIAR 2 AO CEDRO")
-    local importGood=button(workshop,"ImportGood","TRAZER 2 DO CEDRO")
-    local cancelContract=button(workshop,"CancelContract","CANCELAR CONTRATO")
+    local marketChoice=button(castle,"MarketChoice","")
+    local buyGood=button(castle,"BuyGood","COMPRAR")
+    local sellGood=button(castle,"SellGood","VENDER")
+    local exportGood=button(castle,"ExportGood","ENVIAR 2 AO CEDRO")
+    local importGood=button(castle,"ImportGood","TRAZER 2 DO CEDRO")
+    local cancelContract=button(castle,"CancelContract","CANCELAR CONTRATO")
     local marketControls={marketChoice,buyGood,sellGood,exportGood,importGood,cancelContract}
     for index,control in ipairs(marketControls) do
         control.LayoutOrder=30+index
@@ -414,51 +445,25 @@ function UI.start(player: Player)
     exportGood.Activated:Connect(function() request("freight",{seller="home",units=2,item=Market.goods[marketIndex],id=HttpService:GenerateGUID(false)}) end)
     importGood.Activated:Connect(function() request("freight",{seller="foreign",units=2,item=Market.goods[marketIndex],id=HttpService:GenerateGUID(false)}) end)
     cancelContract.Activated:Connect(function() request("freight_cancel",nil) end)
-    local diplomacyInfo=rowText(workshop,"Relations","",40,58)
+    local diplomacyInfo=rowText(castle,"Relations","",40,58)
     local diplomacyButtons={}
     for index,entry in ipairs({{"trade","ACORDO COMERCIAL"},{"alliance","ALIANÇA"},
         {"tribute","TRIBUTO AO CEDRO · 3 MOEDAS"},{"withdraw","ENCERRAR ACORDO"}}) do
-        local control=button(workshop,"Diplomacy_"..entry[1],entry[2])
+        local control=button(castle,"Diplomacy_"..entry[1],entry[2])
         control.LayoutOrder=40+index
         control.Size=UDim2.new(1,-12,0,42)
         control.Visible=false
         control.Activated:Connect(function() request("diplomacy",entry[1]) end)
         table.insert(diplomacyButtons,control)
     end
-    local tradeButton=button(workshop,"SellWood","VENDER 1 MADEIRA")
+    local tradeButton=button(castle,"SellWood","VENDER 1 MADEIRA")
     tradeButton.LayoutOrder=6
     tradeButton.Size=UDim2.new(1,-12,0,42)
-    local coinsInfo=rowText(workshop,"PurseInfo","",7,62)
-    local dropCoin=button(workshop,"DropCoin","SOLTAR 1 MOEDA")
+    local coinsInfo=rowText(castle,"PurseInfo","",7,62)
+    local dropCoin=button(castle,"DropCoin","SOLTAR 1 MOEDA")
     dropCoin.LayoutOrder=8
     dropCoin.Size=UDim2.new(1,-12,0,42)
 
-    collectButton.Activated:Connect(function()
-        if (nearby.wood or 0)>=2 then
-            request("take_wood",nil)
-        else
-            local dist=nearby.nearestWoodDistance or -1
-            if dist>=0 then
-                notify("Árvore com madeira a "..tostring(dist).." studs à "..
-                    tostring(nearby.nearestWoodDirection)..".")
-            else
-                notify("Madeira esgotada nas fontes conhecidas.")
-            end
-        end
-    end)
-    craftButton.Activated:Connect(function()
-        if (hud.playerWood or 0)<2 and nearby.canCraftArrows~=true then
-            local dist=nearby.nearestWoodDistance or -1
-            if dist>=0 then
-                notify("Madeira disponível "..tostring(dist).." studs à "..
-                    tostring(nearby.nearestWoodDirection)..". Aproxime-se e recolha.")
-            else
-                notify("Faltam duas madeiras na bolsa ou num galpão próximo.")
-            end
-            return
-        end
-        request("craft_arrows",nil)
-    end)
     tradeButton.Activated:Connect(function() request("trade","wood") end)
     dropCoin.Activated:Connect(function() request("drop_coin",nil) end)
 
@@ -466,17 +471,17 @@ function UI.start(player: Player)
         {"build","OBRAS"},
         {"resources","ESTOQUE"},
         {"villagers","PESSOAS"},
-        {"workshop","OFICINA"},
     }
     for i,item in ipairs(entries) do
         local b=button(tabs,"Tab_"..item[1],item[2])
         b.LayoutOrder=i
-        b.Size=UDim2.new(0.25,-4,1,0)
+        b.Size=UDim2.new(1/3,-4,1,0)
         b.TextSize=10
         tabsUI[item[1]]=b
     end
     local function showTab(nextTab: string)
         tab=nextTab
+        tabs.Visible=panels[tab]==nil
         for key,page in pairs(pages) do page.Visible=(key==tab) end
         for key,b in pairs(tabsUI) do
             b.BackgroundColor3=if key==tab then C.raised else C.surface
@@ -492,6 +497,7 @@ function UI.start(player: Player)
 
     local function showJournal(value: boolean,nextTab: string?)
         if value then builds.closePreview() end
+        if not value or (nextTab and not panels[nextTab]) then openSite=nil end
         journal.Visible=value
         openJournal.Text=if value then "FECHAR" else "VILA"
         if nextTab then showTab(nextTab) end
@@ -559,16 +565,20 @@ function UI.start(player: Player)
     local contextTarget: any=0
     local pressedTree: any=nil
     local talking=false
+    local cancelInteract: ()->()=function() end
     local function paintActions()
         local open=not talking and not journal.Visible and player:GetAttribute("ER_LocalPlacement")~=true
-        combat.Visible=open
-        attack.Visible=open
-        weapons.show(open)
-        if not open then weapons.cancel() end
+        local riding=player:GetAttribute("ER_Riding")~=nil
+        combat.Visible=open and not riding
+        attack.Visible=combat.Visible
+        weapons.show(combat.Visible)
+        if not combat.Visible then weapons.cancel() end
+        if not open and pressedTree then cancelInteract() end
         interact.Visible=open and contextKind~="none"
         openJournal.Visible=not talking
     end
     player:GetAttributeChangedSignal("ER_LocalPlacement"):Connect(paintActions)
+    player:GetAttributeChangedSignal("ER_Riding"):Connect(paintActions)
     local openDialogue,closeDialogue=DukeDialogue.mount(gui,call,function(value)
         talking=value
         paintActions()
@@ -576,6 +586,7 @@ function UI.start(player: Player)
     player.CharacterRemoving:Connect(closeDialogue)
 
     local function interactNow()
+        if not interact.Visible then return end
         if contextKind=="travel" then
             request("travel",contextTarget)
         elseif contextKind=="gate" then
@@ -588,18 +599,17 @@ function UI.start(player: Player)
         elseif contextKind=="structure" then
             for _,building in ipairs(snapshot and snapshot.buildings or {}) do
                 if building.id==contextTarget then
-                    local labels={complete="Pronto",blueprint="Entregas",building="Em obra",damaged="Danificado",ruined="Ruína"}
-                    notify(building.name.." · "..(labels[building.state] or building.state))
+                    local kind=if panels[building.typeId] and (building.state=="complete" or building.state=="damaged")
+                        then building.typeId else "property"
+                    openSite={id=building.id,kind=kind}
+                    showJournal(true,kind)
+                    updateVillage()
                     break
                 end
             end
-            showJournal(true,"build")
-        elseif contextKind=="wood" then
-            request("take_wood",nil)
-        elseif contextKind=="craft" then
-            request("craft_arrows",nil)
-        elseif contextKind=="market" then
-            showJournal(true,"workshop")
+        elseif contextKind=="dock" then
+            openSite={id="dock",kind="dock"}
+            showJournal(true,"dock")
         elseif contextKind=="story" then
             local phase=player:GetAttribute("ER_R3Phase")
             if phase=="guard" then openDialogue()
@@ -626,7 +636,7 @@ function UI.start(player: Player)
     end
     local pressedKind=""
     local pressedTarget: any=nil
-    local cancelInteract=Gesture.bind(interact,function()
+    cancelInteract=Gesture.bind(interact,function()
         pressedKind=contextKind
         pressedTarget=contextTarget
         if contextKind~="tree" then return end
@@ -724,8 +734,8 @@ function UI.start(player: Player)
 
     end
 
-    local loadCargo=button(workshop,"BoatLoad","GUARDAR 1 MADEIRA NO BARCO")
-    local unloadCargo=button(workshop,"BoatUnload","RETIRAR 1 MADEIRA DO BARCO")
+    local loadCargo=button(panels.dock,"BoatLoad","GUARDAR 1 MADEIRA NO BARCO")
+    local unloadCargo=button(panels.dock,"BoatUnload","RETIRAR 1 MADEIRA DO BARCO")
     for index,control in ipairs({loadCargo,unloadCargo}) do
         control.LayoutOrder=10+index
         control.Size=UDim2.new(1,-12,0,42)
@@ -734,64 +744,31 @@ function UI.start(player: Player)
     loadCargo.Activated:Connect(function() request("travel_cargo","load") end)
     unloadCargo.Activated:Connect(function() request("travel_cargo","unload") end)
 
-    local orderButton=button(workshop,"StoryOrder","CONTINUAR O PRÓLOGO")
-    orderButton.LayoutOrder=9
-    orderButton.Size=UDim2.new(1,-12,0,42)
-    orderButton.Visible=false
-    orderButton.Activated:Connect(function()
-        local phase=player:GetAttribute("ER_R3Phase")
-        if phase=="evacuation" then request("prologue","evacuate")
-        elseif phase=="coronation" then request("prologue","coronation")
-        else notify("Nenhuma ordem especial disponível.") end
-    end)
-
     local function updateContext()
         loadCargo.Visible=type(nearby.boatCargo)=="number"
         unloadCargo.Visible=loadCargo.Visible
-        unloadCargo.Text="RETIRAR 1 MADEIRA DO BARCO • "..tostring(nearby.boatCargo or 0)
-        contextKind="none"
-        contextTarget=0
-        local phase=player:GetAttribute("ER_R3Phase")
-        if nearby.storyAction and (phase=="guard" or phase=="evacuation" or phase=="coronation") then
-            contextKind="story"
-            interact.Text=if phase=="guard" then "FALAR COM DUQUE"
-                else if phase=="evacuation" then "EVACUAR"
-                else "ACEITAR COROA"
-        elseif nearby.travel and travelLabels[nearby.travel] then
-            contextKind="travel"
-            contextTarget=nearby.travel
-            interact.Text=travelLabels[nearby.travel]
-        elseif nearby.gate then
-            contextKind="gate"
-            contextTarget=nearby.gate.id
-            interact.Text=if nearby.gate.open then "FECHAR PORTÃO" else "ABRIR PORTÃO"
-        elseif (nearby.coinId or 0)>0 then
-            contextKind="coin"
-            contextTarget=nearby.coinId
-            interact.Text="RECOLHER MOEDA"
-        elseif nearby.treeId then
-            contextKind="tree"
-            contextTarget=nearby.treeId
-            interact.Text=if nearby.treeMarked then "ÁRVORE\nSegure: desmarcar" else "ÁRVORE\nSegure: marcar"
-        elseif (nearby.npcId or 0)>0 then
-            contextKind="npc"
-            contextTarget=nearby.npcId
-            interact.Text="MORADOR"
-        elseif nearby.buildingId then
-            contextKind="structure"
-            contextTarget=nearby.buildingId
-            interact.Text="ESTRUTURA"
-        elseif (nearby.wood or 0)>=2 then
-            contextKind="wood"
-            interact.Text="PEGAR MADEIRA"
-        elseif nearby.canTrade then
-            contextKind="market"
-            interact.Text="MERCADO"
+        unloadCargo.Text="RETIRAR 1 MADEIRA DO BARCO · "..tostring(nearby.boatCargo or 0)
+        local target=selectedContext
+        contextKind=if target then target.kind else "none"
+        contextTarget=if target then target.id else 0
+        if target then
+            interact.Text=if target.kind=="tree" then "Árvore\nSegure: "..target.label
+                elseif target.kind=="travel" then travelLabels[target.id] or "Viajar"
+                else target.label
         end
-        if pressedTree and contextTarget~=pressedTree.treeId then cancelInteract() end
+        if pressedTree and (contextKind~="tree" or contextTarget~=pressedTree.treeId) then cancelInteract() end
+        if openSite and ((not target or target.id~=openSite.id) or player:GetAttribute("ER_R3Raid")==true) then
+            showJournal(false,nil)
+            return
+        end
         paintActions()
         highlightTarget()
     end
+    local interactions=ReplicatedStorage:WaitForChild("Game"):WaitForChild("ER_InteractionTarget") :: RemoteEvent
+    interactions.OnClientEvent:Connect(function(target: any)
+        selectedContext=target
+        updateContext()
+    end)
     refreshContext=updateContext
 
     function updateVillage()
@@ -865,48 +842,51 @@ function UI.start(player: Player)
             if not active[id] then b.Visible=false end
         end
         local nearSelected=nearby.npcId==selectedNpcId and selectedNpcId>0
-        selectedWorker.Text=if selectedNpcId==0 then "Toque em um morador para ver sua defesa."
-            else if nearSelected then "Morador próximo: você pode equipá-lo."
-            else "Selecione um morador próximo para equipar."
-        equipBar.Visible=nearSelected
-        nextRole.Visible=nearSelected and nearby.canManage==true and snapshot~=nil and snapshot.production~=nil
+        local canOrder=active[selectedNpcId] and nearby.canManage==true and snapshot~=nil and snapshot.production~=nil
+        selectedWorker.Text=if not active[selectedNpcId] then "Escolha um morador." else "Ordens para o morador selecionado"
+        equipBar.Visible=canOrder==true
+        nextRole.Visible=canOrder==true
         orderWorker.Visible=nextRole.Visible
         focusFood.Visible=nearby.canManage==true and snapshot~=nil and snapshot.production~=nil
         focusFood.Text=if focusFood.Visible and snapshot.production.focusFood then "ALIMENTAÇÃO · prioridade alta"
             else "PRIORIZAR ALIMENTAÇÃO"
         applyRole.Visible=nextRole.Visible
         for _,control in ipairs(socialControls) do control.Visible=nearSelected and snapshot~=nil and snapshot.production~=nil end
-        local dist=nearby.nearestWoodDistance or -1
-        local direction=if dist>=0 then
-            "Árvore: "..tostring(dist).." studs à "..
-                tostring(nearby.nearestWoodDirection or "esquerda")
-            else "Nenhuma árvore com estoque restante"
-        local bagWood=hud.playerWood or 0
-        local siteWood=nearby.wood or 0
-        craftInfo.Text="RECEITA: 2 MADEIRAS → 6 FLECHAS"..
-            "\nSua bolsa: "..tostring(bagWood).." madeira(s)  ·  Próximo: "..
-            tostring(siteWood)..
-            "\n"..direction
-        collectButton.Text=if siteWood>=2 then "PEGAR 2 MADEIRAS DA FONTE"
-            else "LOCALIZAR MADEIRA"
-        -- Clicking an unavailable recipe must explain WHY, not silently
-        -- swallow input by disabling a game action.
-        collectButton.Active=true
-        craftButton.Active=true
-        collectButton.BackgroundColor3=if siteWood>=2 then C.raised else C.surface
-        local canCraft=(bagWood>=2 or nearby.canCraftArrows==true) and
-            (player:GetAttribute("ER_R3Arrows") or 0)<=24
-        craftButton.BackgroundColor3=if canCraft then C.raised else C.surface
-        local production=if snapshot then snapshot.production else nil
-        productionInfo.Text=if production then string.format("FABRICAÇÃO · %d na fila · %d concluídas",
-            #production.orders,production.completed) else "FABRICAÇÃO · disponível após o prólogo"
-        local tradeStatus=if not nearby.canTrade then "Aproxime-se do centro da vila."
-            elseif (hud.treasury or 0)<1 then "O tesouro não tem moedas."
-            elseif not nearby.canSellWood then "Traga madeira na bolsa ou abasteça um galpão próximo."
-            else "Madeira disponível para venda."
-        tradeInfo.Text="1 MADEIRA POR 1 MOEDA\n"..tradeStatus
-        tradeButton.BackgroundColor3=if nearby.canTrade and nearby.canSellWood
-            and (hud.treasury or 0)>=1 then C.raised else C.surface
+        equip.Text="SOLICITAR"
+        for _,worker in ipairs(workers or {}) do
+            if worker.id==selectedNpcId and worker.gearOrder then
+                selectedWorker.Text=Items.get(worker.gearOrder).label..(if worker.gettingGear then " · a caminho do estoque" else " · aguardando estoque")
+                break
+            end
+        end
+        if openSite then
+            for _,b in ipairs(snapshot and snapshot.buildings or {}) do
+                if b.id~=openSite.id then continue end
+                local lines={b.name.." · "..tostring(math.floor(b.health)).." de vida"}
+                if openSite.kind=="stockpile" then
+                    local item=depotItems[depotItemIndex]
+                    local held=b.stored[item] or 0
+                    local free=b.available[item] or 0
+                    depotItem.Text=Items.get(item).label.." →"
+                    table.insert(lines,string.format("%d em estoque · %d reservados",held,held-free))
+                    table.insert(lines,string.format("Peso %d / %d",b.storedWeight,b.storedCapacity))
+                elseif openSite.kind=="workshop" or openSite.kind=="forge" then
+                    for _,order in ipairs(snapshot.production and snapshot.production.orders or {}) do
+                        if order.station==b.id then
+                            local recipe=Production.recipes[order.recipe]
+                            table.insert(lines,recipe.label.." · "..tostring(math.floor(100*order.progress/recipe.time)).."%")
+                        end
+                    end
+                    if #lines==1 then table.insert(lines,"Nenhuma fabricação em andamento.") end
+                elseif openSite.kind=="farm" then
+                    local plot=b.plot
+                    if plot then table.insert(lines,string.format("%s · água %s",plot.stage or "Solo",if plot.irrigated then "próxima" else "distante")) end
+                end
+                details[openSite.kind].Text=table.concat(lines,"\n")
+                details[openSite.kind].Size=UDim2.new(1,-12,0,math.min(210,25+#lines*17))
+                break
+            end
+        end
         local market=if snapshot then snapshot.market else nil
         local currentGood=Market.goods[marketIndex]
         local quote=if market then market.goods[currentGood] else nil
@@ -944,10 +924,6 @@ function UI.start(player: Player)
             " moedas. Soltar uma moeda deixa um item físico no chão."
         dropCoin.Active=(player:GetAttribute("ER_R3Wallet") or 0)>0
         dropCoin.BackgroundColor3=if dropCoin.Active then C.raised else C.surface
-        local phase=player:GetAttribute("ER_R3Phase")
-        orderButton.Visible=nearby.storyAction=="evacuate" or nearby.storyAction=="coronation"
-        orderButton.Text=if phase=="evacuation" then "EVACUAR MORADORES"
-            else "ACEITAR A COROA"
         updateContext()
     end
 
@@ -961,6 +937,7 @@ function UI.start(player: Player)
         if not ok or type(response)~="table" or not response.ok then return end
         snapshot=response.data
         nearby=if type(response.nearby)=="table" then response.nearby else {}
+        selectedContext=nearby.context
         hud=if type(response.hud)=="table" then response.hud else {}
         redraw()
         updateVillage()
@@ -978,7 +955,8 @@ function UI.start(player: Player)
         "ER_R3Raid","ER_R3Forecast","ER_Recovering"}) do
         player:GetAttributeChangedSignal(name):Connect(function()
             redraw()
-            if name=="ER_R3Phase" then updateVillage() end
+            if name=="ER_R3Phase" then updateVillage()
+            elseif name=="ER_R3Raid" then updateContext() end
         end)
     end
     UserInputService.InputBegan:Connect(function(input: InputObject,processed: boolean)
@@ -987,7 +965,8 @@ function UI.start(player: Player)
             if input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB then closeDialogue() end
             return
         end
-        if input.KeyCode==Enum.KeyCode.V then showJournal(not journal.Visible,nil) end
+        if journal.Visible and (input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB) then closeJournal()
+        elseif input.KeyCode==Enum.KeyCode.V then showJournal(not journal.Visible,"build") end
     end)
 
     -- Local animation only. The server keeps each coin's ID and pickup value.
