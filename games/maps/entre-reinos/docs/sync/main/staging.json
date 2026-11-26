@@ -1,5 +1,5 @@
 {
-  "loadedVersion": 18,
+  "loadedVersion": 20,
   "placeId": "90623742498445",
   "records": {
     "environment:lighting": {
@@ -162,8 +162,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 982,
-        "sourceHash": "hFurLuKe/Jtz5Gr6kqwv+e1h0jqazIIVnVMSdVK5zm8="
+        "sourceBytes": 1820,
+        "sourceHash": "A96kqlH0Aw0+0+gVDbc8jclEke3ur01ocDFIMM0n/Hg="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -194,8 +194,72 @@
         }
       ],
       "properties": {
-        "sourceBytes": 6404,
-        "sourceHash": "N0KUUo5OJgKTI+B7mPtDJBSeUL4zaZDDlmbc7QjfM7E="
+        "sourceBytes": 6819,
+        "sourceHash": "4hkDItwdYIfBWOaiIZdw5mHMDyWVe4qSnR9fl02rfos="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"Market\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "Market",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "Market",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 14703,
+        "sourceHash": "dJtPgMHZaBTKAr5VBWqCO0FtJFR/gbNDH/vui0dKclk="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"Production\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "Production",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "Production",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 10789,
+        "sourceHash": "5QhghnkU2unVcD/9s93onUimB0zoYxKKLnlxz1S9nDU="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -226,8 +290,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 1313,
-        "sourceHash": "bsisnQwXFIK8TVLZjRWbBfd7YH3lAswpefY4qBQs/VA="
+        "sourceBytes": 2630,
+        "sourceHash": "Uc2zhdJL8WIYrsQkOuqP2ddeouAl2RhMfKzkkU6jnrU="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -258,8 +322,40 @@
         }
       ],
       "properties": {
-        "sourceBytes": 29170,
-        "sourceHash": "+tXhwzOdzPDwRzARnF1HCNFf4Kngt2OzTdux+UQCbPI="
+        "sourceBytes": 31560,
+        "sourceHash": "8puG8+wf31zgreEhXQ/BS35S4+nicBXhaOjOXzluy2Y="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"Social\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "Social",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "Social",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 7464,
+        "sourceHash": "SRmeZl8xsE1vd1sh2q5E8LSgkzXVUxEFvq8AbZv4MPk="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -290,8 +386,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 1766,
-        "sourceHash": "zure+nYPx5XbRR/cpI3CL/eQV296PgqPcMsTdTwmYiw="
+        "sourceBytes": 2770,
+        "sourceHash": "nsMmQ04aJE1Th/TMEmuUiBW20Ce5OdPxZvT1Bl3FT6E="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -328,6 +424,38 @@
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
     },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"VillageNeeds\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "VillageNeeds",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "Folder",
+          "name": "Living",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "VillageNeeds",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 12556,
+        "sourceHash": "ScVXT+eowAKJfe6wIoTuEH2XKaP5YplYtxobENdNfdo="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
     "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"WorkEngine\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
@@ -354,8 +482,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 31079,
-        "sourceHash": "FaOFHbmZiL5P44pdV1aLaqstnFoNuLRAkFbYn2zjTdA="
+        "sourceBytes": 49493,
+        "sourceHash": "w+VTKtp/p9Lzmr9wr6jgjI9fAqRw/S31vn8uGMnJ4xE="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -363,7 +491,7 @@
     "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"Folder\",\"name\":\"Living\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
-      "childCount": 10,
+      "childCount": 14,
       "class": "Folder",
       "coverage": "structure",
       "managedId": "",
@@ -438,6 +566,87 @@
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
     },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"RegionalCrossings\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "RegionalCrossings",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "RegionalCrossings",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 6410,
+        "sourceHash": "D1eDfxasz3qOcPdqFF3d2/M9YRdd4Mwm2lA+98BpP0E="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"RegionalProfile\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "RegionalProfile",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "RegionalProfile",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 11035,
+        "sourceHash": "RCz8W/HBoKUdeCiuH/C4tOibf5NtOyCGpLK9BqCfrcs="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"RegionalWorld\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "RegionalWorld",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Game",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "RegionalWorld",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 10776,
+        "sourceHash": "u8TSIm4aDHYc20W/BOruYVzCe0UzwFWKN2on1RSzZzU="
+      },
+      "service": "ReplicatedStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
     "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"SlotLeasePolicy\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
@@ -486,8 +695,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 6261,
-        "sourceHash": "gjYxmwEfaaQtoyLZ+vKecW7D0bUDG+G2+BZwJu5FyKg="
+        "sourceBytes": 7126,
+        "sourceHash": "7PxgGXkcIMU8N3YZhdidX3ztzKsDCYKkEzj3SUvmrnM="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -513,8 +722,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 3213,
-        "sourceHash": "5byhKMIcMl4EGijtv+hjsz9rLW/ebOpcOfrNtdgm0YQ="
+        "sourceBytes": 3311,
+        "sourceHash": "lL5maJ9AjRnSeI/qlB1sc94t+oazqZPRBUr3X3go/MM="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -549,7 +758,7 @@
     "path:[\"ReplicatedStorage\",[{\"class\":\"Folder\",\"name\":\"Game\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
-      "childCount": 7,
+      "childCount": 10,
       "class": "Folder",
       "coverage": "structure",
       "managedId": "",
@@ -611,6 +820,33 @@
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
     },
+    "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"BridgeScene\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "BridgeScene",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Services",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "BridgeScene",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 2198,
+        "sourceHash": "WlfC12gK/QxH548z8YBPrel0SJ+kujdfLLSRknx67a4="
+      },
+      "service": "ServerScriptService",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
     "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"CharacterService\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
@@ -659,8 +895,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 24999,
-        "sourceHash": "wqOTqkekJ9os2np7c6RjixV1fAQWa8dkOBvOjkPvCuc="
+        "sourceBytes": 25574,
+        "sourceHash": "V0srhN0DgGTDaQkBSv5G4CeTLKBsH/U2fTpVvA/K9p4="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -686,8 +922,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 39106,
-        "sourceHash": "b/h/Dd3Q2tOooq7pI+aE+P36jZFfZTKqmuDZpdnXkpk="
+        "sourceBytes": 58942,
+        "sourceHash": "YvN1KPMITuYL2uBlq/2CENNnyvT3yeZiJ21p8WzntTk="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -713,8 +949,62 @@
         }
       ],
       "properties": {
-        "sourceBytes": 16824,
-        "sourceHash": "dmqx5/mjdw5P5G7vzvL/041SYzD2nEVe1BlHMKznsxU="
+        "sourceBytes": 19056,
+        "sourceHash": "izegjtl2BYAcem2HQgVjSkT4YvSvMWcEqLm9X+raZHM="
+      },
+      "service": "ServerScriptService",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"TravelService\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "TravelService",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Services",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "TravelService",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 19218,
+        "sourceHash": "YgP4lGOzmOfPXMJiqXdiOTU8s+on6zrigInCE3/FumE="
+      },
+      "service": "ServerScriptService",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"VehicleRig\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "VehicleRig",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Services",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "VehicleRig",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 5431,
+        "sourceHash": "0pyj+5mkmUoVJkxHJ+r8ux6XsVM9+WFjkeLrQdzl+Qo="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -740,8 +1030,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 13380,
-        "sourceHash": "Zy3UaN9AQDZXLqAmxOZNs19FYjzJAY8X4jbA87taHVw="
+        "sourceBytes": 17968,
+        "sourceHash": "BoQKXBagdufkfZfQys2EwuQZJWJZZQNZHfdxieg2huI="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -749,7 +1039,7 @@
     "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
-      "childCount": 5,
+      "childCount": 8,
       "class": "Folder",
       "coverage": "structure",
       "managedId": "",
@@ -783,8 +1073,8 @@
       "properties": {
         "enabled": true,
         "runContext": "Legacy",
-        "sourceBytes": 19875,
-        "sourceHash": "v8fDZoWyI1VEyLIM4gIspxDVojDXqgdeX3UbO5EIFfY="
+        "sourceBytes": 19887,
+        "sourceHash": "/zb5P9Kk/t8STTVK/QVrKJxKDAH//5IXQoCPuebt3wI="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -831,8 +1121,8 @@
       "properties": {
         "enabled": true,
         "runContext": "Legacy",
-        "sourceBytes": 3526,
-        "sourceHash": "MQyQ0NxJaQXDrqtzKTVsWhadEROhKMKL5tvmkVNG+t0="
+        "sourceBytes": 3657,
+        "sourceHash": "ExqCii07MV+YL4Q73PxAbW9RbY1cszHQ6yKP9wu4Ko4="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -948,8 +1238,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 15154,
-        "sourceHash": "4JgriyiziN6m6kv1ZZgADYWkEtb9LQdXfiZYDzk52Xs="
+        "sourceBytes": 16865,
+        "sourceHash": "oUskwLlNBF6XoYdGArKQUWlIzt//2cHnezpihKn1HP8="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1002,8 +1292,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 4383,
-        "sourceHash": "IUwpvnsKTBSvn8XN/a1Ly6eBMFgwE7N0rdaWr/Sil00="
+        "sourceBytes": 4905,
+        "sourceHash": "mKbf2UJV1crdXqPv6EgbR20PyPH3nG7Zqnv+eRfULgc="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1029,8 +1319,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 6297,
-        "sourceHash": "3cHUmkrtAB/mSHuCaWyAI3lcLKRMvJf47F7SaheMg5E="
+        "sourceBytes": 6362,
+        "sourceHash": "j02dT5QMBE9oS0wSHbS9BzhmrGHQ7GuxOmZixSUyIAE="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2624,8 +2914,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 39933,
-        "sourceHash": "rPLVwmyWlfVd2x65Fa2QexEQeJexymQXIFkAlW/91wE="
+        "sourceBytes": 51577,
+        "sourceHash": "Xvsouoby7CZzUgwa5CNBrOYCUjFj7EeP7mp4LK/LrPg="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2680,6 +2970,33 @@
       "properties": {
         "sourceBytes": 17814,
         "sourceHash": "2z8jlTJrkxefxlLuq9CNL4XoCQUdVtcmUpXLFtDVHHE="
+      },
+      "service": "StarterPlayer",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"VehiclePresentation\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "VehiclePresentation",
+      "path": [
+        {
+          "class": "StarterPlayerScripts",
+          "name": "StarterPlayerScripts",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "VehiclePresentation",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 2516,
+        "sourceHash": "ka3b5i+8iaPCPb3uEoSJLLpz3tiJIBVk64jmM6WMfI4="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -2741,7 +3058,7 @@
     "path:[\"StarterPlayer\",[{\"class\":\"StarterPlayerScripts\",\"name\":\"StarterPlayerScripts\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
-      "childCount": 14,
+      "childCount": 15,
       "class": "StarterPlayerScripts",
       "coverage": "structure",
       "managedId": "",
@@ -2983,7 +3300,7 @@
     "Teams",
     "ReplicatedFirst"
   ],
-  "stateDigest": "136e70ba80ea9af4ac9934b933ade766310fdaa45f1b40a366e3940be5783de7",
-  "total": 90,
+  "stateDigest": "ac7bccae902771c3e1c250886119741a0e2033772e74b650476ebda57e0c726c",
+  "total": 101,
   "universeId": "10769712413"
 }

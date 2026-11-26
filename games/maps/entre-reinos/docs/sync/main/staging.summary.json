@@ -4,7 +4,7 @@
     "Folder": 5,
     "LocalScript": 3,
     "Model": 1,
-    "ModuleScript": 74,
+    "ModuleScript": 85,
     "Part": 1,
     "Script": 1,
     "SpawnLocation": 1,
@@ -13,20 +13,14 @@
     "Terrain": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 18,
+  "loadedVersion": 20,
   "placeId": "90623742498445",
   "schemaVersion": 1,
-  "stateDigest": "136e70ba80ea9af4ac9934b933ade766310fdaa45f1b40a366e3940be5783de7",
+  "stateDigest": "ac7bccae902771c3e1c250886119741a0e2033772e74b650476ebda57e0c726c",
   "terrain": {},
-  "total": 90,
+  "total": 101,
   "universeId": "10769712413",
   "workspaceRoots": [
-    {
-      "class": "Camera",
-      "key": "path:[\"Workspace\",[{\"class\":\"Camera\",\"name\":\"Camera\",\"ordinal\":1}]]",
-      "managedId": "",
-      "name": "Camera"
-    },
     {
       "class": "Model",
       "key": "path:[\"Workspace\",[{\"class\":\"Model\",\"name\":\"StartArea\",\"ordinal\":1}]]",
@@ -38,6 +32,12 @@
       "key": "path:[\"Workspace\",[{\"class\":\"Terrain\",\"name\":\"Terrain\",\"ordinal\":1}]]",
       "managedId": "",
       "name": "Terrain"
+    },
+    {
+      "class": "Camera",
+      "key": "path:[\"Workspace\",[{\"class\":\"Camera\",\"name\":\"Camera\",\"ordinal\":1}]]",
+      "managedId": "",
+      "name": "Camera"
     }
   ]
 }
