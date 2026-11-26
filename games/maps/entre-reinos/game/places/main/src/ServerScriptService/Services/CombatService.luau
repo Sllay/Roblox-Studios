@@ -120,6 +120,7 @@ local function enemyModel(e: any): Model
     colors.Parent=m
     torso.Color=uniform
     local h=m:FindFirstChildOfClass("Humanoid") :: Humanoid
+    h.EvaluateStateMachine=false
     h.DisplayName=if e.story then e.label elseif royal then "Duque corrompido" else "Corrompido"
     h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Subject
     h.NameDisplayDistance=if e.story then 28 else 0

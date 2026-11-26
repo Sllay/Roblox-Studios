@@ -2,6 +2,7 @@
 -- Local steering index. Rebuilt once per simulation tick and updated after movement.
 local Crowd={}
 local CELL=4
+Crowd.INDEX_MIN=9
 local worlds=setmetatable({}, {__mode="k"})
 local function key(x: number,z: number): string
     return tostring(x)..":"..tostring(z)
@@ -22,7 +23,7 @@ function Crowd.index(state: any): any
         index={tick=-1,stands={},claims={},approaches={}}
         worlds[state]=index
     end
-    if index.tick~=state.elapsed then
+    if #state.npcs>=Crowd.INDEX_MIN and index.tick~=state.elapsed then
         index.tick=state.elapsed
         index.bins,index.cells={},{}
         for _,npc in ipairs(state.npcs) do

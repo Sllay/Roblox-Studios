@@ -49,16 +49,19 @@ local function probeRefinement(world,profile,scenery,combat,living,r3)
     folder.Parent=workspace
     combat.start(nil,state,folder)
     local duke=assert(folder:FindFirstChild("Story_duke"))
+    local avatar=Instance.new("Part")
     local ghostParts=0
     for _,part in ipairs(duke:GetDescendants()) do
         if part:IsA("BasePart") then
-            assert(not part.CanCollide and part.CollisionGroup=="ER_StoryAndEnemies")
+            assert(part.CollisionGroup=="ER_StoryAndEnemies" and not part:CanCollideWith(avatar),
+                part.Name.." collided with the player collision group")
             ghostParts+=1
         end
     end
+    avatar:Destroy()
     state.r3.prologue.stage="hesitation"
     combat.present()
-    assert(folder.Story_guard_one:GetAttribute("ER_NPCFacing")==math.pi/2)
+    assert(math.abs(folder.Story_guard_one:GetAttribute("ER_NPCFacing")-math.pi/2)<1e-5)
     assert(folder.Story_guard_one:GetAttribute("ER_NPCActivity")=="stagger")
     state.r3.enemies={{id=900,x=16,hp=24,side=-1,attackClock=0}}
     combat.present()

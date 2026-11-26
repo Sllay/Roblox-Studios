@@ -493,19 +493,17 @@ local function assign(npc: any, state: any, onlyBuild: boolean?): boolean
     return not onlyBuild and assignStorage(npc,state)
 end
 
-local function freeGround(state: any,npc: any,x: number,z: number,allowUnloaded: boolean?): boolean
+local function freeGround(state: any,npc: any,x: number,z: number,
+        currentY: number,class: string,fromDeck: number?,allowUnloaded: boolean?): boolean
     if math.abs(z)>20 then return false end
     local context=contexts[state]
     if context and not context.detached and not allowUnloaded and context.readyAt and not context.readyAt(x) then return false end
-    local class=if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
-    local current=sample(state,npc.x,npc.z or 0)
     local nextGround=sample(state,x,z)
     local deck,crossing=Engine.deckAt(state,x,z,class)
-    local fromDeck=Engine.deckAt(state,npc.x,npc.z or 0,class)
     local shallow=context and nextGround.waterSurface
         and nextGround.waterSurface-nextGround.height<=2
     if nextGround.wet and not shallow and not deck then return false end
-    if math.abs((deck or nextGround.height)-(fromDeck or current.height))>(if deck or fromDeck then 2.4 else 1.4) then return false end
+    if math.abs((deck or nextGround.height)-currentY)>(if deck or fromDeck then 2.4 else 1.4) then return false end
     if crossing and not fromDeck and not Engine.deckHasSpace(state,crossing,class,npc) then return false end
     for _,site in ipairs(state.sites) do
         if site.item=="wood" and site.remaining>0 and not site.salvage then
@@ -532,8 +530,8 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
     local targetZ=destZ or z
     local finalX,finalZ=destX,targetZ
     local context=contexts[state]
+    local class=if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
     if context then
-        local class=if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
         local entry=npc.bridgeEntry
         if entry then
             local deck=Engine.deckAt(state,npc.x,z,class)
@@ -576,13 +574,17 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
     local angle=math.atan2(dz,dx)
     local bestX,bestZ=npc.x,z
     local bestScore=-math.huge
-    local neighbors=Crowd.near(Crowd.index(state),npc)
+    local indexed=#state.npcs>=Crowd.INDEX_MIN
+    local neighbors=if indexed then Crowd.near(Crowd.index(state),npc) else state.npcs
+    local fromDeck=Engine.deckAt(state,npc.x,z,class)
+    local currentY=fromDeck or sample(state,npc.x,z).height
     for _,offset in ipairs(steering) do
         local x=npc.x+math.cos(angle+offset)*travel
         local nextZ=z+math.sin(angle+offset)*travel
-        if not freeGround(state,npc,x,nextZ,allowUnloaded) then continue end
+        if not freeGround(state,npc,x,nextZ,currentY,class,fromDeck,allowUnloaded) then continue end
         local score=math.cos(offset)
         for _,other in ipairs(neighbors) do
+            if other==npc or other.health<=0 then continue end
             local before=(npc.x-other.x)^2+(z-(other.z or 0))^2
             local after=(x-other.x)^2+(nextZ-(other.z or 0))^2
             if after<2.4 and after<before then score-=3*(2.4-after) end
@@ -614,7 +616,6 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
     local turn=dx*(bestZ-z)-dz*(bestX-npc.x)
     npc.steerSide=if math.abs(turn)<0.01 then nil elseif turn>0 then 1 else -1
     if context then
-        local class=if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "carrier" else "worker"
         local deck=Engine.deckAt(state,bestX,bestZ,class)
         if deck and not npc.bridgeEntry then
             npc.bridgeEntry={x=npc.x,z=z}
@@ -623,7 +624,7 @@ function Engine.walkResident(state: any,npc: any,destX: number,dt: number,destZ:
         end
     end
     npc.x,npc.z=bestX,bestZ
-    Crowd.move(state,npc)
+    if indexed then Crowd.move(state,npc) end
     npc.fatigue=math.min(100,npc.fatigue+dt*0.03)
     return (finalX-npc.x)^2+(finalZ-npc.z)^2<=NEAR^2
 end
