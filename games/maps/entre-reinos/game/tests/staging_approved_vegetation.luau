@@ -32,12 +32,11 @@ local function probeApprovedVegetation(world,vegetation)
         if status~=Enum.AssetFetchStatus.Success then failures[id]=status.Name end
     end)
     assert(checked>=#parts and not next(failures),game:GetService("HttpService"):JSONEncode(failures))
-    assert(workspace.Terrain.Decoration,"native grass is disabled")
     assert(#workspace.ER_World_3D:FindFirstChild("Scenery_0_1"):GetChildren()==0,"maritime vegetation")
     local metrics=world.metrics()
     assert(metrics.vegetationModels>0 and metrics.decorations>metrics.vegetationModels)
     folder:Destroy()
-    return {templates=names,meshes=#parts,preloaded=checked,nativeGrass=true,
+    return {templates=names,meshes=#parts,preloaded=checked,baselineNativeGrass=workspace.Terrain.Decoration,
         worldModels=metrics.vegetationModels,worldDecorInstances=metrics.decorations,
         generationMs=metrics.vegetationMs}
 end

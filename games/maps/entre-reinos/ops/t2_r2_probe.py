@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 from tempfile import TemporaryDirectory
+import xml.etree.ElementTree as ET
 
 from cloud_tasks import run_task
 
@@ -25,6 +26,14 @@ def vegetation_blob():
         project.write_text(json.dumps({"name": "ERVegetation", "tree": {"$path": str(model)}}))
         subprocess.run(["rojo", "build", str(project), "--output", str(output)], check=True)
         return base64.b64encode(output.read_bytes()).decode("ascii")
+
+
+def verify_candidate_grass():
+    """Check the authored Terrain property in the candidate, not the v22 scene."""
+    subprocess.run(["python", "tools/workspace.py", "build", "--game", "entre-reinos", "--place", "main"], check=True)
+    place = ET.parse("dist/entre-reinos/main.rbxlx")
+    terrains = place.findall(".//Item[@class='Terrain']")
+    assert len(terrains) == 1 and terrains[0].findtext("Properties/bool[@name='Decoration']") == "true"
 
 
 def bundle_source():
@@ -117,6 +126,7 @@ def bundle_source():
 if __name__ == "__main__":
     cfg = json.loads((GAME / "deploy.targets.json").read_text())["environments"]["staging"]
     assert cfg["universeId"] == "10769712413" and cfg["placeIds"]["main"] == "90623742498445"
+    verify_candidate_grass()
     result = run_task(cfg["universeId"], cfg["placeIds"]["main"],
                       os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], bundle_source())
     assert result["loadedVersion"] == 22
@@ -125,5 +135,6 @@ if __name__ == "__main__":
     assert result["refinement"]["nativeLegacyUnchanged"] == 9216
     assert result["waterBridge"]["lightBuilt"] and result["waterBridge"]["reinforcedBuilt"]
     assert result["waterBridge"]["mountedRoute"] and result["waterBridge"]["solidOnlyObstruction"]
-    assert result["fullBridge"]["result"] == "built_both" and result["vegetation"]["nativeGrass"]
+    assert result["fullBridge"]["result"] == "built_both"
+    result["vegetation"]["candidateNativeGrass"] = True
     print("ENTRE_REINOS_T2_R2_PROBE", json.dumps(result, sort_keys=True))
