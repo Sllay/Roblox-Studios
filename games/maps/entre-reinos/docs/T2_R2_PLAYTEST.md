@@ -1,6 +1,10 @@
 # Playtest T2-R2 · ER-028 a ER-035
 
-A prévia ativa no staging é a **v22**, com as correções de água e encaixe das pontes. Siga o rio da encosta até a faixa frontal e confirme as duas categorias de ponte a partir de uma margem seca. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Provas e roteiro](runner-receipts/T2-R2-v20-refino.md) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/46027305046)
+A prévia ativa no staging é a **v23**, com a correção da obstrução das pontes pelas docas, a vegetação aprovada e o mar frontal. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/46082052074)
+
+1. No celular, abra um slot de teste e chegue às docas. Inicie a prévia pelo terreno seco. Confirme a ponte provisória, observe a entrega de materiais e confira a travessia do jogador após o reforço.
+2. Siga o rio até o mar. Pela câmera lateral, confira a desembocadura, a continuidade da água entre chunks, a grama e a vegetação ao longo da costa.
+3. Marque e colha uma árvore. Salve e reabra o mundo para verificar a ponte e o estado da fonte. [Recibo da v23](runner-receipts/T2-R2-v20-refino.md#publicação-da-v23--27112026)
 
 ## Histórico da prévia v20
 
