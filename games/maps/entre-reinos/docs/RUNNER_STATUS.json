@@ -3,8 +3,8 @@
   "project": "entre-reinos",
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
-  "recordedAt": "2026-11-26",
-  "note": "The v21 T2-R2 refinement is available for creator playtest on the existing staging Place. Roblox API confirmation, independent readback and post-publication Scene Sync passed. T2-R3 awaits creator feedback.",
+  "recordedAt": "2026-11-27",
+  "note": "Water and bridge regressions reported during the T2-R2 playtest are fixed in a candidate validated by CI and the Roblox engine. Staging remains on v21 pending authorization.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -468,6 +468,20 @@
             "rollbackScriptsVerified": 45,
             "rollbackArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503/artifacts/15081372944",
             "evidenceArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503/artifacts/15081107686"
+          },
+          "waterBridgeRegression": {
+            "status": "in_progress",
+            "candidate": "b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9",
+            "baselineRevision": 21,
+            "ruleset": 5,
+            "nextRunner": "blocked_awaiting_creator_feedback",
+            "technicalVerification": "passed",
+            "publicationStatus": "awaiting_creator_authorization",
+            "reproduction": "https://github.com/Sllay/Roblox-Studios/actions/runs/45929927177",
+            "ci": "https://github.com/Sllay/Roblox-Studios/actions/runs/45930483702",
+            "robloxProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/45930476816",
+            "clientMobile": "awaiting_candidate_playtest",
+            "receipt": "docs/runner-receipts/T2-R2-v20-refino.md"
           }
         },
         {
@@ -554,7 +568,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R2_v21_refinement_published_awaiting_creator_playtest",
+  "programStage": "T2_R2_water_bridge_fix_awaiting_preview_authorization",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",

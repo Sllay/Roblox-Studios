@@ -252,3 +252,7 @@ Correção v9 em desenvolvimento:
 
 - [AUTORIZADO PELO CRIADOR] Publicar exatamente `c4fb0790c14cd7c42cead0ae17e8f013b36fab1c` no staging do Entre Reinos, Universe `10769712413`, Place `90623742498445`, em substituição à v20.
 - [AUTORIZADO PELO CRIADOR] Preservar o ruleset 5, os seis slots e o rollback exato da v20. Usar as provas já aprovadas, o workflow oficial, readback independente e Scene Sync após a publicação. A T2-R3 aguarda o feedback do playtest. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-do-refinamento-da-t2-r2)
+
+## 27/11/2026 — Regressão de água e pontes no playtest T2-R2
+
+- [FIXADO PELO CRIADOR] O relevo, o leito e a água precisam formar um curso contínuo das encostas até a faixa frontal. O encaixe da ponte deve partir de margens válidas e rejeitar obstruções físicas. Preservar as travessias, o terreno jogável, os reinos e os saves. A T2-R3 aguarda a correção e o playtest. [Diagnóstico e provas](runner-receipts/T2-R2-v20-refino.md#correção-do-rio-e-das-pontes--27112026)
