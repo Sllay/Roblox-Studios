@@ -19,7 +19,6 @@ type RuntimeProfile = {
         height: number, wet: boolean, shore: boolean, riverDist: number,
         material: string, waterSurface: number?,
     },
-    waterfall: ((number, number) -> {{x: number,y: number,z: number}}?)?,
     naturalSites: ((number, number) -> {{id: string, x: number, y: number, z: number,
         item: string, initialAmount: number}})?,
 }
@@ -206,30 +205,6 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
             end
         end
     end
-    local waterfall=if Profile.waterfall then Profile.waterfall(seed,id) else nil
-    if waterfall then
-        local model=Instance.new("Model")
-        model.Name="ER_Cascade"
-        model:SetAttribute("ER_VisualLayer","background")
-        for index=1,#waterfall-1 do
-            local a,b=waterfall[index],waterfall[index+1]
-            local from,to=Vector3.new(a.x,a.y,a.z),Vector3.new(b.x,b.y,b.z)
-            local middle=(from+to)*0.5
-            local span=(to-from).Magnitude
-            for strip=-1,1 do
-                local current=part(model,"WaterSheet",Vector3.new(2.1,0.25,span+0.18),
-                    middle,Color3.fromRGB(130+strip*9,193+strip*8,202+strip*9))
-                current.Material=Enum.Material.Glass
-                current.Transparency=0.3+math.abs(strip)*0.14
-                current.CFrame=CFrame.lookAt(middle,to)*CFrame.new(strip*2.1,0,0)
-            end
-        end
-        local endPoint=waterfall[#waterfall]
-        local foam=part(model,"Foam",Vector3.new(6,0.26,3.2),
-            Vector3.new(endPoint.x,endPoint.y,endPoint.z),Color3.fromRGB(210,244,238),Enum.PartType.Ball)
-        foam.Transparency=0.52
-        model.Parent=chunkFolder
-    end
     chunkFolder.Parent = scene
 end
 
@@ -376,19 +351,6 @@ local function createScenery(seed: number,id: number,row: number): (boolean,stri
                 Vector3.new(tree.x,tree.y+height*(0.77+crown*0.15),tree.z),
                 if tree.conifer then Color3.fromRGB(62,102,81) else Color3.fromRGB(84,126,70),Enum.PartType.Ball)
             leaves.Orientation=Vector3.new(0,math.deg(tree.angle),0)
-        end
-    end
-    local cascade=if row==-1 then Scenery.cascade(seed,id) else nil
-    if cascade then
-        for index=1,#cascade-1 do
-            local a,b=cascade[index],cascade[index+1]
-            local from,to=Vector3.new(a.x,a.y,a.z),Vector3.new(b.x,b.y,b.z)
-            local middle=(from+to)*0.5
-            local sheet=part(layer,"FeederCascade",Vector3.new(6,0.2,(to-from).Magnitude+0.25),
-                middle,Color3.fromRGB(158,207,211))
-            sheet.CFrame=CFrame.lookAt(middle,to)
-            sheet.Material=Enum.Material.Glass
-            sheet.Transparency=0.47
         end
     end
     layer.Parent=scene

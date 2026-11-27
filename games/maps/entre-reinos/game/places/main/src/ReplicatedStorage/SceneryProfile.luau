@@ -2,7 +2,7 @@
 -- Extra native Terrain is outside the persisted playable voxel envelope.
 local Profile=require("./RegionalProfile")
 local Scenery={}
-Scenery.VERSION=1
+Scenery.VERSION=2
 Scenery.ROW=64
 Scenery.MAX_ASPECT=2.2
 Scenery.CAMERA_DISTANCE=118
@@ -30,27 +30,36 @@ function Scenery.sample(seed: number,x: number,z: number)
         local taper=smooth(depth/45)
         local stages=13*smooth(depth/64)+23*smooth((depth-44)/86)+25*smooth((depth-102)/88)
         local hill=taper*(math.noise(x/115,z/88,phase)*25+math.noise(x/58,z/44,phase)*10)
-        local water=old.waterSurface
-        local rise=stages+hill
-        if water then
-            -- Step the feeder beds gradually up to the headwaters. The
-            -- underlying course uses the same meander as the adjacent seam.
-            rise=9*smooth(depth/38)+11*smooth((depth-46)/52)+10*smooth((depth-112)/78)
-            water+=rise
-        end
-        return {height=old.height+rise,waterSurface=water,wet=old.wet,
-            material=if not water and old.height+rise>83 then "Slate" else old.material,biome=old.biome}
+        local rise=9*smooth(depth/38)+11*smooth((depth-46)/52)+10*smooth((depth-112)/78)
+        local bed=old.channelBed+rise
+        local level=old.channelSurface+rise
+        local land=old.landHeight+stages+hill
+        -- Raise the upland and river independently, then join both with a
+        -- continuous bank. Widen the bank as relief increases upstream.
+        local relief=math.max(0,land-level-(old.landHeight-old.channelSurface))
+        local bankWidth=old.channelBankWidth+relief
+        local shoulder=smooth((old.riverDist-old.channelWidth)/bankWidth)
+        local height=bed+(land-bed)*shoulder
+        local wet=shoulder<1 and height<level
+        local material=if wet then "Mud" elseif shoulder<1 then "Sand"
+            elseif height>83 then "Slate" else old.material
+        return {height=height,waterSurface=if wet then level else nil,wet=wet,
+            material=material,biome=old.biome}
     elseif z>b.zMax then
-        local t=smooth((z-b.zMax)/35)
+        local distance=z-b.zMax
+        local t=smooth(distance/35)
         local shore=b.zMax+29+7*math.noise(x/94,phase,2.1)
         local blend=smooth((z-shore+12)/23)
         local bed=-12+2*math.noise(x/95,z/31,phase)
         local height=old.height+(bed-old.height)*blend
-        local source=old.waterSurface
-        local level=if source then source+(6-source)*t else 6
-        local water=if height<level and (source~=nil or blend>0.1) then level else nil
-        return {height=height,waterSurface=water,wet=water~=nil,
-            material=if water and blend>0.05 then "Mud" elseif blend>0.05 then "Sand" else old.material,biome=old.biome}
+        -- All tributaries converge to one foreground level. Away from a
+        -- river, use that same level before the first coastal wet column.
+        local shoulder=smooth((old.riverDist-old.channelWidth)/old.channelBankWidth)
+        local level=6+(old.channelSurface-6)*(1-t)*(1-smooth(distance/12)*shoulder)
+        local wet=height<level and (shoulder<1 or blend>0)
+        local material=if wet and blend>0.05 then "Mud" elseif blend>0.05 then "Sand" else old.material
+        return {height=height,waterSurface=if wet then level else nil,wet=wet,
+            material=material,biome=old.biome}
     end
     return old
 end
@@ -65,35 +74,6 @@ function Scenery.coverage(x: number,velocity: number,row: number): (number,numbe
     local cap=Profile.CHUNK_RADIUS+Scenery.EDGE_CHUNKS
     return math.max(-cap,math.floor((x-half+math.min(0,lead)+32)/64)),
         math.min(cap,math.floor((x+half+math.max(0,lead)+32)/64))
-end
-
-function Scenery.cascade(seed: number,id: number): {any}?
-    local bounds=Scenery.bounds(id,-1)
-    local firstZ=b.zMin-24
-    local center: number?=nil
-    local best=3
-    for x=bounds.xMin+1,bounds.xMax-1,2 do
-        local sample=Profile.sample(seed,x,firstZ)
-        if sample.wet and sample.riverDist<best then center,best=x,sample.riverDist end
-    end
-    if not center then return nil end
-    local anchor=center
-    -- Own exactly one sheet per course when a meander crosses a chunk edge.
-    if Profile.sample(seed,anchor-2,firstZ).riverDist<best
-        or Profile.sample(seed,anchor+2,firstZ).riverDist<best then return nil end
-    local points={}
-    for z=b.zMin-38,b.zMin-8,10 do
-        local bestGap=math.huge
-        local picked=anchor
-        for x=anchor-12,anchor+12,2 do
-            local sample=Profile.sample(seed,x,z)
-            if sample.wet and sample.riverDist<bestGap then picked,bestGap=x,sample.riverDist end
-        end
-        local sample=Scenery.sample(seed,picked,z)
-        if not sample.waterSurface then return nil end
-        table.insert(points,{x=picked,y=sample.waterSurface+0.2,z=z})
-    end
-    return points
 end
 
 function Scenery.trees(seed: number,id: number,row: number): {any}

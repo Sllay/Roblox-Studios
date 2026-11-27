@@ -62,3 +62,17 @@ for index = 1, 1024 do
         string.format("regional bridge has infeasible banks in seed %d", seed))
 end
 print("ENTRE_REINOS_T2_R1_ROUTE: permissions on seven seeds and 2,048 outer spans verified")
+
+-- A dry approach snaps to the same persisted crossing, while the exact
+-- lookup used to read existing records keeps its original interval.
+local snapGraph=Routes.compile(516639272)
+local central=snapGraph.crossings[3]
+assert(central.region==0 and central.buildable)
+assert(Routes.bridgePlan(snapGraph,central.west.x-2)==nil)
+assert(Routes.bridgePlan(snapGraph,central.west.x-2,36)==central)
+assert(Routes.bridgePlan(snapGraph,central.east.x+2,36)==central)
+assert(Routes.bridgePlan(snapGraph,central.west.x-37,36)==nil)
+local ford=snapGraph.crossings[2]
+local snapped,snapError=Routes.bridgePlan(snapGraph,(ford.west.x+ford.east.x)/2,36)
+assert(not snapped and snapError=="invalid_bridge_banks")
+print("ENTRE_REINOS_BRIDGE_SNAP: dry approaches, stable center and invalid ford")

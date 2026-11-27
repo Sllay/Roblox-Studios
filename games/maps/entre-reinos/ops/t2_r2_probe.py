@@ -35,7 +35,7 @@ def bundle_source():
         assert count == 1, variable
 
     services = {}
-    for service in ("WorldService", "CombatService"):
+    for service in ("WorldService", "CombatService", "BridgeScene"):
         source = (MODULES.parent / f"ServerScriptService/Services/{service}.luau").read_text()
         source = re.sub(r'require\([^\n]+:WaitForChild\("([\w]+)"\)\)', r'loadCandidate("\1")', source)
         services[service] = f"local function load{service}()\n{source}\nend"
@@ -62,7 +62,7 @@ def bundle_source():
         'report.refinement=probeRefinement(world,loadCandidate("RegionalProfile"),'
         'loadCandidate("SceneryProfile"),loadCombatService(),loadCandidate("LivingModel"),loadCandidate("R3Engine"))',
         (TESTS / "staging_water_bridge.luau").read_text(),
-        'report.waterBridge=probeWaterBridge(world,loadCandidate("RegionalProfile"),loadCandidate("RegionalCrossings"))',
+        'report.waterBridge=probeWaterBridge(world,loadCandidate("RegionalProfile"),loadCandidate("RegionalCrossings"),loadBridgeScene())',
         f'local function datastoreProbe()\n{(TESTS / "staging_society_datastore.luau").read_text()}\nend',
         'report.datastore=datastoreProbe()',
         'return game:GetService("HttpService"):JSONEncode(report)',
@@ -78,4 +78,6 @@ if __name__ == "__main__":
     assert result["datastore"]["backupRestored"] and result["datastore"]["replyRetry"]
     assert result["datastore"]["newRuleset"] == 5
     assert result["refinement"]["nativeLegacyUnchanged"] == 9216
+    assert result["waterBridge"]["lightBuilt"] and result["waterBridge"]["reinforcedBuilt"]
+    assert result["waterBridge"]["mountedRoute"] and result["waterBridge"]["solidOnlyObstruction"]
     print("ENTRE_REINOS_T2_R2_PROBE", json.dumps(result, sort_keys=True))

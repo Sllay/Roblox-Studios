@@ -3,6 +3,8 @@
 local Structures = {}
 Structures.DEPTH_Z = -10
 Structures.PLACEMENT_RANGE = 36
+Structures.BRIDGE_DECK_WIDTH = 6.7
+Structures.BRIDGE_DECK_THICKNESS = 0.7
 Structures.all = {
     workshop = {label="Oficina", footprint=11, maxSlope=4, cost={wood=10,stone=4},
         buildSeconds=28, health=140, storageMass=0, kind="production", height=7},

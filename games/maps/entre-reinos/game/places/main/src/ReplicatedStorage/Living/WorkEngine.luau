@@ -155,10 +155,10 @@ function Engine.mountStep(state: any, old: {x: number,y: number,z: number}, targ
     return nil,nil
 end
 
-function Engine.bridgePlan(state: any,x: number): (Routes.Crossing?,string?)
+function Engine.bridgePlan(state: any,x: number,approachRange: number?): (Routes.Crossing?,string?)
     local graph=Engine.crossings(state)
     if not graph then return nil,"invalid_structure" end
-    return Routes.bridgePlan(graph,x)
+    return Routes.bridgePlan(graph,x,approachRange)
 end
 local NEAR=1.6
 

@@ -959,30 +959,32 @@ function Service.stop(player: Player)
     visualization=nil
 end
 
-local function placementGround(typeId: string, x: number, root: BasePart): (boolean, any, any?)
-    local allowed,reason=Work.canPlace(state,typeId,x)
-    if not allowed then return false,reason end
+local function placementGround(typeId: string, x: number, root: BasePart, snap: boolean?): (boolean, any, any?)
     local definition=Structures.get(typeId)
     if definition.kind=="crossing" then
-        local crossing=Work.bridgePlan(state,x)
-        if not crossing then return false,"invalid_bridge_banks" end
+        local crossing,reason=Work.bridgePlan(state,x,if snap then Structures.PLACEMENT_RANGE else nil)
+        if not crossing then return false,reason end
+        local center=(crossing.west.x+crossing.east.x)/2
+        local allowed,errorCode=Work.canPlace(state,typeId,center)
+        if not allowed then return false,errorCode,crossing end
         if math.min(math.abs(root.Position.X-crossing.west.x),math.abs(root.Position.X-crossing.east.x))
-            >Structures.PLACEMENT_RANGE then return false,"build_too_far" end
-        local wet=RaycastParams.new()
-        wet.FilterType=Enum.RaycastFilterType.Include
-        wet.FilterDescendantsInstances={workspace.Terrain}
+            >Structures.PLACEMENT_RANGE then return false,"build_too_far",crossing end
         for _,bank in ipairs({crossing.west,crossing.east}) do
-            if not WorldService.ensureNear(state.seed,bank.x) then return false,"terrain_not_ready" end
-            for _,z in ipairs({-2,0,2}) do
-                local hit=workspace:Raycast(Vector3.new(bank.x,70,z),Vector3.new(0,-120,0),wet)
-                if not hit then return false,"terrain_not_ready" end
-                if hit.Material==Enum.Material.Water or math.abs(hit.Position.Y-bank.y)>3 then
-                    return false,"invalid_bridge_banks"
-                end
+            if not WorldService.isLoadedAt(bank.x) and not WorldService.ensureNear(state.seed,bank.x) then
+                return false,"terrain_not_ready",crossing
             end
         end
+        local ignored={workspace.Terrain,root.Parent :: Instance}
+        -- Work.canPlace only accepts an existing footprint when upgrading
+        -- its completed provisional bridge. Its model is the only exemption.
+        local current=bridgeFolder and bridgeFolder:FindFirstChild(crossing.id)
+        if current then table.insert(ignored,current) end
+        local valid,blocking=BridgeScene.validatePlacement(crossing,ignored)
+        if not valid then return false,blocking,crossing end
         return true,(crossing.deckWestY+crossing.deckEastY)/2,crossing
     end
+    local allowed,reason=Work.canPlace(state,typeId,x)
+    if not allowed then return false,reason end
     if math.abs(x-root.Position.X)>Structures.PLACEMENT_RANGE then
         return false,"build_too_far"
     end
@@ -1356,13 +1358,13 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             return {ok=false,error="outside_region"}
         end
         local x=math.round(candidateX)
-        local available,height,crossing=placementGround(arg,x,root)
-        if not available then return {ok=false,error=height} end
+        local available,height,crossing=placementGround(arg,x,root,true)
+        if not available then return {ok=false,error=height,bridge=crossing} end
+        local placedX=if crossing then (crossing.west.x+crossing.east.x)/2 else x
         previewId+=1
-        buildPreview={id=previewId,x=x,typeId=arg}
-        return {ok=true,previewId=previewId,
-            x=if crossing then (crossing.west.x+crossing.east.x)/2 else x,
-            y=height,district=Work.districtAt(state,x),bridge=crossing}
+        buildPreview={id=previewId,x=placedX,typeId=arg,crossingId=crossing and crossing.id}
+        return {ok=true,previewId=previewId,x=placedX,
+            y=height,district=Work.districtAt(state,placedX),bridge=crossing}
     end
     if action=="build" and buildPreview and arg==buildPreview.id and buildPreview.result then
         return buildPreview.result
@@ -1384,8 +1386,11 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
     end
     local plan=buildPreview
     if not plan or arg~=plan.id then return {ok=false,error="preview_changed"} end
-    local available,height=placementGround(plan.typeId,plan.x,root)
+    local available,height,crossing=placementGround(plan.typeId,plan.x,root)
     if not available then return {ok=false,error=height} end
+    if plan.crossingId and (not crossing or crossing.id~=plan.crossingId) then
+        return {ok=false,error="preview_changed"}
+    end
     local placed,result=Work.place(state,plan.typeId,plan.x,height)
     if not placed then return {ok=false,error=result} end
     plan.result={ok=true,buildingId=result.id,x=result.x,typeId=plan.typeId}

@@ -77,14 +77,19 @@ function Routes.compile(seed: number): Graph
     return {crossings = crossings}
 end
 
-function Routes.bridgePlan(graph: Graph, x: number): (Crossing?, string?)
+function Routes.bridgePlan(graph: Graph, x: number, approachRange: number?): (Crossing?, string?)
     if not Profile.regionAt(x) then return nil, "outside_region" end
+    local closest: Crossing? = nil
+    local distance = approachRange or 0
     for _, crossing in ipairs(graph.crossings) do
-        if x >= crossing.west.x and x <= crossing.east.x then
-            if crossing.buildable then return crossing, nil end
-            return nil, "invalid_bridge_banks"
+        local gap = math.max(crossing.west.x - x, x - crossing.east.x)
+        if gap <= 0 then
+            return if crossing.buildable then crossing else nil,
+                if crossing.buildable then nil else "invalid_bridge_banks"
         end
+        if crossing.buildable and gap <= distance then closest, distance = crossing, gap end
     end
+    if closest then return closest, nil end
     return nil, "missing_crossing"
 end
 

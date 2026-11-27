@@ -202,7 +202,7 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('local valid,reason=Engine.canPlace(state,typeId,x)', engine)
         self.assertIn('sample.wet or sample.shore', engine)
         self.assertIn('no_worker_route', engine)
-        self.assertIn('local available,height=placementGround(plan.typeId,plan.x,root)', living)
+        self.assertIn('local available,height,crossing=placementGround(plan.typeId,plan.x,root)', living)
         self.assertIn('local placed,result=Work.place(state,plan.typeId,plan.x,height)', living)
         self.assertIn('return buildPreview.result', living)
         self.assertIn('call("build_preview",id,candidate)', ui)
