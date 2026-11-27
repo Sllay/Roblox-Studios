@@ -28,7 +28,7 @@ jobs:
           s=games/maps/entre-reinos/game/places/main/src/ReplicatedStorage
           luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$s/RegionalWorld.luau" "$s/SlotModel.luau"
           for test in games/maps/entre-reinos/game/tests/society_*.luau; do luau "$test"; done
-      - name: Exercise unpublished candidate code in Roblox staging v20 and isolated DataStore
+      - name: Exercise unpublished candidate code in Roblox staging v21 and isolated DataStore
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: PYTHONPATH=tools python games/maps/entre-reinos/ops/t2_r2_probe.py
