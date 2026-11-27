@@ -178,3 +178,9 @@ Distâncias/escala de reinos; limite NPC e carga; regras precisas de derrota e r
 [FIXADO] Gerar Terrain além do enquadramento máximo, considerando zoom, proporção e velocidade de montaria, e validar o que o cliente recebe. Barreira segura em ambas as extremidades e dois chunks decorativos por lado. Três fileiras adicionais em Z com altura crescente, silhuetas naturais e árvores variadas por altitude, umidade, inclinação e bioma, com densidade e LOD limitados. Faixa frontal de água 3D, margens naturais e continuidade dos cursos que descem do fundo ao primeiro plano, com cascatas visuais e volumes nativos coerentes. Preservar terreno, travessias, seed e dados atuais.
 
 [FIXADO] Medir custo de simulação, render, atualização de UI, memória, movimento, replicação e geração. Perfil em servidor isolado não equivale a FPS mobile. Concluir os checkpoints A–F e revisar em staging existente, com autorização específica de publicação. T2-R3 aguarda o refinamento.
+
+## 27/11/2026 — Mar frontal e vegetação
+
+[FIXADO] A primeira fileira do lado da câmera é mar aberto. A margem fica na transição do terreno jogável. O mar é contínuo em X, incluindo os chunks decorativos das extremidades, com nível comum fora das desembocaduras. Rios vindos das elevações atravessam o terreno jogável e deságuam no mar. Usar volumes nativos de Terrain; preservar as margens, travessias e o limite de movimento do jogador em Z.
+
+[FIXADO] Os modelos aprovados do Black Islands podem ser reutilizados nos elementos naturais do Entre Reinos. A distribuição varia por seed, bioma e relevo e preserva clareiras e acessos. A camada distante tem orçamento reduzido. A apresentação de uma fonte preserva sua identidade, quantidade e estado persistido. Grama usa a decoração nativa de Terrain.

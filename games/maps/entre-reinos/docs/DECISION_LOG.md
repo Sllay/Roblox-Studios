@@ -258,3 +258,9 @@ Correção v9 em desenvolvimento:
 - [FIXADO PELO CRIADOR] O relevo, o leito e a água precisam formar um curso contínuo das encostas até a faixa frontal. O encaixe da ponte deve partir de margens válidas e rejeitar obstruções físicas. Preservar as travessias, o terreno jogável, os reinos e os saves. A T2-R3 aguarda a correção e o playtest. [Diagnóstico e provas](runner-receipts/T2-R2-v20-refino.md#correção-do-rio-e-das-pontes--27112026)
 
 - [AUTORIZADO PELO CRIADOR] Publicar `b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9` em substituição à v21 no staging existente. Preservar o ruleset 5, os seis slots e o rollback da v21. A T2-R3 aguarda o playtest. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-para-a-correção-de-água-e-pontes)
+
+## 27/11/2026 — Pontes, vegetação aprovada e mar frontal
+
+- [FIXADO PELO CRIADOR] A faixa frontal é o mar. A linha costeira coincide com a borda do terreno jogável. A água do Terrain segue o mundo em X, inclusive após as duas extremidades jogáveis. Os rios descem do fundo e deságuam nessa faixa. A composição é visual e preserva a faixa jogável, o movimento lateral e as travessias persistidas.
+- [AUTORIZADO PELO CRIADOR] Reutilizar os modelos aprovados do Black Islands com as malhas, texturas, UVs e materiais revisados. Manter a substituição visual vinculada aos IDs existentes das fontes do Entre Reinos. Usar grama nativa nos materiais aplicáveis e densidade limitada de vegetação distante.
+- [FIXADO PELO CRIADOR] Validar a ponte com a vila carregada, preservar a rejeição de objetos fixos dentro do vão e manter o acesso do jogador restrito à ponte reforçada. O playtest da correção precede a T2-R3. [Recibo](runner-receipts/T2-R2-v20-refino.md#pontes-vegetação-aprovada-e-mar-frontal)

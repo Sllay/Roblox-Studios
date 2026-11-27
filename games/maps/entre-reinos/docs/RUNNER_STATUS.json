@@ -503,6 +503,24 @@
             "rollbackScriptsVerified": 50,
             "rollbackArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/46027305046/artifacts/15212701803",
             "evidenceArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/46027305046/artifacts/15212268935"
+          },
+          "bridgeSeaVegetationRefinement": {
+            "recordedAt": "2026-11-27",
+            "candidate": "46594201fe56d6f49707088e3a919d20977d8f13",
+            "baselineRevision": 22,
+            "ruleset": 5,
+            "slots": 6,
+            "technicalVerification": "passed",
+            "publicationStatus": "awaiting_creator_authorization",
+            "clientMobile": "awaiting_creator_playtest",
+            "nextRunner": "blocked_awaiting_creator_feedback",
+            "reproduction": "https://github.com/Sllay/Roblox-Studios/actions/runs/46065489931",
+            "ci": "https://github.com/Sllay/Roblox-Studios/actions/runs/46066711476",
+            "robloxProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/46066704862",
+            "baselineSceneSync": "https://github.com/Sllay/Roblox-Studios/actions/runs/46066703578",
+            "baselineDigest": "3e815508daf96d1faace1f57d6bbe24342a6bcb854e221dadfd4d629c1f48aa9",
+            "rollbackBuildSha256": "cc9f62b5fdb13652474ce2b967d39a1869181f082ae598324c528e540483c126",
+            "receipt": "docs/runner-receipts/T2-R2-v20-refino.md"
           }
         },
         {
