@@ -45,6 +45,8 @@ def bundle_source():
         )
         if service == "LivingService":
             source = source.replace("actions.OnServerInvoke=function(", "local function probeAction(")
+            # Headless fixture has no network Player to receive the UI event.
+            source = source.replace("interaction:FireClient(player,best)", "Service.probeTarget=best")
             source = source.replace("connection=RunService.Heartbeat:Connect(function(dt: number)",
                                     "Service.probeStep=function(dt: number)")
             source = source.replace("    end)\n    player:SetAttribute(\"ER_NPCCount\"", "    end\n    player:SetAttribute(\"ER_NPCCount\"")
