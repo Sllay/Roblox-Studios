@@ -1,6 +1,6 @@
 # Playtest T2-R2 · ER-028 a ER-035
 
-A prévia ativa no staging é a **v21**, com o refinamento mobile, NPCs, combate e cenário. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Roteiro mobile](runner-receipts/T2-R2-v20-refino.md#roteiro-para-a-próxima-revisão-de-staging) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503)
+A prévia ativa no staging é a **v22**, com as correções de água e encaixe das pontes. Siga o rio da encosta até a faixa frontal e confirme as duas categorias de ponte a partir de uma margem seca. [Jogar no Roblox](https://www.roblox.com/games/90623742498445) · [Provas e roteiro](runner-receipts/T2-R2-v20-refino.md) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/46027305046)
 
 ## Histórico da prévia v20
 

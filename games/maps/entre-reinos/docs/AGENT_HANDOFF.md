@@ -383,3 +383,7 @@ A autorização do criador fixou o candidato `c4fb079` e a substituição da v20
 ## 27/11/2026 — Água e encaixe de ponte
 
 O playtest reportou um corte no morro, linha na água e dificuldade de encaixar a ponte. O candidato `b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9` corrige a seção do rio e o snap das margens secas. CI e Open Cloud confirmaram continuidade do Terrain, obstrução física, construção das duas pontes e preservação de dados. A v21 continua publicada. A correção aguarda autorização para staging e conferência visual no cliente. T2-R3 segue suspensa. [Recibo](runner-receipts/T2-R2-v20-refino.md#correção-do-rio-e-das-pontes--27112026)
+
+## 27/11/2026 — Correção de água e pontes publicada na v22
+
+A v22 está disponível no staging, com ruleset 5 e seis slots. A API confirmou a publicação de `b712a6f`, o readback verificou 50 scripts e o Scene Sync confirmou o digest. O workflow arquivou o rollback da v21 antes da escrita. T2-R3 aguarda o playtest do criador. [Playtest](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R2-v20-refino.md) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/46027305046) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/46027483067)
