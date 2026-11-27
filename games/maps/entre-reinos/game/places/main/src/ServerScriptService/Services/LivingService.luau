@@ -24,6 +24,7 @@ local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDe
 local Professions=require(shared:WaitForChild("Living"):WaitForChild("ProfessionDefs"))
 local Items=require(shared:WaitForChild("Living"):WaitForChild("ItemDefs"))
 local Inventory=require(shared:WaitForChild("Living"):WaitForChild("Inventory"))
+local Vegetation=require(script.Parent:WaitForChild("VegetationScene"))
 local WorldService=require(script.Parent:WaitForChild("WorldService"))
 local Service={}
 local owner: Player?=nil
@@ -569,62 +570,40 @@ end
 local function createSiteVisual(site: any)
     if not visualization then return end
     local z=site.z or (if site.item=="wood" then -6 else -4)
-    local pos=Profile.sample(state.seed,site.x,if site.z then z else 0)
-    local anchor: BasePart
-    if site.item=="wood" and not site.salvage and not string.match(site.id,"salvage_") then
-        -- Distinct harvestable tree; background trees remain decoration.
-        local tree=Instance.new("Model")
-        tree.Name="HarvestableTree_"..tostring(site.id)
-        tree:SetAttribute("ER_Harvestable",true)
-        tree:SetAttribute("ER_SourceId",site.id)
-        local trunk=makePart(tree,"Trunk",
-            Vector3.new(2.1,7.2,2.1),Color3.fromRGB(112,75,47))
-        trunk.Position=Vector3.new(site.x,pos.height+3.6,z)
-        for k=1,3 do
-            local leaves=makePart(tree,"LeafCrown",
-                Vector3.new(7.5-k*1.1,3.8,7.5-k*1.1),
-                Color3.fromRGB(63,116,77))
-            leaves.Shape=Enum.PartType.Ball
-            leaves.Position=Vector3.new(site.x,pos.height+7.1+k*1.8,z)
-        end
-        tree.Parent=visualization
-        anchor=trunk
+    local ground=groundHeight(site.x,z)
+    local timber=site.item=="wood" and not site.salvage and not string.match(site.id,"salvage_")
+    local kind=if timber then (if site.x%3==0 then "broadleaf" else "tree")
+        elseif site.item=="wood" then "log"
+        elseif site.item=="food" or site.item=="grain" then "bush" else "rock"
+    local yaw=math.rad((state.seed+site.x*71)%360)
+    local model=Vegetation.place(visualization,kind,Vector3.new(site.x,ground,z),
+        if timber then 0.9 else 0.78,yaw,math.floor(site.x),false)
+    model.Name=if timber then "HarvestableTree_"..tostring(site.id) else "Resource_"..site.id
+    model:SetAttribute("ER_SourceId",site.id)
+    local anchor=makePart(model,if timber then "Trunk" else "ResourceAnchor",
+        if timber then Vector3.new(2.1,7.2,2.1) else Vector3.new(2,2,2),Color3.new())
+    anchor.Transparency=1
+    anchor.Position=Vector3.new(site.x,ground+(if timber then 3.6 else 1),z)
+    -- Existing near-lane source IDs remain accessible. Only trunks beyond
+    -- the corridor receive a collider; the model's canopy stays decorative.
+    local solidTrunk=timber and math.abs(z)>=9
+    if solidTrunk then
+        anchor:SetAttribute("ER_PlacementRole","resource")
+        anchor.CanCollide=site.remaining>0
+        anchor.CanQuery=true
+    end
+    anchor:SetAttribute("ER_TrunkCollider",solidTrunk)
+    if timber then
+        model:SetAttribute("ER_Harvestable",true)
         local high=Instance.new("Highlight")
         high.Name="MarkedForCarpenter"
-        high.Adornee=tree
+        high.Adornee=model
         high.FillColor=Color3.fromRGB(230,189,85)
         high.OutlineColor=Color3.fromRGB(255,222,120)
         high.FillTransparency=0.85
         high.OutlineTransparency=0.1
         high.Enabled=site.marked==true and site.remaining>0
-        high.Parent=tree
-    elseif site.id=="forage_orchard" then
-        local bush=Instance.new("Model")
-        bush.Name="ForageOrchard"
-        local canopy=makePart(bush,"Canopy",Vector3.new(4.4,2.5,3.2),Color3.fromRGB(72,128,78))
-        canopy.Shape=Enum.PartType.Ball
-        canopy.Position=Vector3.new(site.x,pos.height+1.35,z)
-        canopy.CanCollide=false
-        for i=1,5 do
-            local berry=makePart(bush,"Berry",Vector3.new(0.42,0.42,0.42),Color3.fromRGB(210,83,67))
-            berry.Shape=Enum.PartType.Ball
-            berry.Position=Vector3.new(site.x+(i-3)*0.63,pos.height+1.5+(i%2)*0.6,z+1.12)
-            berry.CanCollide=false
-            berry.CanQuery=false
-        end
-        bush.Parent=visualization
-        anchor=canopy
-    else
-        -- Each resource has its own recognizable shape and palette.
-        local color=if site.item=="stone" then Color3.fromRGB(126,131,130)
-            else if site.item=="iron" then Color3.fromRGB(97,116,132)
-            else Color3.fromRGB(96,151,88)
-        local block=makePart(visualization,"Resource_"..site.id,
-            if site.item=="food" then Vector3.new(3.7,2.6,3.7)
-            else Vector3.new(3.8,3,3.4),color)
-        block.Shape=if site.item=="food" then Enum.PartType.Ball else Enum.PartType.Block
-        block.Position=Vector3.new(site.x,pos.height+1.4,z)
-        anchor=block
+        high.Parent=model
     end
     anchor:SetAttribute("ResourceType",site.item)
     anchor:SetAttribute("SourceId",site.id)
@@ -716,18 +695,8 @@ local function draw(observerX: number)
     for _,site in ipairs(state.sites) do
         if not siteVisuals[site.id] and WorldService.isLoadedAt(site.x) then createSiteVisual(site) end
         local anchor=siteVisuals[site.id]
-        if site.id=="forage_orchard" and anchor and anchor.Parent then
-            local count=math.ceil(site.remaining*5/9)
-            if anchor:GetAttribute("ER_FruitCount")~=count then
-                anchor:SetAttribute("ER_FruitCount",count)
-                local index=0
-                for _,fruit in ipairs(anchor.Parent:GetChildren()) do
-                    if fruit:IsA("BasePart") and fruit.Name=="Berry" then
-                        index+=1
-                        fruit.Transparency=if index<=count then 0 else 1
-                    end
-                end
-            end
+        if anchor and anchor:GetAttribute("ER_TrunkCollider")==true then
+            anchor.CanCollide=site.remaining>0
         end
         if site.item=="wood" and visualization then
             local tree=visualization:FindFirstChild("HarvestableTree_"..tostring(site.id))
@@ -741,8 +710,9 @@ local function draw(observerX: number)
                 if prior~=(site.remaining<=0) then
                     tree:SetAttribute("ER_Depleted",site.remaining<=0)
                     for _,part in ipairs(tree:GetChildren()) do
-                        if part:IsA("BasePart") and part.Name~="Trunk" then
-                            part.Transparency=if site.remaining<=0 then 1 else 0
+                        if part:IsA("MeshPart") then
+                            local trunk=string.find(part.Name,"Trunk")~=nil
+                            part.Transparency=if site.remaining<=0 and not trunk then 1 else 0
                         end
                     end
                 end

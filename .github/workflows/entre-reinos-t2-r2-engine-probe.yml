@@ -23,6 +23,7 @@ jobs:
       - run: python -m pip install Pillow==11.3.0
       - run: bash tools/install-luau.sh
       - run: bash tools/install-luau-lsp.sh
+      - uses: CompeyDev/setup-rokit@v0.2.1
       - name: Type check and run the society suites
         run: |
           s=games/maps/entre-reinos/game/places/main/src/ReplicatedStorage

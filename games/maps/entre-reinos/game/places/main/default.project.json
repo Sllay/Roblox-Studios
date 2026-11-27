@@ -32,6 +32,10 @@
         "StreamingTargetRadius": 320
       },
       "$path": "src/Workspace"
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$path": "src/ServerStorage"
     }
   }
 }

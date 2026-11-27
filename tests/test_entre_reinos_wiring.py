@@ -278,7 +278,8 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('local x,z=actorX(npc),actorZ(npc)', living)
         self.assertIn('desiredDistance = if wide then Scenery.CAMERA_DISTANCE else 88', camera)
         self.assertNotIn('BlackForegroundGrass', world)
-        self.assertIn('DarkTreeSilhouette_', world)
+        self.assertIn('Scenery.vegetation(seed,id,row)', world)
+        self.assertIn('Vegetation.place(layer,item.kind', world)
         self.assertIn('ER_VisualLayer', world)
 
     def test_r3_combat_raid_ledger_and_prologue_are_server_owned(self):

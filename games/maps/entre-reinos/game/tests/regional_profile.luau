@@ -135,7 +135,7 @@ for _,worldSeed in ipairs(scenicSeeds) do
         assert(math.abs(Scenery.bounds(id,0).xMin)>Regions.PLAY_EDGE or math.abs(Scenery.bounds(id,0).xMax)>Regions.PLAY_EDGE)
     end
     for row=-3,-1 do
-        local a,b=Scenery.trees(worldSeed,4,row),Scenery.trees(worldSeed,4,row)
+        local a,b=Scenery.vegetation(worldSeed,4,row),Scenery.vegetation(worldSeed,4,row)
         assert(#a==#b and #a<=13)
         for i,tree in ipairs(a) do
             assert(tree.x==b[i].x and tree.y==b[i].y and tree.z==b[i].z)

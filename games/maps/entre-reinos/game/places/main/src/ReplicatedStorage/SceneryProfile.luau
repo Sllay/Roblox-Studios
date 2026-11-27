@@ -76,28 +76,45 @@ function Scenery.coverage(x: number,velocity: number,row: number): (number,numbe
         math.min(cap,math.floor((x+half+math.max(0,lead)+32)/64))
 end
 
-function Scenery.trees(seed: number,id: number,row: number): {any}
+function Scenery.vegetation(seed: number,id: number,row: number): {any}
+    if row==1 then return {} end
     local bounds=Scenery.bounds(id,row)
     local result={}
     local spacing=if row<=-2 then 16 else 8
+    local budget=if row==-3 then 5 elseif row==-2 then 8 else 13
     local phase=(seed%17749)/51
     for x=bounds.xMin+spacing/2,bounds.xMax-1,spacing do
         for z=bounds.zMin+spacing/2,bounds.zMax-1,spacing do
+            -- Keep the playable lane, buildings and approaches clear.
+            if row==0 and z>=-23 then continue end
             local clump=math.noise(x/45,z/33,phase)
             local detail=math.noise(x/11,z/9,phase+6)
             local px=x+detail*3
             local pz=z+math.noise(x/13,phase,z/15)*3
-            if row==1 and pz>b.zMax+14 then continue end
             local point=Scenery.sample(seed,px,pz)
-            local density=if point.biome=="forest" or point.biome=="heartland" then -0.09
-                elseif point.biome=="rockland" or point.biome=="mountains" then 0.10 else 0.015
-            if clump+detail*0.28<density or point.wet or point.height>82 then continue end
-            if math.abs(Scenery.sample(seed,px+4,pz).height-point.height)>3.4 then continue end
-            table.insert(result,{x=px,y=point.height,z=pz,size=0.72+(detail+0.5)*0.53,
-                angle=math.rad((seed+x*13+z*7)%360),conifer=point.height>48 or point.biome=="forest"})
-            if #result>=(if row<=-2 then 8 else 13) then return result end
+            if point.wet or point.height>98 then continue end
+            if math.abs(Scenery.sample(seed,px+3,pz).height-point.height)>3
+                or math.abs(Scenery.sample(seed,px,pz+3).height-point.height)>3 then continue end
+            local density=if point.biome=="forest" or point.biome=="heartland" then -0.11
+                elseif point.biome=="rockland" or point.biome=="mountains" then 0.11 else 0.018
+            local kind
+            if clump+detail*0.28>=density and point.material=="Grass" then
+                kind=if point.height>48 or point.biome=="forest" then "pine"
+                    elseif detail>0.02 then "tree" else "broadleaf"
+            elseif row>-2 then
+                if point.material=="Rock" or point.material=="Slate" then kind=if detail>0 then "rock" else "pebble"
+                elseif point.material=="Grass" and clump>density-0.15 then
+                    kind=if detail>0.20 then "log" elseif detail>=0 then "bush" else "stick"
+                elseif point.material=="Sand" and detail>0.17 then kind="pebble" end
+            end
+            if not kind then continue end
+            table.insert(result,{x=px,y=point.height,z=pz,size=0.78+(detail+0.5)*0.42,
+                angle=math.rad((seed+x*13+z*7)%360),kind=kind,tint=math.floor((clump+1)*97),
+                score=clump+0.4*detail})
         end
     end
+    table.sort(result,function(a,b) return a.score>b.score end)
+    while #result>budget do table.remove(result) end
     return result
 end
 return Scenery
