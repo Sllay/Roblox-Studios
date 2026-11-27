@@ -1,5 +1,5 @@
 {
-  "loadedVersion": 21,
+  "loadedVersion": 22,
   "placeId": "90623742498445",
   "records": {
     "environment:lighting": {
@@ -450,8 +450,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 2770,
-        "sourceHash": "nsMmQ04aJE1Th/TMEmuUiBW20Ce5OdPxZvT1Bl3FT6E="
+        "sourceBytes": 2844,
+        "sourceHash": "d4CMfObUHRSpKmRNKBpqDuJYeQaE+a2EL8YK8o3Dfq8="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -546,8 +546,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 56467,
-        "sourceHash": "krXQh7AZBi/nyx4PEWxeU5sIqqbdMbCAesf+wyMULPg="
+        "sourceBytes": 56504,
+        "sourceHash": "DoQFpy0b8XOkLDZwoybDLiVGdNjfa8bvNhomMxopfv8="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -651,8 +651,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 6410,
-        "sourceHash": "D1eDfxasz3qOcPdqFF3d2/M9YRdd4Mwm2lA+98BpP0E="
+        "sourceBytes": 6709,
+        "sourceHash": "p+1fcO6mjincirmtzUAgd2N8JMcD8CkY/YSiM4dDBS8="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -678,8 +678,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 11035,
-        "sourceHash": "RCz8W/HBoKUdeCiuH/C4tOibf5NtOyCGpLK9BqCfrcs="
+        "sourceBytes": 10691,
+        "sourceHash": "EAT01yZ9w5xIffsFUA8E/9uqREnqJxsFHv7FNAu0iMw="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -732,8 +732,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 5536,
-        "sourceHash": "Y4xnOO8PHgO7RI83RfGLyTiVLqhtIA/yOdRU/SQHIS8="
+        "sourceBytes": 5017,
+        "sourceHash": "fpXQSDbJTtGl90BEfHd1JaJh/P2HOTtw1dU4cQWwqUA="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -813,8 +813,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 3311,
-        "sourceHash": "lL5maJ9AjRnSeI/qlB1sc94t+oazqZPRBUr3X3go/MM="
+        "sourceBytes": 3480,
+        "sourceHash": "cNViu/mvgAaNehvbxrtE3kboy5z4DPvwpeZ7aeVmUig="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -932,8 +932,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 2198,
-        "sourceHash": "WlfC12gK/QxH548z8YBPrel0SJ+kujdfLLSRknx67a4="
+        "sourceBytes": 4015,
+        "sourceHash": "CYdX7PoZ8My4HiBawG6OmxcoS7vOAq9WCPDjWmBdLn8="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1013,8 +1013,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 65333,
-        "sourceHash": "rnXDFqmdy9lcn38NJ2Hv4O8f6fK5O39MY1GqUc4Bhc8="
+        "sourceBytes": 65844,
+        "sourceHash": "ocwK3+uS7UwEEv/1GK4AJnlQLm5N5cEaFMEhS3mH4VQ="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1121,8 +1121,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 22611,
-        "sourceHash": "hzYgvZro4k2ag0lbrdxc1VMMPZSG4WGXwjU1SrWySpU="
+        "sourceBytes": 20750,
+        "sourceHash": "0/lSKWVh6zZuP6ezrNHzmxQfBI+7KETfD8ruwLWssBs="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1329,8 +1329,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 16861,
-        "sourceHash": "wgXKp5qY+WBRKSMZ3U8sMAhJV2q+cyDyjzGswuGOdSE="
+        "sourceBytes": 17492,
+        "sourceHash": "cs939UPKqTOtyTc/OQbSvb2xGxLa9pz0je7kjqBeZTE="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -3445,7 +3445,7 @@
     "Teams",
     "ReplicatedFirst"
   ],
-  "stateDigest": "b8d6d7db0c1813d29431cdf6f93505a8786d3473607d5b73e13f963751b1b5e6",
+  "stateDigest": "3e815508daf96d1faace1f57d6bbe24342a6bcb854e221dadfd4d629c1f48aa9",
   "total": 106,
   "universeId": "10769712413"
 }
