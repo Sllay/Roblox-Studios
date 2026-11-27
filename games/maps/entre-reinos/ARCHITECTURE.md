@@ -130,3 +130,19 @@ No ruleset 3, `Campaign` guarda o estado discreto da história e as posições d
 `WorkEngine` integra X/Z com desvio local limitado e mantém a posição antiga em X ao migrar moradores. Apenas os NPCs ganham liberdade no plano X/Z. `NPCPresentation` interpola o estado replicado e usa faixas do Animator R6. `CombatService` é dono da arma, da janela de carga, do consumo, da trajetória e do dano. `Ballistics` fornece parâmetros compartilhados de previsão ao cliente. `R3HUD` aciona a mesma interação contextual em touch, mouse e controle.
 
 `WorldProfile` define 17 chunks de 64 studs e preserva a função do terreno antigo nessa região. `WorldService` escreve Terrain nativo ao iniciar e sob demanda. Os voxels já escritos permanecem no servidor. O Workspace faz streaming para o cliente, com residência mínima configurada em 64 studs e raio alvo de 160. O snapshot mantém a posição legada e um campo aditivo `frontierPosition` vinculado à revisão do save. Um ponto externo só é usado na revisão corrente, com geração ao redor da posição antes do spawn. Os seis slots, o formato e o ruleset 3 permanecem.
+
+## Preparação T2-R1 — compatibilidade espacial
+
+`RegionalProfile` prolonga `WorldProfile` nos mesmos tiles de 64 studs. Os chunks -8…8 continuam amostrando o perfil legado, incluindo o leito, o nível da água e os materiais. Fora deles o relevo combina nós de bioma em coordenadas globais com uma transição apoiada na borda da v18. `WorldService` recebe o perfil regional somente no laboratório. O caminho normal de Boot, as chaves e as versões dos saves continuam na v18.
+
+`RegionalCrossings` calcula os cursos transversais à faixa lateral uma vez por seed. A consulta de travessia usa a classe do agente e o estado atual da passagem. O grafo regional entrega os pontos de entrada e saída e o modo permitido. O desvio local do WorkEngine continua responsável por obstáculos em X/Z. A integração futura precisa de reservas autoritativas de capacidade, suportes de tabuleiro e invalidação de caminhos ativos quando a obra mudar.
+
+Para integrar regiões à persistência, preservar o slot como raiz de identidade e lease. Medir a serialização de estados regionais antes de introduzir partições. Se forem necessárias múltiplas chaves, tratar a referência publicada pelo slot como o commit: gravar e verificar as revisões regionais antes de trocar o manifesto raiz. A versão atual não escreve novos estados regionais.
+
+## T2-R1 — runtime no candidato do PR #13
+
+O Boot reservado inicia com `RegionalProfile`. A geometria v18 continua delegada ao perfil legado. O restante do Terrain é gerado conforme a janela do jogador, a demanda de trabalho ou um destino de viagem. Cursos de água do perfil novo incluem cascatas 3D em suas encostas. `RegionalWorld` mantém a vila inicial e o segundo reino com populações, construções, fontes e estoques distintos. `LivingService` troca a população observável e recria os rigs próximos a partir dos dados existentes. O estado distante conserva o relógio, as reservas e as baixas até a reativação.
+
+A obra de ponte usa inventários e trabalhos do `WorkEngine`. O servidor resolve as margens nativas antes de confirmar a prévia. A navegação em X/Z consulta a capacidade e o estado corrente da travessia. `BridgeScene` produz o tabuleiro físico reforçado. O acesso montado para na margem suportada até que a passagem possa ser usada. A transição entre regiões reduz a distância do passo se o desnível exigir.
+
+O ruleset 4 serializa um envelope regional versionado no slot existente, limitado a 512 KiB. Um único `UpdateAsync` com lease grava posição, populações, custódia e veículos. Antes da promoção, o backup compatível com a v18 precisa ser confirmado. Na viagem rápida, o servidor confirma o snapshot com o destino antes de mover a pessoa. O sistema de veículos mantém propriedade e posição autoritativas e só libera os controles depois da confirmação do vínculo físico de assento.

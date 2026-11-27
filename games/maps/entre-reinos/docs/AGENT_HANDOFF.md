@@ -323,3 +323,35 @@ O PR #12 foi integrado na main em `af4cb9bde16e8445045fa3c988a694211da6ebf7`. O 
 - F6 prepara cinco chunks no início e visita até 17. Os seis slots mantêm as chaves e o ruleset 3. O DataStore real isolado verificou backup, lease e reabertura na fronteira. [Probe de integração](https://github.com/Sllay/Roblox-Studios/actions/runs/45497927554)
 
 O playtest touch e visual do criador continua pendente. Os pontos principais são sobreposição de controles em telas pequenas, ritmo dos passos e leitura das ações dos NPCs, continuidade do prólogo e fluidez ao atravessar chunks. ER-001–020 permanecem PARCIAIS. As decisões sobre perdas por morte, ruínas e estorno seguem abertas. [Receibo técnico](runner-receipts/T1-F6.md)
+
+## 25/11/2026 — Preparação de T2-R1 em branch isolada
+
+O criador aceitou a v18 como fundação e autorizou o trabalho técnico. A T1 segue em certificação. ER-001–020 permanecem PARCIAIS e o aceite não equivale a aprovação individual. O perfil regional de desenvolvimento prolonga o campo da v18, reusa o gerador nativo e é verificável em sessão Open Cloud descartável. Mantém-se a v18 no staging e o fluxo de save no perfil anterior. A integração do runner depende do protocolo de transição e dos gates ER-021–027. [Recibo T2-R1](runner-receipts/T2-R1.md)
+
+## 25/11/2026 — Runtime regional em desenvolvimento no PR #13
+
+A branch isolada carrega o perfil regional no Boot, convida o jogador a construir as pontes pelo caderno e usa WorkEngine em ambos os reinos. Ruleset 4 grava o estado regional, o destino e os veículos com backup da v18 no mesmo lease. O SaveSlotService mantém um limite explícito para o snapshot. O PR continua em rascunho. O staging permanece na v18. Consultar o [recibo T2-R1](runner-receipts/T2-R1.md) para evidências, parâmetros provisórios e verificações de cliente pendentes.
+
+## 25/11/2026 — regressão de montagem e travessia corrigida no PR #13
+
+O candidato `04d9be796ae944324b7ffd61bba6d2f93ffeeee3` passou no probe Roblox com R6 sintético, incluindo espera na margem, ponte reforçada, remontagem, fronteira, barco com carga e retry da viagem. A migração v18, o restore do segundo reino, a montaria e a carga também passaram no DataStore isolado. O status do runner permanece bloqueado para integração pela certificação da T1 e pela prova em cliente/mobile. A main e o staging v18 foram preservados. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45658252612) · [Motor](https://github.com/Sllay/Roblox-Studios/actions/runs/45658231902) · [Recibo](runner-receipts/T2-R1.md)
+
+## 25/11/2026 — Certificação e prévia regional
+
+O PR #13 recebeu `7bf8a7bafc9e7cf6d0da893fb813ecab3ff4bc55`. Ao morrer montado ou a bordo, o jogador perde o vínculo com o assento e volta ao castelo, inclusive ao reabrir um save com recuperação pendente. Veículo e carga ficam onde estavam. O cancelamento e a ruína de pontes colocam os materiais recuperáveis na margem usada pelos trabalhadores. VILA → ESTOQUE aponta para a Vila do Cedro até a primeira visita. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45671239634) · [Motor](https://github.com/Sllay/Roblox-Studios/actions/runs/45671224264) · [Recibo](runner-receipts/T2-R1.md)
+
+O criador aceitou a v18 para continuar o desenvolvimento. A [revisão individual da T1](T1_CERTIFICATION_V18.md) identifica as provas técnicas reaproveitadas, os ensaios em cliente e as decisões de recuperação pendentes. Os requisitos formais continuam parciais. O PR segue em rascunho e staging em v18. Uma prévia antecipada exige autorização formal registrada, com destino identificado e workflow aprovado para o SHA. O [roteiro da prévia](T2_R1_PLAYTEST.md) contém os passos depois da liberação e o plano de preservação da v18.
+
+O [mapa T2-R2](T2_R2_INTEGRATION_MAP.md) cobre ER-028–035. A proposta de avanço agregado durante sessão ativa usa o mesmo estado de produção regional. O avanço offline continua aberto. A implementação aguarda fechamento dos gates da T1 e T2-R1.
+
+## 25/11/2026 — Autorização formal da prévia isolada
+
+O criador autorizou uma prévia T2-R1 do PR #13 em Universe independente, com candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745`. O workflow na branch usa o secret de staging `ROBLOX_T2_R1_PREVIEW_API_KEY`. A criação da experiência isolada depende da interface oficial do Roblox e do provisionamento da chave pelo dono. O staging v18, o DataStore e os gates de integração continuam separados. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1) · [Procedimento](T2_R1_PLAYTEST.md) · [Inventário v18](https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920)
+
+## 25/11/2026 — Correção do destino da prévia T2-R1
+
+O criador autorizou usar o staging existente e migrar saves compatíveis de ruleset 3 para 4 pelo fluxo com backup. O PR #13 permanece em rascunho. A publicação usa o candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` e a credencial existente. O Scene Sync confirmou v18 sem alterações externas. Consultar o recibo para revisão final e recuperação. [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45685859918) · [Procedimento](T2_R1_PLAYTEST.md)
+
+## 25/11/2026 — Prévia regional v19 disponível
+
+O candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` foi publicado no staging existente. A API confirmou v19 e o readback verificou 41 scripts. O Scene Sync pós-publicação confirmou o digest da cena. O backup da v18 permanece no histórico de versões e no artefato verificado. Os saves migram durante a partida pelo fluxo com backup por slot. O PR #13 continua em rascunho e T2-R2 aguarda os gates. [Jogar](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R1.md) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45686521277)

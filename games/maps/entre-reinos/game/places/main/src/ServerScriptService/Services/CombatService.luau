@@ -140,7 +140,21 @@ local function enemyModel(e: any): Model
     return m
 end
 
+local townVisible=true
+function Combat.setTownVisible(value: boolean)
+    if value==townVisible then return end
+    townVisible=value
+    if value then return end
+    for _,model in pairs(enemies) do model:Destroy() end
+    for _,model in pairs(storyFigures) do model:Destroy() end
+    for _,coin in pairs(coins) do coin:Destroy() end
+    table.clear(enemies)
+    table.clear(storyFigures)
+    table.clear(coins)
+end
+
 local function syncViews()
+    if not townVisible then return end
     if not folder or not state then return end
     local activeStory: {[string]: boolean}={}
     for _,actor in ipairs(R3.storyActors(state.r3.prologue)) do
@@ -230,6 +244,7 @@ end
 
 function Combat.start(player: Player,living: any,worldFolder: Folder)
     cleanup()
+    townVisible=true
     if not rigTemplate then
         local description=Instance.new("HumanoidDescription")
         local ok,rig=pcall(function()
@@ -416,7 +431,7 @@ local function beginDialogue(player: Player,root: BasePart): any
     return {ok=true}
 end
 
-function Combat.action(player: Player,action: string,arg: any): any
+function Combat.action(player: Player,action: string,arg: any,population: any?): any
     if player~=owner or not state then return {ok=false,error="world_not_loaded"} end
     local root,h=playerRoot(player)
     if not root or not h then return {ok=false,error="character_not_ready"} end
@@ -528,15 +543,16 @@ function Combat.action(player: Player,action: string,arg: any): any
         if type(arg)~="string" or #arg>32 then return {ok=false,error="invalid_equipment"} end
         local id,weapon=string.match(arg,"^(%d+):(%a+)$")
         if not id then return {ok=false,error="invalid_equipment"} end
-        if math.abs(root.Position.X)>World.PLAY_EDGE then return {ok=false,error="outside_region"} end
+        if not population and math.abs(root.Position.X)>World.PLAY_EDGE then return {ok=false,error="outside_region"} end
         local npcId=tonumber(id)
         if not npcId then return {ok=false,error="invalid_equipment"} end
+        local residents=population or state
         local npc=nil
-        for _,n in ipairs(state.npcs) do if n.id==npcId then npc=n; break end end
+        for _,n in ipairs(residents.npcs) do if n.id==npcId then npc=n; break end end
         if not npc or math.abs(npc.x-root.Position.X)>15 then
             return {ok=false,error="too_far_from_defender"}
         end
-        local ok,result=R3.arm(state,npcId,weapon)
+        local ok,result=R3.arm(residents,npcId,weapon,state.r3)
         return {ok=ok,result=result,error=if not ok then result else nil}
     elseif action=="prologue" then
         if not allowed("command",0.5) then return {ok=false,error="rate_limited"} end

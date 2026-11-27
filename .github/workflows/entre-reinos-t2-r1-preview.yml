@@ -1,0 +1,87 @@
+name: Entre Reinos T2-R1 staging development preview
+
+on:
+  push:
+    branches: [entre-reinos/t2-r1-world-regions]
+    paths: [games/maps/entre-reinos/docs/sync/t2-r1-preview/target.json]
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: roblox-place-write-entre-reinos-main-staging
+  cancel-in-progress: false
+
+jobs:
+  staging-preview:
+    if: ${{ github.repository == 'Sllay/Roblox-Studios' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 20
+    env:
+      CANDIDATE: f7d4ac685f2372d066cdf49a19b2b978f2454745
+      ENGINE_HEAD: 7bf8a7bafc9e7cf6d0da893fb813ecab3ff4bc55
+      PLAN: games/maps/entre-reinos/docs/sync/t2-r1-preview/target.json
+      PREVIEW_TOOL: games/maps/entre-reinos/ops/t2_r1_preview.py
+      EVIDENCE: dist/entre-reinos-t2-r1-preview
+      PYTHONPATH: ${{ github.workspace }}/preview-candidate/tools
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: f7d4ac685f2372d066cdf49a19b2b978f2454745
+          path: preview-candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 98f81262ff93066c759b915253d557193e3efc9f
+          path: preview-rollback
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Check the reviewed source and existing successful runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(jq -er .action "$PLAN")" = publish
+          test "$(jq -er .candidate "$PLAN")" = "$CANDIDATE"
+          test "$(git -C preview-candidate rev-parse HEAD)" = "$CANDIDATE"
+          git -C preview-candidate diff --exit-code "$ENGINE_HEAD" "$CANDIDATE" -- \
+            games/maps/entre-reinos/game packages games/maps/entre-reinos/game.manifest.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45671927799" \
+            --jq '.conclusion + " " + .head_sha + " " + .path' \
+            | grep -Fx "success $CANDIDATE .github/workflows/ci.yml"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45671224264" \
+            --jq '.conclusion + " " + .head_sha + " " + .path' \
+            | grep -Fx "success $ENGINE_HEAD .github/workflows/entre-reinos-t2-r1-engine-probe.yml"
+      - run: python -m pip install Pillow==11.3.0
+      - name: Install pinned official Luau
+        run: bash preview-candidate/tools/install-luau.sh
+      - uses: CompeyDev/setup-rokit@v0.2.1
+      - name: Build only the approved Entre Reinos Place
+        working-directory: preview-candidate
+        run: python tools/workspace.py build --game entre-reinos --place main
+      - name: Build the exact v18 rollback file
+        run: |
+          (cd preview-rollback && python tools/workspace.py build --game entre-reinos --place main)
+          mkdir -p "$EVIDENCE"
+          cp preview-rollback/dist/entre-reinos/main.rbxlx "$EVIDENCE/entre-reinos-v18-rollback.rbxlx"
+      - name: Verify v18 backup and Scene Sync, then publish staging through Open Cloud
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python "$PREVIEW_TOOL" publish --plan "$PLAN" --output "$EVIDENCE"
+      - name: Independently read the published revision, Scene Sync and script hashes
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: python "$PREVIEW_TOOL" readback --plan "$PLAN" --output "$EVIDENCE"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: entre-reinos-t2-r1-preview
+          path: dist/entre-reinos-t2-r1-preview/
+          if-no-files-found: ignore

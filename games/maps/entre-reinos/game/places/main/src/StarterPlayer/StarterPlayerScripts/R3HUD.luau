@@ -29,6 +29,11 @@ local C={
 local resourceNames={wood="Madeira",stone="Pedra",iron="Ferro",food="Alimento"}
 local resourceOrder={"wood","stone","iron","food"}
 local errorTexts={
+    travel_cargo_capacity="Confira a madeira e o espaço disponível.",
+    travel_cost="Você precisa de 12 moedas para o cavalo.",
+    travel_unavailable="Chegue perto da montaria, de uma doca ou de um reino já visitado.",
+    save_busy="O save está ocupado. Tente viajar novamente.",
+    datastore_unavailable="O save está indisponível. A viagem não foi confirmada.",
     rate_limited="Aguarde um instante.",
     no_arrows="Sem flechas. Fabrique perto de uma fonte de madeira.",
     no_target="Nenhum inimigo ao alcance.",
@@ -336,12 +341,14 @@ function UI.start(player: Player)
     resTitle.Font=Enum.Font.GothamBold
     resTitle.TextSize=15
     resTitle.TextColor3=C.paper
+    local cedroRoute=rowText(resourcesPage,"CedroRoute","",2,36)
+    cedroRoute.Visible=false
     local resHint=rowText(resourcesPage,"Hint",
-        "Fontes são depósitos naturais; bolsas são materiais que NPCs estão carregando. Recursos aplicados às obras não estão mais livres.",2,58)
+        "Fontes são depósitos naturais; bolsas são materiais que NPCs estão carregando. Recursos aplicados às obras não estão mais livres.",3,58)
     resHint.TextColor3=C.secondary
     local resourceCards: {[string]: TextLabel}={}
     for i,id in ipairs(resourceOrder) do
-        local t=rowText(resourcesPage,"Resource_"..id,"",i+2,72)
+        local t=rowText(resourcesPage,"Resource_"..id,"",i+3,72)
         t.TextColor3=C.paper
         resourceCards[id]=t
     end
@@ -532,6 +539,8 @@ function UI.start(player: Player)
     fill.BorderSizePixel=0
     fill.Size=UDim2.fromScale(0,1)
     fill.Parent=track
+    local travelLabels={buy_mount="CAVALO • 12 MOEDAS",mount="MONTAR",dismount="DESMONTAR",
+        board="EMBARCAR",disembark="DESEMBARCAR",travel="VIAJAR ENTRE REINOS"}
     local contextKind="none"
     local contextTarget: any=0
     local pressedTree: any=nil
@@ -552,7 +561,11 @@ function UI.start(player: Player)
     player.CharacterRemoving:Connect(closeDialogue)
 
     local function interactNow()
-        if contextKind=="coin" then
+        if contextKind=="travel" then
+            request("travel",contextTarget)
+        elseif contextKind=="gate" then
+            request("gate",contextTarget)
+        elseif contextKind=="coin" then
             request("pickup_coin",contextTarget)
         elseif contextKind=="npc" then
             selectedNpcId=contextTarget
@@ -673,6 +686,8 @@ function UI.start(player: Player)
     warning.Visible=false
 
     local function redraw()
+        local kingdom=player:GetAttribute("ER_Kingdom")
+        if type(kingdom)=="string" then head.Text=string.upper(kingdom) end
         local day=player:GetAttribute("ER_R3Day") or 1
         local night=player:GetAttribute("ER_R3Night")==true
         local wallet=player:GetAttribute("ER_R3Wallet") or 0
@@ -696,6 +711,16 @@ function UI.start(player: Player)
 
     end
 
+    local loadCargo=button(workshop,"BoatLoad","GUARDAR 1 MADEIRA NO BARCO")
+    local unloadCargo=button(workshop,"BoatUnload","RETIRAR 1 MADEIRA DO BARCO")
+    for index,control in ipairs({loadCargo,unloadCargo}) do
+        control.LayoutOrder=10+index
+        control.Size=UDim2.new(1,-12,0,42)
+        control.Visible=false
+    end
+    loadCargo.Activated:Connect(function() request("travel_cargo","load") end)
+    unloadCargo.Activated:Connect(function() request("travel_cargo","unload") end)
+
     local orderButton=button(workshop,"StoryOrder","CONTINUAR O PRÓLOGO")
     orderButton.LayoutOrder=9
     orderButton.Size=UDim2.new(1,-12,0,42)
@@ -708,6 +733,9 @@ function UI.start(player: Player)
     end)
 
     local function updateContext()
+        loadCargo.Visible=type(nearby.boatCargo)=="number"
+        unloadCargo.Visible=loadCargo.Visible
+        unloadCargo.Text="RETIRAR 1 MADEIRA DO BARCO • "..tostring(nearby.boatCargo or 0)
         contextKind="none"
         contextTarget=0
         local phase=player:GetAttribute("ER_R3Phase")
@@ -716,6 +744,14 @@ function UI.start(player: Player)
             interact.Text=if phase=="guard" then "FALAR COM DUQUE"
                 else if phase=="evacuation" then "EVACUAR"
                 else "ACEITAR COROA"
+        elseif nearby.travel and travelLabels[nearby.travel] then
+            contextKind="travel"
+            contextTarget=nearby.travel
+            interact.Text=travelLabels[nearby.travel]
+        elseif nearby.gate then
+            contextKind="gate"
+            contextTarget=nearby.gate.id
+            interact.Text=if nearby.gate.open then "FECHAR PORTÃO" else "ABRIR PORTÃO"
         elseif (nearby.coinId or 0)>0 then
             contextKind="coin"
             contextTarget=nearby.coinId
@@ -749,6 +785,11 @@ function UI.start(player: Player)
     refreshContext=updateContext
 
     function updateVillage()
+        cedroRoute.Visible=type(nearby.cedroDistance)=="number"
+        if cedroRoute.Visible then
+            cedroRoute.Text=string.format("Vila do Cedro · siga para %s (%d studs)",
+                nearby.cedroDirection,nearby.cedroDistance)
+        end
         local resources=if snapshot then snapshot.resources else nil
         local sources=if resources then resources.sources else nil
         local carried=if resources then resources.carried else nil

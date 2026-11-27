@@ -12,7 +12,7 @@ local World = require(services:WaitForChild("WorldService"))
 local Characters = require(services:WaitForChild("CharacterService"))
 local LivingService = require(services:WaitForChild("LivingService"))
 local shared = ReplicatedStorage:WaitForChild("Game")
-local Profile = require(shared:WaitForChild("WorldProfile"))
+local Profile = require(shared:WaitForChild("RegionalProfile"))
 local Slots = require(shared:WaitForChild("SlotModel"))
 local Route = require(shared:WaitForChild("WorldRoute"))
 
@@ -188,7 +188,7 @@ local function startWorld(player: Player)
     local terrainInvoked, terrainOk, terrainReason = pcall(World.activate,
         record.seed, function(fraction: number, message: string)
             stage(player, "terrain", 0.18 + fraction * 0.66, message)
-        end)
+        end, Profile)
     if not terrainInvoked or not terrainOk then
         local failureCode = if terrainInvoked then (terrainReason or World.getFailure()
             or "terrain_failed") else "terrain_activation_exception"

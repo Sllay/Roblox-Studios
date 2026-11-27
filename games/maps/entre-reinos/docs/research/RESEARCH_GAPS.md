@@ -41,3 +41,7 @@ Campos por item: domínio | o que não sabemos | como validar | dono/runner.
 Registrar data, link, versão, condições, método e evidência A/N/O/P/R/H/U. Se houver experimento Roblox: incluir seed, dispositivos, FPS/memoria, testes, screencast se realmente gerado, commit e receipt. Nunca substituir hipótese por "fato" com base somente no nome de método de um mod.
 
 Este registro é atualizado no início e ao fim do runner, sem deixar itens resolvidos sem evidência.
+
+### Evidência T2-R1 de preparação — 25/11/2026
+
+A API oficial de Terrain (R) confirma a grade de 4 studs e os canais sólido, líquido e material. A leitura comunitária de viagens e decaimento de Kingdom Two Crowns 2.4.2 rev23529 (A/N/U) tem lacunas na cadeia completa de transporte e no comportamento da ausência. O Entre Reinos usa um campo regional próprio (H) e mantém aberta a política de tempo distante. O ensaio de terreno suporta somente o cenário Open Cloud sem cliente na seed 516639272. Curva de perda, velocidade de barco/montaria e regras de decaimento continuam sem decisão. [Creator Hub](https://github.com/Roblox/creator-docs/blob/main/content/en-us/reference/engine/classes/Terrain.yaml) · [Limites do estudo](https://github.com/SongZcode/kingdom-two-crowns-mechanics/blob/main/docs/evidence-and-limitations.md) · [Recibo T2-R1](../runner-receipts/T2-R1.md)

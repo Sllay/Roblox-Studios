@@ -191,3 +191,35 @@ Correção v9 em desenvolvimento:
 - [FIXADO] Nova missão fala com duque, interação de proximidade abre diálogo original com câmera aproximando os dois em painel de RPG (estética geral de Stardew Valley sem copiar arte), duque explica seu passeio fora do castelo; só após diálogo a escolta começa.
 - [FIXADO] Mundo com 17 chunks totais (um central e oito para cada lado) de 64 studs; iniciar com 5 (central, dois para cada lado), expandir progressivamente conforme deslocamento; preserve áreas/seeds/saves existentes e avalie streaming mobile.
 - [ESCOPO] Nova rodada de refinamento da T1 após v17: T1-F4/F5/F6; T2 bloqueada. Proposta técnica detalhada: `docs/T1_V17_CREATOR_PLAYTEST_REFINEMENT.md`.
+
+## 25/11/2026 — Avaliação da v18 e preparação técnica de T2-R1
+
+- [ESTADO] O criador avaliou positivamente a v18 como fundação e autorizou iniciar o trabalho técnico de T2-R1. O aceite de fundação é registrado separadamente do fechamento da T1.
+- [ESTADO] A certificação ER-001–020 continua pendente. A preparação segue em branch isolada, com ensaios sem gravação do Place. O staging continua v18 e o gate cumulativo permanece ativo.
+- [ABERTO] Escala final das regiões, progresso de regiões distantes, balanceamento e custos de montarias e embarcações. Os valores do laboratório são provisórios.
+
+## T2-R1 — políticas provisórias do candidato
+
+- [PROVISÓRIO] A população distante preserva estoque, reservas, saúde e tarefas com o relógio local parado. Avanço agregado com orçamento por ciclo permanece uma alternativa de design, condicionada a regras de produção, déficit e recuperação.
+- [PROVISÓRIO] A passagem reforçada permite montaria com capacidade controlada. Se o tabuleiro cair sob um agente, a recuperação usa a última margem comprovada e mantém sua carga. Custos, capacidade e recuperação definitiva aguardam playtest.
+- [PROVISÓRIO] O cavalo custa 12 moedas e o barco opcional liga as duas docas do rio do Vale. O transporte de carga inicial aceita madeira. Viagem rápida exige visita às duas capitais e confirmação do save do destino.
+- [ABERTO] Balanceamento e aparência em partida, parâmetros de montaria e barco, escala final e política de tempo distante. As decisões da T1 sobre perdas permanecem no gate próprio.
+
+## 25/11/2026 — Certificação individual e regras de recuperação em avaliação
+
+- [ESTADO] O aceite da v18 como fundação permite o trabalho técnico em branch. Os requisitos ER-001–020 continuam sujeitos às respectivas evidências e à certificação individual.
+- [PROPOSTA] Retorno ao castelo com equipamento preservado e, se aprovado, perda parcial de moedas para uma bolsa recuperável uma vez. Permanecem abertos o valor, a duração, as permissões de coleta e as consequências de derrota. O candidato conserva carteira e bolsa e encerra apenas o vínculo do jogador morto com o veículo.
+- [PROPOSTA] Liberar reservas no cancelamento e permitir que trabalhadores recuperem materiais entregues. A regra provisória usa pilhas físicas. Em ponte, a pilha fica na margem de trabalho da população proprietária. O cancelamento de um reforço em andamento depende da regra de crédito dos materiais reaproveitados.
+- [ABERTO] Na ruína de galpão, definir o destino do roubo e a partição configurável entre perdido, roubado e recuperável. Até essa decisão, o estoque permanece isolado e uma reparação não recria recursos.
+- [PROPOSTA] Economia agregada em regiões distantes durante uma sessão ativa, com custódia e progresso confirmados por região. O tempo de save fechado continua uma decisão independente. [Mapa T2-R2](T2_R2_INTEGRATION_MAP.md)
+
+## 25/11/2026 — Prévia de desenvolvimento da T2-R1 autorizada
+
+- [AUTORIZADO PELO CRIADOR] Uma publicação intermediária do candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` do PR #13 para playtest, antes de R3. O fluxo usa uma experiência isolada e preserva a v18. A exceção está no [protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1).
+- [ESTADO] A inspeção oficial confirmou um único Place no Universe da v18. Falta provisionar uma experiência independente e sua chave restrita. [Inventário Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/45681890920)
+
+## 25/11/2026 — Staging existente autorizado para a prévia T2-R1
+
+- [AUTORIZADO PELO CRIADOR] O Universe `10769712413` e o Place `90623742498445` são o ambiente de desenvolvimento. Publicar a prévia do SHA `f7d4ac685f2372d066cdf49a19b2b978f2454745` nesse destino, substituindo a v18. Usar credenciais e ferramentas existentes.
+- [AUTORIZADO PELO CRIADOR] Migrar saves compatíveis de ruleset 3 para 4 com o backup, a validação e a recuperação existentes. Preservar os seis slots. A autorização não inclui excluir saves.
+- [ESTADO] A decisão substitui o plano de Universe separado. Certificação visual ocorre após publicar a prévia. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1)

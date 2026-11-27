@@ -31,7 +31,7 @@ class EntreReinosWiring(unittest.TestCase):
         for name in ("WorldService", "SaveSlotService", "CharacterService"):
             self.assertTrue((SRC/"ServerScriptService/Services"/f"{name}.luau").is_file())
             self.assertIn(f'WaitForChild("{name}")', boot)
-        for name in ("WorldProfile", "WorldRoute", "SlotModel", "SlotLeasePolicy"):
+        for name in ("RegionalProfile", "WorldRoute", "SlotModel", "SlotLeasePolicy"):
             self.assertTrue((SRC/"ReplicatedStorage"/f"{name}.luau").is_file())
             self.assertIn(f'WaitForChild("{name}")', boot if name != "SlotLeasePolicy"
                           else read("ServerScriptService/Services/SaveSlotService.luau"))
@@ -289,7 +289,7 @@ class EntreReinosWiring(unittest.TestCase):
         client = read("StarterPlayer/StarterPlayerScripts/ClientBoot.client.luau")
         ui = read("StarterPlayer/StarterPlayerScripts/R3HUD.luau")
         self.assertIn('pcall(R3.ensure,loaded,worldRecord.living==nil)', server)
-        self.assertIn('Combat.start(player,state,folder)', server)
+        self.assertIn('Combat.start(player,regional.home,folder)', server)
         self.assertIn('Combat.tick(dt)', server)
         self.assertIn('R3.step(state,0.1,x,Combat.fireResident,y)', server)
         self.assertIn('h:TakeDamage(damage)', server)
@@ -334,8 +334,8 @@ class EntreReinosWiring(unittest.TestCase):
         self.assertIn('task.wait(3)', hud)
         self.assertIn('contextKind="story"', hud)
         self.assertIn('item=="wood"', server)
-        self.assertIn('nearby.canTrade=R3.marketNear(state,x,y)', server)
-        self.assertIn('return {ok=true,data=overview,hud=R3.summary(state),nearby=nearby}', server)
+        self.assertIn('nearby.canTrade=state==regional.home and R3.marketNear(state,x,y)', server)
+        self.assertIn('return {ok=true,data=overview,hud=R3.summary(regional.home),nearby=nearby}', server)
         self.assertIn('resources={sources=sources,carried=carried,reserved=reserved,', work)
         self.assertIn('committed=committed,stored=deposited,isolated=isolated,markedTrees=markedTrees}', work)
         self.assertIn('record.living = LivingModel.clone(state)',

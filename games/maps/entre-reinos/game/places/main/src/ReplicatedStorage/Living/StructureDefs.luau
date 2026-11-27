@@ -4,6 +4,10 @@ local Structures = {}
 Structures.DEPTH_Z = -10
 Structures.PLACEMENT_RANGE = 36
 Structures.all = {
+    bridge_light = {label="Ponte provisória", footprint=8, maxSlope=4, cost={wood=12},
+        buildSeconds=26, health=95, storageMass=0, kind="crossing", tier="light", height=4},
+    bridge_reinforced = {label="Ponte reforçada", footprint=8, maxSlope=4, cost={wood=20,stone=12},
+        buildSeconds=48, health=260, storageMass=0, kind="crossing", tier="reinforced", height=5},
     castle = {label="Castelo", footprint=17, maxSlope=4, cost={wood=20,stone=36},
         buildSeconds=80, health=840, storageMass=0, kind="treasury", height=22, buildable=false},
     shelter = {label="Abrigo", footprint=10, maxSlope=5, cost={wood=8,stone=3},
@@ -14,6 +18,8 @@ Structures.all = {
         buildSeconds=30, health=150, storageMass=250, kind="storage", height=10},
     fence = {label="Cerca", footprint=7, maxSlope=6, cost={wood=5},
         buildSeconds=12, health=60, storageMass=0, kind="defense", height=6},
+    gate = {label="Portão", footprint=6, maxSlope=4, cost={wood=12,iron=2},
+        buildSeconds=32, health=220, storageMass=0, kind="gate", height=9},
     wall = {label="Muralha", footprint=9, maxSlope=4, cost={wood=10,stone=12},
         buildSeconds=50, health=360, storageMass=0, kind="defense", height=12},
 }

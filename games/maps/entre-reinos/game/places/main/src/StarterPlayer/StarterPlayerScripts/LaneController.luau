@@ -6,6 +6,8 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Projection = require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("InputProjection"))
 local Controller = {}
+local rider: Player?=nil
+local sent=0
 
 local active = false
 local paused=false
@@ -59,10 +61,24 @@ local function readNativeInput(h: Humanoid): (number, number)
     return Projection.toLane(motion.X, motion.Z)
 end
 
-local function update(_dt: number)
+local function update(dt: number)
     local h = humanoid
     local o = turn
     if not h or not o or h.Health <= 0 then return end
+    if rider and rider:GetAttribute("ER_Riding") then
+        sent+=dt
+        if sent>=0.085 then
+            sent=0
+            local remote=ReplicatedStorage.Game:FindFirstChild("ER_TravelSteering")
+            if remote and remote:IsA("RemoteEvent") then
+                local x=readNativeInput(h)
+                remote:FireServer(if paused then 0 else x)
+            end
+        end
+        h:Move(Vector3.zero,false)
+        h.Jump=false
+        return
+    end
     if paused then
         h:Move(Vector3.zero,false)
         h.Jump=false
@@ -89,6 +105,7 @@ end
 function Controller.start(player: Player)
     if active then return end
     active = true
+    rider=player
     local scripts = player:WaitForChild("PlayerScripts")
     local playerModule = scripts:WaitForChild("PlayerModule", 8)
     if playerModule then

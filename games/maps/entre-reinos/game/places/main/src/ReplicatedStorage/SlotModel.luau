@@ -2,13 +2,15 @@
 -- T1-R1: pure persisted record contract. Every world is a separate DataStore key.
 local Living = require("./Living/LivingModel")
 local World=require("./WorldProfile")
+local Regions=require("./RegionalWorld")
 local Slots = {}
 Slots.COUNT = 6
 Slots.SCHEMA_VERSION = 1
 -- These are data contracts, not Roblox Place revisions.
 -- Cosmetic/gameplay changes keep these versions untouched.
 Slots.SAVE_FORMAT_VERSION = 1
-Slots.RULESET_VERSION = 3
+Slots.RULESET_VERSION = 4
+Slots.LEGACY_RULESET_VERSION = 3
 Slots.MIN_RULESET_VERSION = 1
 
 function Slots.compatibility(data: any): (boolean, string)
@@ -28,7 +30,7 @@ function Slots.compatibility(data: any): (boolean, string)
         return false,"migration_required"
     end
     if format<Slots.SAVE_FORMAT_VERSION then return false,"migration_required" end
-    if rules==1 or rules==2 then return true,"legacy_compatible" end
+    if rules<Slots.RULESET_VERSION then return true,"legacy_compatible" end
     if rules~=Slots.RULESET_VERSION then return false,"migration_required" end
     return true,if data.saveFormatVersion==nil then "legacy_compatible" else "compatible"
 end
@@ -58,7 +60,7 @@ function Slots.newWorld(seed: number, now: number, spawn: {x: number, y: number,
         schemaVersion = Slots.SCHEMA_VERSION,
         generatorVersion = 1,
         saveFormatVersion = Slots.SAVE_FORMAT_VERSION,
-        rulesetVersion = Slots.RULESET_VERSION,
+        rulesetVersion = Slots.LEGACY_RULESET_VERSION,
         seed = seed,
         createdAt = now,
         updatedAt = now,
@@ -82,6 +84,10 @@ function Slots.validTravel(x: any,y: any,z: any): boolean
 end
 
 function Slots.spawnPosition(data: any): any
+    if data.living and data.living.r3 and data.living.r3.awaitingRecovery then
+        return World.spawn(data.seed)
+    end
+    if data.regionWorld and Regions.validPosition(data.regionWorld.position) then return data.regionWorld.position end
     local p=data.frontierPosition
     if type(p)=="table" and p.revision==data.revision and Slots.validTravel(p.x,p.y,p.z) then
         return p
@@ -125,6 +131,11 @@ function Slots.validWorld(data: any): boolean
     -- Population itself has its own migratable schema and must never silently
     -- be discarded when a newer/unknown population record is encountered.
     if data.living ~= nil and (not Living.valid(data.living) or data.living.seed ~= data.seed) then
+        return false
+    end
+    if data.rulesetVersion==Slots.RULESET_VERSION then
+        if not Regions.valid(data.regionWorld,data.seed,data.living) then return false end
+    elseif data.regionWorld~=nil then
         return false
     end
     return true

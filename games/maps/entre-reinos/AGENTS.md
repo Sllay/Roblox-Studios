@@ -25,7 +25,7 @@ Leia as regras globais `/AGENTS.md` do repositório e este jogo: `GDD.md`, `ARCH
 Antes de QUALQUER patch, ler tambem docs/SEASON_RUNNERS.md, docs/RUNNER_PROTOCOL.md e docs/RUNNER_STATUS.json (alem de Biblia, log, GDD, arquitetura e regras globais).
 Exatamente 3 temporadas principais x 3 runners principais; cada runner deve ter multiplas implementacoes funcionais, testes, evidence/receipt, validacao e commit antes de iniciar o proximo.
 Proibido antecipar funcionalidade planejada para runner/temporada futura; permitir somente contratos e schemas de extensao sem gameplay adiantado.
-Depois de R3 (e nunca apenas R1 ou R2), publicar SOMENTE staging verificado mediante procedimentos oficiais/autorizacoes do repositorio, registrar receipt e aguardar revisao do criador.
+A publicação de uma temporada ocorre depois de R3, somente em staging verificado. A [exceção autorizada da T2-R1](docs/RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1) permite uma única prévia no staging verificado do Entre Reinos, com o SHA aprovado e sem integrar o PR #13.
 Se criador reprovar a versao, criar camada de exatamente 3 runners de refinamento para a mesma temporada. Repetir se preciso, sem roubar features da seguinte.
 Nao declarar "green", "validado", "publicado" ou "aprovado pelo usuario" sem evidencias objetivas e atualizacao correta do JSON de status.
 T3 deve entregar jogo medieval solo completo e jogavel; production apenas com autorizacao explicita e Place separado.

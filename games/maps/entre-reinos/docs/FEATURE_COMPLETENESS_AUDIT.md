@@ -1,6 +1,6 @@
 # ENTRE REINOS — Auditoria de completude e rastreabilidade do jogo medieval solo
 
-**Iniciada:** 2026-11-22. **Revisão auditada:** staging v14 (Place 90623742498445). **Fonte canônica:** `VISION_MASTER.md`, `../GDD.md`, `../ARCHITECTURE.md`, `SEASON_RUNNERS.md`, `RUNNER_PROTOCOL.md`, `DECISION_LOG.md` e os 27 módulos Luau do Place em `game/places/main/src`.
+**Iniciada:** 2026-11-22. **Revisão inicial:** staging v14 (Place 90623742498445). **Fonte canônica:** `VISION_MASTER.md`, `../GDD.md`, `../ARCHITECTURE.md`, `SEASON_RUNNERS.md`, `RUNNER_PROTOCOL.md`, `DECISION_LOG.md` e os 27 módulos Luau do Place em `game/places/main/src`.
 
 > **Este relatório não certifica jogo completo.** A CI verifica scripts/lógica/build; somente um teste funcional Roblox real, com saves e dispositivo, verifica a jogabilidade e a experiência. Mesmo um módulo presente pode estar parcialmente integrado ou nunca exercitado pelo jogador.
 
@@ -17,22 +17,22 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 | ID | Owner | Estado | Função e condição concreta de conclusão |
 |---|---|---|---|
 | ER-001 | T1-R1/F | PARCIAL | Menus e 6 slots: criar, abrir, salvar, fechar, excluir, reconectar e repetir sem trocar mundos/sobrescrever; validação de dados e telas reais. |
-| ER-002 | T1-R1/F | PARCIAL | Compatibilidade de saves: formato, regras e gerador independentes de revisão do Place; upgrades testados, backups restauráveis, rollback seguro, erro inteligível e **nenhum wipe automático**. Há guard de versão mas ainda não pipeline completo de migração/restauração. |
+| ER-002 | T1-R1/F | PARCIAL | Compatibilidade de saves: formato, regras e gerador independentes de revisão do Place; upgrades testados, backups restauráveis, rollback seguro, erro inteligível e **nenhum wipe automático**. |
 | ER-003 | T1-R1/F | PARCIAL | Terrain 3D/rios/quatro planos visuais/câmera lateral: arte final sem parallax 2D, sombras/foreground legíveis, chunks, sem sumiço/oclusão e sem travar FPS. |
 | ER-004 | T1-R1/F | PARCIAL | Controle R6: X lateral, olhar frente/fundo sem mover Z, corrida, pulo, subida/mergulho/diagonal em água nativa; teste mobile do usuário aprovou água, faltam regressão e perf. |
 | ER-005 | T1-R2/F | PARCIAL | NPCs R6 e animações: sem jitter, afundamento, clipping, colisão com jogador, leitura da atividade, roupas medievais e visual correspondente. Não aceitar “60 FPS geral” como prova de movimento fluido. |
 | ER-006 | T1-R2/F | PARCIAL | Trabalhos prioritários: profissão, necessidades, fadiga, riscos, bag real, ordem, ações determinísticas e pausas/retomadas depois de ataques e saves, sem loops/travamentos. |
-| ER-007 | T1-R2/F | PARCIAL | Madeira, pedras, ferro, comida: coletar de origem real, transportar, reservar, entregar, consumir sem duplicação; árvore marcada deve ser fonte rastreada, com corte/depleção visual e restauração após reload. v14 iniciou, teste humano pendente. |
-| ER-008 | T1-R2/F | PARCIAL | Galpão: NPC deposita de fato, capacidade real, obra consome também materiais estocados, inventário persistente, destruição divide recursos entre perda/roubo/salvage uma única vez; v14 iniciou **depósito**, mas retirada para obra e perda integral do galpão ainda precisam fechamento. |
-| ER-009 | T1-R2/F | PARCIAL | Construção **escolhida pelo jogador** (não deslocamento automático X+15): preview/rotacionar se permitido, validar água/declive/área/rota, cancelar/reembolsar de forma idempotente, progresso material e trabalho, save/load. Atualmente escolhe-se tipo e servidor escolhe posição. |
-| ER-010 | T1-R2/F | PARCIAL | Castelo/tesouro, dois galpões iniciais, anéis/distritos, abrigo e casas: mundo novo começa com lista vazia de edifícios; não confundir ícones/texto/cubos com estrutura inicial funcional. |
-| ER-011 | T1-R2/F | PARCIAL | Arte 3D de estruturas: tenda, casa, galpão, cerca e muro distinguíveis, progressão visual por estado, colisão/escala coerente, ocupação e dano reais; v14 tem peças geométricas novas, falta aprovação visual. |
+| ER-007 | T1-R2/F | PARCIAL | Madeira, pedras, ferro, comida: coletar de origem real, transportar, reservar, entregar, consumir sem duplicação; árvore marcada deve ser fonte rastreada, com corte/depleção visual e restauração após reload. |
+| ER-008 | T1-R2/F | PARCIAL | Galpão: NPC deposita de fato, capacidade real, obra consome também materiais estocados, inventário persistente, destruição divide recursos entre perda/roubo/salvage uma única vez. |
+| ER-009 | T1-R2/F | PARCIAL | Construção **escolhida pelo jogador** (não deslocamento automático X+15): preview/rotacionar se permitido, validar água/declive/área/rota, cancelar/reembolsar de forma idempotente, progresso material e trabalho, save/load. |
+| ER-010 | T1-R2/F | PARCIAL | Castelo/tesouro, dois galpões iniciais, anéis/distritos, abrigo e casas funcionais desde a criação do mundo. |
+| ER-011 | T1-R2/F | PARCIAL | Arte 3D de estruturas: tenda, casa, galpão, cerca e muro distinguíveis, progressão visual por estado, colisão/escala coerente, ocupação e dano reais. |
 | ER-012 | T1-R3/F | PARCIAL | Ataque corpo a corpo e arco: equipamentos visíveis, cooldown justo, flecha gravitacional com colisão confiável, direção/altura corretas, morte/dano real, exploração proibida e controles mobile práticos. |
-| ER-013 | T1-R3/F | PARCIAL | Invasores: perigo legível, spawn local no horizonte, noite tranquila e aviso; segunda noite de sandbox agora prevista com raid (v14), testar todas as fases e saves e dificuldade justa. |
+| ER-013 | T1-R3/F | PARCIAL | Invasores: perigo legível, spawn local no horizonte, noite tranquila e aviso; testar todas as fases e saves e dificuldade justa. |
 | ER-014 | T1-R3/F | PARCIAL | Defesa: muros intactos barram inimigos, civis buscam abrigo real, defensores recebem ordens/equipamentos, flechas usam recursos, casas/depósitos podem cair, perda/recuperação justa. |
-| ER-015 | T1-R3/F | PARCIAL | Prólogo fixado completo: escolta do duque, encontro com monstro infectante, transformação, hesitação de guardas, batalha, muralhas caindo, evacuação e coroação ao amanhecer; por enquanto há transições de estado e duque representado, **não toda encenação jogável nem tutorial contextual**. |
+| ER-015 | T1-R3/F | PARCIAL | Prólogo fixado completo: escolta do duque, encontro com monstro infectante, transformação, hesitação de guardas, batalha, muralhas caindo, evacuação e coroação ao amanhecer. |
 | ER-016 | T1-R3/F | PARCIAL | Economia inicial: moedas/tesouro, drop físico, coleta, crafting local, comércio e custo legível; consumir estoque real, não imprimir dinheiro; validar morte/desconexão/duplo toque. |
-| ER-017 | T1-R3/F | PARCIAL | Interface de jogo: HUD enxuto, estoques identificados, preço/posse/requisitos/progresso, respostas de erro e ações contextuais em celular pequeno; v13 criou primeira versão, criador precisa aprovar composição real. |
+| ER-017 | T1-R3/F | PARCIAL | Interface de jogo: HUD enxuto, estoques identificados, preço/posse/requisitos/progresso, respostas de erro e ações contextuais em celular pequeno; criador precisa aprovar composição real. |
 | ER-018 | T1-R3/F | PARCIAL | Vertical slice completo: novo slot → prólogo → construir/estocar/fabricar → raid → sofrer dano → recuperar materiais → reparar → salvar/reentrar; replay em três seeds, sem intervenção dev. |
 | ER-019 | T1-R3/F | PARCIAL | Death/recovery inicial: morte do jogador e NPC, soltar/reter itens conforme regra aprovada, respawn sem duplo saque, derrota/continuação e recuperação de sessão. Contratos ainda precisam decisão do criador. |
 | ER-020 | T1-R3/F | PARCIAL | Qualidade base: visual coerente, sem textos/blocos dev, FPS/latência/consumo de memória mensurados no aparelho real, relatório de frame pacing e portas RPC resistentes a spam. |
@@ -41,13 +41,13 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 
 | ID | Owner | Estado | Fluxo completo exigido para fechamento |
 |---|---|---|---|
-| ER-021 | T2-R1 | PLANEJADO | Multi-bioma/multi-reino procedural por seed, rios/cachoeiras, relevo caminhável e localidades coerentes, persistência regional e geração estável em longa distância. |
-| ER-022 | T2-R1 | PLANEJADO | Pontes provisórias/reforçadas com custos, workers, acesso por classes de NPC/montarias, travessia e rotas recalculadas ao destruir ponte. |
-| ER-023 | T2-R1 | PLANEJADO | Grafo de rotas, navegação NPC/carga/expedição com margens, pontes, abrigos e bloqueio por raid; não caminhar através de água/estrutura sem permissão. |
-| ER-024 | T2-R1 | PLANEJADO | Streaming e simulação agregada de cidades longínquas, NPCs/estoques sem duplicação ao ativar/desativar regiões, custo previsível em mobile. |
-| ER-025 | T2-R1 | PLANEJADO | Montarias físicas, compra/domesticação, equipamento, stamina/vida, save, travessias e integração real aos controles/raids/rotas. |
-| ER-026 | T2-R1 | PLANEJADO | Portos/barco quando geografia requer e alternativa de fast travel solo funcional, não duplicar ou perder veículos/carga ao trocar região. |
-| ER-027 | T2-R1 | PLANEJADO | Segundo reino NPC e seus distritos/estruturas/pessoas/economia/território persistidos em mesmo mundo; dois reinos vivos sem duplicação. |
+| ER-021 | T2-R1 | PARCIAL | Multi-bioma/multi-reino procedural por seed, rios/cachoeiras, relevo caminhável e localidades coerentes, persistência regional e geração estável em longa distância. |
+| ER-022 | T2-R1 | PARCIAL | Pontes provisórias/reforçadas com custos, workers, acesso por classes de NPC/montarias, travessia e rotas recalculadas ao destruir ponte. |
+| ER-023 | T2-R1 | PARCIAL | Grafo de rotas, navegação NPC/carga/expedição com margens, pontes, abrigos e bloqueio por raid; não caminhar através de água/estrutura sem permissão. |
+| ER-024 | T2-R1 | PARCIAL | Streaming e simulação agregada de cidades longínquas, NPCs/estoques sem duplicação ao ativar/desativar regiões, custo previsível em mobile. |
+| ER-025 | T2-R1 | PARCIAL | Montarias físicas, compra/domesticação, equipamento, stamina/vida, save, travessias e integração real aos controles/raids/rotas. |
+| ER-026 | T2-R1 | PARCIAL | Portos/barco quando geografia requer e alternativa de fast travel solo funcional, não duplicar ou perder veículos/carga ao trocar região. |
+| ER-027 | T2-R1 | PARCIAL | Segundo reino NPC e seus distritos/estruturas/pessoas/economia/território persistidos em mesmo mundo; dois reinos vivos sem duplicação. |
 | ER-028 | T2-R2 | PLANEJADO | Todos ofícios-base: ferreiro, artesão, fazendeiro, caçador, transportador, guarda, arqueiro, lanceiro além dos atuais, com trabalho realmente executável. |
 | ER-029 | T2-R2 | PLANEJADO | Ferramentas e receitas registradas, forja/tecelagem/agricultura/refinamento/crafting/equipar, insumos → produto → transporte → consumo, UI interativa. |
 | ER-030 | T2-R2 | PLANEJADO | Skill XP/níveis e aprendizagem de profissão com efeito mensurável no trabalho, necessidades/fome/sono/sobrevivência, ferramentas/equipamentos usados e quebrados/repostos. |
@@ -85,7 +85,9 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 | ER-057 | T3-R3 | PLANEJADO | **Fluxo final de ponta a ponta**: início/prólogo, primeira vila, produção, defesa, viagem, várias cidades, eventos, batalha/facções/portais/campanha e longa progressão em 6 slots, sem trabalho manual de desenvolvedor. |
 | ER-058 | T3-R3 | PLANEJADO | Receber **aprovação humana explícita do criador** no staging. Produção separada somente após checklist ER-001…057 sem pendências impeditivas. |
 
-## Lacunas que estavam pouco explícitas e precisam de dono antes do lançamento
+## Lacunas da auditoria inicial v14
+
+Esta lista histórica registra o diagnóstico de origem. A revisão da [fundação v18](T1_CERTIFICATION_V18.md) e a [prévia regional](T2_R1_PLAYTEST.md) abaixo atualizam o estado das implementações.
 
 1. **Produção e uso do estoque** (ER-008, T1-F): o galpão agora recebe recursos, mas o planejador de obra ainda procura `availableSource`, ignorando depósito. Sem consertar, o próprio galpão pode esvaziar as fontes e impedir construção. Revisar reserva e devolução por fonte/estoque no mesmo ledger, sem duplicação.
 2. **Destruição do depósito com itens** (ER-008/014, T1-F): a lógica de ruína trata principalmente `delivered` (materiais gastos para construir), não o inventário `stored`. Exigir partição auditável de recursos depositados, bloqueio de acesso à ruína e salvamento parcial uma só vez.
@@ -148,3 +150,17 @@ A [revisão ER-001–020](runner-receipts/T1-F3.md#revisão-er-001020) documenta
 | ER-020 | Readback de scripts e tempo de geração em sessão isolada. | FPS, frame pacing, memória e conforto dos comandos em celular. |
 
 Os estados canônicos ER-001–020 permanecem PARCIAIS enquanto as provas de jogo e as decisões abertas estiverem pendentes. [Recibo T1-F6](runner-receipts/T1-F6.md) · [Readback](https://github.com/Sllay/Roblox-Studios/actions/runs/45498431957)
+
+### Preparação regional de T2-R1 (histórico)
+
+ER-021 possui um campo regional determinístico no laboratório, com testes de continuidade e comparação com a v18. As fontes regionais são candidatas e a prova de simulação, população e jogo móvel permanece pendente. ER-022 e ER-023 têm cálculo de apoios e grafo de travessias com classes e invalidação. Entrega de materiais, construção física, reservas de capacidade e seguimento por NPC ainda precisam da integração. ER-024–027 continuam planejados. A avaliação favorável da fundação v18 convive com a certificação pendente de ER-001–020. [Recibo de preparação](runner-receipts/T2-R1.md)
+
+### Candidato integrado T2-R1 no PR #13
+
+O candidato liga ER-021–027 ao runtime da branch. A execução isolada no Roblox confirmou a extensão do Terrain sem alteração da v18, construção e ruína de ponte, passagem de trabalhador com carga, bloqueio de água profunda para o cavalo, travessia montada pela ponte reforçada, remonte e passagem para a região vizinha, navegação e carga no barco, recuperação da viagem rápida e migração de save com reabertura do segundo reino. Evidência em partida com cliente, mobile e aceite do criador continuam pendentes. Os sete contratos estão PARCIAIS. O aceite da v18 como fundação e a certificação incompleta de ER-001–020 continuam registrados separadamente. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45658252612) · [Motor Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/45658231902) · [Recibo](runner-receipts/T2-R1.md)
+
+### Revisão de certificação da v18 e do candidato regional
+
+A revisão de [ER-001–020](T1_CERTIFICATION_V18.md) registra a prova aproveitável e o que falta a cada contrato. O aceite do criador da v18 para continuar o desenvolvimento está registrado. Morte, estorno e ruínas têm um contrato em avaliação, com custódia provisória preservada.
+
+O roteiro de [ER-021–027](T2_R1_PLAYTEST.md) identifica a entrada pela interface e a prova de cliente de cada contrato. O probe mais recente confirmou o encerramento do vínculo ao morrer no barco, a travessia montada, o DataStore isolado e a preservação do Terrain v18. O PR #13 permanece em rascunho e a prévia depende de autorização formal antes de R3. [Probe](https://github.com/Sllay/Roblox-Studios/actions/runs/45671224264) · [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45671239634)

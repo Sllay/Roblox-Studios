@@ -47,7 +47,7 @@ jobs:
           game = Path("games/maps/entre-reinos")
           staging = json.loads((game / "deploy.targets.json").read_text())["environments"]["staging"]
           src = game / "game/places/main/src/ReplicatedStorage"
-          names = ("WorldProfile", "SlotModel", "SlotLeasePolicy", "WorldRoute", "InputProjection",
+          names = ("WorldProfile", "RegionalProfile", "RegionalCrossings", "RegionalWorld", "SlotModel", "SlotLeasePolicy", "WorldRoute", "InputProjection",
                    "ItemDefs", "ProfessionDefs", "StructureDefs", "Inventory",
                    "WorkEngine", "Campaign", "Trajectory", "Ballistics", "R3Engine", "LivingModel")
           paths = {p.stem: p for p in src.rglob("*.luau")}
@@ -122,7 +122,7 @@ jobs:
 
           save_service = (game / "game/places/main/src/ServerScriptService/Services/SaveSlotService.luau").read_text()
           for name, module in (("Slots", "SlotModel"), ("WorldProfile", "WorldProfile"),
-                               ("Policy", "SlotLeasePolicy"), ("LivingModel", "LivingModel")):
+                               ("Policy", "SlotLeasePolicy"), ("LivingModel", "LivingModel"), ("Regions", "RegionalWorld")):
               save_service, count = re.subn(
                   rf"local {name} = require\(ReplicatedStorage:[^\n]*(?:\n +:[^\n]*)?\)\n",
                   f'local {name} = loadCandidate("{module}")\n', save_service, flags=re.S)
@@ -141,8 +141,8 @@ jobs:
           parts.append((game / "game/tests/staging_combat.luau").read_text())
           parts.append((game / "game/tests/staging_world.luau").read_text())
           world_source = (game / "game/places/main/src/ServerScriptService/Services/WorldService.luau").read_text()
-          world_source, count = re.subn(r"^local Profile = require\(.*\)$",
-              'local Profile = loadCandidate("WorldProfile")', world_source, flags=re.M)
+          world_source, count = re.subn(r"^local (Profile|LegacyProfile) = require\(.*\)$",
+              r'local \1 = loadCandidate("WorldProfile")', world_source, flags=re.M)
           assert count == 1
           parts.append(f"local function loadWorldService()\n{world_source}\nend")
           living_service = (game / "game/places/main/src/ServerScriptService/Services/LivingService.luau").read_text()

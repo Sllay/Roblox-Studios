@@ -1,0 +1,147 @@
+name: Entre Reinos T2-R1 isolated Terrain probe
+
+on:
+  push:
+    branches: [entre-reinos/t2-r1-world-regions]
+    paths:
+      - .github/workflows/entre-reinos-t2-r1-engine-probe.yml
+      - games/maps/entre-reinos/game/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regional-terrain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: bash tools/install-luau-lsp.sh
+      - name: Execute and type-check regional terrain and crossing contracts
+        run: |
+          game=games/maps/entre-reinos/game
+          src="$game/places/main/src/ReplicatedStorage"
+          luau "$game/tests/regional_profile.luau"
+          luau "$game/tests/regional_crossings.luau"
+          luau "$game/tests/regional_gameplay.luau"
+          luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" \
+            "$src/RegionalProfile.luau" "$src/RegionalCrossings.luau" \
+            "$game/tests/regional_profile.luau" "$game/tests/regional_crossings.luau" \
+            "$src/RegionalWorld.luau" "$game/tests/regional_gameplay.luau"
+      - name: Compare with the published v18 in an unsaved session
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          PYTHONPATH=tools python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          from cloud_tasks import run_task
+
+          game = Path("games/maps/entre-reinos")
+          target = json.loads((game / "deploy.targets.json").read_text())["environments"]["staging"]
+          src = game / "game/places/main/src"
+          replicated = src / "ReplicatedStorage"
+          services = src / "ServerScriptService/Services"
+          paths = {path.stem: path for path in replicated.rglob("*.luau")}
+          names = ("WorldProfile", "RegionalProfile", "RegionalCrossings", "RegionalWorld", "SlotModel",
+                   "SlotLeasePolicy", "LivingModel", "WorkEngine", "Inventory", "ItemDefs", "StructureDefs",
+                   "ProfessionDefs", "Campaign", "R3Engine", "Trajectory", "Ballistics")
+          modules = []
+          for name in names:
+              content = re.sub(r'require\("([./][^"]*)"\)',
+                  lambda match: f'loadCandidate("{Path(match[1]).name}")', paths[name].read_text())
+              modules.append(f'modules["{name}"] = function()\n{content}\nend')
+          world = (services / "WorldService.luau").read_text()
+          saves = (services / "SaveSlotService.luau").read_text()
+          for name, module in {
+              "Slots": "SlotModel", "WorldProfile": "WorldProfile", "Policy": "SlotLeasePolicy",
+              "LivingModel": "LivingModel", "Regions": "RegionalWorld",
+          }.items():
+              saves, count = re.subn(rf'local {name} = require\(ReplicatedStorage[^\n]*(?:\n[^\n]*LivingModel"\)\))?',
+                  f'local {name} = loadCandidate("{module}")', saves, count=1)
+              assert count == 1, name
+          bridge = (services / "BridgeScene.luau").read_text()
+          rig = (services / "VehicleRig.luau").read_text()
+          travel_source = (services / "TravelService.luau").read_text()
+          for name,module in {"Profile":"RegionalProfile", "Work":"WorkEngine", "R3":"R3Engine",
+                              "Inventory":"Inventory"}.items():
+              travel_source, replaced = re.subn(rf'^local {name}=require\(.*?\)$',
+                  f'local {name}=loadCandidate("{module}")', travel_source, count=1, flags=re.M)
+              assert replaced == 1, name
+          travel_source = re.sub(r'^local World=require\(.*?\)$', 'local World=world', travel_source, flags=re.M)
+          travel_source = re.sub(r'^local Rig=require\(.*?\)$', 'local Rig=vehicleRig', travel_source, flags=re.M)
+          travel_test = (game / "game/tests/staging_regional_travel.luau").read_text()
+          published = """
+          assert(game.PlaceVersion == 18, "unexpected published baseline")
+          local published = require(game:GetService("ReplicatedStorage")
+              :WaitForChild("Game"):WaitForChild("WorldProfile"))
+          """
+          test = (game / "game/tests/staging_regional_profile.luau").read_text()
+          datastore = (game / "game/tests/staging_datastore.luau").read_text()
+          gameplay = (game / "game/tests/staging_regional_gameplay.luau").read_text()
+          bundled = "\n".join(modules)
+          source = f"""
+          {published}
+          local modules,cache = {{}},{{}}
+          local function loadCandidate(name)
+              if cache[name] == nil then cache[name] = assert(modules[name],name)() end
+              return cache[name]
+          end
+          {bundled}
+          local function loadWorld()
+          {world}
+          end
+          local function loadBridgeScene()
+          {bridge}
+          end
+          local function loadVehicleRig()
+          {rig}
+          end
+          local function loadTravel(world,vehicleRig)
+          {travel_source}
+          end
+          {gameplay}
+          {travel_test}
+          local function probeDataStore()
+              local function loadSaveService(game)
+              {saves}
+              end
+              {datastore}
+              datastoreResult.regional = probeNewSave(first,second,main,backups,seed,player,worldKey,Http,
+                  function(value) failBackup=value end,function() loseReply=true end)
+              return datastoreResult
+          end
+          {test}
+          local regionalProfile = loadCandidate("RegionalProfile")
+          local routes = loadCandidate("RegionalCrossings")
+          local world=loadWorld()
+          local result = probeRegions(world, regionalProfile, published, routes, 516639272)
+          result.travel = probeTravel(loadTravel(world,loadVehicleRig()),loadBridgeScene(),516639272)
+          result.datastore = probeDataStore()
+          result.gameplay = probeRegionalModels(loadBridgeScene(), loadVehicleRig(), routes, 516639272)
+          result.universeId = tostring(game.GameId)
+          result.placeId = tostring(game.PlaceId)
+          return game:GetService("HttpService"):JSONEncode(result)
+          """
+          report = run_task(target["universeId"], target["placeIds"]["main"],
+                            os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], source)
+          assert report["loadedVersion"] == 18, report
+          assert report["complete"]["chunks"] == 49 and report["legacyVoxels"] == 156672
+          assert report["crossings"]["checked"] == 5 and report["crossings"]["nativeBanks"] == 4
+          assert report["datastore"]["actual"] and report["datastore"]["frontierReopen"]
+          assert report["datastore"]["backupRestore"] and report["datastore"]["futureSaveGuard"]
+          assert report["datastore"]["regional"]["foreignReopen"] and report["gameplay"]["workerCrossed"]
+          assert report["datastore"]["regional"]["travelCheckpoint"]
+          assert report["gameplay"]["destroyed"] and report["streaming"]
+          assert all(report["travel"].values())
+          print("ENTRE_REINOS_T2_R1_NATIVE", json.dumps(report, sort_keys=True))
+          PY
