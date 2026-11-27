@@ -1,9 +1,9 @@
 {
   "action": "publish",
-  "candidate": "b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9",
+  "candidate": "46594201fe56d6f49707088e3a919d20977d8f13",
   "universeId": "10769712413",
   "placeId": "90623742498445",
-  "expectedVersion": 21,
-  "expectedDigest": "b8d6d7db0c1813d29431cdf6f93505a8786d3473607d5b73e13f963751b1b5e6",
+  "expectedVersion": 22,
+  "expectedDigest": "3e815508daf96d1faace1f57d6bbe24342a6bcb854e221dadfd4d629c1f48aa9",
   "confirmFullReplacement": true
 }

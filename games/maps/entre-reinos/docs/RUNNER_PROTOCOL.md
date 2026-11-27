@@ -67,6 +67,10 @@ Reutilizar o workflow oficial da prévia do PR #14, suas proteções de staging 
 
 Em 27/11/2026, o criador autorizou substituir a v21 pelo candidato `b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9` somente no staging do Entre Reinos, Universe `10769712413`, Place `90623742498445`. O workflow oficial reutiliza a CI e a prova de motor desse SHA, guarda o rollback da v21 e verifica a revisão publicada pela API, pelo readback e pelo Scene Sync. Preservar o ruleset 5 e os seis slots. A T2-R3 aguarda o playtest do criador.
 
+## Exceção autorizada para pontes, vegetação e mar frontal
+
+Em 27/11/2026, o criador autorizou substituir a v22 pelo candidato `46594201fe56d6f49707088e3a919d20977d8f13` do PR #14, no staging `10769712413/90623742498445`. A prévia preserva ruleset 5 e os seis slots. O workflow oficial exige a CI e a prova Roblox do SHA exato, arquiva o rollback da v22 e confirma a revisão pela API, pelo readback independente e pelo Scene Sync posterior. O playtest precede a T2-R3. [Scene Sync prévio](https://github.com/Sllay/Roblox-Studios/actions/runs/46081824236)
+
 ## Refinamento (pacotes adicionais de tres runners)
 T1-F1/F2/F3, T2-F1/F2/F3 ou T3-F1/F2/F3. Quando houver mais de um ciclo, usar sufixo numerado para diferenciar.
 F1: auditar defeitos, arquitetura, instrumentacao e corrigir a causa das falhas do escopo atual.
