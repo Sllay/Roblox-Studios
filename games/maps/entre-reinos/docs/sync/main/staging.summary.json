@@ -1,24 +1,26 @@
 {
   "classes": {
     "Camera": 1,
-    "Folder": 5,
+    "Folder": 6,
     "LocalScript": 3,
-    "Model": 1,
-    "ModuleScript": 90,
+    "MeshPart": 12,
+    "Model": 9,
+    "ModuleScript": 91,
     "Part": 1,
     "Script": 1,
     "SpawnLocation": 1,
     "StarterCharacterScripts": 1,
     "StarterPlayerScripts": 1,
+    "SurfaceAppearance": 9,
     "Terrain": 1
   },
   "coverageNote": "Scoped inventory, not full backup. Query full records for object properties.",
-  "loadedVersion": 22,
+  "loadedVersion": 23,
   "placeId": "90623742498445",
   "schemaVersion": 1,
-  "stateDigest": "3e815508daf96d1faace1f57d6bbe24342a6bcb854e221dadfd4d629c1f48aa9",
+  "stateDigest": "ff78362c635837a28da635f2b8c177151f3753b121905737cc8b784509c1f583",
   "terrain": {},
-  "total": 106,
+  "total": 137,
   "universeId": "10769712413",
   "workspaceRoots": [
     {

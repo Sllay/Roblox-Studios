@@ -1,5 +1,5 @@
 {
-  "loadedVersion": 22,
+  "loadedVersion": 23,
   "placeId": "90623742498445",
   "records": {
     "environment:lighting": {
@@ -732,8 +732,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 5017,
-        "sourceHash": "fpXQSDbJTtGl90BEfHd1JaJh/P2HOTtw1dU4cQWwqUA="
+        "sourceBytes": 6618,
+        "sourceHash": "EfxrkhD2UiRFUkhS481Wxpw9rLh2DBj4GnNcq9hZHYE="
       },
       "service": "ReplicatedStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -932,8 +932,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 4015,
-        "sourceHash": "CYdX7PoZ8My4HiBawG6OmxcoS7vOAq9WCPDjWmBdLn8="
+        "sourceBytes": 6007,
+        "sourceHash": "fSbTgiLLTGbovQ1yYfw2LhDVCs71SkxYCBStemjdqrw="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1013,8 +1013,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 65844,
-        "sourceHash": "ocwK3+uS7UwEEv/1GK4AJnlQLm5N5cEaFMEhS3mH4VQ="
+        "sourceBytes": 65417,
+        "sourceHash": "1KTkq3T/flLovqjmfWbrrLE9wxHGbiHXJR5dDG2BcVQ="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1067,8 +1067,35 @@
         }
       ],
       "properties": {
-        "sourceBytes": 20502,
-        "sourceHash": "2LojjS1B6PZs1PLgfTj50Rxx5QkH/YjBBqzOPZJO8cE="
+        "sourceBytes": 20849,
+        "sourceHash": "XoV/Rbmd65qYuH/nNep9A27WT5012VGlzYqhNY7grOc="
+      },
+      "service": "ServerScriptService",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1},{\"class\":\"ModuleScript\",\"name\":\"VegetationScene\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "ModuleScript",
+      "coverage": "script_hash",
+      "managedId": "",
+      "name": "VegetationScene",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "Services",
+          "ordinal": 1
+        },
+        {
+          "class": "ModuleScript",
+          "name": "VegetationScene",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "sourceBytes": 2088,
+        "sourceHash": "zjGNlBGydOaBciIbnWWy5sfOGjlOdAMzxxfd5249Z3A="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1121,8 +1148,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 20750,
-        "sourceHash": "0/lSKWVh6zZuP6ezrNHzmxQfBI+7KETfD8ruwLWssBs="
+        "sourceBytes": 15641,
+        "sourceHash": "S7lFxawfpMee1W9pNPBtx1CZ6yUGWDgej5x26XMNdbs="
       },
       "service": "ServerScriptService",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -1130,7 +1157,7 @@
     "path:[\"ServerScriptService\",[{\"class\":\"Folder\",\"name\":\"Services\",\"ordinal\":1}]]": {
       "ambiguous": false,
       "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
-      "childCount": 8,
+      "childCount": 9,
       "class": "Folder",
       "coverage": "structure",
       "managedId": "",
@@ -1168,6 +1195,1731 @@
         "sourceHash": "V7Y6rOAvvpItcX0p1j/3hKfrVyXkV+pNwnVquCKxklg="
       },
       "service": "ServerScriptService",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafA\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Canopy_01\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"Leaves_01_4\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "Leaves_01_4",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafA",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Canopy_01",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "Leaves_01_4",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://89626593244521"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "NormalMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://91633090510389"
+        },
+        "alphaMode": "Transparency",
+        "color": [
+          0.2980392277240753,
+          0.3764705955982208,
+          0.0941176488995552
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafA\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Canopy_01\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Canopy_01",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafA",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Canopy_01",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          -0.3874487578868866,
+          18.246803283691406,
+          1.2928637266159058,
+          0.9999999403953552,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0.9999999403953552
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          1,
+          1,
+          1
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://18716595527",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          27.293546676635742,
+          26.022735595703125,
+          25.16826820373535
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafA\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Trunk_01\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"Bark_Grooved\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "Bark_Grooved",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafA",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Trunk_01",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "Bark_Grooved",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718123628"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "NormalMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718124198"
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718124854"
+        },
+        "alphaMode": "Overlay",
+        "color": [
+          0.41568630933761597,
+          0.3137255012989044,
+          0.2549019753932953
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafA\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Trunk_01\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Trunk_01",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafA",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Trunk_01",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          0.9563536643981934,
+          10.347023010253906,
+          1.8208531141281128,
+          0.9999999403953552,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0.9999999403953552
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          0.6392157077789307,
+          0.6352941393852234,
+          0.6470588445663452
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://18716595484",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          17.48270606994629,
+          33.49182891845703,
+          14.715659141540527
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafA\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 2,
+      "class": "Model",
+      "coverage": "model",
+      "managedId": "",
+      "name": "BroadleafA",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafA",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "pivot": [
+          -0.3874487578868866,
+          12.42963981628418,
+          1.2928637266159058,
+          0.9999999403953552,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0.9999999403953552
+        ],
+        "scale": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafB\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Canopy_08\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"Leaves_1_3\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "Leaves_1_3",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafB",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Canopy_08",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "Leaves_1_3",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://89626593244521"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "NormalMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://91633090510389"
+        },
+        "alphaMode": "Transparency",
+        "color": [
+          0.2980392277240753,
+          0.3764705955982208,
+          0.0941176488995552
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafB\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Canopy_08\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Canopy_08",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafB",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Canopy_08",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          -0.019009096547961235,
+          26.99920654296875,
+          0.7081567049026489,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          1,
+          1,
+          1
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://18720273012",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          19.540014266967773,
+          33.7840461730957,
+          18.193130493164062
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafB\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Trunk_08\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"Bark_Grooved\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "Bark_Grooved",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafB",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Trunk_08",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "Bark_Grooved",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718123628"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "NormalMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718124198"
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718124854"
+        },
+        "alphaMode": "Overlay",
+        "color": [
+          0.41568630933761597,
+          0.3137255012989044,
+          0.2549019753932953
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafB\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Trunk_08\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Trunk_08",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafB",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Trunk_08",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          -0.41373613476753235,
+          17.117877960205078,
+          0.6606287956237793,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          0.6392157077789307,
+          0.6352941393852234,
+          0.6470588445663452
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://18720273005",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          11.73841667175293,
+          45.92320251464844,
+          10.994973182678223
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"BroadleafB\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 2,
+      "class": "Model",
+      "coverage": "model",
+      "managedId": "",
+      "name": "BroadleafB",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "BroadleafB",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "pivot": [
+          -0.019009096547961235,
+          19.023754119873047,
+          0.7081567049026489,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Bush\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Bush_Canopy_01\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"Leaves_1_2\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "Leaves_1_2",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Bush",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Bush_Canopy_01",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "Leaves_1_2",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://13255387277"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "NormalMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://13244568809"
+        },
+        "alphaMode": "Transparency",
+        "color": [
+          0.364705890417099,
+          0.41960787773132324,
+          0.1098039299249649
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Bush\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Bush_Canopy_01\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Bush_Canopy_01",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Bush",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Bush_Canopy_01",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          0.057401739060878754,
+          4.576286315917969,
+          0.34562018513679504,
+          0.9999998807907104,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0.9999998807907104
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          0.6392157077789307,
+          0.6352941393852234,
+          0.6470588445663452
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://18720998648",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          8.27625846862793,
+          6.553782939910889,
+          7.589534759521484
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Bush\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Bush_Trunk_01\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"Bark_Grooved\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "Bark_Grooved",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Bush",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Bush_Trunk_01",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "Bark_Grooved",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718123628"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "NormalMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718124198"
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://18718124854"
+        },
+        "alphaMode": "Overlay",
+        "color": [
+          0.41568630933761597,
+          0.3137255012989044,
+          0.2549019753932953
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Bush\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Bush_Trunk_01\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Bush_Trunk_01",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Bush",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Bush_Trunk_01",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          0.16279856860637665,
+          2.9425010681152344,
+          0.6323235630989075,
+          0.9999998807907104,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0.9999998807907104
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          0.6392157077789307,
+          0.6352941393852234,
+          0.6470588445663452
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://18720998685",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          4.527110576629639,
+          6.273362159729004,
+          3.1818110942840576
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Bush\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 2,
+      "class": "Model",
+      "coverage": "model",
+      "managedId": "",
+      "name": "Bush",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Bush",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "pivot": [
+          0.057401739060878754,
+          3.829498767852783,
+          0.34562018513679504,
+          0.9999998807907104,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0.9999998807907104
+        ],
+        "scale": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"FallenLog\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Log\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Log",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "FallenLog",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Log",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          0,
+          0,
+          0,
+          0.9999999403953552,
+          2.1074721967551113e-09,
+          5.846009898391458e-09,
+          2.1074721967551113e-09,
+          0.9999999403953552,
+          2.4839745815796732e-09,
+          5.846009898391458e-09,
+          2.4839745815796732e-09,
+          0.9999999403953552
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          1,
+          1,
+          1
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://84426557612247",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          4.260200023651123,
+          1.3121000528335571,
+          1.339900016784668
+        ],
+        "textureId": "rbxassetid://129687460952107",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"FallenLog\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "Model",
+      "coverage": "model",
+      "managedId": "",
+      "name": "FallenLog",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "FallenLog",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "pivot": [
+          0,
+          0,
+          0,
+          0.9999999403953552,
+          2.1074721967551113e-09,
+          5.846009898391458e-09,
+          2.1074721967551113e-09,
+          0.9999999403953552,
+          2.4839745815796732e-09,
+          5.846009898391458e-09,
+          2.4839745815796732e-09,
+          0.9999999403953552
+        ],
+        "scale": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"LargeRock\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Mossy_Rock1_M_Mossy_Rock_0\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"SurfaceAppearance\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "SurfaceAppearance",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "LargeRock",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Mossy_Rock1_M_Mossy_Rock_0",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "SurfaceAppearance",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://122492215886612"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://117806444692708"
+        },
+        "NormalMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://112876096870697"
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://121754642795961"
+        },
+        "alphaMode": "Overlay",
+        "color": [
+          1,
+          1,
+          1
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"LargeRock\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Mossy_Rock1_M_Mossy_Rock_0\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Mossy_Rock1_M_Mossy_Rock_0",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "LargeRock",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Mossy_Rock1_M_Mossy_Rock_0",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          0,
+          0,
+          0,
+          0.9999999403953552,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0.9999999403953552
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          0.6392157077789307,
+          0.6352941393852234,
+          0.6470588445663452
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://112710935392609",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          4.518717288970947,
+          7.702760696411133,
+          3.9661965370178223
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"LargeRock\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "Model",
+      "coverage": "model",
+      "managedId": "",
+      "name": "LargeRock",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "LargeRock",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "pivot": [
+          0,
+          0,
+          0,
+          0.9999999403953552,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0.9999999403953552
+        ],
+        "scale": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Pebble\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Icosphere\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Icosphere",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Pebble",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Icosphere",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          -298.4231262207031,
+          8.135464668273926,
+          -210.99526977539062,
+          0.2670495808124542,
+          -0.040248770266771317,
+          -0.9628418684005737,
+          -0.08261465281248093,
+          0.9944931268692017,
+          -0.06448548287153244,
+          0.9601349234580994,
+          0.0967656821012497,
+          0.26225385069847107
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          1,
+          1,
+          1
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://120877868842825",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          1.611043930053711,
+          0.8695439100265503,
+          1.1305214166641235
+        ],
+        "textureId": "rbxassetid://106957063387208",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Pebble\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "Model",
+      "coverage": "model",
+      "managedId": "",
+      "name": "Pebble",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Pebble",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "pivot": [
+          -298.4231262207031,
+          8.135464668273926,
+          -210.99526977539062,
+          0.2670495808124542,
+          -0.040248770266771317,
+          -0.9628418684005737,
+          -0.08261465281248093,
+          0.9944931268692017,
+          -0.06448548287153244,
+          0.9601349234580994,
+          0.0967656821012497,
+          0.26225385069847107
+        ],
+        "scale": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Pine\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Leaves\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"SurfaceAppearance\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "SurfaceAppearance",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Pine",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Leaves",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "SurfaceAppearance",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://17718997641"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://17718985246"
+        },
+        "NormalMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://17718985305"
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://17718985236"
+        },
+        "alphaMode": "Transparency",
+        "color": [
+          1,
+          1,
+          1
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Pine\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Leaves\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Leaves",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Pine",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Leaves",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          0,
+          6.8787384033203125,
+          0,
+          -0.9999998807907104,
+          0,
+          -5.665512503583159e-10,
+          0,
+          1,
+          0,
+          5.665512503583159e-10,
+          0,
+          -0.9999998807907104
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          0.6392157077789307,
+          0.6352941393852234,
+          0.6470588445663452
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://17718985299",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          45.53799819946289,
+          59.5717887878418,
+          45.21535873413086
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Pine\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Trunk\",\"ordinal\":1},{\"class\":\"SurfaceAppearance\",\"name\":\"SurfaceAppearance\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "SurfaceAppearance",
+      "coverage": "surface_appearance_authoring",
+      "managedId": "",
+      "name": "SurfaceAppearance",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Pine",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Trunk",
+          "ordinal": 1
+        },
+        {
+          "class": "SurfaceAppearance",
+          "name": "SurfaceAppearance",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "ColorMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://17718985219"
+        },
+        "EmissiveMaskContent": {
+          "source": "None",
+          "uri": ""
+        },
+        "MetalnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://17718985190"
+        },
+        "NormalMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://17718985251"
+        },
+        "RoughnessMapContent": {
+          "source": "Uri",
+          "uri": "rbxassetid://17718985196"
+        },
+        "alphaMode": "Overlay",
+        "color": [
+          1,
+          1,
+          1
+        ],
+        "emissiveStrength": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Pine\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Trunk\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Trunk",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Pine",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Trunk",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          0.0006330988253466785,
+          -0.020782470703125,
+          0.65067458152771,
+          -0.9999998807907104,
+          0,
+          -5.665512503583159e-10,
+          0,
+          1,
+          0,
+          5.665512503583159e-10,
+          0,
+          -0.9999998807907104
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          0.6392157077789307,
+          0.6352941393852234,
+          0.6470588445663452
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://17718985276",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          8.101313591003418,
+          73.2885971069336,
+          8.101320266723633
+        ],
+        "textureId": "",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Pine\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 2,
+      "class": "Model",
+      "coverage": "model",
+      "managedId": "",
+      "name": "Pine",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Pine",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "pivot": [
+          0,
+          -0.00022411346435546875,
+          0,
+          -0.9999998807907104,
+          0,
+          -5.665512503583159e-10,
+          0,
+          1,
+          0,
+          5.665512503583159e-10,
+          0,
+          -0.9999998807907104
+        ],
+        "scale": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Stick\",\"ordinal\":1},{\"class\":\"MeshPart\",\"name\":\"Visual\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 0,
+      "class": "MeshPart",
+      "coverage": "basepart",
+      "managedId": "",
+      "name": "Visual",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Stick",
+          "ordinal": 1
+        },
+        {
+          "class": "MeshPart",
+          "name": "Visual",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "anchored": true,
+        "canCollide": false,
+        "canQuery": false,
+        "canTouch": false,
+        "castShadow": false,
+        "cframe": [
+          117.55815124511719,
+          1.2433757781982422,
+          -377.15240478515625,
+          -0.9691668748855591,
+          0.07931781560182571,
+          0.2332906574010849,
+          0.1166834756731987,
+          0.981624186038971,
+          0.1509939581155777,
+          -0.21702715754508972,
+          0.17355947196483612,
+          -0.9606127142906189
+        ],
+        "collisionFidelity": "PreciseConvexDecomposition",
+        "collisionGroup": "Default",
+        "color": [
+          1,
+          1,
+          1
+        ],
+        "massless": false,
+        "material": "Plastic",
+        "materialVariant": "",
+        "meshId": "rbxassetid://101820304976769",
+        "reflectance": 0,
+        "renderFidelity": "Automatic",
+        "size": [
+          4.202181339263916,
+          0.5108794569969177,
+          1.4098081588745117
+        ],
+        "textureId": "rbxassetid://110578979081477",
+        "transparency": 0
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1},{\"class\":\"Model\",\"name\":\"Stick\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 1,
+      "class": "Model",
+      "coverage": "model",
+      "managedId": "",
+      "name": "Stick",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        },
+        {
+          "class": "Model",
+          "name": "Stick",
+          "ordinal": 1
+        }
+      ],
+      "properties": {
+        "pivot": [
+          117.55815124511719,
+          1.2433757781982422,
+          -377.15240478515625,
+          -0.9691668748855591,
+          0.07931781560182571,
+          0.2332906574010849,
+          0.1166834756731987,
+          0.981624186038971,
+          0.1509939581155777,
+          -0.21702715754508972,
+          0.17355947196483612,
+          -0.9606127142906189
+        ],
+        "scale": 1
+      },
+      "service": "ServerStorage",
+      "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
+    },
+    "path:[\"ServerStorage\",[{\"class\":\"Folder\",\"name\":\"ERVegetation\",\"ordinal\":1}]]": {
+      "ambiguous": false,
+      "attributesHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=",
+      "childCount": 8,
+      "class": "Folder",
+      "coverage": "structure",
+      "managedId": "",
+      "name": "ERVegetation",
+      "path": [
+        {
+          "class": "Folder",
+          "name": "ERVegetation",
+          "ordinal": 1
+        }
+      ],
+      "properties": [],
+      "service": "ServerStorage",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
     },
     "path:[\"StarterPlayer\",[{\"class\":\"StarterCharacterScripts\",\"name\":\"StarterCharacterScripts\",\"ordinal\":1}]]": {
@@ -1329,8 +3081,8 @@
         }
       ],
       "properties": {
-        "sourceBytes": 17492,
-        "sourceHash": "cs939UPKqTOtyTc/OQbSvb2xGxLa9pz0je7kjqBeZTE="
+        "sourceBytes": 17503,
+        "sourceHash": "XPOSCkcaqw7ZCN/nukxPmpb+Y8+faiVQmjdc5WXE+7Y="
       },
       "service": "StarterPlayer",
       "tagsHash": "T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU="
@@ -3415,7 +5167,7 @@
         }
       ],
       "properties": {
-        "decoration": false,
+        "decoration": true,
         "grassLength": 0.699999988079071,
         "waterColor": [
           0.05000000074505806,
@@ -3445,7 +5197,7 @@
     "Teams",
     "ReplicatedFirst"
   ],
-  "stateDigest": "3e815508daf96d1faace1f57d6bbe24342a6bcb854e221dadfd4d629c1f48aa9",
-  "total": 106,
+  "stateDigest": "ff78362c635837a28da635f2b8c177151f3753b121905737cc8b784509c1f583",
+  "total": 137,
   "universeId": "10769712413"
 }
