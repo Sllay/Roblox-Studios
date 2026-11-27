@@ -38,6 +38,18 @@ local function probeWaterBridge(world,profile,routes,scene)
             and math.abs(a.Position.Y-b.Position.Y)<0.1,"foreground line at X "..edge)
         seamTests+=1
     end
+    local marineColumns=0
+    local scenery=loadCandidate("SceneryProfile")
+    for _,id in ipairs({-profile.CHUNK_RADIUS-2,-1,0,1,profile.CHUNK_RADIUS+2}) do
+        local tile=scenery.bounds(id,1)
+        for x=tile.xMin+2,tile.xMax-2,4 do
+            for _,z in ipairs({tile.zMin+6,tile.zMin+18,tile.zMax-6}) do
+                local water=cast(x,z,wet)
+                assert(water and water.Material==Enum.Material.Water,"dry or missing sea column")
+                marineColumns+=1
+            end
+        end
+    end
     assert(not workspace.ER_World_3D:FindFirstChild("WaterSheet",true))
     assert(not workspace.ER_World_3D:FindFirstChild("FeederCascade",true))
 
@@ -142,7 +154,7 @@ local function probeWaterBridge(world,profile,routes,scene)
     assert(Slots.validWorld(save) and Slots.COUNT==6)
     assert(Regions.new(seed,assert(Living.restore(home,seed)),save.regionWorld,profile.spawn(seed)))
     folder:Destroy()
-    return {nativeWaterColumns=checkedWater,seams=seamTests,readyBanks=readyBanks,
+    return {nativeWaterColumns=checkedWater,marineColumns=marineColumns,seams=seamTests,readyBanks=readyBanks,
         solidOnlyObstruction=true,lightBuilt=true,reinforcedBuilt=true,mountedRoute=true,
         ticks=buildTicks,stableCrossingId=crossing.id,ruleset=save.rulesetVersion}
 end

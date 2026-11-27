@@ -189,3 +189,23 @@ for _,seed in ipairs({516639272,42,17071985,382775}) do
     end
 end
 print("ENTRE_REINOS_WATER_BRIDGE: connected watershed and continuous borders across four seeds")
+
+-- The seaward row begins with water at the first native voxel, runs beyond
+-- both play barriers, and places its river mouths above a continuous seabed.
+for _,seed in ipairs({516639272,42,17071985,382775}) do
+    for id=-Regions.CHUNK_RADIUS-2,Regions.CHUNK_RADIUS+2 do
+        local bounds=Scenery.bounds(id,1)
+        assert(#Scenery.vegetation(seed,id,1)==0)
+        for x=bounds.xMin+Regions.CELL/2,bounds.xMax-Regions.CELL/2,Regions.CELL do
+            local previous=math.huge
+            for z=bounds.zMin+Regions.CELL/2,bounds.zMax-Regions.CELL/2,Regions.CELL do
+                local sea=Scenery.sample(seed,x,z)
+                assert(sea.wet and sea.waterSurface and sea.waterSurface>sea.height,"dry marine column")
+                assert(sea.waterSurface<=previous,"river mouth climbs away from the coast")
+                previous=sea.waterSurface
+            end
+            assert(previous==Scenery.SEA_LEVEL)
+        end
+    end
+end
+print("ENTRE_REINOS_MARITIME: 53 connected sea chunks in four seeds")

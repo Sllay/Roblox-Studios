@@ -11,7 +11,6 @@ local function probeApprovedVegetation(world,vegetation)
         for _,part in ipairs(model:GetChildren()) do
             assert(part:IsA("MeshPart") and part.MeshId~="" and not part.CanCollide and not part.CanQuery)
             table.insert(parts,part)
-            contents[part.MeshId]=true
             if part.TextureID~="" then contents[part.TextureID]=true end
             for _,surface in ipairs(part:GetChildren()) do
                 assert(surface:IsA("SurfaceAppearance"))
@@ -22,7 +21,9 @@ local function probeApprovedVegetation(world,vegetation)
             end
         end
     end
-    local requests={}
+    -- The published asset pipeline preloads MeshParts as instances and PBR
+    -- dependencies as URIs. A bare mesh URI is not a texture request.
+    local requests=table.clone(parts)
     for id in pairs(contents) do table.insert(requests,id) end
     local failures={}
     local checked=0

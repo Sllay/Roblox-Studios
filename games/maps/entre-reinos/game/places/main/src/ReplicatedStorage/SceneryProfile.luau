@@ -2,12 +2,13 @@
 -- Extra native Terrain is outside the persisted playable voxel envelope.
 local Profile=require("./RegionalProfile")
 local Scenery={}
-Scenery.VERSION=2
+Scenery.VERSION=3
 Scenery.ROW=64
 Scenery.MAX_ASPECT=2.2
 Scenery.CAMERA_DISTANCE=118
 Scenery.VERTICAL_FOV=46
 Scenery.EDGE_CHUNKS=2
+Scenery.SEA_LEVEL=6
 local b=Profile.BOUNDS
 
 local function smooth(v: number): number
@@ -31,14 +32,18 @@ function Scenery.sample(seed: number,x: number,z: number)
         local stages=13*smooth(depth/64)+23*smooth((depth-44)/86)+25*smooth((depth-102)/88)
         local hill=taper*(math.noise(x/115,z/88,phase)*25+math.noise(x/58,z/44,phase)*10)
         local rise=9*smooth(depth/38)+11*smooth((depth-46)/52)+10*smooth((depth-112)/78)
-        local bed=old.channelBed+rise
-        local level=old.channelSurface+rise
+        -- The upstream course meanders independently of the mountain field.
+        -- Its offset fades to zero at the persisted back edge.
+        local bend=8*taper*math.noise(depth/54,phase,7.3)
+        local channel=Profile.sample(seed,x-bend,z)
+        local bed=channel.channelBed+rise
+        local level=channel.channelSurface+rise
         local land=old.landHeight+stages+hill
         -- Raise the upland and river independently, then join both with a
         -- continuous bank. Widen the bank as relief increases upstream.
-        local relief=math.max(0,land-level-(old.landHeight-old.channelSurface))
-        local bankWidth=old.channelBankWidth+relief
-        local shoulder=smooth((old.riverDist-old.channelWidth)/bankWidth)
+        local relief=math.max(0,land-level-(old.landHeight-channel.channelSurface))
+        local bankWidth=channel.channelBankWidth+relief
+        local shoulder=smooth((channel.riverDist-channel.channelWidth)/bankWidth)
         local height=bed+(land-bed)*shoulder
         local wet=shoulder<1 and height<level
         local material=if wet then "Mud" elseif shoulder<1 then "Sand"
@@ -47,19 +52,24 @@ function Scenery.sample(seed: number,x: number,z: number)
             material=material,biome=old.biome}
     elseif z>b.zMax then
         local distance=z-b.zMax
-        local t=smooth(distance/35)
-        local shore=b.zMax+29+7*math.noise(x/94,phase,2.1)
-        local blend=smooth((z-shore+12)/23)
-        local bed=-12+2*math.noise(x/95,z/31,phase)
-        local height=old.height+(bed-old.height)*blend
-        -- All tributaries converge to one foreground level. Away from a
-        -- river, use that same level before the first coastal wet column.
-        local shoulder=smooth((old.riverDist-old.channelWidth)/old.channelBankWidth)
-        local level=6+(old.channelSurface-6)*(1-t)*(1-smooth(distance/12)*shoulder)
-        local wet=height<level and (shoulder<1 or blend>0)
-        local material=if wet and blend>0.05 then "Mud" elseif blend>0.05 then "Sand" else old.material
+        local shore=Profile.sample(seed,x,b.zMax)
+        local mouthDepth=math.max(0,(shore.waterSurface or shore.height)-shore.height)
+        -- The shore is the last edge of playable ground. The first marine
+        -- voxel is on a submerged shelf even at high coastal escarpments.
+        local shelf=math.min(shore.height,Scenery.SEA_LEVEL-Profile.CELL)
+        local seabed=-16+2*math.noise(x/95,z/31,phase)
+        local slope=smooth(distance/(Profile.CELL/2))
+        local offshore=smooth((distance-Profile.CELL/2)/(8*Profile.CELL))
+        local near=shore.height+(shelf-shore.height)*slope
+        local height=near+(seabed-near)*offshore
+        -- Only a river mouth has a local head of water. It descends into
+        -- the shared sea level within three cells of the coast.
+        local plume=(shore.channelSurface-Scenery.SEA_LEVEL)
+            *smooth(mouthDepth/Profile.CELL)*(1-smooth(distance/(3*Profile.CELL)))
+        local level=Scenery.SEA_LEVEL+plume
+        local wet=height<level
         return {height=height,waterSurface=if wet then level else nil,wet=wet,
-            material=material,biome=old.biome}
+            material=if offshore>0.5 then "Mud" else "Sand",biome=old.biome}
     end
     return old
 end
