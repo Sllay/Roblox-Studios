@@ -63,6 +63,10 @@ Em 26/11/2026, o criador autorizou a prévia do candidato `c4fb0790c14cd7c42cead
 
 Reutilizar o workflow oficial da prévia do PR #14, suas proteções de staging e sua verificação de CI e prova Roblox no SHA exato. Conferir a v20 pelo Scene Sync e arquivar o RBXLX de rollback com o mesmo SHA-256 da publicação original antes de escrever. Confirmar a nova revisão pela API e pelo readback de scripts. Executar o Scene Sync posterior e registrar os comprovantes. A T2-R3 aguarda o feedback do criador. [Recibo e roteiro](runner-receipts/T2-R2-v20-refino.md)
 
+## Exceção autorizada para a correção de água e pontes
+
+Em 27/11/2026, o criador autorizou substituir a v21 pelo candidato `b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9` somente no staging do Entre Reinos, Universe `10769712413`, Place `90623742498445`. O workflow oficial reutiliza a CI e a prova de motor desse SHA, guarda o rollback da v21 e verifica a revisão publicada pela API, pelo readback e pelo Scene Sync. Preservar o ruleset 5 e os seis slots. A T2-R3 aguarda o playtest do criador.
+
 ## Refinamento (pacotes adicionais de tres runners)
 T1-F1/F2/F3, T2-F1/F2/F3 ou T3-F1/F2/F3. Quando houver mais de um ciclo, usar sufixo numerado para diferenciar.
 F1: auditar defeitos, arquitetura, instrumentacao e corrigir a causa das falhas do escopo atual.

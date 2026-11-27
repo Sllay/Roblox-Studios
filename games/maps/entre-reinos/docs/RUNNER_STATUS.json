@@ -4,7 +4,7 @@
   "plan": "docs/SEASON_RUNNERS.md",
   "protocol": "docs/RUNNER_PROTOCOL.md",
   "recordedAt": "2026-11-27",
-  "note": "Water and bridge regressions reported during the T2-R2 playtest are fixed in a candidate validated by CI and the Roblox engine. Staging remains on v21 pending authorization.",
+  "note": "The creator authorized the exact water and bridge fix candidate for the existing staging Place, with ruleset 5 and the v21 rollback preserved.",
   "stagingVerified": true,
   "productionVerified": false,
   "allowedRunnerStatuses": [
@@ -476,12 +476,16 @@
             "ruleset": 5,
             "nextRunner": "blocked_awaiting_creator_feedback",
             "technicalVerification": "passed",
-            "publicationStatus": "awaiting_creator_authorization",
+            "publicationStatus": "authorized",
             "reproduction": "https://github.com/Sllay/Roblox-Studios/actions/runs/45929927177",
             "ci": "https://github.com/Sllay/Roblox-Studios/actions/runs/45930483702",
             "robloxProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/45930476816",
             "clientMobile": "awaiting_candidate_playtest",
-            "receipt": "docs/runner-receipts/T2-R2-v20-refino.md"
+            "receipt": "docs/runner-receipts/T2-R2-v20-refino.md",
+            "authorizationDate": "2026-11-27",
+            "baselineDigest": "b8d6d7db0c1813d29431cdf6f93505a8786d3473607d5b73e13f963751b1b5e6",
+            "rollbackBuildSha256": "1565386ebe41d92b8530c9c2b6d4cac9afceb3d6609c0323561a9306271850d9",
+            "prePublishSceneSyncUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/46027165839"
           }
         },
         {
@@ -568,7 +572,7 @@
     }
   ],
   "planVersion": "V2-2026-11-21",
-  "programStage": "T2_R2_water_bridge_fix_awaiting_preview_authorization",
+  "programStage": "T2_R2_water_bridge_fix_preview_authorized",
   "programIntent": {
     "T1": "fundacao",
     "T2": "finalizacao_de_todos_sistemas_centrais",

@@ -256,3 +256,5 @@ Correção v9 em desenvolvimento:
 ## 27/11/2026 — Regressão de água e pontes no playtest T2-R2
 
 - [FIXADO PELO CRIADOR] O relevo, o leito e a água precisam formar um curso contínuo das encostas até a faixa frontal. O encaixe da ponte deve partir de margens válidas e rejeitar obstruções físicas. Preservar as travessias, o terreno jogável, os reinos e os saves. A T2-R3 aguarda a correção e o playtest. [Diagnóstico e provas](runner-receipts/T2-R2-v20-refino.md#correção-do-rio-e-das-pontes--27112026)
+
+- [AUTORIZADO PELO CRIADOR] Publicar `b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9` em substituição à v21 no staging existente. Preservar o ruleset 5, os seis slots e o rollback da v21. A T2-R3 aguarda o playtest. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-para-a-correção-de-água-e-pontes)

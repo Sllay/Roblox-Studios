@@ -20,7 +20,7 @@ jobs:
     environment: staging
     timeout-minutes: 20
     env:
-      CANDIDATE: c4fb0790c14cd7c42cead0ae17e8f013b36fab1c
+      CANDIDATE: b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9
       PLAN: games/maps/entre-reinos/docs/sync/t2-r2-preview/target.json
       PREVIEW_TOOL: games/maps/entre-reinos/ops/t2_r2_preview.py
       EVIDENCE: dist/entre-reinos-t2-r2-preview
@@ -31,13 +31,13 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
-          ref: c4fb0790c14cd7c42cead0ae17e8f013b36fab1c
+          ref: b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9
           path: preview-candidate
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
-          ref: c905eca3437ecd124c6afac6cce0df21df31f8e1
+          ref: c4fb0790c14cd7c42cead0ae17e8f013b36fab1c
           path: preview-rollback
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -50,10 +50,10 @@ jobs:
           test "$(jq -er .action "$PLAN")" = publish
           test "$(jq -er .candidate "$PLAN")" = "$CANDIDATE"
           test "$(git -C preview-candidate rev-parse HEAD)" = "$CANDIDATE"
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45732016488" \
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45930476885" \
             --jq '.conclusion + " " + .head_sha + " " + .path' \
             | grep -Fx "success $CANDIDATE .github/workflows/ci.yml"
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45732016659" \
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45930476816" \
             --jq '.conclusion + " " + .head_sha + " " + .path' \
             | grep -Fx "success $CANDIDATE .github/workflows/entre-reinos-t2-r2-engine-probe.yml"
       - run: python -m pip install Pillow==11.3.0
@@ -63,20 +63,20 @@ jobs:
       - name: Build only the approved Entre Reinos Place
         working-directory: preview-candidate
         run: python tools/workspace.py build --game entre-reinos --place main
-      - name: Build the exact v20 rollback file
+      - name: Build the exact v21 rollback file
         run: |
           (cd preview-rollback && python tools/workspace.py build --game entre-reinos --place main)
           mkdir -p "$EVIDENCE"
-          cp preview-rollback/dist/entre-reinos/main.rbxlx "$EVIDENCE/entre-reinos-v20-rollback.rbxlx"
-          printf '63d2ffe7261cb815dfe514a0ad9498e4259bf8364410c87db50708954a0e470f  %s\n' \
-            "$EVIDENCE/entre-reinos-v20-rollback.rbxlx" | sha256sum --check
-      - name: Archive v20 rollback before publishing
+          cp preview-rollback/dist/entre-reinos/main.rbxlx "$EVIDENCE/entre-reinos-v21-rollback.rbxlx"
+          printf '1565386ebe41d92b8530c9c2b6d4cac9afceb3d6609c0323561a9306271850d9  %s\n' \
+            "$EVIDENCE/entre-reinos-v21-rollback.rbxlx" | sha256sum --check
+      - name: Archive v21 rollback before publishing
         uses: actions/upload-artifact@v4
         with:
-          name: entre-reinos-v20-rollback
-          path: dist/entre-reinos-t2-r2-preview/entre-reinos-v20-rollback.rbxlx
+          name: entre-reinos-v21-rollback
+          path: dist/entre-reinos-t2-r2-preview/entre-reinos-v21-rollback.rbxlx
           if-no-files-found: error
-      - name: Verify v20 backup and Scene Sync, then publish staging through Open Cloud
+      - name: Verify v21 backup and Scene Sync, then publish staging through Open Cloud
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python "$PREVIEW_TOOL" publish --plan "$PLAN" --output "$EVIDENCE"
