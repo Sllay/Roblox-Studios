@@ -107,6 +107,7 @@ local function decoratedChunk(seed: number, id: number, xmin: number, xmax: numb
             wall.Position = Vector3.new(side * (Profile.PLAY_EDGE + 2), 54, 0)
             wall.Transparency = 1
             wall.CanCollide = true
+            wall:SetAttribute("ER_PlacementRole", "control")
             wall.CanTouch = false
             wall.CanQuery = false
             wall.Parent = f

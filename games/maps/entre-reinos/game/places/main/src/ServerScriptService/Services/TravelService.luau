@@ -2,6 +2,7 @@
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local shared=ReplicatedStorage:WaitForChild("Game")
 local Profile=require(shared:WaitForChild("RegionalProfile"))
+local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
 local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
 local Inventory=require(shared:WaitForChild("Living"):WaitForChild("Inventory"))
@@ -92,6 +93,7 @@ local function drawDock(index: number,stop: any)
     if dockModels[index] or not World.isLoadedAt(stop.bank.x) then return end
     local hull=Instance.new("Model")
     hull.Name=if index==1 then "Ancoradouro do Vale" else "Ancoradouro da Margem"
+    hull:SetAttribute("ER_PlacementRole","dock")
     local function plank(name: string, size: Vector3,pose: CFrame): Part
         local p=Instance.new("Part")
         p.Name=name
@@ -104,13 +106,17 @@ local function drawDock(index: number,stop: any)
         return p
     end
     local length=math.abs(stop.moor.x-stop.bank.x)
-    -- Lateral walk lane remains clear for native swimming. Dock alongside it.
+    -- Keep the entire collidable deck beside the bridge clearance. Mooring
+    -- and boarding still use the existing lateral coordinates and save data.
+    local dockWidth=3.8
+    local dockZ=-(Structures.BRIDGE_DECK_WIDTH+dockWidth)/2-0.5
+    local outsideZ=dockZ-dockWidth/2
     local y=math.max(stop.moor.y+0.5,stop.bank.y+0.35)
     local center=(stop.moor.x+stop.bank.x)/2
-    plank("Píer",Vector3.new(length+1.2,0.52,3.8),CFrame.new(center,y,-1.05))
+    plank("Píer",Vector3.new(length+1.2,0.52,dockWidth),CFrame.new(center,y,dockZ))
     for _,x in ipairs({stop.bank.x,stop.moor.x}) do
-        plank("Pilote",Vector3.new(0.62,14,0.62),CFrame.new(x,y-6,-4.55))
-        plank("Amarra",Vector3.new(0.7,1.35,0.7),CFrame.new(x,y+0.64,-4.55))
+        plank("Pilote",Vector3.new(0.62,14,0.62),CFrame.new(x,y-6,outsideZ))
+        plank("Amarra",Vector3.new(0.7,1.35,0.7),CFrame.new(x,y+0.64,outsideZ))
     end
     hull.Parent=folder
     dockModels[index]=hull

@@ -13,33 +13,82 @@ local function deckPose(crossing: any): (CFrame,number)
     return CFrame.new((from+to)/2)*CFrame.Angles(0,0,math.atan2(to.Y-from.Y,to.X-from.X)),(to-from).Magnitude
 end
 
-function Scene.validatePlacement(crossing: any,ignored: {Instance}): (boolean,string?)
+local function placementRole(part: BasePart): string
+    local node: Instance?=part
+    while node and node~=workspace do
+        local role=node:GetAttribute("ER_PlacementRole")
+        if type(role)=="string" then return role end
+        if node:IsA("Model") and (node:FindFirstChildOfClass("Humanoid")
+            or node:GetAttribute("ER_GaitKind")) then return "mobile_entity" end
+        node=node.Parent
+    end
+    return if part.CanCollide then "structure" else "decoration"
+end
+
+local function vector(v: Vector3): {number}
+    return {v.X,v.Y,v.Z}
+end
+
+local function partEvidence(part: BasePart, role: string): any
+    return {name=part.Name,path=part:GetFullName(),class=part.ClassName,category=role,
+        collisionGroup=part.CollisionGroup,canCollide=part.CanCollide,canQuery=part.CanQuery,
+        size=vector(part.Size),position=vector(part.Position)}
+end
+
+function Scene.validatePlacement(crossing: any,ignored: {Instance}): (boolean,string?,any?)
+    local pose,span=deckPose(crossing)
+    local passage=pose*CFrame.new(0,MOUNTED_CLEARANCE/2,0)
+    local size=Vector3.new(span,MOUNTED_CLEARANCE+DECK_THICKNESS,DECK_WIDTH)
+    local evidence={crossing=crossing.id,volume={frame={passage:GetComponents()},size=vector(size)},parts={}}
     local terrain=workspace.Terrain
     local support=RaycastParams.new()
     support.FilterType=Enum.RaycastFilterType.Include
     support.FilterDescendantsInstances={terrain}
     for _,bank in ipairs({crossing.west,crossing.east}) do
-        -- Sample the landing across the actual deck width in native Terrain.
         for _,z in ipairs({-DECK_WIDTH/2,0,DECK_WIDTH/2}) do
             local hit=workspace:Raycast(Vector3.new(bank.x,70,z),Vector3.new(0,-120,0),support)
-            if not hit then return false,"terrain_not_ready" end
+            if not hit then return false,"terrain_not_ready",evidence end
             if hit.Material==Enum.Material.Water or math.abs(hit.Position.Y-bank.y)>NATIVE_SURFACE_TOLERANCE then
-                return false,"invalid_bridge_banks"
+                return false,"invalid_bridge_banks",evidence
             end
         end
     end
 
-    local pose,span=deckPose(crossing)
     local overlap=OverlapParams.new()
     overlap.RespectCanCollide=true
-    overlap.MaxParts=1
     overlap.FilterType=Enum.RaycastFilterType.Exclude
     overlap.FilterDescendantsInstances=ignored
-    local height=MOUNTED_CLEARANCE+DECK_THICKNESS
-    local passage=pose*CFrame.new(0,MOUNTED_CLEARANCE/2,0)
-    local blocked=workspace:GetPartBoundsInBox(passage,Vector3.new(span,height,DECK_WIDTH),overlap)
-    if #blocked>0 then return false,"solid_obstruction" end
-    return true,nil
+    local fixed: {Instance}={}
+    local candidates=workspace:GetPartBoundsInBox(passage,size,overlap)
+    for _,part in ipairs(candidates) do
+        local role=placementRole(part)
+        if role~="mobile_entity" and role~="decoration" and role~="control" then
+            table.insert(fixed,part)
+        end
+    end
+    if #fixed==0 then return true,nil,evidence end
+
+    -- Exact volume query for structural candidates. Bounding boxes alone can
+    -- intersect the passage at empty corners of sloped or hollow geometry.
+    local volume=Instance.new("Part")
+    volume.Name="ER_BridgePlacementVolume"
+    volume.CFrame=passage
+    volume.Size=size
+    volume.Transparency=1
+    volume.Anchored=true
+    volume.CanCollide=false
+    volume.CanTouch=false
+    volume.CanQuery=false
+    volume.Parent=workspace
+    overlap.FilterType=Enum.RaycastFilterType.Include
+    overlap.FilterDescendantsInstances=fixed
+    local blocked=workspace:GetPartsInPart(volume,overlap)
+    volume:Destroy()
+    for _,part in ipairs(blocked) do
+        table.insert(evidence.parts,partEvidence(part,placementRole(part)))
+        if #evidence.parts==8 then break end
+    end
+    return #blocked==0,if #blocked>0 then "solid_obstruction" else nil,evidence
 end
 local function timber(model: Model,name: string,size: Vector3,pose: CFrame,stone: boolean): Part
     local p=Instance.new("Part")

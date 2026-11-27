@@ -5,6 +5,7 @@ local Players=game:GetService("Players")
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local PhysicsService=game:GetService("PhysicsService")
+local HttpService=game:GetService("HttpService")
 local Lighting=game:GetService("Lighting")
 local shared=ReplicatedStorage:WaitForChild("Game")
 local Profile=require(shared:WaitForChild("RegionalProfile"))
@@ -45,6 +46,7 @@ local lastActionAt=0
 local lastPreviewAt=0
 local buildPreview: any=nil
 local previewId=0
+local lastPlacementDiagnostic: {[string]: number}={}
 -- Non-physical R6 residents. Logical work coordinates remain untouched.
 local GHOST_GROUP="ER_GhostNPC"
 if not PhysicsService:IsCollisionGroupRegistered(GHOST_GROUP) then
@@ -979,7 +981,20 @@ local function placementGround(typeId: string, x: number, root: BasePart, snap: 
         -- its completed provisional bridge. Its model is the only exemption.
         local current=bridgeFolder and bridgeFolder:FindFirstChild(crossing.id)
         if current then table.insert(ignored,current) end
-        local valid,blocking=BridgeScene.validatePlacement(crossing,ignored)
+        local valid,blocking,diagnostic=BridgeScene.validatePlacement(crossing,ignored)
+        -- Temporary server log for this regression. Deduplicate repeated
+        -- movement over the same candidate without exposing scene paths to clients.
+        if diagnostic then
+            local phase=if snap then "preview" else "confirmation"
+            local key=phase..":"..crossing.id..":"..tostring(blocking)
+            local now=os.clock()
+            if now-(lastPlacementDiagnostic[key] or -math.huge)>=8 then
+                lastPlacementDiagnostic[key]=now
+                diagnostic.phase=phase
+                diagnostic.result=blocking or "ok"
+                warn("[EntreReinos][BridgePlacement] "..HttpService:JSONEncode(diagnostic))
+            end
+        end
         if not valid then return false,blocking,crossing end
         return true,(crossing.deckWestY+crossing.deckEastY)/2,crossing
     end

@@ -7,6 +7,10 @@ local function probeFullBridge(world,living,bridgeScene)
     local record=slots.newWorld(seed,100,{x=crossing.west.x-3,y=crossing.west.y+4,z=0})
     local domain=loadCandidate("LivingModel").new(seed)
     assert(loadCandidate("WorkEngine").initializeVillage(domain))
+    local inventory=loadCandidate("Inventory")
+    assert(inventory.add(domain.buildings[2].stored,"wood",44))
+    assert(inventory.add(domain.buildings[2].stored,"stone",16))
+    domain.npcs[3].x=crossing.west.x-4
     record.living=domain
     local rig=Instance.new("Model")
     local root=Instance.new("Part")
@@ -26,26 +30,83 @@ local function probeFullBridge(world,living,bridgeScene)
     local village=assert(workspace:FindFirstChild("ER_LivingWorld"))
     local dock=assert(village.ER_Travel:FindFirstChild("Ancoradouro do Vale"))
     assert(village:FindFirstChild("Building_1_castle") and village:FindFirstChild("NPC_1_Ari"))
-    local result=living.probeAction(player,"build_preview","bridge_light",crossing.west.x-3)
-    assert(not result.ok and result.error=="solid_obstruction","v22 failure not reproduced: "..tostring(result.error))
-    local thickness=0.7
-    local span=Vector3.new(crossing.span,crossing.deckEastY-crossing.deckWestY,0).Magnitude
-    local pose=CFrame.new((crossing.west.x+crossing.east.x)/2,(crossing.deckWestY+crossing.deckEastY)/2-thickness/2,0)
-        *CFrame.Angles(0,0,math.atan2(crossing.deckEastY-crossing.deckWestY,crossing.span))
-        *CFrame.new(0,3.5,0)
-    local overlap=OverlapParams.new()
-    overlap.RespectCanCollide=true
-    overlap.FilterDescendantsInstances={workspace.Terrain,rig}
-    local hits={}
-    for _,part in ipairs(workspace:GetPartBoundsInBox(pose,Vector3.new(span,7+thickness,6.7),overlap)) do
-        table.insert(hits,{path=part:GetFullName(),class=part.ClassName,collisionGroup=part.CollisionGroup,
-            canCollide=part.CanCollide,canQuery=part.CanQuery,size={part.Size.X,part.Size.Y,part.Size.Z},
-            position={part.Position.X,part.Position.Y,part.Position.Z},
-            category=if part:IsDescendantOf(dock) then "dock" else "other"})
+    assert(village:FindFirstChild("HarvestableTree_wood_a"))
+    local parts=#village:GetDescendants()
+    local clearance=loadCandidate("StructureDefs").BRIDGE_DECK_WIDTH/2
+    for _,landing in ipairs(village.ER_Travel:GetChildren()) do
+        if landing:GetAttribute("ER_PlacementRole")~="dock" then continue end
+        local deck=landing:FindFirstChild("Píer")
+        assert(deck and deck.CanCollide and deck.Position.Z+deck.Size.Z/2 < -clearance)
     end
-    assert(#hits>0 and hits[1].category=="dock","dock intersection missing")
+    local approach=crossing.west.x-3
+    local preview=living.probeAction(player,"build_preview","bridge_light",approach)
+    assert(preview.ok and preview.bridge.id==crossing.id, tostring(preview.error))
+    local center=(crossing.west.x+crossing.east.x)/2
+    local blocker=Instance.new("Part")
+    blocker.Name="FixedBridgeObstruction"
+    blocker.Size=Vector3.new(2,2,2)
+    blocker.Anchored=true
+    blocker.Position=Vector3.new(center,preview.y+2,0)
+    blocker.Parent=workspace
+    local rejected=living.probeAction(player,"build",preview.previewId)
+    assert(not rejected.ok and rejected.error=="solid_obstruction")
+    local clear,code,details=bridgeScene.validatePlacement(crossing,{workspace.Terrain,rig})
+    assert(not clear and code=="solid_obstruction" and details.parts[1].path==blocker:GetFullName())
+    blocker:Destroy()
+    task.wait(0.67)
+
+    -- A physically solid moving resident is classified separately.
+    local subject=village.NPC_1_Ari:Clone()
+    subject.Name="ResidentCrossing"
+    subject.Parent=workspace
+    subject:PivotTo(CFrame.new(center,preview.y+2,0))
+    local torso=subject:FindFirstChild("Torso")
+    torso.CollisionGroup="Default"
+    torso.CanCollide=true
+    assert(bridgeScene.validatePlacement(crossing,{workspace.Terrain,rig}))
+    subject:Destroy()
+    local function finish(tier)
+        local draft=living.probeAction(player,"build_preview",tier,approach)
+        assert(draft.ok and draft.bridge.id==crossing.id, tostring(draft.error))
+        local ordered=living.probeAction(player,"build",draft.previewId)
+        assert(ordered.ok and ordered.x==center,tostring(ordered.error))
+        for tick=1,5000 do
+            living.probeStep(0.1)
+            if tick%25==0 then
+                local live=living.snapshot(player)
+                for _,b in ipairs(live.buildings) do
+                    if b.id==ordered.buildingId and b.state=="complete" then
+                        return b,tick
+                    end
+                end
+            end
+        end
+        error("deliveries or work did not finish for "..tier)
+    end
+    local light,lightTicks=finish("bridge_light")
+    assert(light.delivered.wood==12)
+    local physical=RaycastParams.new()
+    physical.FilterType=Enum.RaycastFilterType.Include
+    physical.RespectCanCollide=true
+    local function deckAt()
+        physical.FilterDescendantsInstances={village.ER_Bridges[crossing.id]}
+        return workspace:Raycast(Vector3.new(center,70,0),Vector3.new(0,-120,0),physical)
+    end
+    assert(not deckAt(),"light bridge blocked the player")
+    task.wait(0.67)
+    local reinforced,reinforcedTicks=finish("bridge_reinforced")
+    assert(reinforced.id==light.id and reinforced.delivered.wood==20 and reinforced.delivered.stone==12)
+    assert(deckAt(),"reinforced bridge lacks physical deck")
+    local live,region=living.snapshot(player)
+    local save=slots.newWorld(seed,100,profile.spawn(seed))
+    save.living=live
+    save.regionWorld=region
+    save.rulesetVersion=5
+    assert(slots.validWorld(save) and slots.COUNT==6)
+    local dockZ=dock["Píer"].Position.Z
     living.stop(player)
     rig:Destroy()
-    return {stage="preview",result=result.error,crossing=crossing.id,hits=hits,center={pose.X,pose.Y,pose.Z},
-        size={span,7+thickness,6.7},villageParts=#village:GetDescendants()}
+    return {result="built_both",crossing=crossing.id,blocker=details.parts[1],
+        reviewVolume=details.volume,villageParts=parts,lightTicks=lightTicks,reinforcedTicks=reinforcedTicks,
+        dockZ=dockZ}
 end
