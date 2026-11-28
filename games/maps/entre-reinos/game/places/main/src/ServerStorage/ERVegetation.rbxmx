@@ -22,6 +22,11 @@
           <Content name="MeshId">
             <url>rbxassetid://18716595527</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>34.1169319</X>
+            <Y>32.5284195</Y>
+            <Z>31.4603348</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>27.2935467</X>
             <Y>26.0227356</Y>
@@ -80,6 +85,11 @@
           <Content name="MeshId">
             <url>rbxassetid://18716595484</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>21.8533821</X>
+            <Y>41.8647842</Y>
+            <Z>18.3945732</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>17.4827061</X>
             <Y>33.4918289</Y>
@@ -146,6 +156,11 @@
           <Content name="MeshId">
             <url>rbxassetid://18720273012</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>26.7671394</X>
+            <Y>46.2795143</Y>
+            <Z>24.9220963</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>19.5400143</X>
             <Y>33.7840462</Y>
@@ -204,6 +219,11 @@
           <Content name="MeshId">
             <url>rbxassetid://18720273005</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>16.0800228</X>
+            <Y>62.908493</Y>
+            <Z>15.0616055</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>11.7384167</X>
             <Y>45.9232025</Y>
@@ -270,6 +290,11 @@
           <Content name="MeshId">
             <url>rbxassetid://17718985299</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>458.4021</X>
+            <Y>599.671326</Y>
+            <Z>455.154297</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>45.5379982</X>
             <Y>59.5717888</Y>
@@ -334,6 +359,11 @@
           <Content name="MeshId">
             <url>rbxassetid://17718985276</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>81.5507812</X>
+            <Y>713.32428</Y>
+            <Z>81.5508423</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>8.10131359</X>
             <Y>73.2885971</Y>
@@ -403,6 +433,11 @@
           <Content name="MeshId">
             <url>rbxassetid://18720998648</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>9.97139549</X>
+            <Y>7.89612436</Y>
+            <Z>9.14401817</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>8.27625847</X>
             <Y>6.55378294</Y>
@@ -461,6 +496,11 @@
           <Content name="MeshId">
             <url>rbxassetid://18720998685</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>5.45435047</X>
+            <Y>7.55826759</Y>
+            <Z>3.8335073</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>4.52711058</X>
             <Y>6.27336216</Y>
@@ -527,6 +567,11 @@
           <Content name="MeshId">
             <url>rbxassetid://112710935392609</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>0.521589279</X>
+            <Y>0.889118969</Y>
+            <Z>0.457812548</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>4.51871729</X>
             <Y>7.7027607</Y>
@@ -599,6 +644,11 @@
           <Content name="TextureID">
             <url>rbxassetid://106957063387208</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>1.36108088</X>
+            <Y>0.734629035</Y>
+            <Z>0.955114365</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>1.61104393</X>
             <Y>0.86954391</Y>
@@ -648,6 +698,11 @@
           <Content name="TextureID">
             <url>rbxassetid://110578979081477</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>2.42490339</X>
+            <Y>0.294807196</Y>
+            <Z>0.813541412</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>4.20218134</X>
             <Y>0.510879457</Y>
@@ -697,6 +752,11 @@
           <Content name="TextureID">
             <url>rbxassetid://129687460952107</url>
           </Content>
+          <Vector3 name="InitialSize">
+            <X>3.12199998</X>
+            <Y>0.961570978</Y>
+            <Z>0.981929898</Z>
+          </Vector3>
           <Vector3 name="Size">
             <X>4.26020002</X>
             <Y>1.31210005</Y>

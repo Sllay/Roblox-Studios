@@ -43,10 +43,16 @@ local function probeApprovedVegetation(world,vegetation)
     assert(checked>=#parts and not next(failures),game:GetService("HttpService"):JSONEncode(failures))
     local meshSizes={}
     local assetService=game:GetService("AssetService")
+    local baseline=game:GetService("ServerStorage"):FindFirstChild("ERBaselineVegetation")
+    local invalidBaselineSizes=0
     for _,part in ipairs(parts) do
         local reference=assetService:CreateMeshPartAsync(part.MeshContent,{CollisionFidelity=Enum.CollisionFidelity.Box})
         local current,original=part.MeshSize,reference.MeshSize
+        local old=baseline:FindFirstChild(part.Name,true)
+        assert(old and old.MeshId==part.MeshId,"published mesh identity changed: "..part.Name)
+        if old.MeshSize.Magnitude==0 then invalidBaselineSizes+=1 end
         meshSizes[part.Name]={stored={current.X,current.Y,current.Z},source={original.X,original.Y,original.Z}}
+        assert((current-original).Magnitude<=0.02,"incorrect original mesh size: "..part.Name)
         reference:Destroy()
     end
     assert(#workspace.ER_World_3D:FindFirstChild("Scenery_0_1"):GetChildren()==0,"maritime vegetation")
@@ -71,5 +77,6 @@ local function probeApprovedVegetation(world,vegetation)
     folder:Destroy()
     return {templates=names,meshes=#parts,preloaded=checked,baselineNativeGrass=workspace.Terrain.Decoration,
         worldModels=metrics.vegetationModels,worldDecorInstances=metrics.decorations,
-        generationMs=metrics.vegetationMs,cameraClearance=counts,meshSizes=meshSizes}
+        generationMs=metrics.vegetationMs,cameraClearance=counts,meshSizes=meshSizes,
+        invalidBaselineSizes=invalidBaselineSizes}
 end
