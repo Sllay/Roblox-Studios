@@ -41,6 +41,14 @@ local function probeApprovedVegetation(world,vegetation)
         if status~=Enum.AssetFetchStatus.Success then failures[id]=status.Name end
     end)
     assert(checked>=#parts and not next(failures),game:GetService("HttpService"):JSONEncode(failures))
+    local meshSizes={}
+    local assetService=game:GetService("AssetService")
+    for _,part in ipairs(parts) do
+        local reference=assetService:CreateMeshPartAsync(part.MeshContent,{CollisionFidelity=Enum.CollisionFidelity.Box})
+        local current,original=part.MeshSize,reference.MeshSize
+        meshSizes[part.Name]={stored={current.X,current.Y,current.Z},source={original.X,original.Y,original.Z}}
+        reference:Destroy()
+    end
     assert(#workspace.ER_World_3D:FindFirstChild("Scenery_0_1"):GetChildren()==0,"maritime vegetation")
     local metrics=world.metrics()
     assert(metrics.vegetationModels>0 and metrics.decorations>metrics.vegetationModels)
@@ -63,5 +71,5 @@ local function probeApprovedVegetation(world,vegetation)
     folder:Destroy()
     return {templates=names,meshes=#parts,preloaded=checked,baselineNativeGrass=workspace.Terrain.Decoration,
         worldModels=metrics.vegetationModels,worldDecorInstances=metrics.decorations,
-        generationMs=metrics.vegetationMs,cameraClearance=counts}
+        generationMs=metrics.vegetationMs,cameraClearance=counts,meshSizes=meshSizes}
 end
