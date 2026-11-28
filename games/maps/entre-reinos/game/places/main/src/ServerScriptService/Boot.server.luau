@@ -214,6 +214,14 @@ local function startWorld(player: Player)
         Saves.abortActivation(player)
         return
     end
+    stage(player,"terrain",0.88,"Preparando a paisagem até o horizonte...")
+    local prepared,viewReason=World.prefetch(record.seed,returnPosition.x,0,true)
+    if not prepared then
+        player:SetAttribute("ER_LoadError",viewReason or "terrain_prefetch_failed")
+        stage(player,"failed",nil,"O terreno ainda não está disponível. Seu save foi preservado.")
+        Saves.abortActivation(player)
+        return
+    end
     stage(player, "spawn", 0.91, "Posicionando personagem no terreno...")
     local char = player.Character
     if not char then
@@ -253,17 +261,20 @@ local function startWorld(player: Player)
     task.spawn(function()
         local lastSafe: CFrame?=nil
         while player.Parent == Players and activePlayer == player do
-            task.wait(0.65)
+            task.wait(0.28)
             local character = player.Character
             local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
-            if root and root:IsA("BasePart") then
+            if root and root:IsA("BasePart") and player:GetAttribute("ER_TravelPending")~=true then
                 if World.isLoadedAt(root.Position.X) and root.Position.Y> -16 then
                     lastSafe=root.CFrame
                 elseif lastSafe then
                     root.CFrame=lastSafe
                     root.AssemblyLinearVelocity=Vector3.zero
                 end
-                local generated, reason = World.ensureNear(record.seed, root.Position.X)
+                local velocity=root.AssemblyLinearVelocity.X
+                local travelVelocity=player:GetAttribute("ER_TravelVelocity")
+                if type(travelVelocity)=="number" then velocity=travelVelocity end
+                local generated,reason=World.prefetch(record.seed,root.Position.X,velocity)
                 if not generated and reason ~= "world_generation_in_progress" then
                     warn("[EntreReinos][Streaming] Could not load nearby region: ", reason)
                     player:SetAttribute("ER_StreamError", tostring(reason))

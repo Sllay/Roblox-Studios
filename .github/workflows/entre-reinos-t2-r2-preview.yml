@@ -1,9 +1,9 @@
-name: Entre Reinos T2-R1 staging development preview
+name: Entre Reinos T2-R2 staging development preview
 
 on:
   push:
-    branches: [entre-reinos/t2-r1-world-regions]
-    paths: [games/maps/entre-reinos/docs/sync/t2-r1-preview/target.json]
+    branches: [entre-reinos/t2-r2-society]
+    paths: [games/maps/entre-reinos/docs/sync/t2-r2-preview/target.json]
 
 permissions:
   actions: read
@@ -20,11 +20,10 @@ jobs:
     environment: staging
     timeout-minutes: 20
     env:
-      CANDIDATE: f7d4ac685f2372d066cdf49a19b2b978f2454745
-      ENGINE_HEAD: 7bf8a7bafc9e7cf6d0da893fb813ecab3ff4bc55
-      PLAN: games/maps/entre-reinos/docs/sync/t2-r1-preview/target.json
-      PREVIEW_TOOL: games/maps/entre-reinos/ops/t2_r1_preview.py
-      EVIDENCE: dist/entre-reinos-t2-r1-preview
+      CANDIDATE: 46594201fe56d6f49707088e3a919d20977d8f13
+      PLAN: games/maps/entre-reinos/docs/sync/t2-r2-preview/target.json
+      PREVIEW_TOOL: games/maps/entre-reinos/ops/t2_r2_preview.py
+      EVIDENCE: dist/entre-reinos-t2-r2-preview
       PYTHONPATH: ${{ github.workspace }}/preview-candidate/tools
     steps:
       - uses: actions/checkout@v4
@@ -32,13 +31,13 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
-          ref: f7d4ac685f2372d066cdf49a19b2b978f2454745
+          ref: 46594201fe56d6f49707088e3a919d20977d8f13
           path: preview-candidate
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
-          ref: 98f81262ff93066c759b915253d557193e3efc9f
+          ref: b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9
           path: preview-rollback
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -51,14 +50,12 @@ jobs:
           test "$(jq -er .action "$PLAN")" = publish
           test "$(jq -er .candidate "$PLAN")" = "$CANDIDATE"
           test "$(git -C preview-candidate rev-parse HEAD)" = "$CANDIDATE"
-          git -C preview-candidate diff --exit-code "$ENGINE_HEAD" "$CANDIDATE" -- \
-            games/maps/entre-reinos/game packages games/maps/entre-reinos/game.manifest.json
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45671927799" \
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/46066704982" \
             --jq '.conclusion + " " + .head_sha + " " + .path' \
             | grep -Fx "success $CANDIDATE .github/workflows/ci.yml"
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/45671224264" \
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/46066704862" \
             --jq '.conclusion + " " + .head_sha + " " + .path' \
-            | grep -Fx "success $ENGINE_HEAD .github/workflows/entre-reinos-t2-r1-engine-probe.yml"
+            | grep -Fx "success $CANDIDATE .github/workflows/entre-reinos-t2-r2-engine-probe.yml"
       - run: python -m pip install Pillow==11.3.0
       - name: Install pinned official Luau
         run: bash preview-candidate/tools/install-luau.sh
@@ -66,12 +63,20 @@ jobs:
       - name: Build only the approved Entre Reinos Place
         working-directory: preview-candidate
         run: python tools/workspace.py build --game entre-reinos --place main
-      - name: Build the exact v18 rollback file
+      - name: Build the exact v22 rollback file
         run: |
           (cd preview-rollback && python tools/workspace.py build --game entre-reinos --place main)
           mkdir -p "$EVIDENCE"
-          cp preview-rollback/dist/entre-reinos/main.rbxlx "$EVIDENCE/entre-reinos-v18-rollback.rbxlx"
-      - name: Verify v18 backup and Scene Sync, then publish staging through Open Cloud
+          cp preview-rollback/dist/entre-reinos/main.rbxlx "$EVIDENCE/entre-reinos-v22-rollback.rbxlx"
+          printf 'cc9f62b5fdb13652474ce2b967d39a1869181f082ae598324c528e540483c126  %s\n' \
+            "$EVIDENCE/entre-reinos-v22-rollback.rbxlx" | sha256sum --check
+      - name: Archive v22 rollback before publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: entre-reinos-v22-rollback
+          path: dist/entre-reinos-t2-r2-preview/entre-reinos-v22-rollback.rbxlx
+          if-no-files-found: error
+      - name: Verify v22 backup and Scene Sync, then publish staging through Open Cloud
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python "$PREVIEW_TOOL" publish --plan "$PLAN" --output "$EVIDENCE"
@@ -82,6 +87,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: entre-reinos-t2-r1-preview
-          path: dist/entre-reinos-t2-r1-preview/
+          name: entre-reinos-t2-r2-preview
+          path: dist/entre-reinos-t2-r2-preview/*.json
           if-no-files-found: ignore

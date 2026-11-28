@@ -46,10 +46,30 @@ Os status oficiais sao planned, in_progress, blocked, validated; no inicio todos
 Em 25/11/2026, o criador autorizou uma publicação intermediária do PR #13, branch `entre-reinos/t2-r1-world-regions`, antes de R3 e exclusivamente para playtest. O candidato fixado é `f7d4ac685f2372d066cdf49a19b2b978f2454745`. O destino autorizado é o staging existente do Entre Reinos, Universe `10769712413`, Place `90623742498445`, substituindo a v18. O lançamento oficial terá outra experiência. Esta decisão substitui o procedimento anterior que exigia um Universe isolado.
 
 - Reutilizar o secret `ROBLOX_OPEN_CLOUD_API_KEY` e as proteções do ambiente `staging`. A exceção permite publicar a partir da branch, sem integrar o PR. O workflow genérico continua sob as regras normais da `main`.
-- O [workflow da prévia](../../../../.github/workflows/entre-reinos-t2-r1-preview.yml) usa Place Provision, Scene Sync, Rojo, o gate Luau e o publicador oficial. O registro versionado exige confirmação explícita de substituição, IDs, SHA, revisão e digest da v18. Usar o mesmo grupo de concorrência do publish normal. Confirmar a revisão histórica e guardar o RBXLX de recuperação verificado antes de escrever.
+- O [workflow da prévia](https://github.com/Sllay/Roblox-Studios/blob/f50dbfd8ca600e96952db836765590bd9497dea7/.github/workflows/entre-reinos-t2-r1-preview.yml) usa Place Provision, Scene Sync, Rojo, o gate Luau e o publicador oficial. O registro versionado exige confirmação explícita de substituição, IDs, SHA, revisão e digest da v18. Usar o mesmo grupo de concorrência do publish normal. Confirmar a revisão histórica e guardar o RBXLX de recuperação verificado antes de escrever.
 - O criador autorizou migrar saves compatíveis de ruleset 3 para 4 pelo fluxo existente. A migração ocorre sob lease por slot e exige backup anterior à gravação. A autorização preserva os seis slots e exclui qualquer operação de deleção.
 - Registrar `isPublished=true`, revisão, inventário e hashes por leitura independente. Qualquer resposta ambígua exige consulta do Place antes de nova tentativa. O rollback de Place e o restauro por slot têm efeitos distintos.
 - O playtest visual ocorre após disponibilizar a prévia. Certificação, integração do PR, escopo da T2-R2 e publicação de temporada seguem seus próprios gates. [Procedimento de prévia e rollback](T2_R1_PLAYTEST.md)
+
+## Exceção autorizada T2-R2
+
+Em 25/11/2026, o criador autorizou uma publicação intermediária do PR #14 para substituir a v19 no staging existente, Universe `10769712413`, Place `90623742498445`. O candidato aprovado é `c905eca3437ecd124c6afac6cce0df21df31f8e1`, fixado no registro de destino da branch `entre-reinos/t2-r2-society`. A autorização inclui a migração de saves compatíveis 4 → 5 com backup por slot. Os seis slots são preservados. Exclusão de saves segue fora da autorização.
+
+O [workflow da prévia T2-R2](../../../../.github/workflows/entre-reinos-t2-r2-preview.yml) reaproveita a operação de publicação do R1, a credencial existente, o mesmo grupo de concorrência do staging e o publicador oficialmente suportado. Exige CI e prova Roblox do SHA, v19 com digest aprovado, arquivo de recuperação conferido e confirmação da API e do readback. A prévia é independente de integração, produção e certificação visual. [Scene Sync prévio](https://github.com/Sllay/Roblox-Studios/actions/runs/45723157400) · [Playtest e recuperação](T2_R2_PLAYTEST.md)
+
+## Exceção autorizada do refinamento da T2-R2
+
+Em 26/11/2026, o criador autorizou a prévia do candidato `c4fb0790c14cd7c42cead0ae17e8f013b36fab1c` no staging existente do Entre Reinos, Universe `10769712413`, Place `90623742498445`, substituindo a v20. Preservar os seis slots e o ruleset 5. A autorização abrange somente o candidato e o destino registrados.
+
+Reutilizar o workflow oficial da prévia do PR #14, suas proteções de staging e sua verificação de CI e prova Roblox no SHA exato. Conferir a v20 pelo Scene Sync e arquivar o RBXLX de rollback com o mesmo SHA-256 da publicação original antes de escrever. Confirmar a nova revisão pela API e pelo readback de scripts. Executar o Scene Sync posterior e registrar os comprovantes. A T2-R3 aguarda o feedback do criador. [Recibo e roteiro](runner-receipts/T2-R2-v20-refino.md)
+
+## Exceção autorizada para a correção de água e pontes
+
+Em 27/11/2026, o criador autorizou substituir a v21 pelo candidato `b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9` somente no staging do Entre Reinos, Universe `10769712413`, Place `90623742498445`. O workflow oficial reutiliza a CI e a prova de motor desse SHA, guarda o rollback da v21 e verifica a revisão publicada pela API, pelo readback e pelo Scene Sync. Preservar o ruleset 5 e os seis slots. A T2-R3 aguarda o playtest do criador.
+
+## Exceção autorizada para pontes, vegetação e mar frontal
+
+Em 27/11/2026, o criador autorizou substituir a v22 pelo candidato `46594201fe56d6f49707088e3a919d20977d8f13` do PR #14, no staging `10769712413/90623742498445`. A prévia preserva ruleset 5 e os seis slots. O workflow oficial exige a CI e a prova Roblox do SHA exato, arquiva o rollback da v22 e confirma a revisão pela API, pelo readback independente e pelo Scene Sync posterior. O playtest precede a T2-R3. [Scene Sync prévio](https://github.com/Sllay/Roblox-Studios/actions/runs/46081824236)
 
 ## Refinamento (pacotes adicionais de tres runners)
 T1-F1/F2/F3, T2-F1/F2/F3 ou T3-F1/F2/F3. Quando houver mais de um ciclo, usar sufixo numerado para diferenciar.

@@ -223,3 +223,49 @@ Correção v9 em desenvolvimento:
 - [AUTORIZADO PELO CRIADOR] O Universe `10769712413` e o Place `90623742498445` são o ambiente de desenvolvimento. Publicar a prévia do SHA `f7d4ac685f2372d066cdf49a19b2b978f2454745` nesse destino, substituindo a v18. Usar credenciais e ferramentas existentes.
 - [AUTORIZADO PELO CRIADOR] Migrar saves compatíveis de ruleset 3 para 4 com o backup, a validação e a recuperação existentes. Preservar os seis slots. A autorização não inclui excluir saves.
 - [ESTADO] A decisão substitui o plano de Universe separado. Certificação visual ocorre após publicar a prévia. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r1)
+
+## 25/11/2026 — Playtest parcial da v19 e continuidade
+
+- [CONFIRMADO PELO CRIADOR] Construção das duas categorias de ponte, travessia do jogador exclusivamente na reforçada e exploração de múltiplos biomas. Ajustes visuais dos biomas ficam para refinamento posterior.
+- [AUTORIZADO PELO CRIADOR] Iniciar T2-R2 usando a base da v19. Produção recebe parâmetros provisórios em desenvolvimento. Certificação cumulativa e autorização para nova prévia permanecem próprias.
+
+## 25/11/2026 — Parâmetros provisórios da T2-R2
+
+- [PROVISÓRIO] Preços variam por estoque dentro de limites. Salário de uma moeda por dia quando a tesouraria tem saldo e imposto de uma moeda a partir de quatro na bolsa do morador. Tributo custa três moedas; acordo reduz a unidade do valor do frete.
+- [PROVISÓRIO] Plantio usa um grão e colhe quatro. Crescimento leva 30 s de simulação irrigada e é mais lento em solo seco. Reposição dos frutos é limitada e depende de tempo de sessão. Dois animais preservam o piso de reprodução.
+- [ESTADO] A produção distante roda durante sessão ativa. O avanço offline continua em aberto. Nenhum destes valores equivale a balanceamento final aprovado.
+
+## 25/11/2026 — Prévia T2-R2 autorizada
+
+- [AUTORIZADO PELO CRIADOR] Publicar o candidato `c905eca3437ecd124c6afac6cce0df21df31f8e1` do PR #14 no staging existente, Universe `10769712413`, Place `90623742498445`, substituindo a v19.
+- [AUTORIZADO PELO CRIADOR] Migrar saves compatíveis de ruleset 4 para 5 com backup por slot, preservando os seis slots. A autorização exclui deleção de saves e publicação em produção. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-t2-r2)
+
+## 26/11/2026 — Feedback da v20 e escopo do refinamento
+
+- [FIXADO PELO CRIADOR] Redesign mobile compartilhado, hotbars superior e inferior, alvo contextual na direção, controles circulares, acesso físico a telas de estrutura, e ordens remotas autorizadas com retirada física de equipamento.
+- [FIXADO PELO CRIADOR] Separar navegação, filas e apresentação. Corrigir congestionamento, ausência de progresso e pausas; civis precisam reagir à ameaça real e defensores à própria função.
+- [FIXADO PELO CRIADOR] Corrigir volumes de dano, voo contínuo de projéteis, colisão do duque e orientação/hesitação dos guardas. Preservar roteiro e alcance.
+- [FIXADO PELO CRIADOR] Geração antecipada, dois chunks decorativos nas extremidades e três camadas elevadas em Z. Faixa frontal visual de água com continuidade dos rios. Preservar corredor, pontes, seed e saves.
+- [ESTADO] Checkpoints A–F no PR #14. Staging v20 fica como baseline até nova publicação autorizada. A próxima temporada aguarda a validação. [Especificação integral](VISION_MASTER.md#26112026--refinamento-do-playtest-v20)
+
+## 26/11/2026 — Prévia do refinamento da T2-R2 autorizada
+
+- [AUTORIZADO PELO CRIADOR] Publicar exatamente `c4fb0790c14cd7c42cead0ae17e8f013b36fab1c` no staging do Entre Reinos, Universe `10769712413`, Place `90623742498445`, em substituição à v20.
+- [AUTORIZADO PELO CRIADOR] Preservar o ruleset 5, os seis slots e o rollback exato da v20. Usar as provas já aprovadas, o workflow oficial, readback independente e Scene Sync após a publicação. A T2-R3 aguarda o feedback do playtest. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-do-refinamento-da-t2-r2)
+
+## 27/11/2026 — Regressão de água e pontes no playtest T2-R2
+
+- [FIXADO PELO CRIADOR] O relevo, o leito e a água precisam formar um curso contínuo das encostas até a faixa frontal. O encaixe da ponte deve partir de margens válidas e rejeitar obstruções físicas. Preservar as travessias, o terreno jogável, os reinos e os saves. A T2-R3 aguarda a correção e o playtest. [Diagnóstico e provas](runner-receipts/T2-R2-v20-refino.md#correção-do-rio-e-das-pontes--27112026)
+
+- [AUTORIZADO PELO CRIADOR] Publicar `b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9` em substituição à v21 no staging existente. Preservar o ruleset 5, os seis slots e o rollback da v21. A T2-R3 aguarda o playtest. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-para-a-correção-de-água-e-pontes)
+
+## 27/11/2026 — Pontes, vegetação aprovada e mar frontal
+
+- [FIXADO PELO CRIADOR] A faixa frontal é o mar. A linha costeira coincide com a borda do terreno jogável. A água do Terrain segue o mundo em X, inclusive após as duas extremidades jogáveis. Os rios descem do fundo e deságuam nessa faixa. A composição é visual e preserva a faixa jogável, o movimento lateral e as travessias persistidas.
+- [AUTORIZADO PELO CRIADOR] Reutilizar os modelos aprovados do Black Islands com as malhas, texturas, UVs e materiais revisados. Manter a substituição visual vinculada aos IDs existentes das fontes do Entre Reinos. Usar grama nativa nos materiais aplicáveis e densidade limitada de vegetação distante.
+- [FIXADO PELO CRIADOR] Validar a ponte com a vila carregada, preservar a rejeição de objetos fixos dentro do vão e manter o acesso do jogador restrito à ponte reforçada. O playtest da correção precede a T2-R3. [Recibo](runner-receipts/T2-R2-v20-refino.md#pontes-vegetação-aprovada-e-mar-frontal)
+- [AUTORIZADO PELO CRIADOR] Publicar o candidato `46594201fe56d6f49707088e3a919d20977d8f13` do PR #14 no staging existente, em substituição à v22. Preservar ruleset 5, os seis slots e o rollback da v22. T2-R3 aguarda o playtest. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-para-pontes-vegetação-e-mar-frontal)
+
+## 28/11/2026 — Árvores atrás do corredor
+
+- [FIXADO PELO CRIADOR] O playtest mobile da v23 mostrou a cena encoberta. Retirar as árvores do primeiro plano e manter os modelos visíveis atrás do corredor. Revisar a escala das copas. Preservar a coleta e o estado das fontes nos saves.

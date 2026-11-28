@@ -355,3 +355,49 @@ O criador autorizou usar o staging existente e migrar saves compatíveis de rule
 ## 25/11/2026 — Prévia regional v19 disponível
 
 O candidato `f7d4ac685f2372d066cdf49a19b2b978f2454745` foi publicado no staging existente. A API confirmou v19 e o readback verificou 41 scripts. O Scene Sync pós-publicação confirmou o digest da cena. O backup da v18 permanece no histórico de versões e no artefato verificado. Os saves migram durante a partida pelo fluxo com backup por slot. O PR #13 continua em rascunho e T2-R2 aguarda os gates. [Jogar](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R1.md) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45686521277)
+
+## 25/11/2026 — Feedback v19 e início da T2-R2
+
+O criador confirmou as duas categorias de construção de ponte, a travessia do jogador corretamente restrita à reforçada e a exploração de múltiplos biomas. O refinamento visual dos biomas ficou para depois. Autorizou iniciar o desenvolvimento da T2-R2 em branch derivada de PR #13. O aceite cobre apenas os fluxos observados. [T2-R1](runner-receipts/T2-R1.md) · [T2-R2](runner-receipts/T2-R2.md)
+
+## 25/11/2026 — Candidato T2-R2 e preparo de playtest
+
+O [PR #14](https://github.com/Sllay/Roblox-Studios/pull/14) contém os checkpoints A–F, com a branch T2-R1 como base. O código `c905eca3437ecd124c6afac6cce0df21df31f8e1` passou em CI e no motor v19, em sessão descartável. A migração 4 → 5 usa backup por slot e o avanço distante vale apenas durante a sessão. O ensaio de dois reinos cobriu 2.400 s de simulação. O staging v19 segue publicado e a nova prévia depende de autorização específica. [Recibo](runner-receipts/T2-R2.md) · [Roteiro e publicação](T2_R2_PLAYTEST.md)
+
+## 25/11/2026 — Prévia econômica v20 disponível
+
+O candidato `c905eca3437ecd124c6afac6cce0df21df31f8e1` foi publicado no staging existente após autorização específica para substituir a v19 e migrar saves compatíveis de ruleset 4 para 5. O readback verificou 45 scripts e o Scene Sync posterior confirmou o digest. O rollback exato da v19 está arquivado. A próxima ação é o playtest do criador. [Jogar](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R2.md) · [Roteiro](T2_R2_PLAYTEST.md)
+
+## 26/11/2026 — Refino profundo após o playtest da v20
+
+O feedback da v20 cobre interface mobile, hotbars, alvos e estrutura contextual, ordens remotas, congestionamento, evacuação, hitboxes, duque e guardas, streaming antecipado e profundidade aquática/florestal. Manter o PR #14, os contratos da economia regional e os saves; suspender T2-R3. Trabalhar em A interface, B estruturas e ordens, C multidões, D combate e evacuação, E mundo e F integração/provas. [Feedback integral](VISION_MASTER.md#26112026--refinamento-do-playtest-v20) · [Decisões](DECISION_LOG.md#26112026--feedback-da-v20-e-escopo-do-refinamento)
+
+O candidato de refinamento está no PR #14, com recibo por checkpoint e provas separadas para Luau e Roblox. As ordens de equipamento e a revisão da paisagem adicionam campos opcionais ou dados derivados ao ruleset 5. A área jogável conserva a geração regional 2. O staging continua na v20 e a autorização registrada para a publicação anterior é específica para o candidato econômico original. [Recibo do refinamento](runner-receipts/T2-R2-v20-refino.md)
+
+CI e motor confirmaram o candidato `c4fb0790c14cd7c42cead0ae17e8f013b36fab1c`. O inventário remoto confirmou a v20 no staging existente e o RBXLX de rollback foi reproduzido com o hash publicado. Após o aceite explícito para substituir a v20 por esse SHA, atualizar o procedimento de prévia com esse baseline, rodar a proteção de staging e registrar revisão e readback. T2-R3 aguarda o playtest mobile e a decisão do criador. [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45732024313) · [Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/45732016659) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45732024958)
+
+## 26/11/2026 — Refinamento T2-R2 v21 disponível para playtest
+
+A autorização do criador fixou o candidato `c4fb079` e a substituição da v20 no staging existente. A API confirmou a v21. O readback verificou 50 scripts e o Scene Sync posterior confirmou o inventário. O rollback da v20 foi arquivado antes da publicação. Ruleset 5 e seis slots preservados. A T2-R3 aguarda o feedback do criador. [Playtest](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R2-v20-refino.md) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/45741909503) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/45742069302)
+
+## 27/11/2026 — Água e encaixe de ponte
+
+O playtest reportou um corte no morro, linha na água e dificuldade de encaixar a ponte. O candidato `b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9` corrige a seção do rio e o snap das margens secas. CI e Open Cloud confirmaram continuidade do Terrain, obstrução física, construção das duas pontes e preservação de dados. A v21 continua publicada. A correção aguarda autorização para staging e conferência visual no cliente. T2-R3 segue suspensa. [Recibo](runner-receipts/T2-R2-v20-refino.md#correção-do-rio-e-das-pontes--27112026)
+
+## 27/11/2026 — Correção de água e pontes publicada na v22
+
+A v22 está disponível no staging, com ruleset 5 e seis slots. A API confirmou a publicação de `b712a6f`, o readback verificou 50 scripts e o Scene Sync confirmou o digest. O workflow arquivou o rollback da v21 antes da escrita. T2-R3 aguarda o playtest do criador. [Playtest](https://www.roblox.com/games/90623742498445) · [Recibo](runner-receipts/T2-R2-v20-refino.md) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/46027305046) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/46027483067)
+
+## 27/11/2026 — Pontes, vegetação aprovada e mar frontal
+
+O playtest da v22 ainda reportou `solid_obstruction`. No motor, com a vila carregada, os píeres dos ancoradouros do Vale e da Margem ocuparam a faixa da ponte no cruzamento `region:0:crossing:14`. O candidato `46594201fe56d6f49707088e3a919d20977d8f13` desloca fisicamente os píeres, mantém o bloqueio real de estruturas, integra oito modelos aprovados do Black Islands e inicia o mar contínuo na borda do corredor existente. A prova usa os serviços de inicialização do jogo em servidor descartável com jogador de teste. Os diagnósticos de colocação ficam disponíveis no servidor para o próximo playtest e podem ser retirados após essa confirmação. [Reprodução](https://github.com/Sllay/Roblox-Studios/actions/runs/46065489931) · [Prova final](https://github.com/Sllay/Roblox-Studios/actions/runs/46066704862)
+
+O PR #14 continua em rascunho. O staging permanece na v22 e seu rollback reproduziu o hash publicado. A próxima ação é autorizar o SHA candidato para substituição da v22, arquivar o rollback e conferir o inventário pelo procedimento oficial de prévia. O cliente mobile ainda precisa conferir snap, travessia, costa, cascatas e silhueta do fundo. [Scene Sync v22](https://github.com/Sllay/Roblox-Studios/actions/runs/46066703578) · [Recibo e roteiro](runner-receipts/T2-R2-v20-refino.md#pontes-vegetação-aprovada-e-mar-frontal)
+
+## 27/11/2026 — Pontes, vegetação e mar frontal disponíveis na v23
+
+A autorização do criador liberou o SHA `4659420` para o staging existente. A API confirmou a v23. O readback conferiu 51 scripts, 12 malhas e grama nativa. O Scene Sync posterior registrou 137 objetos, zero conflitos e o mesmo digest. O rollback da v22 foi arquivado antes da escrita. Ruleset 5 e seis slots preservados. O PR #14 continua em rascunho e a T2-R3 aguarda o playtest do criador. [Playtest](T2_R2_PLAYTEST.md) · [Recibo](runner-receipts/T2-R2-v20-refino.md#publicação-da-v23--27112026) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/46082052074) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/46082166226)
+
+## 28/11/2026 — Escala das árvores e câmera lateral
+
+O playtest mobile da v23 mostrou a tela encoberta durante a escolta. O motor confirmou 12 malhas com dimensões originais zeradas na revisão publicada. O candidato `8f30a1f54f233990347bf4d6c0bb454b6f974540` restaura essas dimensões, limita a altura das árvores e deixa as copas inteiramente ao fundo. As fontes conservam suas âncoras e o estado salvo. CI e probe aprovados. A v23 continua no staging e a nova publicação aguarda autorização específica. Após publicar, confirmar a mesma cena de escolta no celular. [Recibo](runner-receipts/T2-R2-v20-refino.md#árvores-e-câmera-lateral--28112026) · [Prova Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/46163091485)

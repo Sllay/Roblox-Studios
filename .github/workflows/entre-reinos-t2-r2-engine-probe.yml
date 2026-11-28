@@ -1,0 +1,35 @@
+name: Entre Reinos T2-R2 society probe
+
+on:
+  push:
+    branches: [entre-reinos/t2-r2-society]
+    paths:
+      - .github/workflows/entre-reinos-t2-r2-engine-probe.yml
+      - games/maps/entre-reinos/game/**
+      - games/maps/entre-reinos/ops/t2_r2_probe.py
+
+permissions:
+  contents: read
+
+jobs:
+  society:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: bash tools/install-luau.sh
+      - run: bash tools/install-luau-lsp.sh
+      - uses: CompeyDev/setup-rokit@v0.2.1
+      - name: Type check and run the society suites
+        run: |
+          s=games/maps/entre-reinos/game/places/main/src/ReplicatedStorage
+          luau-lsp analyze --definitions="$RS_ROBLOX_DEFINITIONS" "$s/RegionalWorld.luau" "$s/SlotModel.luau"
+          for test in games/maps/entre-reinos/game/tests/society_*.luau; do luau "$test"; done
+      - name: Exercise unpublished candidate code in Roblox staging v23 and isolated DataStore
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: PYTHONPATH=tools python games/maps/entre-reinos/ops/t2_r2_probe.py

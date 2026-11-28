@@ -3,7 +3,15 @@
 local Structures = {}
 Structures.DEPTH_Z = -10
 Structures.PLACEMENT_RANGE = 36
+Structures.BRIDGE_DECK_WIDTH = 6.7
+Structures.BRIDGE_DECK_THICKNESS = 0.7
 Structures.all = {
+    workshop = {label="Oficina", footprint=11, maxSlope=4, cost={wood=10,stone=4},
+        buildSeconds=28, health=140, storageMass=0, kind="production", height=7},
+    forge = {label="Forja", footprint=11, maxSlope=4, cost={stone=12,plank=4},
+        buildSeconds=32, health=180, storageMass=0, kind="production", height=10},
+    farm = {label="Horta", footprint=8, maxSlope=5, cost={wood=6},
+        buildSeconds=16, health=100, storageMass=0, kind="farm", height=2},
     bridge_light = {label="Ponte provisória", footprint=8, maxSlope=4, cost={wood=12},
         buildSeconds=26, health=95, storageMass=0, kind="crossing", tier="light", height=4},
     bridge_reinforced = {label="Ponte reforçada", footprint=8, maxSlope=4, cost={wood=20,stone=12},

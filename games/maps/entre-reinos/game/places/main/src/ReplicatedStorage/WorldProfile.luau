@@ -61,6 +61,8 @@ function WorldProfile.sample(seed: number, x: number, z: number)
     local material = if wet then "Mud" elseif shore then "Sand" elseif height > 32 then "Rock" else "Grass"
     return {
         height = height, wet = wet, shore = shore, riverDist = riverDist, material = material,
+        landHeight = surface, channelBed = -6, channelSurface = WorldProfile.WATER_SURFACE,
+        channelWidth = WorldProfile.RIVER_HALF_WIDTH, channelBankWidth = 11,
         waterSurface = if riverDist < 23 then WorldProfile.WATER_SURFACE else nil,
     }
 end

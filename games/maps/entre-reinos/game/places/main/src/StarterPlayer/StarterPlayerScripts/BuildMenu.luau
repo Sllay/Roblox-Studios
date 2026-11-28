@@ -6,7 +6,7 @@ local Profile=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Regio
 local Structures=require(ReplicatedStorage:WaitForChild("Game")
     :WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Menu={}
-local order={"shelter","house","stockpile","fence","wall","gate","bridge_light","bridge_reinforced"}
+local order={"shelter","house","stockpile","fence","wall","gate","bridge_light","bridge_reinforced","workshop","forge","farm"}
 local names={wood="Madeira",stone="Pedra",iron="Ferro",food="Alimento"}
 local amber=Color3.fromRGB(214,175,99)
 local cream=Color3.fromRGB(245,232,203)
@@ -21,12 +21,12 @@ local errors={
     preview_changed="Escolha o local novamente.",
     building_cannot_cancel="Só uma obra em andamento pode ser cancelada.",
     no_recovery_space="Não há espaço para deixar o material da obra no terreno.",
-    solid_obstruction="Um objeto sólido ocupa o local.",
+    solid_obstruction="Um obstáculo fixo ocupa o espaço da obra.",
     building_not_found="A obra já foi removida.",
     invalid_footprint_or_slope="Terreno úmido ou inclinado demais.",
     overlapping_footprint="Outra construção ocupa o local.",
     outside_kingdom="Escolha uma obra dentro do território atual.",
-    missing_crossing="Escolha uma margem de rio profundo.",
+    missing_crossing="Aproxime-se de uma margem de rio profundo.",
     invalid_bridge_banks="As margens precisam de apoios secos e firmes.",
     building_limit="Limite de construções atingido.",
     world_not_loaded="O mundo ainda está carregando.",
@@ -53,7 +53,7 @@ local function actionButton(parent: Instance,name: string,caption: string): Text
     local button=Instance.new("TextButton")
     button.Name=name
     button.Text=caption
-    button.Font=Enum.Font.GothamSemibold
+    button.Font=Enum.Font.GothamMedium
     button.TextSize=13
     button.TextColor3=cream
     button.BackgroundColor3=Color3.fromRGB(50,64,54)
@@ -100,6 +100,11 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
     cancelOrder.LayoutOrder=3
     cancelOrder.Size=UDim2.new(1,-12,0,40)
     cancelOrder.Visible=false
+    local priorityOrder=actionButton(list,"PrioritizeWork","")
+    priorityOrder.LayoutOrder=4
+    priorityOrder.Size=UDim2.new(1,-12,0,40)
+    priorityOrder.Visible=false
+    local priorityId: number?=nil
     local cancelId: number?=nil
     local confirmCancel: number?=nil
 
@@ -170,9 +175,12 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         caption.Text="Verificando o terreno…"
         local result=call("build_preview",id,candidate)
         if selected~=id then return end
-        local x=if result.ok then result.x else candidate
-        local hit=workspace:Raycast(Vector3.new(x,70,Structures.DEPTH_Z),Vector3.new(0,-120,0),cast)
-        local y=if result.ok then result.y elseif hit then hit.Position.Y else 17
+        local bridge=result.bridge
+        if def.kind=="crossing" and not bridge then
+            if ghost then ghost.Transparency=1 end
+            caption.Text=errors[result.error] or "Local indisponível."
+            return
+        end
         local preview=ghost
         if not preview then
             preview=Instance.new("Part")
@@ -187,12 +195,18 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
             preview.Parent=workspace
             ghost=preview
         end
-        if result.ok and result.bridge then
-            local crossing=result.bridge
-            local rise=crossing.deckEastY-crossing.deckWestY
-            preview.Size=Vector3.new(math.sqrt(crossing.span^2+rise^2),0.8,6.7)
-            preview.CFrame=CFrame.new(x,y,0)*CFrame.Angles(0,0,math.atan2(rise,crossing.span))
+        preview.Transparency=0.73
+        if bridge then
+            local rise=bridge.deckEastY-bridge.deckWestY
+            local deck=Structures.BRIDGE_DECK_THICKNESS
+            local x=(bridge.west.x+bridge.east.x)/2
+            local y=(bridge.deckWestY+bridge.deckEastY)/2
+            preview.Size=Vector3.new(math.sqrt(bridge.span^2+rise^2),deck,Structures.BRIDGE_DECK_WIDTH)
+            preview.CFrame=CFrame.new(x,y-deck/2,0)*CFrame.Angles(0,0,math.atan2(rise,bridge.span))
         else
+            local x=if result.ok then result.x else candidate
+            local hit=workspace:Raycast(Vector3.new(x,70,Structures.DEPTH_Z),Vector3.new(0,-120,0),cast)
+            local y=if result.ok then result.y elseif hit then hit.Position.Y else 17
             preview.Size=Vector3.new(def.footprint,def.height,7)
             preview.CFrame=CFrame.new(x,y+def.height/2,if id=="gate" then 0 else Structures.DEPTH_Z)
         end
@@ -200,7 +214,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         if result.ok then
             previewId=result.previewId
             confirm.BackgroundColor3=Color3.fromRGB(58,101,67)
-            caption.Text=def.label.." · terreno livre"..
+            caption.Text=def.label..(if bridge then " · encaixada nas margens" else " · terreno livre")..
                 (if result.district then " · "..result.district else "")
         else
             caption.Text=errors[result.error] or "Local indisponível."
@@ -230,11 +244,20 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
             notify("Obra marcada. Os moradores vão entregar os materiais.")
             refresh()
         else
+            previewId=nil
+            confirm.BackgroundColor3=Color3.fromRGB(79,70,66)
+            if ghost then ghost.Color=Color3.fromRGB(248,121,105) end
             caption.Text=errors[result.error] or "Não foi possível confirmar a obra."
         end
     end)
     overlay.Destroying:Connect(closePreview)
 
+    priorityOrder.Activated:Connect(function()
+        if busy or not priorityId then return end
+        local result=call("work_priority",priorityId)
+        notify(if result.ok then "Ordem de construção atualizada." else "A obra não pode ser priorizada.")
+        refresh()
+    end)
     cancelOrder.Activated:Connect(function()
         if busy or not cancelId then return end
         if confirmCancel~=cancelId then
@@ -254,7 +277,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         local def=Structures.get(id)
         local card=Instance.new("TextButton")
         card.Name="Construct_"..id
-        card.LayoutOrder=i+3
+        card.LayoutOrder=i+4
         card.Size=UDim2.new(1,-12,0,78)
         card.BackgroundColor3=Color3.fromRGB(50,64,54)
         card.BorderSizePixel=0
@@ -271,7 +294,7 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         stroke.Parent=card
 
         local title=text(card,def.label,15,cream)
-        title.Font=Enum.Font.GothamSemibold
+        title.Font=Enum.Font.GothamMedium
         title.Position=UDim2.fromOffset(13,7)
         title.Size=UDim2.new(1,-74,0,24)
         local marker=text(card,"LOCAR",10,amber)
@@ -309,9 +332,16 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         local closest: number?=nil
         local distance=Structures.PLACEMENT_RANGE
         local x=playerX()
+        priorityId=nil
+        local priorityDistance=Structures.PLACEMENT_RANGE
+        local wasPriority=false
         if x and buildings then
             for _,b in ipairs(buildings) do
                 local delta=math.abs(b.x-x)
+                if data.production and (b.state=="blueprint" or b.state=="building"
+                    or b.state=="damaged" or b.state=="ruined") and delta<=priorityDistance then
+                    priorityDistance,priorityId,wasPriority=delta,b.id,b.priority==true
+                end
                 if b.canCancel and delta<=distance then
                     distance=delta
                     closest=b.id
@@ -321,6 +351,8 @@ function Menu.mount(parent: GuiObject,remote: RemoteFunction,
         if closest~=cancelId then confirmCancel=nil end
         cancelId=closest
         cancelOrder.Visible=cancelId~=nil
+        priorityOrder.Visible=priorityId~=nil
+        priorityOrder.Text=(if wasPriority then "REMOVER PRIORIDADE #" else "PRIORIZAR OBRA #")..tostring(priorityId)
         if cancelId then
             cancelOrder.Text=(if confirmCancel then "Confirmar cancelamento #" else "Cancelar obra #")
                 ..tostring(cancelId)

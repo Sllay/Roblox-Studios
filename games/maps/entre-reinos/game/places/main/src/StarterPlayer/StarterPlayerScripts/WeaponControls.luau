@@ -4,11 +4,16 @@ local Input=game:GetService("UserInputService")
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local Ballistics=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("Ballistics"))
 local Gesture=require(script.Parent:WaitForChild("PressGesture"))
+local Hotbars=require(script.Parent:WaitForChild("Hotbars"))
+local Quick=require(ReplicatedStorage:WaitForChild("Game"):WaitForChild("Living"):WaitForChild("QuickItems"))
 local Controls={}
 
 type Call=(string,any)->any
-function Controls.mount(player: Player,attack: TextButton,sword: TextButton,bow: TextButton,
-        call: Call,feedback: (string)->()): ()->()
+function Controls.mount(player: Player,gui: ScreenGui,attack: TextButton,
+        call: Call,feedback: (string)->())
+    local bag: any={}
+    local choose: (string)->()=function() end
+    local bar=Hotbars.equipment(gui,function(mode) choose(mode) end)
     local selected="sword"
     local pressing: any=nil
     local swapping=false
@@ -31,9 +36,11 @@ function Controls.mount(player: Player,attack: TextButton,sword: TextButton,bow:
     end
     local cancelGesture=Gesture.bind(attack,function()
         if swapping then return end
-        if selected=="sword" then
+        if selected~="bow" then
+            local def=Quick.items[selected]
+            if not def then return end
             task.spawn(function()
-                local result=call("attack",nil)
+                local result=call(def.action,nil)
                 if result.ok and result.hit then feedback("Inimigo atingido.") end
             end)
             return
@@ -59,15 +66,12 @@ function Controls.mount(player: Player,attack: TextButton,sword: TextButton,bow:
     end,{Enum.KeyCode.F,Enum.KeyCode.ButtonX})
 
     local function paint()
-        local on=Color3.fromRGB(77,100,71)
-        local off=Color3.fromRGB(40,49,43)
-        sword.BackgroundColor3=if selected=="sword" then on else off
-        bow.BackgroundColor3=if selected=="bow" then on else off
-        bow.Text="2 ARCO\n"..tostring(player:GetAttribute("ER_R3Arrows") or 0).." flechas"
-        attack.Text=if selected=="bow" then "MIRAR" else "ATACAR"
+        bar.update(selected,bag,player:GetAttribute("ER_R3Arrows") or 0)
+        attack.Text=if selected=="bow" then "MIRAR" elseif Quick.items[selected].action=="tool_use"
+            then "USAR" else "ATACAR"
     end
-    local function selectWeapon(mode: string)
-        if not attack.Visible or swapping or mode==selected then return end
+    choose=function(mode: string)
+        if not attack.Visible or swapping or mode==selected or not Quick.owned(mode,{items=bag}) then return end
         swapping=true
         cancelGesture()
         cancel()
@@ -76,13 +80,18 @@ function Controls.mount(player: Player,attack: TextButton,sword: TextButton,bow:
         paint()
         swapping=false
     end
-    sword.Activated:Connect(function() selectWeapon("sword") end)
-    bow.Activated:Connect(function() selectWeapon("bow") end)
+    local keys={Enum.KeyCode.One,Enum.KeyCode.Two,Enum.KeyCode.Three,Enum.KeyCode.Four,Enum.KeyCode.Five}
     Input.InputBegan:Connect(function(input,handled)
         if handled then return end
-        if input.KeyCode==Enum.KeyCode.One then selectWeapon("sword")
-        elseif input.KeyCode==Enum.KeyCode.Two then selectWeapon("bow")
-        elseif input.KeyCode==Enum.KeyCode.ButtonL1 then selectWeapon(if selected=="sword" then "bow" else "sword") end
+        local index=table.find(keys,input.KeyCode)
+        if index then choose(Quick.order[index]);return end
+        if input.KeyCode==Enum.KeyCode.ButtonL1 then
+            local start=table.find(Quick.order,selected) or 1
+            for step=1,#Quick.order do
+                local mode=Quick.order[(start+step-1)%#Quick.order+1]
+                if Quick.owned(mode,{items=bag}) then choose(mode);break end
+            end
+        end
     end)
     player.CharacterRemoving:Connect(function() cancelGesture();cancel() end)
     player:GetAttributeChangedSignal("ER_R3Arrows"):Connect(paint)
@@ -134,9 +143,14 @@ function Controls.mount(player: Player,attack: TextButton,sword: TextButton,bow:
             previous=point
         end
     end)
-    return function()
-        cancelGesture()
-        cancel()
-    end
+    return {
+        cancel=function() cancelGesture();cancel() end,
+        show=function(value: boolean) bar.view.Visible=value end,
+        update=function(values: any)
+            bag=values or {}
+            if not Quick.owned(selected,{items=bag}) then choose("sword") end
+            paint()
+        end,
+    }
 end
 return Controls

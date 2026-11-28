@@ -114,3 +114,98 @@ end
 checkRegions()
 for _, seed in ipairs({1, 42, 1009, 870001, 123456789, 516639272, 2147483646}) do checkSeed(seed) end
 print("ENTRE_REINOS_T2_R1_PROFILE: five regions, 49 chunks and seven seeds passed")
+
+local Scenery=require("../places/main/src/ReplicatedStorage/SceneryProfile")
+local scenicSeeds={516639272,17071985,382775}
+for _,worldSeed in ipairs(scenicSeeds) do
+    local left,right=Scenery.coverage(0,24,0)
+    local rearLeft,rearRight=Scenery.coverage(0,24,-3)
+    assert(right>=-left and rearLeft<left and rearRight>right)
+    for x=-1500,1500,12 do
+        for _,z in ipairs({-46,-2,46}) do
+            local legacy=Regions.sample(worldSeed,x,z)
+            local current=Scenery.sample(worldSeed,x,z)
+            assert(current.height==legacy.height and current.material==legacy.material and current.waterSurface==legacy.waterSurface)
+        end
+        assert(Scenery.sample(worldSeed,x,92).wet)
+    end
+    for _,side in ipairs({-1,1}) do
+        local id=side*(Regions.CHUNK_RADIUS+2)
+        assert(Scenery.bounds(id,-3).zMin==-240 and Scenery.bounds(id,1).zMax==112)
+        assert(math.abs(Scenery.bounds(id,0).xMin)>Regions.PLAY_EDGE or math.abs(Scenery.bounds(id,0).xMax)>Regions.PLAY_EDGE)
+    end
+    for row=-3,-1 do
+        local a,b=Scenery.vegetation(worldSeed,4,row),Scenery.vegetation(worldSeed,4,row)
+        assert(#a==#b and #a<=13)
+        for i,tree in ipairs(a) do
+            assert(tree.x==b[i].x and tree.y==b[i].y and tree.z==b[i].z)
+            assert(not Scenery.sample(worldSeed,tree.x,tree.z).wet)
+        end
+    end
+    local deep=Scenery.sample(worldSeed,0,-232)
+    assert(deep.height>Scenery.sample(worldSeed,0,-48).height+20)
+end
+print("ENTRE_REINOS_V20_SCENERY: unchanged playable samples, exterior terrain and wet frontage in three seeds")
+
+local DRY_LIMIT=Regions.CELL
+for _,seed in ipairs({516639272,42,17071985,382775}) do
+    -- The earlier wet/dry switch jumped 26–48 studs over one quarter stud.
+    for z=-230,-50,4 do
+        local previous=Scenery.sample(seed,52,z)
+        for x=52.25,104,0.25 do
+            local point=Scenery.sample(seed,x,z)
+            if previous.wet~=point.wet then
+                assert(math.abs(point.height-previous.height)<DRY_LIMIT,"broken riverbank profile")
+            end
+            if point.wet then assert((point.waterSurface or -math.huge)>point.height) end
+            previous=point
+        end
+    end
+    -- The same course feeds through all rear rows into one foreground level.
+    local upstream=math.huge
+    for z=-236,108,4 do
+        local point=Scenery.sample(seed,Legacy.RIVER_BASE_X,z)
+        assert(point.waterSurface and point.height<point.waterSurface,"disconnected heartland river")
+        assert(point.waterSurface<=upstream,"river climbs downstream")
+        upstream=point.waterSurface
+    end
+    assert(upstream==6)
+    -- Inspect both dimensions of the tiled raster at their shared boundaries.
+    for _,edge in ipairs({-176,-112,-48,48}) do
+        for x=42,108,2 do
+            local a=Scenery.sample(seed,x,edge-0.001)
+            local b=Scenery.sample(seed,x,edge+0.001)
+            assert(math.abs(a.height-b.height)<0.04,"height jumps between Z rows")
+            if a.waterSurface and b.waterSurface then
+                assert(math.abs(a.waterSurface-b.waterSurface)<0.01)
+            end
+        end
+    end
+    for id=-Regions.CHUNK_RADIUS-1,Regions.CHUNK_RADIUS+2 do
+        local edge=Scenery.bounds(id,1).xMin
+        local a=Scenery.sample(seed,edge-0.001,92)
+        local b=Scenery.sample(seed,edge+0.001,92)
+        assert(a.waterSurface==6 and b.waterSurface==6 and math.abs(a.height-b.height)<0.01)
+    end
+end
+print("ENTRE_REINOS_WATER_BRIDGE: connected watershed and continuous borders across four seeds")
+
+-- The seaward row begins with water at the first native voxel, runs beyond
+-- both play barriers, and places its river mouths above a continuous seabed.
+for _,seed in ipairs({516639272,42,17071985,382775}) do
+    for id=-Regions.CHUNK_RADIUS-2,Regions.CHUNK_RADIUS+2 do
+        local bounds=Scenery.bounds(id,1)
+        assert(#Scenery.vegetation(seed,id,1)==0)
+        for x=bounds.xMin+Regions.CELL/2,bounds.xMax-Regions.CELL/2,Regions.CELL do
+            local previous=math.huge
+            for z=bounds.zMin+Regions.CELL/2,bounds.zMax-Regions.CELL/2,Regions.CELL do
+                local sea=Scenery.sample(seed,x,z)
+                assert(sea.wet and sea.waterSurface and sea.waterSurface>sea.height,"dry marine column")
+                assert(sea.waterSurface<=previous,"river mouth climbs away from the coast")
+                previous=sea.waterSurface
+            end
+            assert(previous==Scenery.SEA_LEVEL)
+        end
+    end
+end
+print("ENTRE_REINOS_MARITIME: 53 connected sea chunks in four seeds")

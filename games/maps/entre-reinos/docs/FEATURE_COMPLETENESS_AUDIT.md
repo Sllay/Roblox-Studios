@@ -48,14 +48,14 @@ Estados: **PARCIAL** = implementado apenas em parte e/ou testes reais pendentes;
 | ER-025 | T2-R1 | PARCIAL | Montarias físicas, compra/domesticação, equipamento, stamina/vida, save, travessias e integração real aos controles/raids/rotas. |
 | ER-026 | T2-R1 | PARCIAL | Portos/barco quando geografia requer e alternativa de fast travel solo funcional, não duplicar ou perder veículos/carga ao trocar região. |
 | ER-027 | T2-R1 | PARCIAL | Segundo reino NPC e seus distritos/estruturas/pessoas/economia/território persistidos em mesmo mundo; dois reinos vivos sem duplicação. |
-| ER-028 | T2-R2 | PLANEJADO | Todos ofícios-base: ferreiro, artesão, fazendeiro, caçador, transportador, guarda, arqueiro, lanceiro além dos atuais, com trabalho realmente executável. |
-| ER-029 | T2-R2 | PLANEJADO | Ferramentas e receitas registradas, forja/tecelagem/agricultura/refinamento/crafting/equipar, insumos → produto → transporte → consumo, UI interativa. |
-| ER-030 | T2-R2 | PLANEJADO | Skill XP/níveis e aprendizagem de profissão com efeito mensurável no trabalho, necessidades/fome/sono/sobrevivência, ferramentas/equipamentos usados e quebrados/repostos. |
-| ER-031 | T2-R2 | PLANEJADO | Fazenda, irrigação/terreno próximo a água, caça/pesca quando aprovada, alimento finito, refeições e cadeia econômica sem geração espontânea. |
-| ER-032 | T2-R2 | PLANEJADO | Mercado/preços dinâmicos, compras, venda, contratos, salário, tributo, impostos, tesouro e economia entre reinos contabilizados e persistidos sem inflação artificial. |
-| ER-033 | T2-R2 | PLANEJADO | Relacionamentos NPC↔NPC/jogador: presentes, resgates, confiança/memórias/traços, decisões distintas sob medo/alegria, UI e save. |
-| ER-034 | T2-R2 | PLANEJADO | Prioridades de trabalhadores, ordens individuais/de grupo, reatribuição manual, filas e utilidade, sem decisão aleatória que ignore necessidade do jogador. |
-| ER-035 | T2-R2 | PLANEJADO | Facções, alianças, reputação, comércio com reinos NPCs e feedback de decisões na diplomacia/logística; simulação offline/agregada coerente. |
+| ER-028 | T2-R2 | PARCIAL | Todos ofícios-base: ferreiro, artesão, fazendeiro, caçador, transportador, guarda, arqueiro, lanceiro além dos atuais, com trabalho realmente executável. |
+| ER-029 | T2-R2 | PARCIAL | Ferramentas e receitas registradas, forja/tecelagem/agricultura/refinamento/crafting/equipar, insumos → produto → transporte → consumo, UI interativa. |
+| ER-030 | T2-R2 | PARCIAL | Skill XP/níveis e aprendizagem de profissão com efeito mensurável no trabalho, necessidades/fome/sono/sobrevivência, ferramentas/equipamentos usados e quebrados/repostos. |
+| ER-031 | T2-R2 | PARCIAL | Fazenda, irrigação/terreno próximo a água, caça/pesca quando aprovada, alimento finito, refeições e cadeia econômica sem geração espontânea. |
+| ER-032 | T2-R2 | PARCIAL | Mercado/preços dinâmicos, compras, venda, contratos, salário, tributo, impostos, tesouro e economia entre reinos contabilizados e persistidos sem inflação artificial. |
+| ER-033 | T2-R2 | PARCIAL | Relacionamentos NPC↔NPC/jogador: presentes, resgates, confiança/memórias/traços, decisões distintas sob medo/alegria, UI e save. |
+| ER-034 | T2-R2 | PARCIAL | Prioridades de trabalhadores, ordens individuais/de grupo, reatribuição manual, filas e utilidade, sem decisão aleatória que ignore necessidade do jogador. |
+| ER-035 | T2-R2 | PARCIAL | Facções, alianças, reputação, comércio com reinos NPCs e feedback de decisões na diplomacia/logística; simulação offline/agregada coerente. |
 | ER-036 | T2-R3 | PLANEJADO | Inimigos variados por registro, saque com custódia, objetivos distintos e resistências; telemetria do comportamento sem IA cara. |
 | ER-037 | T2-R3 | PLANEJADO | Infecção real de fauna/cidadãos, transmissão, sinais, isolamento/cura, defesa de iniciantes e progressão justa; duque roteirizado não conta como sistema completo. |
 | ER-038 | T2-R3 | PLANEJADO | Portais evolutivos atacando reinos próximos, escolha de direção dependente de ameaças e fatores reais, contra-ataque/expedição/dano/destruição de portal. |
@@ -164,3 +164,7 @@ O candidato liga ER-021–027 ao runtime da branch. A execução isolada no Robl
 A revisão de [ER-001–020](T1_CERTIFICATION_V18.md) registra a prova aproveitável e o que falta a cada contrato. O aceite do criador da v18 para continuar o desenvolvimento está registrado. Morte, estorno e ruínas têm um contrato em avaliação, com custódia provisória preservada.
 
 O roteiro de [ER-021–027](T2_R1_PLAYTEST.md) identifica a entrada pela interface e a prova de cliente de cada contrato. O probe mais recente confirmou o encerramento do vínculo ao morrer no barco, a travessia montada, o DataStore isolado e a preservação do Terrain v18. O PR #13 permanece em rascunho e a prévia depende de autorização formal antes de R3. [Probe](https://github.com/Sllay/Roblox-Studios/actions/runs/45671224264) · [CI](https://github.com/Sllay/Roblox-Studios/actions/runs/45671239634)
+
+O criador confirmou na v19 construção das duas pontes, restrição de travessia do jogador à reforçada e exploração de vários biomas. Melhorias visuais dos biomas ficam para refinamento posterior. O aceite autoriza continuar o desenvolvimento da T2-R2 e não fecha outros critérios da T2-R1. [Recibo](runner-receipts/T2-R1.md)
+
+ER-028–035 têm candidato integrado em branch e evidência automatizada por contrato. A definição e as pendências de jogo continuam no [recibo T2-R2](runner-receipts/T2-R2.md). Nenhum contrato foi elevado para VALIDADO.

@@ -5,6 +5,8 @@ local Living=require("./Living/LivingModel")
 local Work=require("./Living/WorkEngine")
 local Structures=require("./Living/StructureDefs")
 local Inventory=require("./Living/Inventory")
+local Production=require("./Living/Production")
+local Market=require("./Living/Market")
 
 local World={}
 World.VERSION=1
@@ -36,6 +38,22 @@ function World.valid(record: any, seed: number, home: any): boolean
     end
     local foreign=record.foreign
     if foreign~=nil and (not Living.valid(foreign) or foreign.seed~=seed or foreign.r3~=nil) then return false end
+    local market=home and home.production and home.production.market
+    local contract=market and market.contract
+    if foreign and foreign.production and foreign.production.market and foreign.production.market.contract then
+        return false
+    end
+    if contract then
+        if not foreign or not foreign.production or not foreign.production.market then return false end
+        if contract.worker then
+            local origin=if contract.seller=="home" then home else foreign
+            local found=false
+            for _,npc in ipairs(origin.npcs) do
+                if npc.id==contract.worker then found=true;break end
+            end
+            if not found then return false end
+        end
+    end
     local graph=Routes.compile(seed)
     local crossings={}
     for _,crossing in ipairs(graph.crossings) do crossings[crossing.id]=crossing end
@@ -168,6 +186,53 @@ function World.activate(session: any,x: number): (any, boolean)
     session.activeRegion=index
     session.phases[index]="active"
     return state,changed
+end
+
+local function planCedro(town: any,origin: number)
+    -- Existing saves keep their buildings. The steward orders ordinary
+    -- material-backed blueprints on dry land using the normal placement rules.
+    local farm,workshop=false,false
+    for _,b in ipairs(town.buildings) do
+        if b.typeId=="farm" then farm=true
+        elseif b.typeId=="workshop" then workshop=true end
+    end
+    if town.production.stewardPlanned then return end
+    if not farm then
+        for offset=20,112,2 do
+            if Work.place(town,"farm",origin+offset) or Work.place(town,"farm",origin-offset) then break end
+        end
+    end
+    if not workshop then
+        for offset=20,112,2 do
+            if Work.place(town,"workshop",origin+offset) or Work.place(town,"workshop",origin-offset) then break end
+        end
+    end
+    town.production.stewardPlanned=true
+end
+
+-- A session-local accumulator never reads wall-clock time. The snapshot
+-- captures committed work only, so closing the save cannot produce hours of catch-up.
+function World.stepEconomy(session: any,foreground: any,dt: number)
+    local home=session.home
+    if not home.r3 or home.r3.prologue.stage~="sandbox" then return end
+    local towns={home,session.record.foreign}
+    session.economyDebt=session.economyDebt or {}
+    for index,town in ipairs(towns) do
+        Production.ensure(town)
+        if index==2 then planCedro(town,session.center.x) end
+        if town==foreground then
+            session.economyDebt[index]=0
+        else
+            local debt=math.min(1,(session.economyDebt[index] or 0)+dt)
+            if debt>=0.5 then
+                Work.stepDetached(town,0.25)
+                Work.stepDetached(town,0.25)
+                debt-=0.5
+            end
+            session.economyDebt[index]=debt
+        end
+    end
+    Market.stepFreight(session,dt,Work)
 end
 
 function World.snapshot(session: any): any

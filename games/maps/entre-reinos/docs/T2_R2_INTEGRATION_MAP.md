@@ -1,6 +1,6 @@
 # Mapa de integração · T2-R2 · ER-028 a ER-035
 
-T2-R2 permanece planejada. O [protocolo](RUNNER_PROTOCOL.md) exige fechar os gates da T1, obter as provas de partida da T2-R1 e integrar o candidato aprovado. Este mapa prepara o próximo runner dentro da [Bíblia de Design](VISION_MASTER.md) e da [matriz](FEATURE_COMPLETENESS_AUDIT.md).
+A implementação em branch foi autorizada após o playtest parcial da v19. A certificação cumulativa e os gates de integração e publicação permanecem registrados no [protocolo](RUNNER_PROTOCOL.md).
 
 ## Contratos e pontos de entrada
 

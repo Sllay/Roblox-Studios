@@ -5,6 +5,7 @@ local Players=game:GetService("Players")
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local PhysicsService=game:GetService("PhysicsService")
+local HttpService=game:GetService("HttpService")
 local Lighting=game:GetService("Lighting")
 local shared=ReplicatedStorage:WaitForChild("Game")
 local Profile=require(shared:WaitForChild("RegionalProfile"))
@@ -14,11 +15,16 @@ local Travel=require(script.Parent:WaitForChild("TravelService"))
 local Saves=require(script.Parent:WaitForChild("SaveSlotService"))
 local Living=require(shared:WaitForChild("Living"):WaitForChild("LivingModel"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
+local Production=require(shared:WaitForChild("Living"):WaitForChild("Production"))
+local Market=require(shared:WaitForChild("Living"):WaitForChild("Market"))
+local Social=require(shared:WaitForChild("Living"):WaitForChild("Social"))
 local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
 local Combat=require(script.Parent:WaitForChild("CombatService"))
 local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Professions=require(shared:WaitForChild("Living"):WaitForChild("ProfessionDefs"))
+local Items=require(shared:WaitForChild("Living"):WaitForChild("ItemDefs"))
 local Inventory=require(shared:WaitForChild("Living"):WaitForChild("Inventory"))
+local Vegetation=require(script.Parent:WaitForChild("VegetationScene"))
 local WorldService=require(script.Parent:WaitForChild("WorldService"))
 local Service={}
 local owner: Player?=nil
@@ -27,6 +33,7 @@ local regional: any=nil
 local bridgeFolder: Folder?=nil
 local visualization: Folder?=nil
 local figures: {[number]: Model}={}
+local animals: {[number]: Model}={}
 local buildings: {[number]: Model}={}
 local siteVisuals: {[string]: BasePart}={}
 local treePress: any=nil
@@ -40,6 +47,7 @@ local lastActionAt=0
 local lastPreviewAt=0
 local buildPreview: any=nil
 local previewId=0
+local lastPlacementDiagnostic: {[string]: number}={}
 -- Non-physical R6 residents. Logical work coordinates remain untouched.
 local GHOST_GROUP="ER_GhostNPC"
 if not PhysicsService:IsCollisionGroupRegistered(GHOST_GROUP) then
@@ -106,6 +114,97 @@ end
 local actions=Instance.new("RemoteFunction")
 actions.Name="ER_LivingActions"
 actions.Parent=shared
+
+local interaction=Instance.new("RemoteEvent")
+interaction.Name="ER_InteractionTarget"
+interaction.Parent=shared
+local lastTarget=""
+local targetOwner: any=nil
+local contextTarget: any=nil
+local sight=RaycastParams.new()
+sight.FilterType=Enum.RaycastFilterType.Include
+sight.FilterDescendantsInstances={workspace.Terrain}
+sight.IgnoreWater=true
+
+local function structurePoint(b: any): Vector3
+    return Vector3.new(b.x,b.y+3,if b.typeId=="gate" then 0 else Structures.DEPTH_Z)
+end
+
+local function accessible(root: BasePart,point: Vector3,range: number): boolean
+    local displacement=point-root.Position
+    if displacement.Magnitude>range then return false end
+    for _,b in ipairs(state.buildings) do
+        if (b.typeId=="gate" or b.typeId=="wall") and b.health>0
+            and (b.state=="complete" or b.state=="damaged") and not b.open
+            and (b.x-root.Position.X)*(b.x-point.X)<0
+            and math.abs(b.x-point.X)>1.5 then return false end
+    end
+    return workspace:Raycast(root.Position,displacement,sight)==nil
+end
+
+local function presentInteraction(player: Player)
+    local character=player.Character
+    local root=if character then character:FindFirstChild("HumanoidRootPart") else nil
+    local health=if character then character:FindFirstChildOfClass("Humanoid") else nil
+    local best: any=nil
+    local score=math.huge
+    if targetOwner~=state then contextTarget=nil;targetOwner=state end
+    if root and root:IsA("BasePart") and health and health.Health>0 and not Travel.busy() then
+        local x=root.Position.X
+        local heading=root.CFrame.LookVector.X
+        local function offer(kind: string,id: any,label: string,position: Vector3?,range: number,bias: number)
+            local current=contextTarget and contextTarget.kind==kind and contextTarget.id==id
+            local delta=if position then position-root.Position else Vector3.zero
+            if position and delta.X*heading < (if current then -2.5 else -1.1) then return end
+            local rank=delta.Magnitude+bias-(if current then 1.65 else 0)
+            if rank>=score or (position and not accessible(root,position,range)) then return end
+            score=rank
+            best={kind=kind,id=id,label=label}
+        end
+        local story=R3.storyAction(regional.home,x)
+        if story then
+            local actorX=if story=="training" then regional.home.r3.prologue.dukeX or -4 else 0
+            offer("story",story,if story=="evacuate" then "Evacuar" elseif story=="coronation" then "Coroação" else "Duque",
+                Vector3.new(actorX,root.Position.Y,-1),10,-30)
+        end
+        local travel=Travel.status(player,root)
+        if travel then
+            offer("travel",travel,"",Travel.interactionPoint(travel,root),12,
+                if travel=="dismount" or travel=="disembark" then -29 else if travel=="travel" then 5 else -2)
+        end
+        if Travel.cargoAvailable(player,root)~=nil then
+            offer("dock","dock","Doca",Travel.interactionPoint("dock",root),9,-8)
+        end
+        for _,b in ipairs(state.buildings) do
+            local gate=b.typeId=="gate" and b.health>0 and (b.state=="complete" or b.state=="damaged")
+            local def=Structures.get(b.typeId)
+            offer(if gate then "gate" else "structure",b.id,
+                if gate then (if b.open then "Fechar" else "Abrir") else def.label,
+                structurePoint(b),if gate then 8 else 14,1)
+        end
+        for _,npc in ipairs(state.npcs) do
+            local rig=figures[npc.id]
+            if npc.health>0 and rig then offer("npc",npc.id,npc.name or "Morador",rig:GetPivot().Position,10,2) end
+        end
+        for _,site in ipairs(state.sites) do
+            local anchor=siteVisuals[site.id]
+            if site.item=="wood" and site.remaining>0 and anchor and anchor.Name=="Trunk" then
+                offer("tree",site.id,if site.marked then "Desmarcar" else "Marcar",anchor.Position,12,0)
+            end
+        end
+        for _,coin in ipairs(regional.home.r3.drops) do
+            if not coin.claimed and math.abs(coin.x-x)<=6 then
+                offer("coin",coin.id,"Moeda",Vector3.new(coin.x,root.Position.Y,0),6,0)
+            end
+        end
+    end
+    contextTarget=best
+    local key=if best then best.kind..":"..tostring(best.id)..":"..best.label else ""
+    if key~=lastTarget then
+        lastTarget=key
+        interaction:FireClient(player,best)
+    end
+end
 
 local function makePart(parent: Instance,name: string,size: Vector3,color: Color3): Part
     local p=Instance.new("Part")
@@ -232,7 +331,7 @@ local function attachment(model: Model, name: string, key: string, limb: string,
 end
 
 local activities={
-    collect="Coletando",load="Retirando estoque",build="Construindo",
+    collect="Coletando",load="Retirando estoque",build="Construindo",fabricate="Fabricando",farm="Cultivando",hunt="Caçando",rest="Descansando",freight="Em transporte comercial",
     flee="Em fuga",sheltered="Em abrigo",strike="Defendendo",
 }
 
@@ -270,15 +369,19 @@ local function syncNPC(npc: any)
     if type(facing)=="number" then model:SetAttribute("ER_NPCFacing",facing) end
     local activity=if npc.defenseClock and npc.defenseClock>1.04 then "strike" else npc.activity or ""
     model:SetAttribute("ER_NPCActivity",activity)
+    model:SetAttribute("Profession",npc.profession)
     local h=model:FindFirstChildOfClass("Humanoid")
     if h then h.DisplayName=npc.name.." · "..(activities[activity] or Professions.get(npc.profession).label) end
-    local weapon=npc.defense or (if activity=="collect" then "axe" elseif activity=="build" then "hammer" else "")
+    local working=activity=="collect" or activity=="build" or activity=="fabricate" or activity=="farm"
+    local weapon=if activity=="strike" then npc.defense or ""
+        elseif working and npc.tool then npc.tool.item
+        elseif not state.production then npc.defense or "" else ""
     attachment(model,"HeldItem",weapon,"Right Arm",
         if weapon=="spear" then Vector3.new(0.17,4.4,0.17)
             elseif weapon=="bow" then Vector3.new(0.2,1.65,0.24)
             else Vector3.new(0.35,1.45,0.35),
         Color3.fromRGB(115,78,50),CFrame.new(0,-0.6,-0.5))
-    attachment(model,"Cargo",if Inventory.weight(npc.inventory)>0 then "bag" else "",
+    attachment(model,"Cargo",if npc.tradeLoad or Inventory.weight(npc.inventory)>0 then "bag" else "",
         "Torso",Vector3.new(1.65,1.3,0.72),Color3.fromRGB(156,125,77),CFrame.new(0,0,0.82))
 
 end
@@ -343,6 +446,27 @@ local function buildVisual(b: any)
             buildPiece(model,b,"SupplyCrate",Vector3.new(2.5,2.4,2.4),
                 Vector3.new(i*3,1.7,-0.2),Color3.fromRGB(155,112,70))
         end
+    elseif b.typeId=="workshop" or b.typeId=="forge" then
+        buildPiece(model,b,"Bench",Vector3.new(7,1,4),Vector3.new(0,2.7,0),wood)
+        buildPiece(model,b,"Roof",Vector3.new(11,0.9,7),Vector3.new(0,7,0),roof)
+        for _,side in ipairs({-1,1}) do
+            buildPiece(model,b,"Post",Vector3.new(0.8,6.5,0.8),Vector3.new(side*4,3.5,1.9),wood)
+        end
+        if b.typeId=="forge" then
+            buildPiece(model,b,"Chimney",Vector3.new(3,10,3),Vector3.new(3,5,-1),stone)
+            buildPiece(model,b,"FurnaceOpening",Vector3.new(1.6,1.25,0.2),
+                Vector3.new(3,2,0.55),Color3.fromRGB(214,101,48))
+        end
+    elseif b.typeId=="farm" then
+        for row=-1,1 do
+            buildPiece(model,b,"Soil",Vector3.new(def.footprint-1,0.3,1.4),
+                Vector3.new(0,0.75,row*2),Color3.fromRGB(117,81,48))
+            for column=-2,2 do
+                local plant=buildPiece(model,b,"Crop",Vector3.new(0.55,1.1,0.58),
+                    Vector3.new(column*1.3,1.4,row*2),Color3.fromRGB(132,151,67))
+                plant.CanCollide=false
+            end
+        end
     elseif b.typeId=="castle" then
         buildPiece(model,b,"Keep",Vector3.new(12,14,7),Vector3.new(0,7,0),stone)
         for _,side in ipairs({-1,1}) do
@@ -401,7 +525,7 @@ local function syncBuild(b: any)
     local cargo=math.clamp(math.ceil(stock/30),0,3)
     local damage=if ratio<=0.35 then 2 elseif ratio<=0.68 then 1 else 0
     local visual=b.state..":"..tostring(progress)..":"..tostring(damage)..":"..tostring(cargo)
-        ..":"..tostring(b.open==true)
+        ..":"..tostring(b.open==true)..":"..tostring(b.plot and b.plot.stage)
     if model:GetAttribute("ER_LastVisualState")~=visual then
         model:SetAttribute("ER_LastVisualState",visual)
         local index,crate=0,0
@@ -410,7 +534,11 @@ local function syncBuild(b: any)
             index+=1
             if p.Name=="SupplyCrate" then crate+=1 end
             local section=math.clamp(math.floor((p.Position.Y-b.y)/def.height*6),0,5)
-            if b.state=="blueprint" then
+            if p.Name=="Crop" then
+                local crop=b.state=="complete" and b.plot and (b.plot.stage=="grow" or b.plot.stage=="harvest")
+                p.Transparency=if crop then 0 else 1
+                p.Color=if b.plot and b.plot.stage=="harvest" then Color3.fromRGB(222,178,70) else Color3.fromRGB(132,151,67)
+            elseif b.state=="blueprint" then
                 p.Transparency=if section<=1 then 0.48 else 1
             elseif b.state=="building" then
                 p.Transparency=if section<=progress then 0.08 else 1
@@ -433,7 +561,7 @@ local function syncBuild(b: any)
                 base=p.Color
                 p:SetAttribute("ER_UndamagedColor",base)
             end
-            p.Color=base:Lerp(Color3.fromRGB(54,42,38),damage*0.20)
+            if p.Name~="Crop" then p.Color=base:Lerp(Color3.fromRGB(54,42,38),damage*0.20) end
         end
     end
 
@@ -442,46 +570,44 @@ end
 local function createSiteVisual(site: any)
     if not visualization then return end
     local z=site.z or (if site.item=="wood" then -6 else -4)
-    local pos=Profile.sample(state.seed,site.x,if site.z then z else 0)
-    local anchor: BasePart
-    if site.item=="wood" and not site.salvage and not string.match(site.id,"salvage_") then
-        -- Distinct harvestable tree; background trees remain decoration.
-        local tree=Instance.new("Model")
-        tree.Name="HarvestableTree_"..tostring(site.id)
-        tree:SetAttribute("ER_Harvestable",true)
-        tree:SetAttribute("ER_SourceId",site.id)
-        local trunk=makePart(tree,"Trunk",
-            Vector3.new(2.1,7.2,2.1),Color3.fromRGB(112,75,47))
-        trunk.Position=Vector3.new(site.x,pos.height+3.6,z)
-        for k=1,3 do
-            local leaves=makePart(tree,"LeafCrown",
-                Vector3.new(7.5-k*1.1,3.8,7.5-k*1.1),
-                Color3.fromRGB(63,116,77))
-            leaves.Shape=Enum.PartType.Ball
-            leaves.Position=Vector3.new(site.x,pos.height+7.1+k*1.8,z)
-        end
-        tree.Parent=visualization
-        anchor=trunk
+    local ground=groundHeight(site.x,z)
+    local timber=site.item=="wood" and not site.salvage and not string.match(site.id,"salvage_")
+    local kind=if timber then (if site.x%3==0 then "broadleaf" else "tree")
+        elseif site.item=="wood" then "log"
+        elseif site.item=="food" or site.item=="grain" then "bush" else "rock"
+    local yaw=math.rad((state.seed+site.x*71)%360)
+    -- Place the meshes behind the lane while the work and interaction anchor
+    -- still uses the source's saved coordinates.
+    local visualZ=if timber then math.min(z,Profile.LANE_Z-6) else z
+    local visualGround=if visualZ==z then ground else groundHeight(site.x,visualZ)
+    local model=Vegetation.place(visualization,kind,Vector3.new(site.x,visualGround,visualZ),
+        if timber then 0.9 else 0.78,yaw,math.floor(site.x),false)
+    model.Name=if timber then "HarvestableTree_"..tostring(site.id) else "Resource_"..site.id
+    model:SetAttribute("ER_SourceId",site.id)
+    local anchor=makePart(model,if timber then "Trunk" else "ResourceAnchor",
+        if timber then Vector3.new(2.1,7.2,2.1) else Vector3.new(2,2,2),Color3.new())
+    anchor.Transparency=1
+    anchor.Position=Vector3.new(site.x,ground+(if timber then 3.6 else 1),z)
+    -- Existing near-lane source IDs remain accessible. Only trunks beyond
+    -- the corridor receive a collider; the model's canopy stays decorative.
+    local solidTrunk=timber and math.abs(z)>=9
+    if solidTrunk then
+        anchor:SetAttribute("ER_PlacementRole","resource")
+        anchor.CanCollide=site.remaining>0
+        anchor.CanQuery=true
+    end
+    anchor:SetAttribute("ER_TrunkCollider",solidTrunk)
+    if timber then
+        model:SetAttribute("ER_Harvestable",true)
         local high=Instance.new("Highlight")
         high.Name="MarkedForCarpenter"
-        high.Adornee=tree
+        high.Adornee=model
         high.FillColor=Color3.fromRGB(230,189,85)
         high.OutlineColor=Color3.fromRGB(255,222,120)
         high.FillTransparency=0.85
         high.OutlineTransparency=0.1
         high.Enabled=site.marked==true and site.remaining>0
-        high.Parent=tree
-    else
-        -- Each resource has its own recognizable shape and palette.
-        local color=if site.item=="stone" then Color3.fromRGB(126,131,130)
-            else if site.item=="iron" then Color3.fromRGB(97,116,132)
-            else Color3.fromRGB(96,151,88)
-        local block=makePart(visualization,"Resource_"..site.id,
-            if site.item=="food" then Vector3.new(3.7,2.6,3.7)
-            else Vector3.new(3.8,3,3.4),color)
-        block.Shape=if site.item=="food" then Enum.PartType.Ball else Enum.PartType.Block
-        block.Position=Vector3.new(site.x,pos.height+1.4,z)
-        anchor=block
+        high.Parent=model
     end
     anchor:SetAttribute("ResourceType",site.item)
     anchor:SetAttribute("SourceId",site.id)
@@ -503,8 +629,45 @@ local function syncR3Hud(player: Player)
     Lighting.ClockTime=((regional.home.elapsed%R3.DAY)/10+6)%24
 end
 
+local function drawAnimals(observerX: number)
+    local live={}
+    local population=if state.production then state.production.fauna else nil
+    for _,a in ipairs(population or {}) do
+        if math.abs(a.x-observerX)>145 or not WorldService.isLoadedAt(a.x) then continue end
+        local figure=animals[a.id]
+        if not figure then
+            figure=Instance.new("Model")
+            figure.Name="Deer_"..tostring(a.id)
+            local brown=Color3.fromRGB(139,97,64)
+            local function piece(name: string,size: Vector3,offset: Vector3)
+                local part=makePart(figure :: Model,name,size,brown)
+                part.Position=offset
+                part.CanCollide=false
+                part.CanQuery=false
+            end
+            piece("Body",Vector3.new(2.8,1.35,0.9),Vector3.new(0,1.45,0))
+            piece("Head",Vector3.new(0.95,0.85,0.65),Vector3.new(1.5,2.26,0))
+            piece("Neck",Vector3.new(0.55,1.1,0.6),Vector3.new(1.06,1.95,0))
+            for _,dx in ipairs({-0.95,0.9}) do
+                for _,z in ipairs({-0.33,0.33}) do
+                    piece("Leg",Vector3.new(0.23,1.15,0.24),Vector3.new(dx,0.59,z))
+                end
+            end
+            figure.WorldPivot=CFrame.identity
+            figure.Parent=visualization
+            animals[a.id]=figure
+        end
+        figure:PivotTo(CFrame.new(a.x,groundHeight(a.x,a.z),a.z)*CFrame.Angles(0,if a.flight<0 then math.pi else 0,0))
+        live[a.id]=true
+    end
+    for id,model in pairs(animals) do
+        if not live[id] then model:Destroy();animals[id]=nil end
+    end
+end
+
 local function draw(observerX: number)
     if not state then return end
+    drawAnimals(observerX)
     for _,npc in ipairs(state.npcs) do
         local distance=math.abs(npc.x-observerX)
         if distance>220 and figures[npc.id] then
@@ -515,11 +678,30 @@ local function draw(observerX: number)
         end
         syncNPC(npc)
     end
+    local _,courier=Market.freight(regional)
+    if courier and math.abs(courier.x-observerX)<145 and courier.health>0 and WorldService.isLoadedAt(courier.x)
+        and not table.find(state.npcs,courier) then
+        if not figures[courier.id] then figures[courier.id]=createActor(courier) end
+        syncNPC(courier)
+    end
+    for id,figure in pairs(figures) do
+        if figure:GetAttribute("ER_ExternalCourier")==true and (not courier or courier.id~=id or math.abs(courier.x-observerX)>=145) then
+            figure:Destroy()
+            figures[id]=nil
+        end
+    end
+    if courier and figures[courier.id] then
+        figures[courier.id]:SetAttribute("ER_ExternalCourier",not table.find(state.npcs,courier))
+    end
     for _,b in ipairs(state.buildings) do
         if not b.crossingId and WorldService.isLoadedAt(b.x) then syncBuild(b) end
     end
     for _,site in ipairs(state.sites) do
         if not siteVisuals[site.id] and WorldService.isLoadedAt(site.x) then createSiteVisual(site) end
+        local anchor=siteVisuals[site.id]
+        if anchor and anchor:GetAttribute("ER_TrunkCollider")==true then
+            anchor.CanCollide=site.remaining>0
+        end
         if site.item=="wood" and visualization then
             local tree=visualization:FindFirstChild("HarvestableTree_"..tostring(site.id))
             if tree and tree:IsA("Model") then
@@ -532,8 +714,9 @@ local function draw(observerX: number)
                 if prior~=(site.remaining<=0) then
                     tree:SetAttribute("ER_Depleted",site.remaining<=0)
                     for _,part in ipairs(tree:GetChildren()) do
-                        if part:IsA("BasePart") and part.Name~="Trunk" then
-                            part.Transparency=if site.remaining<=0 then 1 else 0
+                        if part:IsA("MeshPart") then
+                            local trunk=string.find(part.Name,"Trunk")~=nil
+                            part.Transparency=if site.remaining<=0 and not trunk then 1 else 0
                         end
                     end
                 end
@@ -550,6 +733,8 @@ local function selectPopulation(x: number)
     if not changed then return end
     Combat.setTownVisible(selected==regional.home)
     for _,model in pairs(figures) do model:Destroy() end
+    for _,model in pairs(animals) do model:Destroy() end
+    table.clear(animals)
     for _,model in pairs(buildings) do model:Destroy() end
     for _,site in pairs(siteVisuals) do
         if site.Parent and site.Parent:IsA("Model") then site.Parent:Destroy() else site:Destroy() end
@@ -610,6 +795,8 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
     local origin=Slots.spawnPosition(worldRecord)
     regional=Regions.new(worldRecord.seed,loaded,worldRecord.regionWorld,origin,WorldService.isLoadedAt)
     if not regional then return false,"regional_schema_conflict" end
+    lastTarget=""
+    contextTarget=nil
     owner=player
     state=loaded
     loaded.r3.awaitingRecovery=false -- Boot placed a reconnecting character before loading the world.
@@ -667,10 +854,14 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
         for _,npc in ipairs(state.npcs) do
             if npc.health>0 and math.abs(observerX-npc.x)<160 then hasNearbyResident=true; break end
         end
-        simulationAccumulator=if hasNearbyResident then simulationAccumulator+math.min(dt,0.25) else 0
+        simulationAccumulator+=math.min(dt,0.25)
         local ticks=0
         while simulationAccumulator>=0.1 and ticks<3 do
-            Work.step(state,0.1)
+            if hasNearbyResident then
+                if regional.home.r3.prologue.stage=="sandbox" then Production.ensure(state) end
+                Work.step(state,0.1)
+            end
+            Regions.stepEconomy(regional,if hasNearbyResident then state else nil,0.1)
             local currentRoot=if player.Character then
                 player.Character:FindFirstChild("HumanoidRootPart") else nil
             local x=if currentRoot and currentRoot:IsA("BasePart")
@@ -678,7 +869,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
             local h=if player.Character then player.Character:FindFirstChildOfClass("Humanoid") else nil
             local y=if currentRoot and currentRoot:IsA("BasePart") and h and h.Health>0
                 then currentRoot.Position.Y else -100
-            local damage=if state==regional.home then R3.step(state,0.1,x,Combat.fireResident,y) else 0
+            local damage=if hasNearbyResident and state==regional.home then R3.step(state,0.1,x,Combat.fireResident,y) else 0
             if damage>0 and player.Character then
                 local h=player.Character:FindFirstChildOfClass("Humanoid")
                 if h and h.Health>0 then h:TakeDamage(damage) end
@@ -712,6 +903,7 @@ function Service.start(player: Player, worldRecord: any, onProgress: ((number, s
             syncBridges()
             draw(observerX)
             syncR3Hud(player)
+            presentInteraction(player)
             drawAccumulator=0
         end
     end)
@@ -731,6 +923,7 @@ function Service.stop(player: Player)
     lastActionAt=0
     owner=nil
     state=nil
+    table.clear(animals)
     regional=nil
     bridgeFolder=nil
     figures={}
@@ -742,30 +935,45 @@ function Service.stop(player: Player)
     visualization=nil
 end
 
-local function placementGround(typeId: string, x: number, root: BasePart): (boolean, any, any?)
-    local allowed,reason=Work.canPlace(state,typeId,x)
-    if not allowed then return false,reason end
+local function placementGround(typeId: string, x: number, root: BasePart, snap: boolean?): (boolean, any, any?)
     local definition=Structures.get(typeId)
     if definition.kind=="crossing" then
-        local crossing=Work.bridgePlan(state,x)
-        if not crossing then return false,"invalid_bridge_banks" end
+        local crossing,reason=Work.bridgePlan(state,x,if snap then Structures.PLACEMENT_RANGE else nil)
+        if not crossing then return false,reason end
+        local center=(crossing.west.x+crossing.east.x)/2
+        local allowed,errorCode=Work.canPlace(state,typeId,center)
+        if not allowed then return false,errorCode,crossing end
         if math.min(math.abs(root.Position.X-crossing.west.x),math.abs(root.Position.X-crossing.east.x))
-            >Structures.PLACEMENT_RANGE then return false,"build_too_far" end
-        local wet=RaycastParams.new()
-        wet.FilterType=Enum.RaycastFilterType.Include
-        wet.FilterDescendantsInstances={workspace.Terrain}
+            >Structures.PLACEMENT_RANGE then return false,"build_too_far",crossing end
         for _,bank in ipairs({crossing.west,crossing.east}) do
-            if not WorldService.ensureNear(state.seed,bank.x) then return false,"terrain_not_ready" end
-            for _,z in ipairs({-2,0,2}) do
-                local hit=workspace:Raycast(Vector3.new(bank.x,70,z),Vector3.new(0,-120,0),wet)
-                if not hit then return false,"terrain_not_ready" end
-                if hit.Material==Enum.Material.Water or math.abs(hit.Position.Y-bank.y)>3 then
-                    return false,"invalid_bridge_banks"
-                end
+            if not WorldService.isLoadedAt(bank.x) and not WorldService.ensureNear(state.seed,bank.x) then
+                return false,"terrain_not_ready",crossing
             end
         end
+        local ignored={workspace.Terrain,root.Parent :: Instance}
+        -- Work.canPlace only accepts an existing footprint when upgrading
+        -- its completed provisional bridge. Its model is the only exemption.
+        local current=bridgeFolder and bridgeFolder:FindFirstChild(crossing.id)
+        if current then table.insert(ignored,current) end
+        local valid,blocking,diagnostic=BridgeScene.validatePlacement(crossing,ignored)
+        -- Temporary server log for this regression. Deduplicate repeated
+        -- movement over the same candidate without exposing scene paths to clients.
+        if diagnostic then
+            local phase=if snap then "preview" else "confirmation"
+            local key=phase..":"..crossing.id..":"..tostring(blocking)
+            local now=os.clock()
+            if now-(lastPlacementDiagnostic[key] or -math.huge)>=8 then
+                lastPlacementDiagnostic[key]=now
+                diagnostic.phase=phase
+                diagnostic.result=blocking or "ok"
+                warn("[EntreReinos][BridgePlacement] "..HttpService:JSONEncode(diagnostic))
+            end
+        end
+        if not valid then return false,blocking,crossing end
         return true,(crossing.deckWestY+crossing.deckEastY)/2,crossing
     end
+    local allowed,reason=Work.canPlace(state,typeId,x)
+    if not allowed then return false,reason end
     if math.abs(x-root.Position.X)>Structures.PLACEMENT_RANGE then
         return false,"build_too_far"
     end
@@ -868,6 +1076,7 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         if root and root:IsA("BasePart") then
             local x=root.Position.X
             local y=root.Position.Y
+            nearby.context=contextTarget
             nearby.travel=Travel.status(player,root)
             nearby.boatCargo=Travel.cargoAvailable(player,root)
             if regional.home.r3.prologue.stage=="sandbox" and not regional.record.discovered["2"] then
@@ -947,6 +1156,17 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
                 end
             end
         end
+        if overview.market and root and root:IsA("BasePart") then
+            local center=Market.center(state)
+            nearby.marketHere=center~=nil and accessible(root,structurePoint(center),14)
+            nearby.canContract=regional.record.discovered["2"]==true
+            nearby.relations=Market.relations(regional)
+            nearby.canManage=state==regional.home or (nearby.relations and nearby.relations.accord=="alliance")
+            local contract=Market.freight(regional)
+            if contract then
+                nearby.freight={item=contract.item,units=contract.units,stage=contract.stage,returning=contract.returning}
+            end
+        end
         return {ok=true,data=overview,hud=R3.summary(regional.home),nearby=nearby}
     end
     if action=="travel" then return Travel.action(player,arg) end
@@ -973,10 +1193,19 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
     if action=="tree_press" or action=="tree_mark" or action=="tree_cancel" or action=="tree_take" then
         return treeAction(player,action,arg)
     end
+    if action=="craft_arrows" and state.production then
+        local station=Work.findBuilding(state,arg)
+        local root=if player.Character then player.Character:FindFirstChild("HumanoidRootPart") else nil
+        if not station or station.typeId~="workshop" or station.health<=0 or station.state~="complete"
+            or not root or not root:IsA("BasePart") or not accessible(root,structurePoint(station),14) then
+            return {ok=false,error="production_station_required"}
+        end
+    end
+    if action=="trade" and state.production then return {ok=false,error="invalid_market_order"} end
     if action=="arm_defender" and state~=regional.home then
         return Combat.action(player,action,arg,state)
     end
-    if action=="attack" or action=="bow_begin" or action=="bow_release" or action=="bow_cancel"
+    if action=="attack" or action=="tool_use" or action=="bow_begin" or action=="bow_release" or action=="bow_cancel"
         or action=="select_weapon" or action=="duke_talk" or action=="duke_accept" or action=="duke_close"
         or action=="drop_coin"
         or action=="pickup_coin" or action=="arm_defender"
@@ -984,7 +1213,10 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         or action=="prologue" or action=="r3_status" then
         return Combat.action(player,action,arg)
     end
-    if action~="build" and action~="build_preview" and action~="build_cancel" then
+    if action~="build" and action~="build_preview" and action~="build_cancel" and action~="produce" and action~="profession"
+        and action~="market" and action~="freight" and action~="freight_cancel" and action~="social" and action~="diplomacy"
+        and action~="work_order" and action~="work_priority" and action~="food_priority"
+        and action~="equipment_order" and action~="stock_transfer" then
         return {ok=false,error="invalid_action"}
     end
     local character=player.Character
@@ -997,6 +1229,114 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
         return {ok=false,error="outside_playable_lane"}
     end
     local now=os.clock()
+    local relations=Market.relations(regional)
+    local canManage=state==regional.home or (relations and relations.accord=="alliance")
+    if action=="stock_transfer" then
+        if not canManage or type(arg)~="table" or not Items.get(arg.item) or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        local depot=Work.findBuilding(state,arg.id)
+        if not depot or not Work.usableStorage(depot) or not accessible(root,structurePoint(depot),14) then
+            return {ok=false,error="action_unavailable"}
+        end
+        local bag=regional.home.r3.playerBag
+        local ok=false
+        if arg.direction=="take" and Work.stockAvailable(state,depot,arg.item)>0 then
+            ok=Inventory.transfer(depot.stored,bag,arg.item,1)
+        elseif arg.direction=="put" and Inventory.count(bag,arg.item)>0
+            and Work.storageSpace(state,depot,arg.item)>0 then
+            ok=Inventory.transfer(bag,depot.stored,arg.item,1)
+        end
+        lastActionAt=now
+        return {ok=ok,error=if not ok then "stock_unavailable" else nil}
+    end
+    if action=="work_order" or action=="equipment_order" or action=="work_priority" or action=="food_priority" then
+        if not canManage or not state.production or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        lastActionAt=now
+        if action=="work_priority" and type(arg)=="number" then
+            return {ok=Work.setBuildingPriority(state,arg),error="action_unavailable"}
+        elseif action=="food_priority" then
+            state.production.focusFood=not state.production.focusFood
+            return {ok=true}
+        elseif type(arg)=="table" and type(arg.id)=="number" then
+            for _,npc in ipairs(state.npcs) do
+                if npc.id==arg.id then
+                    local ok=if action=="equipment_order" then Work.orderGear(state,npc,arg.item)
+                        else Work.setOrder(state,npc,arg.order)
+                    return {ok=ok,error=if not ok then "action_unavailable" else nil}
+                end
+            end
+        end
+        return {ok=false,error="action_unavailable"}
+    end
+    if action=="market" or action=="freight" or action=="freight_cancel" or action=="diplomacy" then
+        if not state.production or not state.production.market or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        local center=Market.center(state)
+        if not center or (center.state~="complete" and center.state~="damaged")
+            or not accessible(root,structurePoint(center),14) then
+            return {ok=false,error="too_far_from_market"}
+        end
+        lastActionAt=now
+        local ok,reason=false,"invalid_market_order"
+        if action=="market" and type(arg)=="table" then
+            if state~=regional.home and relations and relations.standing<=-20 then
+                return {ok=false,error="market_hostile"}
+            end
+            ok,reason=Market.playerTrade(state,regional.home.r3,arg.id,arg.verb,arg.item,Work)
+        elseif action=="freight" and type(arg)=="table" then
+            ok,reason=Market.openContract(regional,arg.seller,arg.item,arg.units,arg.id,Work)
+        elseif action=="diplomacy" then
+            ok,reason=Market.diplomacy(regional,arg)
+        elseif action=="freight_cancel" and regional.home.production and regional.home.production.market then
+            ok=Market.cancel(regional)
+        end
+        return {ok=ok,error=if not ok then reason else nil}
+    end
+    if action=="social" then
+        if type(arg)~="table" or type(arg.id)~="number" or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        for _,npc in ipairs(state.npcs) do
+            if npc.id==arg.id and math.abs(root.Position.X-npc.x)<=9
+                and math.abs(root.Position.Y-groundHeight(npc.x,npc.z or 0))<8 then
+                lastActionAt=now
+                local ok,value=Social.interact(state,npc,arg.kind,regional.home.r3.playerBag,Work)
+                return {ok=ok,error=if not ok then value else nil,message=if ok then value else nil}
+            end
+        end
+        return {ok=false,error="action_unavailable"}
+    end
+    if action=="profession" then
+        if not canManage or not state.production or type(arg)~="string" or #arg>30 or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        local id,role=string.match(arg,"^(%d+):([a-z]+)$")
+        if role and Professions.get(role) then
+            for _,npc in ipairs(state.npcs) do
+                if npc.id==tonumber(id) and Work.changeProfession(state,npc,role) then
+                    lastActionAt=now
+                    return {ok=true}
+                end
+            end
+        end
+        return {ok=false,error="action_unavailable"}
+    end
+    if action=="produce" then
+        if not canManage or regional.home.r3.prologue.stage~="sandbox" or now-lastActionAt<0.55 then
+            return {ok=false,error="action_unavailable"}
+        end
+        local station=if type(arg)=="table" then Work.findBuilding(state,arg.station) else nil
+        if not station or not accessible(root,structurePoint(station),14) then
+            return {ok=false,error="production_station_required"}
+        end
+        lastActionAt=now
+        local ok,value=Production.enqueue(state,arg.recipe,root.Position.X,station.id)
+        return {ok=ok,error=if not ok then value else nil}
+    end
     if action=="build_preview" then
         if now-lastPreviewAt<0.15 then return {ok=false,error="rate_limited"} end
         lastPreviewAt=now
@@ -1007,13 +1347,13 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
             return {ok=false,error="outside_region"}
         end
         local x=math.round(candidateX)
-        local available,height,crossing=placementGround(arg,x,root)
-        if not available then return {ok=false,error=height} end
+        local available,height,crossing=placementGround(arg,x,root,true)
+        if not available then return {ok=false,error=height,bridge=crossing} end
+        local placedX=if crossing then (crossing.west.x+crossing.east.x)/2 else x
         previewId+=1
-        buildPreview={id=previewId,x=x,typeId=arg}
-        return {ok=true,previewId=previewId,
-            x=if crossing then (crossing.west.x+crossing.east.x)/2 else x,
-            y=height,district=Work.districtAt(state,x),bridge=crossing}
+        buildPreview={id=previewId,x=placedX,typeId=arg,crossingId=crossing and crossing.id}
+        return {ok=true,previewId=previewId,x=placedX,
+            y=height,district=Work.districtAt(state,placedX),bridge=crossing}
     end
     if action=="build" and buildPreview and arg==buildPreview.id and buildPreview.result then
         return buildPreview.result
@@ -1035,8 +1375,11 @@ actions.OnServerInvoke=function(player: Player,action: any,arg: any,candidateX: 
     end
     local plan=buildPreview
     if not plan or arg~=plan.id then return {ok=false,error="preview_changed"} end
-    local available,height=placementGround(plan.typeId,plan.x,root)
+    local available,height,crossing=placementGround(plan.typeId,plan.x,root)
     if not available then return {ok=false,error=height} end
+    if plan.crossingId and (not crossing or crossing.id~=plan.crossingId) then
+        return {ok=false,error="preview_changed"}
+    end
     local placed,result=Work.place(state,plan.typeId,plan.x,height)
     if not placed then return {ok=false,error=result} end
     plan.result={ok=true,buildingId=result.id,x=result.x,typeId=plan.typeId}

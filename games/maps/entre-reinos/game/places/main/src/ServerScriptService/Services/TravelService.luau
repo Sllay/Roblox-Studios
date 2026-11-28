@@ -2,6 +2,7 @@
 local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local shared=ReplicatedStorage:WaitForChild("Game")
 local Profile=require(shared:WaitForChild("RegionalProfile"))
+local Structures=require(shared:WaitForChild("Living"):WaitForChild("StructureDefs"))
 local Work=require(shared:WaitForChild("Living"):WaitForChild("WorkEngine"))
 local R3=require(shared:WaitForChild("Living"):WaitForChild("R3Engine"))
 local Inventory=require(shared:WaitForChild("Living"):WaitForChild("Inventory"))
@@ -92,6 +93,7 @@ local function drawDock(index: number,stop: any)
     if dockModels[index] or not World.isLoadedAt(stop.bank.x) then return end
     local hull=Instance.new("Model")
     hull.Name=if index==1 then "Ancoradouro do Vale" else "Ancoradouro da Margem"
+    hull:SetAttribute("ER_PlacementRole","dock")
     local function plank(name: string, size: Vector3,pose: CFrame): Part
         local p=Instance.new("Part")
         p.Name=name
@@ -104,13 +106,17 @@ local function drawDock(index: number,stop: any)
         return p
     end
     local length=math.abs(stop.moor.x-stop.bank.x)
-    -- Lateral walk lane remains clear for native swimming. Dock alongside it.
+    -- Keep the entire collidable deck beside the bridge clearance. Mooring
+    -- and boarding still use the existing lateral coordinates and save data.
+    local dockWidth=3.8
+    local dockZ=-(Structures.BRIDGE_DECK_WIDTH+dockWidth)/2-0.5
+    local outsideZ=dockZ-dockWidth/2
     local y=math.max(stop.moor.y+0.5,stop.bank.y+0.35)
     local center=(stop.moor.x+stop.bank.x)/2
-    plank("Píer",Vector3.new(length+1.2,0.52,3.8),CFrame.new(center,y,-1.05))
+    plank("Píer",Vector3.new(length+1.2,0.52,dockWidth),CFrame.new(center,y,dockZ))
     for _,x in ipairs({stop.bank.x,stop.moor.x}) do
-        plank("Pilote",Vector3.new(0.62,14,0.62),CFrame.new(x,y-6,-4.55))
-        plank("Amarra",Vector3.new(0.7,1.35,0.7),CFrame.new(x,y+0.64,-4.55))
+        plank("Pilote",Vector3.new(0.62,14,0.62),CFrame.new(x,y-6,outsideZ))
+        plank("Amarra",Vector3.new(0.7,1.35,0.7),CFrame.new(x,y+0.64,outsideZ))
     end
     hull.Parent=folder
     dockModels[index]=hull
@@ -149,6 +155,7 @@ local function clearRider(player: Player)
     exhausted=false
     if mountHealth then mountHealth:Disconnect(); mountHealth=nil end
     player:SetAttribute("ER_Riding",nil)
+    player:SetAttribute("ER_TravelVelocity",nil)
     local _,human=character(player)
     if human then human:SetStateEnabled(Enum.HumanoidStateType.Jumping,true) end
 end
@@ -250,6 +257,21 @@ function Service.status(player: Player,root: BasePart): string?
     return nil
 end
 
+function Service.interactionPoint(action: string,root: BasePart): Vector3?
+    local point: any=nil
+    if action=="mount" then point=regional.record.mount.position
+    elseif action=="board" then point=regional.record.boat.position
+    elseif action=="buy_mount" then point={x=18,y=Profile.sample(regional.seed,18,0).height,z=0}
+    elseif action=="dock" then
+        local stop=nearStop(root,9)
+        if stop then point=stop.moor end
+    elseif action=="travel" then
+        local _,arrival=nearbyCapital(root.Position.X)
+        point=arrival
+    end
+    return if point then Vector3.new(point.x,point.y+2,point.z or 0) else nil
+end
+
 function Service.cargo(player: Player, direction: any): any
     if player~=owner or not regional or transit or (direction~="load" and direction~="unload") then
         return {ok=false,error="travel_unavailable"}
@@ -318,9 +340,19 @@ function Service.action(player: Player,arg: any): any
             return {ok=false,error="travel_unavailable"}
         end
         transit=true
+        player:SetAttribute("ER_TravelPending",true)
         root.Anchored=true
-        local ready=World.ensureNear(regional.seed,x)
-        if ready then task.wait() end
+        local ready,reason=World.ensureNear(regional.seed,x)
+        local deadline=os.clock()+1.2
+        while not ready and reason=="world_generation_in_progress" and os.clock()<deadline do
+            task.wait()
+            ready,reason=World.ensureNear(regional.seed,x)
+        end
+        if ready then ready=World.prefetch(regional.seed,x,0,true) end
+        if ready then
+            pcall(function() player:RequestStreamAroundAsync(Vector3.new(x,ground.height,0),1.25) end)
+            task.wait()
+        end
         local groundOnly=RaycastParams.new()
         groundOnly.FilterType=Enum.RaycastFilterType.Include
         groundOnly.FilterDescendantsInstances={workspace.Terrain}
@@ -338,6 +370,7 @@ function Service.action(player: Player,arg: any): any
         end
         if root.Parent then root.Anchored=false end
         transit=false
+        player:SetAttribute("ER_TravelPending",nil)
         return {ok=ok,error=err}
     end
     return {ok=false,error="travel_unavailable"}
@@ -441,6 +474,7 @@ function Service.tick(dt: number)
         speed=0
     end
     refreshRig(riding)
+    player:SetAttribute("ER_TravelVelocity",math.round(speed))
     Rig.animate(rig,speed)
 end
 return Service

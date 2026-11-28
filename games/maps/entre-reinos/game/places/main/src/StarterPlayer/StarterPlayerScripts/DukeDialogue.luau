@@ -60,7 +60,7 @@ function Dialogue.mount(gui: ScreenGui,call: (string,any)->any,changed: (boolean
     advance.Size=UDim2.fromOffset(112,34)
     advance.TextColor3=Color3.fromRGB(254,236,194)
     advance.BackgroundColor3=Color3.fromRGB(76,87,61)
-    advance.Font=Enum.Font.GothamSemibold
+    advance.Font=Enum.Font.GothamMedium
     advance.TextSize=13
     advance.Parent=panel
     local dismiss=Instance.new("TextButton")

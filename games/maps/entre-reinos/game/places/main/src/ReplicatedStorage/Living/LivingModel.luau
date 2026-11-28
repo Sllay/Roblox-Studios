@@ -6,6 +6,10 @@ local Professions=require("./ProfessionDefs")
 local Structures=require("./StructureDefs")
 local Items=require("./ItemDefs")
 local R3=require("./R3Engine")
+local Production=require("./Production")
+local Needs=require("./VillageNeeds")
+local Market=require("./Market")
+local Social=require("./Social")
 local Living={}
 Living.VERSION=1
 
@@ -115,7 +119,7 @@ function Living.valid(state: any): boolean
         end
         buildingIds[b.id]=true
     end
-    return true
+    return state.production==nil or (Production.valid(state.production,state) and Needs.valid(state) and Market.valid(state) and Social.valid(state))
 end
 function Living.restore(data: any, seed: number): any
     if data==nil then return Living.new(seed) end

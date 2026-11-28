@@ -1,4 +1,4 @@
-"""Publish the approved T2-R1 preview to its existing staging Place."""
+"""Publish the approved T2-R2 preview to its existing staging Place."""
 
 from __future__ import annotations
 
@@ -22,13 +22,16 @@ import scene_sync
 
 
 GAME = "entre-reinos"
-CANDIDATE = "f7d4ac685f2372d066cdf49a19b2b978f2454745"
-V18_UNIVERSE = "10769712413"
-V18_PLACE = "90623742498445"
+CANDIDATE = "46594201fe56d6f49707088e3a919d20977d8f13"
+STAGING_UNIVERSE = "10769712413"
+STAGING_PLACE = "90623742498445"
 # Verified with the official Place Provision inventory run 45681890920.
 OWNER = ("User", "8136365379")
 SCRIPT_CLASSES = {"Script", "LocalScript", "ModuleScript"}
-ROLLBACK_SHA = "98f81262ff93066c759b915253d557193e3efc9f"
+BASELINE_VERSION = 22
+BASELINE_DIGEST = "3e815508daf96d1faace1f57d6bbe24342a6bcb854e221dadfd4d629c1f48aa9"
+ROLLBACK_SHA = "b712a6f6c44e3d91a891ab4db73294aa0e1dcaf9"
+ROLLBACK_BUILD_SHA = "cc9f62b5fdb13652474ce2b967d39a1869181f082ae598324c528e540483c126"
 
 require = scene_sync.require
 
@@ -36,7 +39,7 @@ require = scene_sync.require
 def checked_target(plan, games, targets):
     require(plan.get("candidate") == CANDIDATE, "Unapproved preview candidate")
     target = deploy.resolve(games, targets, GAME, "main", "staging")
-    for field, expected in (("universeId", V18_UNIVERSE), ("placeId", V18_PLACE)):
+    for field, expected in (("universeId", STAGING_UNIVERSE), ("placeId", STAGING_PLACE)):
         require(plan.get(field) == target[field] == expected, f"Unauthorized preview {field}")
     require(target["fullPlaceBuildAuthoritative"], "Full Place replacement is disabled")
     production = targets[GAME]["environments"]["production"]
@@ -44,10 +47,9 @@ def checked_target(plan, games, targets):
             "Unexpected production mapping")
     require(plan.get("action") == "publish" and plan.get("confirmFullReplacement") is True,
             "Explicit staging replacement confirmation required")
-    require(plan.get("expectedVersion") == 18, "This preview only replaces staging v18")
-    baseline = scene_sync.read(scene_sync.state_path(target))
-    require(baseline["loadedVersion"] == 18 and baseline["stateDigest"] == plan.get("expectedDigest"),
-            "Review the current staging v18 Scene Sync baseline")
+    require(plan.get("expectedVersion") == BASELINE_VERSION
+            and plan.get("expectedDigest") == BASELINE_DIGEST,
+            f"This preview only replaces the reviewed staging v{BASELINE_VERSION} baseline")
     return target
 
 
@@ -55,7 +57,7 @@ def check_identity(target, key):
     identity = place_provision.task(target, key, "identity")
     require(identity.get("verified") is True, "Staging identity unverified")
     require((identity["creatorType"], identity["creatorId"]) == OWNER, "Staging owner mismatch")
-    require(identity["loadedVersion"] == 18, "Staging is no longer at v18")
+    require(identity["loadedVersion"] == BASELINE_VERSION, f"Staging is no longer at v{BASELINE_VERSION}")
 
 
 def script_hashes(artifact):
@@ -90,43 +92,85 @@ def verify_scripts(expected, observed):
     require(hashes == expected, "Roblox script hashes differ from the checked build")
 
 
-def publish(target, key, out, plan):
+def vegetation_meshes(artifact):
+    compiled = ElementTree.parse(artifact)
+    require(compiled.findtext(".//Item[@class='Terrain']/Properties/bool[@name='Decoration']") == "true",
+            "Native grass must be enabled in the build")
+    storage = compiled.find("./Item[@class='ServerStorage']")
+    require(storage is not None, "ServerStorage missing from the build")
+    folder = next((item for item in storage.findall("Item[@class='Folder']")
+                   if item.findtext("Properties/string[@name='Name']") == "ERVegetation"), None)
+    require(folder is not None, "Vegetation templates missing from the build")
+    meshes = {}
+    models = folder.findall("Item[@class='Model']")
+    for model in models:
+        model_name = model.findtext("Properties/string[@name='Name']")
+        for mesh in model.findall("Item[@class='MeshPart']"):
+            name = mesh.findtext("Properties/string[@name='Name']")
+            meshes[f"{model_name}/{name}"] = mesh.findtext("Properties/Content[@name='MeshContent']/uri")
+    require(len(models) == 8 and len(meshes) == 12 and all(meshes.values()), "Incomplete vegetation templates")
+    return meshes
+
+
+def verify_vegetation(expected, observed):
+    meshes = {}
+    grass = False
+    for row in observed["records"].values():
+        if row.get("service") == "Workspace" and row.get("class") == "Terrain":
+            grass = row["properties"].get("decoration") is True
+        if row.get("service") != "ServerStorage" or row.get("class") != "MeshPart":
+            continue
+        path = [part["name"] for part in row["path"]]
+        if len(path) == 3 and path[0] == "ERVegetation":
+            meshes["/".join(path[1:])] = row["properties"].get("meshId")
+    require(meshes == expected, "Published vegetation mesh references differ from the checked build")
+    require(grass, "Native grass is disabled in the published Terrain")
+
+
+def publish(target, key, out):
     artifact = target["file"]
     hashes = script_hashes(artifact)
-    rollback_file = out / "entre-reinos-v18-rollback.rbxlx"
+    meshes = vegetation_meshes(artifact)
+    rollback_file = out / f"entre-reinos-v{BASELINE_VERSION}-rollback.rbxlx"
+    rollback_build = hashlib.sha256(rollback_file.read_bytes()).hexdigest()
+    require(rollback_build == ROLLBACK_BUILD_SHA, f"Rollback differs from the published v{BASELINE_VERSION} build")
     rollback_scripts = script_hashes(rollback_file)
     subprocess.run([sys.executable, str(deploy.ROOT / "tools/script_quality.py")], check=True)
 
     check_identity(target, key)
-    historical = scene_sync.capture(target, key, read_version=18)
-    require(historical["loadedVersion"] == 18 and historical["stateDigest"] == plan["expectedDigest"],
-            "Historical v18 rollback scene not verified")
+    historical = scene_sync.capture(target, key, read_version=BASELINE_VERSION)
+    require(historical["loadedVersion"] == BASELINE_VERSION and historical["stateDigest"] == BASELINE_DIGEST,
+            f"Historical v{BASELINE_VERSION} rollback scene not verified")
     verify_scripts(rollback_scripts, historical)
     scene_sync.write(out / "baseline.json", historical)
     rollback = {
-        "candidate": ROLLBACK_SHA, "revision": 18, "sceneDigest": historical["stateDigest"],
-        "artifactSha256": hashlib.sha256(rollback_file.read_bytes()).hexdigest(),
+        "candidate": ROLLBACK_SHA, "revision": BASELINE_VERSION, "sceneDigest": historical["stateDigest"],
+        "artifactSha256": rollback_build,
         "scriptsVerified": len(rollback_scripts),
     }
     scene_sync.write(out / "rollback.json", rollback)
     print("PREVIEW_ROLLBACK", json.dumps(rollback), flush=True)
 
-    # Official publisher compares the current scene against the recorded v18
-    # baseline again immediately before sending the Assets API write.
+    # Refresh the disposable checkout's inventory so the official publisher
+    # can compare the current scene immediately before the Assets API write.
+    path = scene_sync.state_path(target)
+    original = path.read_bytes()
     result = io.StringIO()
     try:
+        scene_sync.write(path, historical)
         with redirect_stdout(result):
             deploy.publish(target, key)
     finally:
+        path.write_bytes(original)
         print(result.getvalue(), end="", flush=True)
     match = re.search(rf"^SUCCESS: Place {target['placeId']}, revision ([1-9][0-9]*)$",
                       result.getvalue(), re.MULTILINE)
-    require(match and int(match[1]) > 18, "Roblox published revision unconfirmed")
+    require(match and int(match[1]) > BASELINE_VERSION, "Roblox published revision unconfirmed")
     scene_sync.write(out / "publication.json", {
         "candidate": CANDIDATE, "universeId": target["universeId"], "placeId": target["placeId"],
         "revision": int(match[1]), "isPublished": True, "baselineDigest": historical["stateDigest"],
         "artifactSha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        "scriptHashes": hashes,
+        "scriptHashes": hashes, "vegetationMeshes": meshes,
     })
 
 
@@ -139,10 +183,12 @@ def readback(target, key, out):
     scene_sync.write(out / "post-publish-inventory.json", observed)
     require(observed["loadedVersion"] == receipt["revision"], "Independent readback loaded a different revision")
     verify_scripts(receipt["scriptHashes"], observed)
+    verify_vegetation(receipt["vegetationMeshes"], observed)
     require(observed["records"]["environment:workspace"]["StreamingEnabled"] is True,
             "Streaming disabled in published preview")
     proof = {k: receipt[k] for k in ("candidate", "universeId", "placeId", "revision", "artifactSha256")}
-    proof.update(scriptsVerified=len(receipt["scriptHashes"]), sceneDigest=observed["stateDigest"],
+    proof.update(scriptsVerified=len(receipt["scriptHashes"]), vegetationMeshesVerified=len(receipt["vegetationMeshes"]),
+                 nativeGrass=True, sceneDigest=observed["stateDigest"],
                  playUrl=f"https://www.roblox.com/games/{target['placeId']}")
     scene_sync.write(out / "readback.json", proof)
     print("PREVIEW_READBACK", json.dumps(proof), flush=True)
@@ -161,7 +207,7 @@ def main():
     key = os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY")
     require(key, "Existing staging Open Cloud credential is unavailable")
     if args.phase == "publish":
-        publish(target, key, args.output, plan)
+        publish(target, key, args.output)
     else:
         readback(target, key, args.output)
 

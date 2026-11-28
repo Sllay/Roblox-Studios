@@ -158,3 +158,33 @@ Distâncias/escala de reinos; limite NPC e carga; regras precisas de derrota e r
 [PROPOSTA] Detalhamento da alocação e testes esta em docs/SEASON_RUNNERS.md V2. Documentacao completa das fontes, fatos e formulas em docs/research/RESEARCH_SOURCES.md, MECHANICS_AUDIT.md e ROBLOX_ADAPTATION.md. Perguntas nao resolvidas em RESEARCH_GAPS.md; não inventar dados da fonte ou do gameplay para preencher lacunas.
 
 [FIXADO] Encerra T1 e T2 e T3 apenas apos cada R3 validado em CI, publicado em staging verificado e aprovado por teste manual do criador; camadas de 3 refinamentos da mesma temporada se necessario. Nenhum escopo da temporada seguinte antecipado.
+
+## 26/11/2026 — Refinamento do playtest v20
+
+[FIXADO] A v20 revelou apresentação confusa no celular. A experiência existente precisa de interface mobile-first, autoexplicativa e contextual. Uso compartilhado de áreas seguras, escala, tipografia, ícones originais, espaçamento e estado modal. Evitar sobreposição com controles nativos, reconstrução de UI por atualização e navegação diferente por dispositivo.
+
+[FIXADO] Na parte superior, até quatro slots de recursos visíveis com nome, ícone e números atual/estoque/max, rolagem horizontal com snap e ordem estável. Na inferior, seleção centrada de armas, ferramentas, munição e itens realmente disponíveis. Botões circulares na direita se adaptam à ação equipada e ao alvo à frente. Alvos usam direção, alcance, acesso, prioridade e histerese. Preservar pressão longa para árvores e cancelar gestos ao trocar contexto.
+
+[FIXADO] Castelo abre tesouraria e comércio; oficina e forja mostram receitas da estação; galpão mostra estoques e custódia; fazenda mostra cultivo; doca lida com transporte e carga. Painéis compactos, contextualizados, fechados ao perder alcance ou entrar em combate, com pré-condições e permissões validadas no servidor.
+
+[FIXADO] O caderno permite ordenar moradores autorizados à distância. Mudança de profissão, tarefa, coleta, construção, prioridades e equipamento desejado respeita autoridade territorial. Armas e ferramentas percorrem reserva, trajeto, recebimento e transferência de custódia física. Uso de estoque remoto sem teletransporte.
+
+[FIXADO] Preservar o grafo regional e separar planejamento, locomoção, desvio, destino e apresentação. Investigar oscilações, concorrência por pontos comuns, travessias e pausas. Usar soluções leves, com espera em gargalos, detecção de ausência de progresso e interpolação X/Z de posição e orientação. Sem retornos a corredores no Z ou teletransporte habitual. Atrás da câmera não simular NPCs ou economia decorativa.
+
+[FIXADO] Ameaça real aciona alerta, interrupção de atividade, evacuação, abrigo e retomada. Noite sem perigo permite trabalho. Civis preservam carga e reservas, evitam inimigos e procuram refúgio acessível. Defensores reagem conforme função e equipamento. Resolver conflitos entre trabalho, necessidade, perigo e narrativa.
+
+[FIXADO] Flechas precisam de hitboxes anatômicas coerentes e detecção contínua sem colisão física com jogador ou dano através de paredes. Preservar gravidade. Duque mantém interação e animação sem empurrar o jogador. Guardas devem olhar para a transformação, hesitar conforme o roteiro e retomar sua função. Preservar a narrativa.
+
+[FIXADO] Gerar Terrain além do enquadramento máximo, considerando zoom, proporção e velocidade de montaria, e validar o que o cliente recebe. Barreira segura em ambas as extremidades e dois chunks decorativos por lado. Três fileiras adicionais em Z com altura crescente, silhuetas naturais e árvores variadas por altitude, umidade, inclinação e bioma, com densidade e LOD limitados. Faixa frontal de água 3D, margens naturais e continuidade dos cursos que descem do fundo ao primeiro plano, com cascatas visuais e volumes nativos coerentes. Preservar terreno, travessias, seed e dados atuais.
+
+[FIXADO] Medir custo de simulação, render, atualização de UI, memória, movimento, replicação e geração. Perfil em servidor isolado não equivale a FPS mobile. Concluir os checkpoints A–F e revisar em staging existente, com autorização específica de publicação. T2-R3 aguarda o refinamento.
+
+## 27/11/2026 — Mar frontal e vegetação
+
+[FIXADO] A primeira fileira do lado da câmera é mar aberto. A margem fica na transição do terreno jogável. O mar é contínuo em X, incluindo os chunks decorativos das extremidades, com nível comum fora das desembocaduras. Rios vindos das elevações atravessam o terreno jogável e deságuam no mar. Usar volumes nativos de Terrain; preservar as margens, travessias e o limite de movimento do jogador em Z.
+
+[FIXADO] Os modelos aprovados do Black Islands podem ser reutilizados nos elementos naturais do Entre Reinos. A distribuição varia por seed, bioma e relevo e preserva clareiras e acessos. A camada distante tem orçamento reduzido. A apresentação de uma fonte preserva sua identidade, quantidade e estado persistido. Grama usa a decoração nativa de Terrain.
+
+## 28/11/2026 — Leitura da cena na câmera lateral
+
+[FIXADO] As árvores ficam atrás do corredor jogável. A copa inteira precisa ficar do lado oposto à câmera lateral inclusive durante os diálogos. A escala deve manter o personagem legível. Quando uma fonte salva tiver coordenada perto da frente, sua âncora de coleta conserva a posição e seu modelo visível fica atrás.

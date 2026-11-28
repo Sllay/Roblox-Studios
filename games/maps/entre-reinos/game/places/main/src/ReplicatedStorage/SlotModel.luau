@@ -9,7 +9,8 @@ Slots.SCHEMA_VERSION = 1
 -- These are data contracts, not Roblox Place revisions.
 -- Cosmetic/gameplay changes keep these versions untouched.
 Slots.SAVE_FORMAT_VERSION = 1
-Slots.RULESET_VERSION = 4
+Slots.RULESET_VERSION = 5
+Slots.REGIONAL_RULESET_VERSION = 4
 Slots.LEGACY_RULESET_VERSION = 3
 Slots.MIN_RULESET_VERSION = 1
 
@@ -133,11 +134,14 @@ function Slots.validWorld(data: any): boolean
     if data.living ~= nil and (not Living.valid(data.living) or data.living.seed ~= data.seed) then
         return false
     end
-    if data.rulesetVersion==Slots.RULESET_VERSION then
+    if data.rulesetVersion==Slots.RULESET_VERSION or data.rulesetVersion==Slots.REGIONAL_RULESET_VERSION then
         if not Regions.valid(data.regionWorld,data.seed,data.living) then return false end
     elseif data.regionWorld~=nil then
         return false
     end
+    if data.rulesetVersion~=Slots.RULESET_VERSION and
+        ((data.living and data.living.production) or
+            (data.regionWorld and data.regionWorld.foreign and data.regionWorld.foreign.production)) then return false end
     return true
 end
 
