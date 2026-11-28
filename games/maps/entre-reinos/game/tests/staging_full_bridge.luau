@@ -10,6 +10,10 @@ local function probeFullBridge(world,living,bridgeScene)
     local inventory=loadCandidate("Inventory")
     assert(inventory.add(domain.buildings[2].stored,"wood",44))
     assert(inventory.add(domain.buildings[2].stored,"stone",16))
+    local savedTree=domain.sites[1]
+    savedTree.z=2
+    savedTree.remaining=17
+    savedTree.marked=true
     domain.npcs[3].x=crossing.west.x-4
     record.living=domain
     local rig=Instance.new("Model")
@@ -30,7 +34,21 @@ local function probeFullBridge(world,living,bridgeScene)
     local village=assert(workspace:FindFirstChild("ER_LivingWorld"))
     local dock=assert(village.ER_Travel:FindFirstChild("Ancoradouro do Vale"))
     assert(village:FindFirstChild("Building_1_castle") and village:FindFirstChild("NPC_1_Ari"))
-    assert(village:FindFirstChild("HarvestableTree_wood_a"))
+    local resourceTree=assert(village:FindFirstChild("HarvestableTree_wood_a"))
+    local trunk=resourceTree:FindFirstChild("Trunk")
+    local foliage=false
+    for _,part in ipairs(resourceTree:GetChildren()) do
+        if part:IsA("MeshPart") then
+            local cf,sz=part.CFrame,part.Size
+            local front=cf.Z+(math.abs(cf.RightVector.Z)*sz.X+math.abs(cf.UpVector.Z)*sz.Y
+                +math.abs(cf.LookVector.Z)*sz.Z)/2
+            assert(front<=-1+0.01,"resource tree leaks onto the camera side")
+            foliage=true
+        end
+    end
+    assert(foliage and trunk.Position.Z==savedTree.z and trunk:GetAttribute("SourceId")==savedTree.id)
+    local savedPopulation=living.snapshot(player)
+    assert(savedPopulation.sites[1].z==2 and savedPopulation.sites[1].remaining==17 and savedPopulation.sites[1].marked)
     local parts=#village:GetDescendants()
     local clearance=loadCandidate("StructureDefs").BRIDGE_DECK_WIDTH/2
     for _,landing in ipairs(village.ER_Travel:GetChildren()) do
@@ -108,5 +126,5 @@ local function probeFullBridge(world,living,bridgeScene)
     rig:Destroy()
     return {result="built_both",crossing=crossing.id,blocker=details.parts[1],
         reviewVolume=details.volume,villageParts=parts,lightTicks=lightTicks,reinforcedTicks=reinforcedTicks,
-        dockZ=dockZ}
+        dockZ=dockZ,foregroundSourcePreserved=true}
 end

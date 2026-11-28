@@ -265,3 +265,7 @@ Correção v9 em desenvolvimento:
 - [AUTORIZADO PELO CRIADOR] Reutilizar os modelos aprovados do Black Islands com as malhas, texturas, UVs e materiais revisados. Manter a substituição visual vinculada aos IDs existentes das fontes do Entre Reinos. Usar grama nativa nos materiais aplicáveis e densidade limitada de vegetação distante.
 - [FIXADO PELO CRIADOR] Validar a ponte com a vila carregada, preservar a rejeição de objetos fixos dentro do vão e manter o acesso do jogador restrito à ponte reforçada. O playtest da correção precede a T2-R3. [Recibo](runner-receipts/T2-R2-v20-refino.md#pontes-vegetação-aprovada-e-mar-frontal)
 - [AUTORIZADO PELO CRIADOR] Publicar o candidato `46594201fe56d6f49707088e3a919d20977d8f13` do PR #14 no staging existente, em substituição à v22. Preservar ruleset 5, os seis slots e o rollback da v22. T2-R3 aguarda o playtest. [Protocolo](RUNNER_PROTOCOL.md#exceção-autorizada-para-pontes-vegetação-e-mar-frontal)
+
+## 28/11/2026 — Árvores atrás do corredor
+
+- [FIXADO PELO CRIADOR] O playtest mobile da v23 mostrou a cena encoberta. Retirar as árvores do primeiro plano e manter os modelos visíveis atrás do corredor. Revisar a escala das copas. Preservar a coleta e o estado das fontes nos saves.

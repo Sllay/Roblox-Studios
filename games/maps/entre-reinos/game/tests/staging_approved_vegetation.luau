@@ -1,3 +1,12 @@
+local treeTemplates={BroadleafA=true,BroadleafB=true,Pine=true}
+
+local function treeBounds(model)
+    local cf,sz=model:GetBoundingBox()
+    local front=cf.Z+(math.abs(cf.RightVector.Z)*sz.X+math.abs(cf.UpVector.Z)*sz.Y
+        +math.abs(cf.LookVector.Z)*sz.Z)/2
+    return sz.Y,front
+end
+
 local function probeApprovedVegetation(world,vegetation)
     local folder=Instance.new("Folder")
     folder.Name="AssetProbe"
@@ -35,8 +44,24 @@ local function probeApprovedVegetation(world,vegetation)
     assert(#workspace.ER_World_3D:FindFirstChild("Scenery_0_1"):GetChildren()==0,"maritime vegetation")
     local metrics=world.metrics()
     assert(metrics.vegetationModels>0 and metrics.decorations>metrics.vegetationModels)
+    local counts={trees=0,maxHeight=0,frontEdge=-math.huge}
+    for _,model in ipairs(workspace.ER_World_3D:GetDescendants()) do
+        if model:IsA("Model") and treeTemplates[model:GetAttribute("ER_AssetTemplate")] then
+            local height,front=treeBounds(model)
+            counts.trees+=1
+            counts.maxHeight=math.max(counts.maxHeight,height)
+            counts.frontEdge=math.max(counts.frontEdge,front)
+        end
+    end
+    assert(counts.trees>0 and counts.maxHeight<=11.01 and counts.frontEdge<=-1+0.01,
+        "generated trees intrude into the camera side or exceed their size cap")
+    for _,kind in ipairs({"tree","broadleaf","pine"}) do
+        local model=vegetation.place(folder,kind,Vector3.new(100,24,6),2,math.pi/4,2,false)
+        local height,front=treeBounds(model)
+        assert(height<=9.51 and front<=-1+0.01,"rotated tree intrudes into the camera side: "..kind)
+    end
     folder:Destroy()
     return {templates=names,meshes=#parts,preloaded=checked,baselineNativeGrass=workspace.Terrain.Decoration,
         worldModels=metrics.vegetationModels,worldDecorInstances=metrics.decorations,
-        generationMs=metrics.vegetationMs}
+        generationMs=metrics.vegetationMs,cameraClearance=counts}
 end

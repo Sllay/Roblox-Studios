@@ -576,7 +576,11 @@ local function createSiteVisual(site: any)
         elseif site.item=="wood" then "log"
         elseif site.item=="food" or site.item=="grain" then "bush" else "rock"
     local yaw=math.rad((state.seed+site.x*71)%360)
-    local model=Vegetation.place(visualization,kind,Vector3.new(site.x,ground,z),
+    -- Place the meshes behind the lane while the work and interaction anchor
+    -- still uses the source's saved coordinates.
+    local visualZ=if timber then math.min(z,Profile.LANE_Z-6) else z
+    local visualGround=if visualZ==z then ground else groundHeight(site.x,visualZ)
+    local model=Vegetation.place(visualization,kind,Vector3.new(site.x,visualGround,visualZ),
         if timber then 0.9 else 0.78,yaw,math.floor(site.x),false)
     model.Name=if timber then "HarvestableTree_"..tostring(site.id) else "Resource_"..site.id
     model:SetAttribute("ER_SourceId",site.id)

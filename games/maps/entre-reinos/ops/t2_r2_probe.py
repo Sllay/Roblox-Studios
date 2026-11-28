@@ -1,4 +1,4 @@
-"""Run village domain suites and synthetic DataStore in a disposable v22 session."""
+"""Run village domain suites and synthetic DataStore in a disposable v23 session."""
 
 import base64
 import json
@@ -14,6 +14,7 @@ from cloud_tasks import run_task
 GAME = Path("games/maps/entre-reinos")
 MODULES = GAME / "game/places/main/src/ReplicatedStorage"
 TESTS = GAME / "game/tests"
+BASELINE_VERSION = 23
 
 
 def vegetation_blob():
@@ -84,7 +85,7 @@ def bundle_source():
         for name in tests
     ]
     return "\n".join([
-        'assert(game.PlaceVersion==22,"Unexpected published staging baseline")',
+        f'assert(game.PlaceVersion=={BASELINE_VERSION},"Unexpected published staging baseline")',
         'local modules,cache={},{}',
         'local function loadCandidate(name)\n'
         ' if cache[name]==nil then cache[name]=assert(modules[name],name)() end\n'
@@ -99,7 +100,9 @@ def bundle_source():
         f'local vegetationBlob=game:GetService("EncodingService"):Base64Decode(buffer.fromstring("{vegetation_blob()}"))',
         'local templates=serial:DeserializeInstancesAsync(vegetationBlob)',
         'assert(#templates==1 and templates[1].Name=="ERVegetation")',
-        'templates[1].Parent=game:GetService("ServerStorage")',
+        'local storage=game:GetService("ServerStorage")',
+        'storage:WaitForChild("ERVegetation").Name="ERBaselineVegetation"',
+        'templates[1].Parent=storage',
         'loadedServices.VegetationScene=loadVegetationScene()',
         'local world=loadWorldService()',
         'loadedServices.WorldService=world',
@@ -129,7 +132,7 @@ if __name__ == "__main__":
     verify_candidate_grass()
     result = run_task(cfg["universeId"], cfg["placeIds"]["main"],
                       os.environ["ROBLOX_OPEN_CLOUD_API_KEY"], bundle_source())
-    assert result["loadedVersion"] == 22
+    assert result["loadedVersion"] == BASELINE_VERSION
     assert result["datastore"]["backupRestored"] and result["datastore"]["replyRetry"]
     assert result["datastore"]["newRuleset"] == 5
     assert result["refinement"]["nativeLegacyUnchanged"] == 9216

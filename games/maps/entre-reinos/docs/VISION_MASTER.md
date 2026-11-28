@@ -184,3 +184,7 @@ Distâncias/escala de reinos; limite NPC e carga; regras precisas de derrota e r
 [FIXADO] A primeira fileira do lado da câmera é mar aberto. A margem fica na transição do terreno jogável. O mar é contínuo em X, incluindo os chunks decorativos das extremidades, com nível comum fora das desembocaduras. Rios vindos das elevações atravessam o terreno jogável e deságuam no mar. Usar volumes nativos de Terrain; preservar as margens, travessias e o limite de movimento do jogador em Z.
 
 [FIXADO] Os modelos aprovados do Black Islands podem ser reutilizados nos elementos naturais do Entre Reinos. A distribuição varia por seed, bioma e relevo e preserva clareiras e acessos. A camada distante tem orçamento reduzido. A apresentação de uma fonte preserva sua identidade, quantidade e estado persistido. Grama usa a decoração nativa de Terrain.
+
+## 28/11/2026 — Leitura da cena na câmera lateral
+
+[FIXADO] As árvores ficam atrás do corredor jogável. A copa inteira precisa ficar do lado oposto à câmera lateral inclusive durante os diálogos. A escala deve manter o personagem legível. Quando uma fonte salva tiver coordenada perto da frente, sua âncora de coleta conserva a posição e seu modelo visível fica atrás.
