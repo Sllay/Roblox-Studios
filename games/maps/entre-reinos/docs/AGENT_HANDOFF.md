@@ -397,3 +397,7 @@ O PR #14 continua em rascunho. O staging permanece na v22 e seu rollback reprodu
 ## 27/11/2026 — Pontes, vegetação e mar frontal disponíveis na v23
 
 A autorização do criador liberou o SHA `4659420` para o staging existente. A API confirmou a v23. O readback conferiu 51 scripts, 12 malhas e grama nativa. O Scene Sync posterior registrou 137 objetos, zero conflitos e o mesmo digest. O rollback da v22 foi arquivado antes da escrita. Ruleset 5 e seis slots preservados. O PR #14 continua em rascunho e a T2-R3 aguarda o playtest do criador. [Playtest](T2_R2_PLAYTEST.md) · [Recibo](runner-receipts/T2-R2-v20-refino.md#publicação-da-v23--27112026) · [Publicação](https://github.com/Sllay/Roblox-Studios/actions/runs/46082052074) · [Scene Sync](https://github.com/Sllay/Roblox-Studios/actions/runs/46082166226)
+
+## 28/11/2026 — Escala das árvores e câmera lateral
+
+O playtest mobile da v23 mostrou a tela encoberta durante a escolta. O motor confirmou 12 malhas com dimensões originais zeradas na revisão publicada. O candidato `8f30a1f54f233990347bf4d6c0bb454b6f974540` restaura essas dimensões, limita a altura das árvores e deixa as copas inteiramente ao fundo. As fontes conservam suas âncoras e o estado salvo. CI e probe aprovados. A v23 continua no staging e a nova publicação aguarda autorização específica. Após publicar, confirmar a mesma cena de escolta no celular. [Recibo](runner-receipts/T2-R2-v20-refino.md#árvores-e-câmera-lateral--28112026) · [Prova Roblox](https://github.com/Sllay/Roblox-Studios/actions/runs/46163091485)

@@ -541,6 +541,22 @@
             "rollbackArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/46082052074/artifacts/15236619608",
             "evidenceArtifactUrl": "https://github.com/Sllay/Roblox-Studios/actions/runs/46082052074/artifacts/15237139197",
             "receipt": "docs/runner-receipts/T2-R2-v20-refino.md"
+          },
+          "cameraTreesRefinement": {
+            "recordedAt": "2026-11-28",
+            "candidate": "8f30a1f54f233990347bf4d6c0bb454b6f974540",
+            "baselineRevision": 23,
+            "ruleset": 5,
+            "slots": 6,
+            "technicalVerification": "passed",
+            "publicationStatus": "awaiting_creator_authorization",
+            "clientMobile": "awaiting_creator_playtest",
+            "nextRunner": "blocked_awaiting_creator_feedback",
+            "ci": "https://github.com/Sllay/Roblox-Studios/actions/runs/46163091490",
+            "robloxProbe": "https://github.com/Sllay/Roblox-Studios/actions/runs/46163091485",
+            "baselineSceneSync": "https://github.com/Sllay/Roblox-Studios/actions/runs/46082166226",
+            "rollbackBuildSha256": "6c0ee657110082c5ed9e3b7a79a581632b1f6c34a0c795a173b537f1159b0dc7",
+            "receipt": "docs/runner-receipts/T2-R2-v20-refino.md"
           }
         },
         {
